@@ -10,6 +10,8 @@ import com.cos.project.service.MemberService;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.config.authentication.UserServiceBeanDefinitionParser;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,33 +39,55 @@ public class MemberController {
 		return "메인 페이지";
 	}
 	
-    
-    
+	
 	@GetMapping("/findall")
-	public List<MemberEntity> findAllUser() {
-		return memberService.showAllMember();
+	public ResponseEntity<?> findAllUser() {
+	    return ResponseEntity.ok(memberService.showAllMember());
 	}
+    
+//    
+//	@GetMapping("/findall")
+//	public List<MemberEntity> findAllUser() {
+//		return memberService.showAllMember();
+//	}
 	
 	@PostMapping("/join")
-public String joinUser(@RequestBody MemberDTO entity) {
+public ResponseEntity<?>  joinUser(@RequestBody MemberDTO entity) {
     	String result = memberService.joinMember(entity);
     
-    return result;
+    return ResponseEntity.ok(result);
 }
+	
+//	@PostMapping("/join")
+//public String joinUser(@RequestBody MemberDTO entity) {
+//    	String result = memberService.joinMember(entity);
+//    
+//    return result;
+//}
 
 @PutMapping("updateuser/{id}")
-public String updateUser(@PathVariable(name = "id") Long id, @RequestBody MemberDTO memberDTO) {
+public ResponseEntity<?> updateUser(@PathVariable(name = "id") Long id, @RequestBody MemberDTO memberDTO) {
     String result = memberService.updateMember(id, memberDTO);
-    return result;
+    return ResponseEntity.ok(result);
 }
+
+//@PutMapping("updateuser/{id}")
+//public String updateUser(@PathVariable(name = "id") Long id, @RequestBody MemberDTO memberDTO) {
+//    String result = memberService.updateMember(id, memberDTO);
+//    return result;
+//}
 
 @DeleteMapping("deleteuser/{id}")
-public String deleteUser(@PathVariable(name = "id") Long id) {
+public ResponseEntity<?> deleteUser(@PathVariable(name = "id") Long id) {
     String result = memberService.deleteMember(id);
-    return result;
+    return ResponseEntity.ok(result);
 }
 
-
+//@DeleteMapping("deleteuser/{id}")
+//public String deleteUser(@PathVariable(name = "id") Long id) {
+//    String result = memberService.deleteMember(id);
+//    return result;
+//}
 
 	
 }
