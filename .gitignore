@@ -1,0 +1,81 @@
+HELP.md
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+
+
+
+
+
+# IDE 관련 파일
+.idea/
+.project
+.classpath
+.settings/
+.vscode/
+
+# Gradle 관련 파일
+.gradle/
+build/
+gradle-wrapper.jar
+gradle-wrapper.properties
+
+# Maven 관련 파일 (사용할 경우)
+target/
+
+# Spring Boot 설정 파일 (민감한 정보가 포함될 수 있는 환경별 설정 파일)
+src/main/resources/application-dev.properties
+src/main/resources/application-prod.properties
+
+# 로그 파일
+logs/
+
+# 컴파일된 클래스 파일
+*.class
+
+# 임시 파일
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+
+# 빌드된 아카이브 파일
+*.jar
+*.war
+*.ear
+
+
+
