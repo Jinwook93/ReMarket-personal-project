@@ -19,10 +19,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
+//@RequestMapping("/member")
 public class MemberController {
 
 	private MemberService memberService;
@@ -34,11 +36,11 @@ public class MemberController {
 
     
     
-	@GetMapping("/")
-	public String  home() {
-		return "메인 페이지";
-	}
-	
+//	@GetMapping("/")
+//	public String  home() {
+//		return "메인 페이지";
+//	}
+//	
 	
 	@GetMapping("/findall")
 	public ResponseEntity<?> findAllUser() {

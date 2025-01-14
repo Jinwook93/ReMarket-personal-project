@@ -7,6 +7,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -54,11 +55,11 @@ public class MemberEntity {
 	
 	
 	
-	@OneToMany(mappedBy = "memberEntity")
+	@OneToMany(mappedBy = "memberEntity", fetch = FetchType.EAGER)
 	List<BoardEntity> boards = new ArrayList<>();
 	
 	
-	@OneToMany(mappedBy = "memberEntity")
+	@OneToMany(mappedBy = "memberEntity", fetch = FetchType.EAGER)
 	List<CommentEntity> comments = new ArrayList<>();
 
 }

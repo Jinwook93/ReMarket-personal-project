@@ -12,8 +12,7 @@ import lombok.*;
 
 @Entity
 @Table(name = "board")
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -27,9 +26,9 @@ public class BoardEntity {
     private String title;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
-    private MemberEntity memberEntity; // Use MemberEntity instead of MemberDTO
-
+    @JoinColumn(name = "member_id")
+    private MemberEntity memberEntity; 
+    
     @Column(nullable = false, columnDefinition = "TEXT")
     private String contents;
 
@@ -37,6 +36,6 @@ public class BoardEntity {
     @Column(updatable = false)
     private Timestamp createTime;
 
-    @OneToMany(mappedBy = "boardEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "boardEntity", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.EAGER)
     private List<CommentEntity> comments = new ArrayList<>();
 }

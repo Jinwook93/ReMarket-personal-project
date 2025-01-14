@@ -3,6 +3,7 @@ package com.cos.project.details;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -15,6 +16,7 @@ public class PrincipalDetails implements UserDetails {
 
     private final MemberEntity memberEntity;
 
+    @Autowired
     public PrincipalDetails(MemberEntity memberEntity) {
         this.memberEntity = memberEntity;
     }

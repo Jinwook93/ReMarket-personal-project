@@ -42,8 +42,9 @@ public class SecurityConfig {
 		http.csrf().disable()
 		.authorizeHttpRequests(auth ->
 		auth.requestMatchers("/findall").hasRole("ADMIN")
-			.requestMatchers("/login").permitAll()	
-			.requestMatchers("/join","/deleteuser/*","/updateuser/*").permitAll()
+			.requestMatchers("/login").permitAll()
+			.requestMatchers("/board/writeboard").authenticated()
+			.requestMatchers("/board/*","/join","/deleteuser/*","/updateuser/*").permitAll()
 			.anyRequest().authenticated()
 				)
 		
@@ -52,7 +53,7 @@ public class SecurityConfig {
 		login.loginProcessingUrl("/login")
 		//		.defaultSuccessUrl("/", true)												// 문제 해결 : 로그인 성공 후 설정을 "/"로 하였기 떄문에 ROLE에 상관없이 안되었던것이다
 				.failureForwardUrl("/login?error=true")
-	            .usernameParameter("userid") // 로그인 폼에서 userid 파라미터 사용
+	     //       .usernameParameter("userid") // 로그인 폼에서 userid 파라미터 사용
 	           .passwordParameter("password") // 로그인 폼에서 password 파라미터 사용
 				)
 		.sessionManagement(session ->
