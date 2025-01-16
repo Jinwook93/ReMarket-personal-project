@@ -9,10 +9,12 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cos.project.details.PrincipalDetails;
 import com.cos.project.dto.LoginRequest;
@@ -41,14 +43,33 @@ public class MemberService {
 //	@Autowired
 //	HttpSession  session;
     
-    @Autowired
-    public MemberService(MemberRepository memberRepository) {
-        this.memberRepository = memberRepository;
-    }
+	@Autowired
+	public MemberService(MemberRepository memberRepository) {
+	    this.memberRepository = memberRepository;
+	}
+
+	@Transactional(readOnly = true)
+	// 아이디 중복 확인
+	public String checkId(String userid) {
+	    // 아이디가 이미 존재하는지 확인
+	    boolean isExist = memberRepository.existsByUserid(userid);
+	    
+	    if (isExist) {
+	        // 아이디가 이미 존재하면 중복 아이디 메시지 반환
+	    	System.out.println("이미 등록된 아이디입니다");
+	        return "이미 등록된 아이디입니다";
+	    } else {
+	        // 아이디가 사용 가능하면 사용 가능 아이디 메시지 반환
+	    	System.out.println("사용 가능한 아이디입니다");
+	        return "사용 가능한 아이디입니다";
+	    }
+	}
 
     
+    
+    
     @Transactional
-    // 로그인
+    //로그인
     public String  checkLogin(LoginRequest loginRequest) {
     	  UsernamePasswordAuthenticationToken authenticationToken = 
                   new UsernamePasswordAuthenticationToken(loginRequest.getUserid(), loginRequest.getPassword());

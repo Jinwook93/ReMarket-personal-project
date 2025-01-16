@@ -7,6 +7,9 @@ import com.cos.project.dto.LoginRequest;
 import com.cos.project.dto.MemberDTO;
 import com.cos.project.entity.MemberEntity;
 import com.cos.project.service.MemberService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.List;
 
@@ -77,6 +80,17 @@ public class MemberController {
        return ResponseEntity.ok(memberService.checkLogin(loginRequest));
     }
 	
+    @PostMapping("/checkId")
+   public String checkId(@RequestBody String userid) throws JsonMappingException, JsonProcessingException {
+    	System.out.println(userid);
+    	ObjectMapper om = new ObjectMapper();
+    	MemberDTO userid_change = om.readValue(userid, MemberDTO.class);		//DTO 클래스로 변환
+       System.out.println("중복ID 컨트롤러");
+       return memberService.checkId(userid_change.getUserid());
+   }
+   
+    
+    
 	@GetMapping("/findall")
 	public ResponseEntity<?> findAllUser() {
 	    return ResponseEntity.ok(memberService.showAllMember());
