@@ -13,6 +13,7 @@ import com.cos.project.entity.BoardEntity;
 public interface BoardRepository extends JpaRepository<BoardEntity, Long>{
 
 	@Query(value = "SELECT b FROM BOARD b WHERE b.TITLE = %:searchIndex%", nativeQuery = true)
+	//@Query("SELECT b FROM BOARDENTITY b WHERE b.TITLE = %:searchIndex%")
 	List<BoardEntity> searchResult (@Param("searchIndex") String searchinex);
 	
 }

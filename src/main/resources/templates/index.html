@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Main Page</title>
+</head>
+<body>
+    <header>
+        <div id="header-content">
+            <div th:if="${isLoggedIn}">
+                <p>환영합니다, <span th:text="${username}"></span>님</p>
+                <a th:href="@{/logout}">로그아웃</a>
+            </div>
+            <h1 th:text="${title}">기본 제목</h1>
+    <p th:if="${isLoggedIn}">안녕하세요, <span th:text="테스트!!"></span>님!</p>
+            <div th:if="${!isLoggedIn}">
+                <a th:href="@{/formlogin}">로그인</a>
+                <a th:href="@{/join}">회원가입</a>
+            </div>
+        </div>
+    </header>
+    <main>
+        <p>메인 페이지</p>
+    </main>
+</body>
+</html>

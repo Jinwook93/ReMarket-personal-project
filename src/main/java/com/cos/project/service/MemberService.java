@@ -1,15 +1,26 @@
 package com.cos.project.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.cos.project.details.PrincipalDetails;
+import com.cos.project.dto.LoginRequest;
 import com.cos.project.dto.MemberDTO;
 import com.cos.project.entity.MemberEntity;
 import com.cos.project.repository.MemberRepository;
 
+import jakarta.servlet.http.HttpSession;
 
 import java.util.List;
 import java.util.stream.Collector;
@@ -24,12 +35,37 @@ public class MemberService {
     @Autowired
     public BCryptPasswordEncoder passwordEncoder;
     
+	@Autowired
+	private AuthenticationManager authenticationManager;
+    
+//	@Autowired
+//	HttpSession  session;
     
     @Autowired
     public MemberService(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
     }
 
+    
+    @Transactional
+    // 로그인
+    public String  checkLogin(LoginRequest loginRequest) {
+    	  UsernamePasswordAuthenticationToken authenticationToken = 
+                  new UsernamePasswordAuthenticationToken(loginRequest.getUserid(), loginRequest.getPassword());
+
+          Authentication authentication = authenticationManager.authenticate(authenticationToken);
+          SecurityContextHolder.getContext().setAuthentication(authentication); // 인증 처리
+          
+          PrincipalDetails principalDetails =(PrincipalDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+         
+          
+          return   principalDetails.getUsername();
+    }
+    
+    
+    
+    
+    
     @Transactional(readOnly =  true)
     // 회원 목록 조회
     public List<MemberEntity> showAllMember() {

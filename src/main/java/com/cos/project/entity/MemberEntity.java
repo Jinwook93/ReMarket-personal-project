@@ -55,11 +55,11 @@ public class MemberEntity {
 	
 	
 	
-	@OneToMany(mappedBy = "memberEntity", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "memberEntity")
 	List<BoardEntity> boards = new ArrayList<>();
 	
 	
-	@OneToMany(mappedBy = "memberEntity", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "memberEntity")
 	List<CommentEntity> comments = new ArrayList<>();
 
 }

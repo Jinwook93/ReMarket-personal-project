@@ -65,35 +65,35 @@ public ResponseEntity<?> writeBoard(@RequestBody BoardEntity boardEntity) {
 	return ResponseEntity.status(200).body("게시글 저장이 완료되었습니다");
 }
 
-@Autowired
-BoardRepository boardRepository;
+//@Autowired
+//BoardRepository boardRepository;
 
-@PostMapping("/write")
-public String writeBoard2(@RequestBody BoardEntity boardEntity) {
-	
-
-    // Get the current authenticated user
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
-    
-    	boardEntity.setMemberEntity(principalDetails.getMemberEntity());
-
-    boardRepository.save(boardEntity);
-
-    return "게시글 작성 완료!";
-}
-
-@GetMapping("/logininfo")
-public ResponseEntity<?> loginInfo() {
-    // Get the authentication object from the security context
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    
-    // Extract the PrincipalDetails (custom UserDetails implementation) from the Authentication object
-    PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
-    
-    // Return the MemberEntity associated with the logged-in user
-    return ResponseEntity.status(200).body(principalDetails.getMemberEntity());
-}
+//@PostMapping("/write")
+//public String writeBoard2(@RequestBody BoardEntity boardEntity) {
+//	
+//
+//    // Get the current authenticated user
+//    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//    PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+//    
+//    	boardEntity.setMemberEntity(principalDetails.getMemberEntity());
+//
+//    boardRepository.save(boardEntity);
+//
+//    return "게시글 작성 완료!";
+//}
+//
+//@GetMapping("/logininfo")
+//public ResponseEntity<?> loginInfo() {
+//    // Get the authentication object from the security context
+//    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//    
+//    // Extract the PrincipalDetails (custom UserDetails implementation) from the Authentication object
+//    PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+//    
+//    // Return the MemberEntity associated with the logged-in user
+//    return ResponseEntity.status(200).body(principalDetails.getMemberEntity());
+//}
 
 
 
