@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시글 작성</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        input, textarea, select {
+            margin-top: 5px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 150px;
+            resize: none;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>게시글 수정</h1>
+        
+<!--         <form action="/board/updateboard/{id}(id=${board.id})" method="PUT"> -->
+  <!-- 글 번호 입력 -->
+<!--             <label for="title">글 번호</label> -->
+            <input type="hidden" th:value="${board.id}"  id="id" name="id" placeholder="제목을 입력하세요" required>
+
+
+            <!-- 제목 입력 -->
+            <label for="title">제목</label>
+            <input type="text" th:value="${board.title}"  id="title" name="title" placeholder="제목을 입력하세요" required>
+            
+            <!-- 작성자 선택 -->
+              <label for="name">작성자</label>
+			  <input type="text" th:value="${board.MemberEntity.name}" id="name" name="name" readOnly/>
+			  
+<!-- 			   <label for="userid">작성자 아이디</label> -->
+			  <input type="hidden" th:value="${board.MemberEntity.userid}" id="userid" name="userid" readOnly/>
+              
+<!--             <select id="member_id" name="member_id" required> -->
+<!--                 <option value="">작성자를 선택하세요</option> -->
+<!--                 서버에서 작성자 목록을 동적으로 채워야 함 -->
+<!--                 <option value="1">작성자 1</option> -->
+<!--                 <option value="2">작성자 2</option> -->
+<!--                 <option value="3">작성자 3</option> -->
+<!--             </select> -->
+
+            <!-- 내용 입력 -->
+            <label for="contents">내용</label>
+            <textarea id="contents" th:text="${board.contents}" name="contents" placeholder="내용을 입력하세요" required></textarea>
+            
+            <!-- 작성 버튼 -->
+            <button type="submit" id = "updateBoard">수정</button>
+        </form>
+    </div>
+    
+     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+         <script src ="/js/updateBoard.js" type="text/javascript"></script>
+</body>
+
+</html>

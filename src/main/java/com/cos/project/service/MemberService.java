@@ -202,6 +202,18 @@ public class MemberService {
     
     
     
+    @Transactional(readOnly = true)			//회원 정보 조회
+    public MemberEntity userInfoByUserid(String userid) throws IllegalAccessException {
+        
+        return memberRepository.findByUserid(userid)
+                      .orElseThrow(() -> new IllegalAccessException("회원 정보를 조회할 수 없습니다"));
+    }
+    
+    
+    
+    
+    
+    
     @Transactional(readOnly = true)
     public MemberDTO userInfo(MemberEntity memberEntity) throws IllegalAccessException {
         List<MemberEntity> members = showAllMember();

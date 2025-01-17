@@ -32,6 +32,9 @@ public class BoardEntity {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String contents;
 
+    
+    private long view=0;
+    
     @CreationTimestamp
     @Column(updatable = false)
     private Timestamp createTime;

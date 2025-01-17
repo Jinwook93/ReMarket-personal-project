@@ -37,7 +37,7 @@ public class HomeController {
     public String mainPage(Model model, @AuthenticationPrincipal PrincipalDetails principal) {
         if (principal != null) {
             model.addAttribute("isLoggedIn", true);
-            model.addAttribute("username", principal.getUsername());
+            model.addAttribute("name", principal.getMemberEntity().getName());
         } else {
             model.addAttribute("isLoggedIn", false);
         }
