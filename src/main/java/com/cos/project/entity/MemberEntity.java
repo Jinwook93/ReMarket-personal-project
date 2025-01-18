@@ -3,6 +3,8 @@ package com.cos.project.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -55,11 +57,13 @@ public class MemberEntity {
 	
 	
 	
-	@OneToMany(mappedBy = "memberEntity")
+	@OneToMany(mappedBy = "memberEntity", fetch = FetchType.LAZY)
+	@JsonManagedReference("member-boards")
 	List<BoardEntity> boards = new ArrayList<>();
 	
 	
-	@OneToMany(mappedBy = "memberEntity")
-	List<CommentEntity> comments = new ArrayList<>();
+//	@OneToMany(mappedBy = "memberEntity", fetch = FetchType.LAZY)
+//	@JsonManagedReference("member-comments")
+//	List<CommentEntity> comments = new ArrayList<>();
 
 }

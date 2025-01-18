@@ -123,6 +123,15 @@ public class BoardService {
 		return boardEntity;
 		
 	}
+
+
+
+
+	public List<BoardEntity> findMyBoards(Long id) {
+		List<BoardEntity>myboards = boardRepository.findByMemberID(id);
+		
+		return myboards;
+	}
 	
 	
 //	@Transactional	//조회수

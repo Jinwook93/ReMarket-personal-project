@@ -4,6 +4,12 @@ import java.sql.Timestamp;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonView;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -34,10 +40,12 @@ public class CommentEntity {
 	
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinColumn(name = "board_id")
+	@JsonBackReference("board-comments")
 	BoardEntity boardEntity;
 	
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER )
 	@JoinColumn(name = "member_id")
+	@JsonIncludeProperties({"id", "name"})		
 	MemberEntity memberEntity;
 	
 	

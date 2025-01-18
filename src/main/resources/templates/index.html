@@ -11,6 +11,11 @@
             <div th:if="${isLoggedIn}">
                 <p>환영합니다, <span th:text="${name}"></span>님</p>
                 <a th:href="@{/logout}">로그아웃</a>
+
+                     <!-- 내가 쓴 게시글 링크 -->
+                <a th:href="@{/boardlist/{id}(id=${id})}">내가 쓴 게시글</a>
+                <!-- 내가 쓴 댓글 링크 -->
+                <a th:href="@{/commentlist/{id}(id=${id})}">내가 쓴 댓글</a>
             </div>
             <h1 th:text="${title}">기본 제목</h1>
  

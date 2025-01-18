@@ -7,6 +7,10 @@ import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,10 +29,7 @@ public class BoardEntity {
     @Column(nullable = false, length = 100)
     private String title;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private MemberEntity memberEntity; 
-    
+
     @Column(nullable = false, columnDefinition = "TEXT")
     private String contents;
 
@@ -39,6 +40,12 @@ public class BoardEntity {
     @Column(updatable = false)
     private Timestamp createTime;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "member_id")
+    @JsonBackReference("member-boards")
+    private MemberEntity memberEntity; 
+    
     @OneToMany(mappedBy = "boardEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference("board-comments")
     private List<CommentEntity> comments = new ArrayList<>();
 }

@@ -5,10 +5,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cos.project.details.PrincipalDetails;
 import com.cos.project.entity.BoardEntity;
+import com.cos.project.entity.CommentEntity;
 import com.cos.project.entity.MemberEntity;
 import com.cos.project.repository.BoardRepository;
 import com.cos.project.repository.MemberRepository;
 import com.cos.project.service.BoardService;
+import com.cos.project.service.CommentService;
 import com.cos.project.service.MemberService;
 
 import java.util.List;
@@ -50,7 +52,8 @@ public BoardController(BoardService boardService) {
 
 
 
-
+@Autowired
+private CommentService commentService;
 
 
 
@@ -219,8 +222,9 @@ public ResponseEntity<?> putMethodName(@PathVariable(name = "id")  Long id) {
 @GetMapping("/view/{id}")
 public String viewContent(@PathVariable(name = "id") Long id, Model model) {
 	   BoardEntity boardEntity =  boardService.viewContent(id,false);
+	   List<CommentEntity> comments = commentService.getAllCommentAboutBoard(id);
 		model.addAttribute("board", boardEntity);
-		
+		model.addAttribute("comments", comments);
     //return ResponseEntity.status(200).body(result);
 		return "boardcontent";
 }

@@ -5,7 +5,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cos.project.dto.LoginRequest;
 import com.cos.project.dto.MemberDTO;
+import com.cos.project.entity.CommentEntity;
 import com.cos.project.entity.MemberEntity;
+import com.cos.project.service.BoardService;
+import com.cos.project.service.CommentService;
 import com.cos.project.service.MemberService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -23,6 +26,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.authentication.UserServiceBeanDefinitionParser;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,6 +49,12 @@ public class MemberController {
 	}
 
 
+    @Autowired
+    private BoardService boardService;
+    
+    @Autowired
+    private CommentService commentService;
+    
     
 //	@GetMapping("/")
 //	public String  home() {
@@ -139,6 +149,8 @@ public ResponseEntity<?> deleteUser(@PathVariable(name = "id") Long id) {
 //    String result = memberService.deleteMember(id);
 //    return result;
 //}
+
+
 
 	
 }

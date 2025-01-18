@@ -29,4 +29,7 @@ document.getElementById("updateBoard").addEventListener("click", function () {
         console.error("Error:", error);
         alert("게시글 수정에 실패했습니다.");
     });
+
+
+
 });
