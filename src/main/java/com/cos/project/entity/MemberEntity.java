@@ -62,8 +62,8 @@ public class MemberEntity {
 	List<BoardEntity> boards = new ArrayList<>();
 	
 	
-//	@OneToMany(mappedBy = "memberEntity", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "memberEntity", fetch = FetchType.LAZY)
 //	@JsonManagedReference("member-comments")
-//	List<CommentEntity> comments = new ArrayList<>();
+	List<CommentEntity> comments = new ArrayList<>();
 
 }

@@ -1,6 +1,7 @@
 package com.cos.project.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -29,6 +30,7 @@ public class CommentService {
 	private final BoardRepository boardRepository;
 	
 	private final MemberRepository memberRepository;
+	
 	
 	
 
@@ -107,13 +109,20 @@ public List<CommentEntity> findMyComments(Long id){
 
 @Transactional
 	public boolean deleteComment (Long id) {
+	System.out.println(id+ " 삭제 중1...");
 		commentRepository.deleteById(id);
+		System.out.println(id+ " 삭제 중2...");
 		return true;
 		
 	}
 @Transactional
 	public boolean updateComment (Long id, CommentEntity commentEntity) {
-		commentRepository.save(commentEntity);
+	CommentEntity comment_before = commentRepository.findById(id)
+			.orElseThrow(() -> new IllegalArgumentException("댓글 데이터를 찾을 수 없습니다"));
+	
+	comment_before.setContent(commentEntity.getContent());
+	
+		commentRepository.save(comment_before);
 		
 		return true;
 	}

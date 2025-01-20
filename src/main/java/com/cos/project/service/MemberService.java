@@ -210,6 +210,12 @@ public class MemberService {
     }
     
     
+    @Transactional(readOnly = true)			//회원 정보 조회
+    public MemberEntity findById(Long id) throws IllegalAccessException {
+        
+        return memberRepository.findById(id)
+                      .orElseThrow(() -> new IllegalAccessException("회원 정보를 조회할 수 없습니다"));
+    }
     
     
     

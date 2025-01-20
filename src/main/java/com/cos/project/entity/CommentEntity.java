@@ -38,16 +38,16 @@ public class CommentEntity {
 	
 	String content;
 	
-	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@ManyToOne(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
 	@JoinColumn(name = "board_id")
 	@JsonBackReference("board-comments")
-	BoardEntity boardEntity;
-	
-	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER )
+	private BoardEntity boardEntity;
+
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "member_id")
-	@JsonIncludeProperties({"id", "name"})		
-	MemberEntity memberEntity;
-	
+	@JsonIncludeProperties({"id", "name", "userid"})
+	private MemberEntity memberEntity;
+
 	
 	@CreationTimestamp
 	Timestamp createTime;

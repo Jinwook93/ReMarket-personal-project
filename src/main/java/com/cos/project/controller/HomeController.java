@@ -21,6 +21,7 @@ import com.cos.project.dto.MemberDTO;
 import com.cos.project.entity.BoardEntity;
 import com.cos.project.entity.CommentEntity;
 import com.cos.project.entity.Gender;
+import com.cos.project.entity.MemberEntity;
 import com.cos.project.entity.Roles;
 import com.cos.project.service.BoardService;
 import com.cos.project.service.CommentService;
@@ -109,14 +110,24 @@ public class HomeController {
 
 
 	//내가 쓴 댓글 리스트 확인
+//	@GetMapping("/commentlist/{id}")
+//	public String myComment(@PathVariable("id") Long id, Model model) {
+//		List<CommentEntity> mycomments = commentService.findMyComments(id);
+//		model.addAttribute("mycomments", mycomments);
+//		
+//		return "mycommentlist";
+//	}
+
+	//내가 쓴 댓글 리스트 확인 2 : 이렇게 찾아도 됨
 	@GetMapping("/commentlist/{id}")
-	public String myComment(@PathVariable("id") Long id, Model model) {
-		List<CommentEntity> mycomments = commentService.findMyComments(id);
-		model.addAttribute("mycomments", mycomments);
+	public String myComment(@PathVariable("id") Long id, Model model) throws IllegalAccessException {
+		MemberEntity member = memberService.findById(id);
+		model.addAttribute("mycomments", member.getComments());
 		
 		return "mycommentlist";
 	}
-
+	
+	
 	
 	//내가 쓴 댓글 리스트 확인
 	@GetMapping("/boardlist/{id}")

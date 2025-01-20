@@ -63,6 +63,7 @@ private CommentService commentService;
 @ModelAttribute("principalDetails")			//전역적으로 처리
 public Authentication getPrincipalDetails() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//    System.out.println("현재 사용자 : "+ authentication.getName());
     return authentication; // 현재 사용자 이름 반환
 }
 

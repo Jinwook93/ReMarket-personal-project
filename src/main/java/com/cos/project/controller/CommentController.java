@@ -46,35 +46,28 @@ public class CommentController {
 
     }
 
-    // 댓글 삭제
-    @DeleteMapping("/{id}")
-    public String deleteComment(@PathVariable("id") Long id) {
-        boolean result = commentService.deleteComment(id);
-        if(result) {
-            return "댓글 삭제 성공";
-        } else {
-            return "댓글 삭제 실패";
-        }
-    }
+
 
     // 댓글 수정
     @PutMapping("/{id}")
-    public String updateComment(
+    public ResponseEntity<?> updateComment(
         @PathVariable("id") Long id,
         @RequestBody CommentEntity commentEntity
     ) {
         boolean result = commentService.updateComment(id, commentEntity);
-        if(result) {
-            return "댓글 수정 성공";
-        } else {
-            return "댓글 수정 실패";
-        }
+	      
+        return ResponseEntity.ok(result);
     }
     
     
     
     
-    
+    // 댓글 삭제
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteComment(@PathVariable("id") Long id) {
+       boolean result = commentService.deleteComment(id);   	
+        return ResponseEntity.ok(result);
+    }
     
     
     
