@@ -3,6 +3,7 @@ package com.cos.project.controller;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cos.project.details.PrincipalDetails;
 import com.cos.project.dto.LoginRequest;
 import com.cos.project.dto.MemberDTO;
 import com.cos.project.entity.CommentEntity;
@@ -25,6 +26,7 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.authentication.UserServiceBeanDefinitionParser;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -126,9 +128,12 @@ public ResponseEntity<?>  joinUser(@RequestBody MemberDTO entity) {
 //    return result;
 //}
 
+	
+	//DB에 마이페이지 수정 적용	
+	
 @PutMapping("updateuser/{id}")
-public ResponseEntity<?> updateUser(@PathVariable(name = "id") Long id, @RequestBody MemberDTO memberDTO) {
-    String result = memberService.updateMember(id, memberDTO);
+public ResponseEntity<?> updateUser(@PathVariable(name = "id") Long id, @RequestBody MemberDTO memberDTO,@AuthenticationPrincipal PrincipalDetails principalDetails) {
+    String result = memberService.updateMember(id, memberDTO, principalDetails);		//"result : 회원수정 완료"
     return ResponseEntity.ok(result);
 }
 

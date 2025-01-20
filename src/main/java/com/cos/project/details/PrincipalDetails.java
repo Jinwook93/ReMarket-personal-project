@@ -10,16 +10,27 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.cos.project.entity.MemberEntity;
 
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 public class PrincipalDetails implements UserDetails {
 
     private final MemberEntity memberEntity;
+    private final Collection<? extends GrantedAuthority> authorities;    // getAuthorities 인자를 안 받아도 잘 됨
 
-    @Autowired
     public PrincipalDetails(MemberEntity memberEntity) {
         this.memberEntity = memberEntity;
+        this.authorities = getAuthorities();     // getAuthorities 인자를 안 받아도 잘 됨
     }
+    // getAuthorities 인자를 안 받아도 잘 됨
+    public PrincipalDetails(MemberEntity memberEntity, Collection<? extends GrantedAuthority> authorities) {
+    		this.memberEntity = memberEntity;
+    		this.authorities = authorities;
+
+    
+    }
+
+    
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

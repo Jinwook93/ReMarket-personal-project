@@ -8,6 +8,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -39,9 +40,11 @@ public class MemberService {
     
 	@Autowired
 	private AuthenticationManager authenticationManager;
+	
+	
     
-//	@Autowired
-//	HttpSession  session;
+	@Autowired
+	HttpSession  session;
     
 	@Autowired
 	public MemberService(MemberRepository memberRepository) {
@@ -140,28 +143,38 @@ public class MemberService {
     
     
     @Transactional
-    // 회원 수정
-    public String updateMember(Long id, MemberDTO memberDTO) {
-    	
-    	// MemberEntity memberEntity = null;
-    	 
-    	 MemberEntity memberEntity = memberRepository.findById(id)
-                 .orElseThrow(() -> new IllegalArgumentException("회원 조회를 할 수 없습니다"));
-//       memberEntity = memberRepository.findByUserid(memberEntity.getUserid())
-//                .orElseThrow(() -> new IllegalArgumentException("회원 조회를 할 수 없습니다"));
+    public String updateMember(Long id, MemberDTO memberDTO, PrincipalDetails principalDetails) {
+        // 회원 정보 수정
+        MemberEntity memberEntity = memberRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("회원 조회를 할 수 없습니다"));
 
         memberEntity.setUserid(memberDTO.getUserid());
         memberEntity.setName(memberDTO.getName());
-        //memberEntity.setPassword(memberDTO.getPassword());
-        memberEntity.setPassword(passwordEncoder.encode(memberDTO.getPassword()));
+        memberEntity.setPassword(passwordEncoder.encode(memberDTO.getPassword())); // 비밀번호 암호화
         memberEntity.setAddress(memberDTO.getAddress());
         memberEntity.setAge(memberDTO.getAge());
         memberEntity.setGender(memberDTO.getGender());
         memberEntity.setPhone(memberDTO.getPhone());
 
+        // 업데이트된 회원 정보 저장
         memberRepository.save(memberEntity);
+
+        // PrincipalDetails를 갱신된 MemberEntity로 업데이트		//시큐리티에서의 PrincipalDetails는 읽기 전용 , 캡슐화가 되어 있는 객체 이므로 이를 직접 수정하는 것은 규칙에 위배
+        // 따라서 Authentication을 새로 만들어서 하는 것을 권장
+        // getAuthorities 인자를 안 받아도 잘 됨
+        PrincipalDetails updatedPrincipalDetails = new PrincipalDetails(memberEntity, principalDetails.getAuthorities());
+
+        // 새로운 인증 객체 생성		       // getAuthorities 인자를 안 받아도 잘 됨
+        Authentication newAuthentication = new UsernamePasswordAuthenticationToken(
+                updatedPrincipalDetails, updatedPrincipalDetails.getPassword(), updatedPrincipalDetails.getAuthorities());
+
+        // SecurityContextHolder에 새로 생성된 인증 객체 설정
+        SecurityContextHolder.getContext().setAuthentication(newAuthentication);
+
         return "회원수정 완료";
     }
+
+
     
     
     
