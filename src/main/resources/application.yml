@@ -4,6 +4,14 @@ spring:
     url: jdbc:mysql://localhost:3306/proj2?serverTimezone=Asia/Seoul
     username: user2
     password: 1234
+#    servlet:
+#    multipart:
+#      enabled: true
+#      max-file-size: 10MB
+#      max-request-size: 10MB  
+    
+    
+
     
   jpa:
     open-in-view: true
@@ -12,10 +20,15 @@ spring:
       ddl-auto: update
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+#  web:
+#    resources:
+#      static-locations: classpath:/static/,file:./image/
+      
         
 
 server:
   port: 8081
   
     
+#spring.web.resources.static-locations=classpath:/static/,file:./image/
 

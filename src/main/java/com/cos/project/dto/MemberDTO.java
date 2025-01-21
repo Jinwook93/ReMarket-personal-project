@@ -50,6 +50,9 @@ public class MemberDTO {
 	
 	private Roles roles = Roles.USER;
 	
+	
+	private String profileImage; // 프로필 이미지 URL 또는 경로
+	
 //	 public MemberDTO(MemberEntity memberEntity) {
 //	        this.userid = memberEntity.getUserid();
 //	        this.password = memberEntity.getPassword();

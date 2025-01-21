@@ -2,11 +2,13 @@ package com.cos.project.controller;
 
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.cos.project.details.PrincipalDetails;
 import com.cos.project.dto.LoginRequest;
 import com.cos.project.dto.MemberDTO;
 import com.cos.project.entity.CommentEntity;
+import com.cos.project.entity.Gender;
 import com.cos.project.entity.MemberEntity;
 import com.cos.project.service.BoardService;
 import com.cos.project.service.CommentService;
@@ -15,7 +17,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -129,13 +136,80 @@ public ResponseEntity<?>  joinUser(@RequestBody MemberDTO entity) {
 //}
 
 	
-	//DB에 마이페이지 수정 적용	
 	
-@PutMapping("updateuser/{id}")
-public ResponseEntity<?> updateUser(@PathVariable(name = "id") Long id, @RequestBody MemberDTO memberDTO,@AuthenticationPrincipal PrincipalDetails principalDetails) {
-    String result = memberService.updateMember(id, memberDTO, principalDetails);		//"result : 회원수정 완료"
-    return ResponseEntity.ok(result);
-}
+	 @PutMapping("/updateMember/{id}")
+	    public ResponseEntity<?> updateMember(
+	       @PathVariable(name ="id") Long id,
+	        @RequestParam(name = "userid") String userid,
+	        @RequestParam(name = "password") String password,
+	        @RequestParam(name = "password_check") String passwordCheck,
+	        @RequestParam(name = "name") String name,
+	        @RequestParam(name = "age") int age,
+	        @RequestParam(name = "gender") Gender gender,
+	        @RequestParam(name = "phone") String phone,
+	        @RequestParam(name = "address") String address,
+	        @RequestParam(value = "profileImage", required = false) MultipartFile profileImage,
+	        @AuthenticationPrincipal PrincipalDetails principalDetails) throws IOException {
+
+	        // Password validation logic (make sure passwords match)
+	        if (!password.equals(passwordCheck)) {
+	            return ResponseEntity.badRequest().body("패스워드가 일치하지 않습니다");
+	        }
+
+	        
+	        
+	        
+	        // 프로필 이미지 파일 저장 경로 생성 (예: /image 폴더에 저장)
+		    String profileImagePath = null;
+		    if (profileImage != null && !profileImage.isEmpty()) {
+		        // 이미지 파일의 원본 이름을 가져옴
+		        String originalFileName = profileImage.getOriginalFilename();
+		        // 고유한 파일 이름 생성
+		        String uniqueFileName = UUID.randomUUID().toString() + "_" + originalFileName;
+		        // /image 폴더 경로로 이미지 저장
+		        Path filePath = Paths.get("src/main/resources/static/profileimage").resolve(uniqueFileName); // "image"는 저장 디렉토리 , 경로를 명시적으로 지정해주어야함
+		        Files.createDirectories(filePath.getParent()); // 디렉토리가 없으면 생성
+		        Files.write(filePath, profileImage.getBytes()); // 파일 저장
+//		        profileImagePath = filePath.toString(); // 저장된 파일 경로
+		        profileImagePath = "/profileimage/"+uniqueFileName; 
+		        System.out.println("저장된 경로" + profileImagePath);
+		    }
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        // Perform the update through the service layer
+	        try {
+	            String isUpdated = memberService.updateMember(id, userid, password, name, age, gender, phone, address, profileImagePath, principalDetails);
+	            if (isUpdated != null) {
+	                return ResponseEntity.ok( "회원 정보 업데이트 성공");
+	            } else {
+	                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("회원 정보 업데이트 실패");
+	            }
+	        } catch (Exception e) {
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류");
+	        }
+	    
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	//DB에 마이페이지 수정 적용	
+	//   (프로필 이미지 추가로 RequestBody 대신 RequestParam 쓸 예정)
+//@PutMapping("updateuser/{id}")
+//public ResponseEntity<?> updateUser(@PathVariable(name = "id") Long id, @RequestBody MemberDTO memberDTO,@AuthenticationPrincipal PrincipalDetails principalDetails) {
+//    String result = memberService.updateMember(id, memberDTO, principalDetails);		//"result : 회원수정 완료"
+//    return ResponseEntity.ok(result);
+//}
 
 //@PutMapping("updateuser/{id}")
 //public String updateUser(@PathVariable(name = "id") Long id, @RequestBody MemberDTO memberDTO) {
@@ -144,7 +218,7 @@ public ResponseEntity<?> updateUser(@PathVariable(name = "id") Long id, @Request
 //}
 
 @DeleteMapping("deleteuser/{id}")
-public ResponseEntity<?> deleteUser(@PathVariable(name = "id") Long id) {
+public ResponseEntity<?> deleteUser(@PathVariable(name = "id") long id) {
     String result = memberService.deleteMember(id);
     return ResponseEntity.ok(result);
 }

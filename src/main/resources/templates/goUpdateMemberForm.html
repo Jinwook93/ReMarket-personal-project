@@ -34,12 +34,23 @@
         
         
         
+  
         
         
 
 <!--         이름 -->
         <label for="name">이름</label>
         <input type="text" id="name" name="name" th:value="${member.name}" required /><br>
+
+<!-- 프로필 이미지 확인 -->
+<label for="profileImage">프로필 이미지</label>
+<input type="file" id="profileImage" name="profileImage" required>
+
+<!-- 이미지 미리보기 -->
+        <div id="imagePreview" style="margin-top: 10px;">
+            <img id="previewImage" th:src="@{{imagePath}(imagePath=${member.profileImage})}" alt="Profile Image Preview" style="display: block; width: 100px; height: 100px;">
+        </div>
+<br>
 
 <!--         나이 -->
         <label for="age">나이</label>
@@ -75,7 +86,23 @@
 <!--     <script src="/js/joinValidation.js" defer></script> -->
 		<script src="/js/checkId.js" defer></script>
 	    <script src="/js/updateMember.js" defer></script>
-		
+		<script>
+        // 프로필 이미지 미리보기
+        document.getElementById('profileImage').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const previewImage = document.getElementById('previewImage');
+                previewImage.src = e.target.result;
+                previewImage.style.display = 'block'; // 이미지를 보여주기
+            };
+
+            if (file) {
+                reader.readAsDataURL(file); // 이미지 파일을 DataURL로 변환
+            }
+        });
+    </script>
 
 </body>
 </html>

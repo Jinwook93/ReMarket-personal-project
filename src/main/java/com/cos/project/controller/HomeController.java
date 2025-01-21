@@ -1,8 +1,14 @@
 package com.cos.project.controller;
 
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.Key;
+import java.util.Base64;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,6 +22,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.cos.project.details.PrincipalDetails;
 import com.cos.project.dto.MemberDTO;
@@ -86,28 +93,46 @@ public class HomeController {
 	        @RequestParam(name = "age") int age,
 	        @RequestParam(name = "address") String address,
 	        @RequestParam(name = "gender") Gender gender,
-	        @RequestParam(name = "password_admin") String password_admin
-	) {
-		Roles role;
-		if(!password_admin.equals(ADMIN_PASSWORD)  || password_admin.equals("")){
-		role = Roles.USER;
-		}else {
-		role = Roles.ADMIN;
-		}
-		
+	        @RequestParam(name = "password_admin") String password_admin,
+	        @RequestParam(value = "profileImage", required = false) MultipartFile profileImage // 프로필 이미지 추가
+	) throws IOException {
+	    Roles role;
+
+	    // 관리자 비밀번호 확인
+	    if (password_admin == null || password_admin.isEmpty() || !password_admin.equals(ADMIN_PASSWORD)) {
+	        role = Roles.USER;
+	    } else {
+	        role = Roles.ADMIN;
+	    }
+
+	    // 프로필 이미지 파일 저장 경로 생성 (예: /image 폴더에 저장)
+	    String profileImagePath = null;
+	    if (profileImage != null && !profileImage.isEmpty()) {
+	        // 이미지 파일의 원본 이름을 가져옴
+	        String originalFileName = profileImage.getOriginalFilename();
+	        // 고유한 파일 이름 생성
+	        String uniqueFileName = UUID.randomUUID().toString() + "_" + originalFileName;
+	        // /image 폴더 경로로 이미지 저장
+	        Path filePath = Paths.get("src/main/resources/static/profileimage").resolve(uniqueFileName); // "image"는 저장 디렉토리 , 경로를 명시적으로 지정해주어야함
+	        Files.createDirectories(filePath.getParent()); // 디렉토리가 없으면 생성
+	        Files.write(filePath, profileImage.getBytes()); // 파일 저장
+//	        profileImagePath = filePath.toString(); // 저장된 파일 경로
+	        profileImagePath = "/profileimage/"+uniqueFileName; 
+	        System.out.println("저장된 경로" + profileImagePath);
+	    }
 	    // Build the MemberDTO using builder pattern
 	    MemberDTO memberDTO = MemberDTO.builder()
-	        .userid(userid)
-	        .password(password)
-	        .name(name)
-	        .phone(phone)
-	        .age(age)
-	        .address(address)
-	        .gender(gender)
-	        .roles(role)
-	        .build();
+	            .userid(userid)
+	            .password(password)
+	            .name(name)
+	            .phone(phone)
+	            .age(age)
+	            .address(address)
+	            .gender(gender)
+	            .roles(role)
+	            .profileImage(profileImagePath) // 이미지 경로를 설정
+	            .build();
 
-	    // Call the service to process the member join
 	    String result = memberService.joinMember(memberDTO);
 
 	    if (result.equals("회원가입 완료")) {
@@ -116,6 +141,8 @@ public class HomeController {
 	        return "redirect:/join";  // Redirect back to the join page if the signup fails
 	    }
 	}
+
+
 
 
 	//내가 쓴 댓글 리스트 확인
@@ -154,7 +181,10 @@ public class HomeController {
 		MemberEntity memberEntity = principalDetails.getMemberEntity();
 		System.out.println("나이"+memberEntity.getAge());
 		System.out.println("성별"+memberEntity.getGender());
-		System.out.println("역할"+memberEntity.getRoles());
+		System.out.println("이미지 : "+memberEntity.getProfileImage());
+//		System.out.println("이미지2 : "+memberService.convertByteArrayToString(memberEntity.getProfileImage()));		Base64
+		memberEntity.setProfileImage(memberEntity.getProfileImage().replace("\\", "/"));
+		System.out.println("수정된 이미지 : "+memberEntity.getProfileImage());
 		if(memberEntity == null) {
 			model.addAttribute("message", "사용자 정보를 조회할 수 없습니다");
 		}
@@ -172,7 +202,7 @@ public class HomeController {
 	@GetMapping("/updatemypage/{id}")
 	public String goUpdatemyPage(@PathVariable("id") Long id, Model model, @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		MemberEntity memberEntity = principalDetails.getMemberEntity();
-		
+		memberEntity.setProfileImage(memberEntity.getProfileImage().replace("\\", "/"));
 		if(memberEntity == null) {
 			model.addAttribute("message", "사용자 정보를 조회할 수 없습니다");
 		}

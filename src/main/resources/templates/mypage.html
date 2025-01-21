@@ -25,6 +25,14 @@
         <label for="name">이름</label>
         <input type="text" id="name" name="name" th:value="${member.name}" required /><br>
 
+<!-- 이미지 미리보기 -->
+        <div id="imagePreview" style="margin-top: 10px;">
+            <img id="previewImage" th:src="@{{imagePath}(imagePath=${member.profileImage})}" loading="lazy" alt="Profile Image Preview" style="display: block; width: 100px; height: 100px;">
+        </div>
+<br><br>
+
+        <p th:text="${member.profileImage}" />
+
 <!--         나이 -->
         <label for="age">나이</label>
         <input type="number" id="age" name="age" th:value="${member.age}" required /><br>
