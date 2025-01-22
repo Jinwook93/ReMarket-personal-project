@@ -90,7 +90,8 @@
                 <tr th:each="board : ${allBoards}">
                     <td th:text="${board.id}"></td>
                     <td><a th:href="@{/board/view/{id}(id=${board.id})}" th:text="${board.title}"></a></td>
-                    <td th:text="${board.memberEntity.name}"></td>
+<!--                    <img id="previewImage" th:src="@{{imagePath}(imagePath=${board.memberEntity.profileImage})}" alt="Profile Image Preview" style="display: block; width: 100px; height: 100px;"> -->
+                    <td th:text="${board.memberEntity.name}"> </td>
                     <td th:text="${#dates.format(board.createTime, 'yyyy-MM-dd HH:mm')}"></td>
                     <td th:text="${board.view}"></td>
                 </tr>

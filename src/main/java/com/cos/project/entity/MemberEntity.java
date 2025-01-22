@@ -70,7 +70,7 @@ public class MemberEntity {
 	
 	
 	@OneToMany(mappedBy = "memberEntity", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-	@JsonManagedReference("member-boards")
+//	@JsonManagedReference("member-boards")
 	List<BoardEntity> boards = new ArrayList<>();
 	
 	

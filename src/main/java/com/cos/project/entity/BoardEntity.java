@@ -9,6 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.*;
@@ -40,12 +41,34 @@ public class BoardEntity {
     @Column(updatable = false)
     private Timestamp createTime;
 
+    
+    
+    
+    
+    private String boardFile;	// 첨부할 URL 추가
+    
+    
+    
+    
+    
+    
+    
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "member_id")
-    @JsonBackReference("member-boards")
+//    @JsonBackReference("member-boards")
+    @JsonIncludeProperties({"id","name","profileImage"})
     private MemberEntity memberEntity; 
     
     @OneToMany(mappedBy = "boardEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("board-comments")
     private List<CommentEntity> comments = new ArrayList<>();
+    
+    
+    
+    
+    
+    
+    
+    
+    
 }

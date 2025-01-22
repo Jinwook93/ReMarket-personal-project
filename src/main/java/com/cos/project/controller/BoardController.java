@@ -1,6 +1,7 @@
 package com.cos.project.controller;
 
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cos.project.details.PrincipalDetails;
@@ -12,8 +13,17 @@ import com.cos.project.repository.MemberRepository;
 import com.cos.project.service.BoardService;
 import com.cos.project.service.CommentService;
 import com.cos.project.service.MemberService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -95,6 +105,7 @@ public String allBoard(Model model) {
 public String writeBoard(Model model, @AuthenticationPrincipal PrincipalDetails principal) {
 	model.addAttribute("name", principal.getMemberEntity().getName());
 	model.addAttribute("userid", principal.getMemberEntity().getUserid());
+	model.addAttribute("profileImage", principal.getMemberEntity().getProfileImage());
 	return "boardwriteform";
 }
 
@@ -103,14 +114,41 @@ public String writeBoard(Model model, @AuthenticationPrincipal PrincipalDetails 
 public String writeBoard(@RequestParam (name = "title") String title, 
         @RequestParam (name = "name") String name, 
         @RequestParam (name = "userid") String userid, 
-        @RequestParam (name = "contents") String contents) {
-	 BoardEntity boardEntity = BoardEntity.builder()
-           .title(title)
-           .contents(contents)
-      //     .memberEntity(memberService.userInfoByUserid(userid))
-           .build();
+        @RequestParam (name = "boardFiles") MultipartFile [] boardFiles,
+        @RequestParam (name = "contents") String contents) throws IOException {
+	
+	
+	
+	String[] boardFilePath = new String[boardFiles.length];
+    ObjectMapper objectMapper = new ObjectMapper();
+
+    int i = 0;
+    for (MultipartFile boardFile : boardFiles) {
+        String uniqueFileName = UUID.randomUUID().toString() + "_" + boardFile.getOriginalFilename();
+        Path filePath = Paths.get("src/main/resources/static/boardimage").resolve(uniqueFileName);
+        Files.createDirectories(filePath.getParent());
+        Files.write(filePath, boardFile.getBytes());
+        boardFilePath[i++] = "/boardimage/" + uniqueFileName;
+    }
+
+    // JSON 변환
+    String boardFileJson = objectMapper.writeValueAsString(boardFilePath);
+
+    BoardEntity boardEntity = BoardEntity.builder()
+            .title(title)
+            .contents(contents)
+            .boardFile(boardFileJson)
+            .build();
+
+    
+    
     boardService.writeContents(boardEntity);
-	//return ResponseEntity.status(200).body("게시글 저장이 완료되었습니다");
+	
+	
+	
+	
+	
+	
 	return "redirect:allboard";
 }
 
@@ -221,11 +259,16 @@ public ResponseEntity<?> putMethodName(@PathVariable(name = "id")  Long id) {
 
 
 @GetMapping("/view/{id}")
-public String viewContent(@PathVariable(name = "id") Long id, Model model) {
+public String viewContent(@PathVariable(name = "id") Long id, Model model) throws JsonMappingException, JsonProcessingException {
 	   BoardEntity boardEntity =  boardService.viewContent(id,false);
 	   List<CommentEntity> comments = commentService.getAllCommentAboutBoard(id);
+	   
+	   ObjectMapper om = new ObjectMapper();
+	   String [] boardFiles = om.readValue(boardEntity.getBoardFile(), String[].class);                                 
+	   
 		model.addAttribute("board", boardEntity);
 		model.addAttribute("comments", comments);
+		model.addAttribute("boardFiles", boardFiles);
     //return ResponseEntity.status(200).body(result);
 		return "boardcontent";
 }

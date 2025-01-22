@@ -134,19 +134,6 @@ public class BoardService {
 	}
 	
 	
-//	@Transactional	//조회수
-//	public Long viewCount (Long id) {		
-//		
-//		BoardEntity boardEntity = boardRepository.findById(id)
-//				.orElseThrow( () -> new IllegalArgumentException("게시글을 찾을 수 없습니다"));
-//
-//		
-//		
-//		boardEntity.setView(boardEntity.getView()+1);
-//		
-//		
-//		return boardEntity.getView();
-//		
-//	}
+
 
 }
