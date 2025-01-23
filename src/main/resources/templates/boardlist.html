@@ -89,9 +89,17 @@
                 <!-- 게시글 데이터 반복 -->
                 <tr th:each="board : ${allBoards}">
                     <td th:text="${board.id}"></td>
-                    <td><a th:href="@{/board/view/{id}(id=${board.id})}" th:text="${board.title}"></a></td>
-<!--                    <img id="previewImage" th:src="@{{imagePath}(imagePath=${board.memberEntity.profileImage})}" alt="Profile Image Preview" style="display: block; width: 100px; height: 100px;"> -->
-                    <td th:text="${board.memberEntity.name}"> </td>
+                    <td>
+                        <a th:href="@{/board/view/{id}(id=${board.id})}" th:text="${board.title}"></a>
+                    </td>
+                    <td>
+                        <div style="display: flex; align-items: center;">
+                            <!-- 프로필 이미지 -->
+                            <img th:src="@{${board.memberEntity.profileImage}}" alt="Profile Image Preview" style="width: 50px; height: 50px; margin-right: 10px;">
+                            <!-- 이름 -->
+                            <span th:text="${board.memberEntity.name}"></span>
+                        </div>
+                    </td>
                     <td th:text="${#dates.format(board.createTime, 'yyyy-MM-dd HH:mm')}"></td>
                     <td th:text="${board.view}"></td>
                 </tr>
@@ -99,9 +107,9 @@
         </table>
         <div class="pagination">
             <!-- 페이지네이션 링크 예시 -->
-            <a href="?page=1" class="active">1</a>
-            <a href="?page=2">2</a>
-            <a href="?page=3">3</a>
+            <a th:href="@{/board/list(page=1)}" th:text="'1'" class="active"></a>
+            <a th:href="@{/board/list(page=2)}" th:text="'2'"></a>
+            <a th:href="@{/board/list(page=3)}" th:text="'3'"></a>
         </div>
     </div>
 </body>

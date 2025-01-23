@@ -15,7 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
 import com.cos.project.details.PrincipalDetails;
+import com.cos.project.dto.BoardDTO;
 import com.cos.project.entity.BoardEntity;
+import com.cos.project.entity.MemberEntity;
 import com.cos.project.repository.BoardRepository;
 import com.mysql.cj.protocol.Security;
 
@@ -68,19 +70,23 @@ public class BoardService {
 	
 	
 	@Transactional
-	public String updateContents(Long id , BoardEntity boardEntity) throws IllegalArgumentException{		//수정하기
+	public String updateContents(Long id ,
+			 BoardDTO boardDTO,
+			String boardFiles
+			) throws IllegalArgumentException{		//수정하기
 		
-		if(boardEntity.getTitle() == null || boardEntity.getContents() == null) {
+		
+		if(boardDTO.getTitle() == null || boardDTO.getContents() == null) {
 			throw new IllegalArgumentException("제목이나 내용이 비어있습니다");
 		}
 			
-		BoardEntity boardBefore = boardRepository.findById(boardEntity.getId()).orElseThrow(() -> new IllegalStateException("수정할 게시글을 찾을 수 없습니다"));
+		BoardEntity boardEntity = boardRepository.findById(id).orElseThrow(() -> new IllegalStateException("수정할 게시글을 찾을 수 없습니다"));
 			
-		boardBefore.setTitle(boardEntity.getTitle());
-		boardBefore.setContents(boardEntity.getContents());
+		boardEntity.setTitle(boardDTO.getTitle());
+		boardEntity.setContents(boardDTO.getContents());
+		boardEntity.setBoardFiles(boardFiles);
 		
-		
-		boardRepository.save(boardBefore);
+		boardRepository.save(boardEntity);
 		System.out.println( "게시글 수정이 완료되었습니다");
 		return "게시글 수정이 완료되었습니다";
 	}

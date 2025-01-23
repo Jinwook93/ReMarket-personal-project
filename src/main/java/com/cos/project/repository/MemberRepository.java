@@ -11,4 +11,6 @@ import com.cos.project.entity.MemberEntity;
 public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
 	Optional<MemberEntity> findByUserid(String userid);
 	boolean existsByUserid(String userid);
+	Optional<MemberEntity> findByPassword(String password);
+	Optional<MemberEntity> findByNameAndPhone (String name, String phone);
 }

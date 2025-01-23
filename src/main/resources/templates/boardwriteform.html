@@ -68,15 +68,28 @@
             <label for="title">제목</label>
             <input type="text" id="title" name="title" placeholder="제목을 입력하세요" required>
             
-            <!-- 작성자 선택 -->
-              <label for="name">작성자</label>
-			  <input type="text" th:value="${name}" id="name" name="name" readOnly/>
-			  <br>
-			    <img id="previewImage" th:src="@{{imagePath}(imagePath=${profileImage})}"  loading="lazy"  alt="Profile Image Preview" style="display: block; width: 100px; height: 100px;"> 
-			   <label for="userid">작성자 아이디</label>
-			  <input type="text" th:value="${userid}" id="userid" name="userid" readOnly/>
+            
+            
+ <label for="name">작성자</label>
+<div style="display: flex; align-items: center;">
+    <!-- 프로필 이미지 -->
+    <img th:src="@{${profileImage}}" loading="lazy" alt="Profile Image Preview" style="width: 50px; height: 50px; margin-right: 10px;">
+    <!-- 이름 -->
+    <span th:text="${name}" ></span>
+        <input type="hidden" name="name", id ="name" th:value="${name}"/>
+    <input type="hidden" name="userid", id ="userid" th:value="${userid}"/>
+</div>
+            
+            
+<!--             작성자 선택 -->
+<!--               <label for="name">작성자</label> -->
+<!-- 			  <input type="text" th:value="${name}" id="name" name="name" readOnly/> -->
+<!-- 			  <br> -->
+<!-- 			    <img id="previewImage" th:src="@{{imagePath}(imagePath=${profileImage})}"  loading="lazy"  alt="Profile Image Preview" style="display: block; width: 100px; height: 100px;">  -->
+<!-- 			   <label for="userid">작성자 아이디</label> -->
+<!-- 			  <input type="text" th:value="${userid}" id="userid" name="userid" readOnly/> -->
 
-<br>
+<!-- <br> -->
               
 <!--             <select id="member_id" name="member_id" required> -->
 <!--                 <option value="">작성자를 선택하세요</option> -->

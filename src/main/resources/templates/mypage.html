@@ -21,15 +21,29 @@
         <input type="text" id="userid" name="userid" th:value="${member.userid}" required /><br>
 <!--         <button type="button" onclick="checkId()">중복확인</button> -->
 
-<!--         이름 -->
-        <label for="name">이름</label>
-        <input type="text" id="name" name="name" th:value="${member.name}" required /><br>
 
-<!-- 이미지 미리보기 -->
-        <div id="imagePreview" style="margin-top: 10px;">
-            <img id="previewImage" th:src="@{{imagePath}(imagePath=${member.profileImage})}" loading="lazy" alt="Profile Image Preview" style="display: block; width: 100px; height: 100px;">
-        </div>
-<br><br>
+
+
+            <label for="name">작성자</label> 
+             <div style="display: flex; align-items: center;">
+        <!-- 프로필 이미지 -->
+        <img th:src="@{{imagePath}(imagePath=${member.profileImage})}" loading="lazy" alt="Profile Image Preview" style="width: 50px; height: 50px; margin-right: 10px;">
+        <!-- 이름 -->
+        <span th:text="${member.name}"></span>
+    </div>
+
+
+
+
+<!-- <!--         이름 -->
+<!--         <label for="name">이름</label> -->
+<!--         <input type="text" id="name" name="name" th:value="${member.name}" required /><br> -->
+
+<!-- <!-- 이미지 미리보기 --> 
+<!--         <div id="imagePreview" style="margin-top: 10px;"> -->
+<!--             <img id="previewImage" th:src="@{{imagePath}(imagePath=${member.profileImage})}" loading="lazy" alt="Profile Image Preview" style="display: block; width: 100px; height: 100px;"> -->
+<!--         </div> -->
+<!-- <br><br> -->
 
 
 <!--         나이 -->

@@ -3,6 +3,10 @@ import { updateComment } from "./updateComment.js";
 
 
 document.addEventListener('DOMContentLoaded', function () {
+	
+	let memberUserid = document.getElementById("userid").value;
+	
+	
     // 댓글 불러오기 함수 정의
     function loadComments(boardId, principalDetails) {
         fetch(`http://localhost:8081/comments/board/${boardId}`, {
@@ -31,13 +35,22 @@ document.addEventListener('DOMContentLoaded', function () {
                     commentElement.classList.add('comment');
                     commentElement.id = `comment-${comment.id}`;
                     commentElement.innerHTML = `
-                        <p class="comment-author">${comment.memberEntity.name}</p>
+                     <div style="display: flex; align-items: center;">
+        <!-- 프로필 이미지 -->
+ <img src="${comment.memberEntity.profileImage}" loading="lazy" alt="Profile Image Preview" style="width: 50px; height: 50px; margin-right: 10px;">
+        <!-- 이름 -->
+        <span>${comment.memberEntity.name}</span>
+    </div>
+                    	
+                    
+                    
+             <!--     <p class="comment-author">${comment.memberEntity.name}</p> -->
                         <p class="comment-text">${comment.content}</p>
                         <p class="comment-createTime">${comment.createTime}</p>
                     `;
 
                     // 수정 및 삭제 버튼 추가
-                    if (comment.memberEntity.userid === principalDetails) {
+                    if ((memberUserid === principalDetails)|| (comment.memberEntity.userid === principalDetails)) {
                         const updateButton = document.createElement('button');
                         updateButton.textContent = '수정하기';
                         updateButton.addEventListener('click', () => updateComment(comment.id, comment.content));

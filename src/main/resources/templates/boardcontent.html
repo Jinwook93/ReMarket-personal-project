@@ -81,26 +81,27 @@
     <div class="container">
         <h1>게시글 작성</h1>
         
-            <!-- 글 번호 -->
-        <label for="title">로그인 유저</label>
-        <input type="text" th:value="${principalDetails.name}" id="principalDetails" name="principalDetails" readonly>
+            <!--로그인 중인 유저 -->
+<!--         <label for="title">로그인 유저</label> -->
+        <input type="hidden" th:value="${principalDetails.name}" id="principalDetails" name="principalDetails" readonly>
         
         
         
         <!-- 글 번호 -->
         <label for="title">글 번호</label>
-        <input type="hidden" th:value="${board.id}" id="id" name="id" readonly>
+        <input type="text" th:value="${board.id}" id="id" name="id" readonly>
         
         <!-- 제목 입력 -->
         <label for="title">제목</label>
         <input type="text" th:value="${board.title}" id="title" name="title" placeholder="제목을 입력하세요" readonly>
         
-        <!-- 작성자 정보 -->
-        <label for="name">작성자</label>
-        <input type="text" th:value="${board.memberEntity.name}" id="name" name="name" th:disabled="${board.MemberEntity.userid != principalDetails}">
-        <br>
-        <img id="previewImage" th:src="@{{imagePath}(imagePath=${board.memberEntity.profileImage})}"  loading="lazy"  alt="Profile Image Preview" style="display: block; width: 100px; height: 100px;"> 
-  
+                             <label for="name">작성자</label> 
+             <div style="display: flex; align-items: center;">
+        <!-- 프로필 이미지 -->
+        <img th:src="@{{imagePath}(imagePath=${board.memberEntity.profileImage})}" loading="lazy" alt="Profile Image Preview" style="width: 100px; height: 100px; margin-right: 10px;">
+        <!-- 이름 -->
+        <span th:text="${board.memberEntity.name}"></span>
+    </div>
   
 <!--       첨부 파일 -->
 <!--             <label for="boardFile">첨부 파일</label> -->
@@ -109,10 +110,38 @@
         
         <!-- 작성자 아이디 (hidden) -->
         <input type="hidden" th:value="${board.memberEntity.userid}" id="userid" name="userid">
+         <input type="hidden" th:value="${board.memberEntity.id}" id="id" name="id">
         
+        <br>    <br>  
         <!-- 조회수 (disabled) -->
         <label for="view">조회수</label>
         <input type="text" th:value="${board.view}" id="view" name="view" disabled>
+        
+<label for="boardFiles">첨부 파일</label>
+<div style="display: flex; flex-direction: row; flex-wrap: wrap; margin-top: 10px;">
+<!--     boardFiles 배열이 비어 있지 않은 경우 -->
+    <div th:if="${boardFiles != null and boardFiles.length > 0}" th:each="file : ${boardFiles}">
+        <div style="margin-right: 10px; margin-bottom: 10px;">
+            <a th:href="@{${file}}">
+                <img th:src="@{${file}}" alt="첨부 파일 미리보기" loading="lazy"
+                     style="display: block; width: 100px; height: 100px;">
+            </a>
+            
+            <a th:href="@{${file}}" download>다운로드</a>
+        </div>
+    </div>
+
+<!--     boardFiles 배열이 비어 있는 경우 -->
+    <div th:if="${boardFiles == null or boardFiles.length == 0}">
+        <div style="margin-right: 10px; margin-bottom: 10px;">
+            <img src="/boardimage/nullimage.jpg" alt="첨부 파일 없음"
+                 style="display: block; width: 100px; height: 100px;">
+            <p>첨부 파일이 없습니다.</p>
+        </div>
+    </div>
+</div>
+
+
         
         <!-- 내용 입력 -->
         <label for="contents">내용</label>
@@ -120,15 +149,12 @@
         
 	
             <!-- boardFiles 배열을 반복하여 이미지를 출력 -->
-            <div th:each="file : ${boardFiles}">
-              <div id="imagePreview" style="margin-top: 10px;">
-                <img th:src="@{${file}}" alt="첨부 파일 미리보기" style="display: block; width: 100px; height: 100px; margin-top: 10px;">
-            </div>
-        </div>
+           
+
         
         
         <!-- 수정/삭제 버튼 (조건부 표시) -->
-        <div th:if="${board.MemberEntity.userid == principalDetails.name}">
+        <div th:if="${board.memberEntity.userid == principalDetails.name}">
 <!--             <button type="button" id="updateBoard"  onClick= "goUpdateForm()">수정하기</button>								전역스 코프로 처리하는 법 -->			
  <button type="button" id="updateBoard" >수정하기</button>
             <button type="button" id="deleteBoard">삭제하기</button>

@@ -44,8 +44,8 @@ public class BoardEntity {
     
     
     
-    
-    private String boardFile;	// 첨부할 URL 추가
+    @Column(columnDefinition = "LONGTEXT") 
+    private String boardFiles;	// 첨부할 URL 추가
     
     
     

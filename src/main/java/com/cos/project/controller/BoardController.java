@@ -5,6 +5,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cos.project.details.PrincipalDetails;
+import com.cos.project.dto.BoardDTO;
 import com.cos.project.entity.BoardEntity;
 import com.cos.project.entity.CommentEntity;
 import com.cos.project.entity.MemberEntity;
@@ -19,9 +20,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -36,6 +39,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -111,46 +116,50 @@ public String writeBoard(Model model, @AuthenticationPrincipal PrincipalDetails 
 
 
 @PostMapping("/writeboard")
-public String writeBoard(@RequestParam (name = "title") String title, 
-        @RequestParam (name = "name") String name, 
-        @RequestParam (name = "userid") String userid, 
-        @RequestParam (name = "boardFiles") MultipartFile [] boardFiles,
-        @RequestParam (name = "contents") String contents) throws IOException {
-	
-	
-	
-	String[] boardFilePath = new String[boardFiles.length];
-    ObjectMapper objectMapper = new ObjectMapper();
+public String writeBoard(@RequestParam(name = "title") String title, 
+                         @RequestParam(name = "name") String name, 
+                         @RequestParam(name = "userid") String userid, 
+                         @RequestParam(name = "boardFiles", required = false) MultipartFile[] boardFiles,
+                         @RequestParam(name = "contents") String contents) throws IOException {
 
-    int i = 0;
-    for (MultipartFile boardFile : boardFiles) {
-        String uniqueFileName = UUID.randomUUID().toString() + "_" + boardFile.getOriginalFilename();
-        Path filePath = Paths.get("src/main/resources/static/boardimage").resolve(uniqueFileName);
-        Files.createDirectories(filePath.getParent());
-        Files.write(filePath, boardFile.getBytes());
-        boardFilePath[i++] = "/boardimage/" + uniqueFileName;
+    ObjectMapper objectMapper = new ObjectMapper();
+    String[] boardFilePath;
+
+    // boardFiles가 null인 경우 빈 배열로 초기화
+    if (boardFiles == null || boardFiles.length == 0 || 
+        (boardFiles.length == 1 && boardFiles[0].getOriginalFilename().isEmpty())) {
+        boardFilePath = new String[0]; // 첨부파일이 없을 경우 빈 배열로 처리
+    } else {
+        boardFilePath = new String[boardFiles.length];
+        int i = 0;
+
+        // 파일 업로드 처리
+        for (MultipartFile boardFile : boardFiles) {
+            String uniqueFileName = UUID.randomUUID().toString() + "_" + boardFile.getOriginalFilename();
+            Path filePath = Paths.get("src/main/resources/static/boardimage").resolve(uniqueFileName);
+            Files.createDirectories(filePath.getParent());
+            Files.write(filePath, boardFile.getBytes());
+            boardFilePath[i++] = "/boardimage/" + uniqueFileName;
+        }
     }
 
     // JSON 변환
     String boardFileJson = objectMapper.writeValueAsString(boardFilePath);
 
+
+    // BoardEntity 생성 및 저장
     BoardEntity boardEntity = BoardEntity.builder()
             .title(title)
             .contents(contents)
-            .boardFile(boardFileJson)
+            .boardFiles(boardFileJson)
             .build();
 
-    
-    
     boardService.writeContents(boardEntity);
-	
-	
-	
-	
-	
-	
-	return "redirect:allboard";
+
+    return "redirect:allboard";
 }
+
+
 
 
 //@PostMapping("/board/write")
@@ -224,27 +233,99 @@ public String writeBoard(@RequestParam (name = "title") String title,
 
 @GetMapping("/updateboard/{id}")
 //public String updateBoard(@PathVariable(name = "id") Long id, @RequestBody BoardEntity boardEntity, RedirectAttributes redirectAttributes) {
-public String goUpdateForm(@PathVariable(name = "id") Long id,  RedirectAttributes redirectAttributes, Model model) {    
+public String goUpdateForm(@PathVariable(name = "id") Long id,  RedirectAttributes redirectAttributes, Model model) throws JsonMappingException, JsonProcessingException {    
 	BoardEntity board = boardService.viewContent(id, true);
    model.addAttribute("board", board);
 
+   ObjectMapper om = new ObjectMapper();
+   String [] boardFiles = om.readValue(board.getBoardFiles(), String[].class);       
     // Redirect to the view page after the update
+   
+   model.addAttribute("boardFiles", boardFiles);
+   
+   
     return "updateboardwriteform";
 }
 
-@PutMapping("/updateboard/{id}")
-public String updateBoard(@PathVariable(name = "id") Long id, @RequestBody BoardEntity boardEntity, RedirectAttributes redirectAttributes) {
-    String result = boardService.updateContents(id, boardEntity);
-    
-    // Adding the id to the redirect URL
-    redirectAttributes.addAttribute("id", id); // id 값을 URL 파라미터로 추가
 
-    // Log to check if it's properly passed
-    System.out.println("Redirecting to: /board/view/" + id);
-    
-    // Redirect to the view page after the update
-    return "redirect:/board/view/{id}"; // {id}는 addAttribute에서 전달된 id로 치환됩니다.
+
+
+
+	//MultiPart Form 데이터에서 PUT을 지원하지 않아서 Post로 처리
+
+
+
+
+
+//Multipart/form-data는 주로 웹 폼을 통해 파일 업로드를 처리할 때 사용되며, 기본적으로 POST 메서드와 함께 사용됩니다. 이는 파일 전송이 포함된 요청이 서버에서 더 일반적인 방식으로 처리되기 때문입니다.
+
+
+
+@PostMapping("/updateboard/{id}")
+public String updateBoard(@PathVariable(name = "id") Long id,
+                          @RequestPart(name = "boardData") String boardDataJson,
+                          @RequestPart(value = "boardFiles", required = false) MultipartFile[] boardFiles,
+                          RedirectAttributes redirectAttributes) throws IOException {
+
+    ObjectMapper objectMapper = new ObjectMapper();
+    BoardDTO boardDTO = objectMapper.readValue(boardDataJson, BoardDTO.class);
+
+    // 기존 파일 목록 처리
+    String[] existingFileList = objectMapper.readValue(boardDTO.getBoardFiles(), String[].class);
+    for (int i = 0; i < existingFileList.length; i++) {
+        existingFileList[i] = existingFileList[i].replace("http://localhost:8081", "");
+    }
+
+    // 새 파일 목록 처리
+    if (boardFiles == null) {
+        boardFiles = new MultipartFile[0]; // boardFiles가 null이면 빈 배열로 초기화
+    }
+
+    // 모든 파일 경로 합치기
+    String[] allFilePath = Arrays.copyOf(existingFileList, existingFileList.length + boardFiles.length);
+    int index = existingFileList.length;
+    for (MultipartFile boardFile : boardFiles) {
+        String uniqueFileName = UUID.randomUUID().toString() + "_" + boardFile.getOriginalFilename();
+        Path filePath = Paths.get("src/main/resources/static/boardimage").resolve(uniqueFileName);
+        Files.createDirectories(filePath.getParent());
+        Files.write(filePath, boardFile.getBytes());
+        allFilePath[index++] = "/boardimage/" + uniqueFileName;
+    }
+
+    // 파일 경로를 JSON으로 변환
+    String boardFileJson = objectMapper.writeValueAsString(allFilePath);
+
+    // 게시글 업데이트
+    boardService.updateContents(id, boardDTO, boardFileJson);
+
+    // 리다이렉트 처리
+    redirectAttributes.addAttribute("id", id);
+    return "redirect:/board/view/{id}";
 }
+
+
+
+
+
+
+
+
+
+
+
+//@PutMapping("/updateboard/{id}")
+//public String updateBoard(@PathVariable(name = "id") Long id, @RequestBody BoardEntity boardEntity, RedirectAttributes redirectAttributes) {
+//    String result = boardService.updateContents(id, boardEntity);
+//    
+//    // Adding the id to the redirect URL
+//    redirectAttributes.addAttribute("id", id); // id 값을 URL 파라미터로 추가
+//
+//    // Log to check if it's properly passed
+//    System.out.println("Redirecting to: /board/view/" + id);
+//    
+//    // Redirect to the view page after the update
+//    return "redirect:/board/view/{id}"; // {id}는 addAttribute에서 전달된 id로 치환됩니다.
+//}
 
 
 
@@ -264,14 +345,38 @@ public String viewContent(@PathVariable(name = "id") Long id, Model model) throw
 	   List<CommentEntity> comments = commentService.getAllCommentAboutBoard(id);
 	   
 	   ObjectMapper om = new ObjectMapper();
-	   String [] boardFiles = om.readValue(boardEntity.getBoardFile(), String[].class);                                 
+	   String [] boardFiles = om.readValue(boardEntity.getBoardFiles(), String[].class);                                 
 	   
 		model.addAttribute("board", boardEntity);
 		model.addAttribute("comments", comments);
+		
+//		if(boardFiles[0].equals("/boardimage/nullimage.jpg")) {
+//			boardFiles = new String[0];
+//		}
 		model.addAttribute("boardFiles", boardFiles);
+		
     //return ResponseEntity.status(200).body(result);
 		return "boardcontent";
 }
+
+
+
+//
+//@GetMapping("/delete/{id}")
+//public @ResponseBody String deleteFile(@PathVariable(name = "id") String path) throws JsonMappingException, JsonProcessingException {
+//	   BoardEntity boardEntity =  boardService.viewContent(id,false);
+//	   List<CommentEntity> comments = commentService.getAllCommentAboutBoard(id);
+//	   
+//	   ObjectMapper om = new ObjectMapper();
+//	   String [] boardFiles = om.readValue(boardEntity.getBoardFiles(), String[].class);                                 
+//	   
+//		model.addAttribute("board", boardEntity);
+//		model.addAttribute("comments", comments);
+//		model.addAttribute("boardFiles", boardFiles);
+//    //return ResponseEntity.status(200).body(result);
+//		return "boardcontent";
+//}
+
 
 
 	

@@ -337,6 +337,14 @@ public class MemberService {
     }
     
     
+    @Transactional(readOnly = true)			//회원 정보 조회
+    public MemberEntity userInfoByNameAndPhone(String name, String password) throws IllegalAccessException {
+        
+        return memberRepository.findByNameAndPhone(name, password)
+                      .orElseThrow(() -> new IllegalAccessException("회원 정보를 조회할 수 없습니다"));
+    }
+    
+    
     
     
     @Transactional(readOnly = true)

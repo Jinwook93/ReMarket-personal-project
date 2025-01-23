@@ -45,7 +45,7 @@ public class CommentEntity {
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "member_id")
-	@JsonIncludeProperties({"id", "name", "userid"})
+	@JsonIncludeProperties({"id", "name", "userid", "profileImage"})
 	private MemberEntity memberEntity;
 
 	

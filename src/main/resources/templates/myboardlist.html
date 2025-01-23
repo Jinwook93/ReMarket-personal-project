@@ -72,13 +72,21 @@
         <div class="board-list">
             <!-- 게시글 목록 반복 -->
             <div th:each="board : ${myboards}">
-                <div class="board">
-                    <div class="board-header">
-                        <p class="board-author" th:text="${board.memberEntity.name}">작성자 이름</p>
-                        <p class="board-time" th:text="${board.createTime}">작성 시간</p>
+                <a th:href="@{/board/view/{id}(id=${board.id})}">
+                    <div class="board">
+                        <div class="board-header">
+                            <div style="display: flex; align-items: center;">
+                                <!-- 프로필 이미지 -->
+                                <img th:src="@{${board.memberEntity.profileImage}}" alt="Profile Image Preview" style="width: 50px; height: 50px; margin-right: 10px;">
+                                <!-- 이름 -->
+                                <span th:text="${board.memberEntity.name}">작성자 이름</span>
+                            </div>
+                            <p class="board-text" th:text="${board.title}">게시글 제목</p>
+                            <p class="board-time" th:text="${#dates.format(board.createTime, 'yyyy-MM-dd HH:mm')}">작성 시간</p>
+                        </div>
+<!--                         <p class="board-text" th:text="${board.contents}">게시글 내용</p> -->
                     </div>
-                    <p class="board-text" th:text="${board.contents}">게시글 내용</p>
-                </div>
+                </a>
             </div>
         </div>
 

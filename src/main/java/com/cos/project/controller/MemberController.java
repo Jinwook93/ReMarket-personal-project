@@ -229,7 +229,28 @@ public ResponseEntity<?> deleteUser(@PathVariable(name = "id") long id) {
 //    return result;
 //}
 
+//아이디 , 비밀번호 찾기
 
+//@GetMapping("/findid")
+//public String goFindId() {
+//    return "findid";
+//}
+//@PostMapping("/findid")
+//public ResponseEntity<?> findId(@RequestBody String userid) throws IllegalAccessException {
+//    MemberEntity memberEntity = memberService.userInfoByUserid(userid);
+//    return ResponseEntity.ok(memberEntity.getUserid());
+//}
+
+//@GetMapping("/findpassword")
+//public String goFindPassword() {
+//    return "findpassword";
+//}
+//
+//@PostMapping("/findpassword")
+//public ResponseEntity<?> findpassword(@RequestBody String password) throws IllegalAccessException {
+//    MemberEntity memberEntity = memberService.userInfoByPassword(password);
+//    return ResponseEntity.ok(memberEntity.getPassword());
+//}
 
 	
 }
