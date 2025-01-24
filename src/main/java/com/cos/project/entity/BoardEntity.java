@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.cos.project.repository.BoardLikeRepository;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
@@ -42,17 +43,16 @@ public class BoardEntity {
     private Timestamp createTime;
 
     
+    @Enumerated(EnumType.STRING)
+    private Category category;
     
+	private int totalLike= 0;
+	private int totalDislike=0;
     
     @Column(columnDefinition = "LONGTEXT") 
     private String boardFiles;	// 첨부할 URL 추가
     
-    
-    
-    
-    
-    
-    
+ 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "member_id")
 //    @JsonBackReference("member-boards")
@@ -64,6 +64,14 @@ public class BoardEntity {
     private List<CommentEntity> comments = new ArrayList<>();
     
     
+//    @OneToMany(mappedBy = "boardEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JsonManagedReference("board-likeboard")
+//    private List<BoardLikeEntity> boardLikeEntities;
+//    
+//    
+//    @OneToMany(mappedBy = "commentEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JsonManagedReference("board-likecomment")
+//    private List<CommentLikeEntity> commentLikeEntities;
     
     
     

@@ -77,5 +77,15 @@ public class MemberEntity {
 	@OneToMany(mappedBy = "memberEntity", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
 //	@JsonManagedReference("member-comments")
 	List<CommentEntity> comments = new ArrayList<>();
+	
+	
+//	   @OneToMany(mappedBy = "memberEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+//	    @JsonManagedReference("board-likeboard")
+//	    private List<BoardLikeEntity> boardLikeEntities;
+//	    
+//	    
+//	    @OneToMany(mappedBy = "memberEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+//	    @JsonManagedReference("board-likecomment")
+//	    private List<CommentLikeEntity> commentLikeEntities;
 
 }

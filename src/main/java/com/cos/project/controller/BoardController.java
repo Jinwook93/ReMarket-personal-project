@@ -9,6 +9,7 @@ import com.cos.project.dto.BoardDTO;
 import com.cos.project.entity.BoardEntity;
 import com.cos.project.entity.CommentEntity;
 import com.cos.project.entity.MemberEntity;
+import com.cos.project.repository.BoardLikeRepository;
 import com.cos.project.repository.BoardRepository;
 import com.cos.project.repository.MemberRepository;
 import com.cos.project.service.BoardService;
@@ -71,7 +72,8 @@ public BoardController(BoardService boardService) {
 private CommentService commentService;
 
 
-
+@Autowired
+private BoardLikeRepository boardLikeRepository;
 
 
 
@@ -354,6 +356,8 @@ public String viewContent(@PathVariable(name = "id") Long id, Model model) throw
 //			boardFiles = new String[0];
 //		}
 		model.addAttribute("boardFiles", boardFiles);
+			
+		
 		
     //return ResponseEntity.status(200).body(result);
 		return "boardcontent";

@@ -49,6 +49,10 @@ public class CommentEntity {
 	private MemberEntity memberEntity;
 
 	
+	private int totalLike=0;
+	private int totalDislike=0;
+	
+	
 	@CreationTimestamp
 	Timestamp createTime;
 }

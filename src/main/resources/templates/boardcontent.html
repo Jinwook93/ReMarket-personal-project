@@ -75,6 +75,14 @@
         .comment-text {
             margin-top: 5px;
         }
+        #like.active {
+    background-color: green; /* 좋아요 버튼 활성화 시 배경색 (예: 연한 빨간색) */
+}
+
+#dislike.active {
+    background-color: green; /* 싫어요 버튼 활성화 시 배경색 (예: 연한 회색) */
+}
+        
     </style>
 </head>
 <body>
@@ -94,8 +102,10 @@
         <!-- 제목 입력 -->
         <label for="title">제목</label>
         <input type="text" th:value="${board.title}" id="title" name="title" placeholder="제목을 입력하세요" readonly>
+     
+
         
-                             <label for="name">작성자</label> 
+     <label for="name">작성자</label> 
              <div style="display: flex; align-items: center;">
         <!-- 프로필 이미지 -->
         <img th:src="@{{imagePath}(imagePath=${board.memberEntity.profileImage})}" loading="lazy" alt="Profile Image Preview" style="width: 100px; height: 100px; margin-right: 10px;">
@@ -112,6 +122,29 @@
         <input type="hidden" th:value="${board.memberEntity.userid}" id="userid" name="userid">
          <input type="hidden" th:value="${board.memberEntity.id}" id="id" name="id">
         
+        
+<div th:if="${board.memberEntity.userid != principalDetails.name}">
+    <!-- If the logged-in user's `userid` is not the same as the board's owner, show Like and Dislike buttons -->
+    <div style="display: flex;">
+        <button type="button" id="like" name="like" th:text="'❤️ ' + ${board.totalLike}">
+            ❤️ Like
+        </button>
+        <button type="button" id="dislike" name="dislike" th:text="'🖤 ' + ${board.totalDislike}">
+            🖤 Dislike
+        </button>
+    </div>
+</div>
+
+<div th:unless="${board.memberEntity.userid != principalDetails.name}">
+    <!-- If the logged-in user's `userid` is the same as the board's owner, show Like and Dislike count only -->
+    <div style="display: flex;">
+        <p th:text="'좋아요 : ' + ${board.totalLike}">좋아요</p>
+        <span>&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;</span>
+        <p th:text="'싫어요 : ' + ${board.totalDislike}">싫어요</p>
+    </div>
+</div>
+
+
         <br>    <br>  
         <!-- 조회수 (disabled) -->
         <label for="view">조회수</label>
@@ -195,5 +228,8 @@
 
 <script src="/js/showBoardComment.js" type="module"></script>
 <script src="/js/addBoardComment.js" type="module"></script>
+<script src="/js/likeButton.js" type="module"></script>
+
+
 </body>
 </html>
