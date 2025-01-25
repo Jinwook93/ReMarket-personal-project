@@ -56,7 +56,7 @@ public class BoardEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "member_id")
 //    @JsonBackReference("member-boards")
-    @JsonIncludeProperties({"id","name","profileImage"})
+    @JsonIncludeProperties({"id", "userid","name","profileImage"})
     private MemberEntity memberEntity; 
     
     @OneToMany(mappedBy = "boardEntity", cascade =  CascadeType.REMOVE, orphanRemoval = true)

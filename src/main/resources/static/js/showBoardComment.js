@@ -51,6 +51,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     `;
 
 					// 수정 및 삭제 버튼 추가
+					
+					
 					if (comment.memberEntity.userid === principalDetails) {
 						const updateButton = document.createElement('button');
 						updateButton.textContent = '수정하기';
@@ -62,7 +64,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
 						commentElement.appendChild(updateButton);
 						commentElement.appendChild(deleteButton);
+					}	else if (memberUserid === principalDetails) {
+						const deleteButton = document.createElement('button');
+						deleteButton.textContent = '삭제하기';
+						deleteButton.addEventListener('click', () => deleteComment(comment.id));
+							commentElement.appendChild(deleteButton);
 					}
+				
+			
+
+
+
 
 					commentsList.appendChild(commentElement);
 
