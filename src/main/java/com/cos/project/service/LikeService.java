@@ -7,10 +7,12 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.cos.project.entity.BoardEntity;
-import com.cos.project.entity.BoardLikeEntity;
+import com.cos.project.entity.BoardLikeEntity;import com.cos.project.entity.CommentEntity;
+import com.cos.project.entity.CommentLikeEntity;
 import com.cos.project.entity.MemberEntity;
 import com.cos.project.repository.BoardLikeRepository;
 import com.cos.project.repository.BoardRepository;
+import com.cos.project.repository.CommentLikeRepository;
 import com.cos.project.repository.CommentRepository;
 import com.cos.project.repository.MemberRepository;
 
@@ -21,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 public class LikeService {
 
     private final BoardLikeRepository boardLikeRepository;
+    private final CommentLikeRepository commentLikeRepository;
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
     private final CommentRepository commentRepository;
@@ -121,4 +124,117 @@ public class LikeService {
     		}
     }
 
+    
+    
+    
+    ///댓글에 관한 좋아요,싫어요 내용=========================
+    
+    
+    public List<Integer> commentToggleLike(Long commentId, Long memberId) {
+        CommentEntity commentEntity = commentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다"));
+        MemberEntity memberEntity = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다"));
+
+        // 기존에 싫어요가 눌려 있었다면, 싫어요 취소
+        if (commentLikeRepository.findCommentLikeEntity(commentId, memberId).isPresent() &&
+                commentLikeRepository.findCommentLikeEntity(commentId, memberId).get().isFlag() == false) {
+            commentEntity.setTotalDislike(commentEntity.getTotalDislike() - 1);  // 싫어요 감소
+            commentLikeRepository.deleteCommentLikeEntity(commentId, memberId, false);  // 싫어요 삭제
+        }
+
+        // 이미 좋아요가 눌러져 있으면 좋아요 취소
+        Optional<CommentLikeEntity> existingLike = commentLikeRepository.findCommentLikeEntity(commentId, memberId);
+        if (existingLike.isPresent() && existingLike.get().isFlag() == true) {
+            // 좋아요 취소
+            commentEntity.setTotalLike(commentEntity.getTotalLike() - 1);  // 좋아요 감소
+            commentLikeRepository.deleteCommentLikeEntity(commentId, memberId, true);  // 좋아요 삭제
+        } else {
+            // 좋아요 추가
+            commentEntity.setTotalLike(commentEntity.getTotalLike() + 1);  // 좋아요 증가
+            CommentLikeEntity commentLikeEntity = new CommentLikeEntity();
+            commentLikeEntity.setCommentEntity(commentEntity);
+            commentLikeEntity.setMemberEntity(memberEntity);
+            commentLikeEntity.setFlag(true);  // 좋아요 상태로 설정
+            commentLikeRepository.save(commentLikeEntity);
+        }
+
+        // 총 좋아요와 싫어요 수가 음수가 되지 않도록 처리
+        if (commentEntity.getTotalLike() < 0) {
+            commentEntity.setTotalLike(0);
+        }
+        if (commentEntity.getTotalDislike() < 0) {
+            commentEntity.setTotalDislike(0);
+        }
+
+        // 결과 반환: 총 좋아요, 총 싫어요, 좋아요 상태 (true/false), 싫어요 상태 (true/false)
+        boolean isLiked = existingLike.isPresent() && existingLike.get().isFlag() == true;
+        return Arrays.asList(commentEntity.getTotalLike(), commentEntity.getTotalDislike());
+    }
+
+    public List<Integer> commentToggleDislike(Long commentId, Long memberId) {
+    	CommentEntity commentEntity = commentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다"));
+        MemberEntity memberEntity = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다"));
+
+        // 기존에 좋아요가 눌려 있었다면, 좋아요 취소
+        if (commentLikeRepository.findCommentLikeEntity(commentId, memberId).isPresent() &&
+                commentLikeRepository.findCommentLikeEntity(commentId, memberId).get().isFlag() == true) {
+            commentEntity.setTotalLike(commentEntity.getTotalLike() - 1);  // 좋아요 감소
+            commentLikeRepository.deleteCommentLikeEntity(commentId, memberId, true);  // 좋아요 삭제
+        }
+
+        // 이미 싫어요가 눌러져 있으면 싫어요 취소
+        Optional<CommentLikeEntity> existingDislike = commentLikeRepository.findCommentLikeEntity(commentId, memberId);
+        if (existingDislike.isPresent() && existingDislike.get().isFlag() == false) {
+            // 싫어요 취소
+        	 commentEntity.setTotalDislike( commentEntity.getTotalDislike() - 1);  // 싫어요 감소
+            commentLikeRepository.deleteCommentLikeEntity(commentId, memberId, false);  // 싫어요 삭제
+        } else {
+            // 싫어요 추가
+        	commentEntity.setTotalDislike(commentEntity.getTotalDislike() + 1);  // 싫어요 증가
+            CommentLikeEntity commentLikeEntity = new CommentLikeEntity();
+            commentLikeEntity.setCommentEntity(commentEntity);
+            commentLikeEntity.setMemberEntity(memberEntity);
+            commentLikeEntity.setFlag(false);  // 싫어요 상태로 설정
+            commentLikeRepository.save(commentLikeEntity);
+        }
+
+        // 총 좋아요와 싫어요 수가 음수가 되지 않도록 처리
+        if (commentEntity.getTotalLike() < 0) {
+        	commentEntity.setTotalLike(0);
+        }
+        if (commentEntity.getTotalDislike() < 0) {
+        	commentEntity.setTotalDislike(0);
+        }
+
+        // 결과 반환: 총 좋아요, 총 싫어요, 좋아요 상태 (true/false), 싫어요 상태 (false/true)
+        boolean isDisliked = existingDislike.isPresent() && existingDislike.get().isFlag() == false;
+        return Arrays.asList(commentEntity.getTotalLike(), commentEntity.getTotalDislike());
+    }																															//1 : LIKE 활성화 신호
+
+    
+    public String comment_findMemberLike_Dislike(Long commentId, Long memberId) {
+    	CommentLikeEntity commentLikeEntity = commentLikeRepository.findCommentLikeEntity(commentId, memberId).get();
+    		if(commentLikeEntity.getId() != null &&commentLikeEntity.isFlag() == true) {
+    			return "ENABLE_LIKE";
+    		}else if (commentLikeEntity.getId() != null &&commentLikeEntity.isFlag() == false)  {
+    			return "ENABLE_DISLIKE";
+    		}else {				//if (commentLikeEntity.getId() == null) 
+    			return "DISABLE";
+    		}
+    }
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 }

@@ -1,12 +1,6 @@
-import { deleteComment } from "./deleteComment.js";
-import { updateComment } from "./updateComment.js";
+document.addEventListener('DOMContentLoaded', function() {
+    let memberUserid = document.getElementById("userid").value;
 
-
-document.addEventListener('DOMContentLoaded', function () {
-	
-	let memberUserid = document.getElementById("userid").value;
-	
-	
     // 댓글 불러오기 함수 정의
     function loadComments(boardId, principalDetails) {
         fetch(`http://localhost:8081/comments/board/${boardId}`, {
@@ -36,21 +30,19 @@ document.addEventListener('DOMContentLoaded', function () {
                     commentElement.id = `comment-${comment.id}`;
                     commentElement.innerHTML = `
                      <div style="display: flex; align-items: center;">
-        <!-- 프로필 이미지 -->
- <img src="${comment.memberEntity.profileImage}" loading="lazy" alt="Profile Image Preview" style="width: 50px; height: 50px; margin-right: 10px;">
-        <!-- 이름 -->
-        <span>${comment.memberEntity.name}</span>
-    </div>
-                    	
-                    
-                    
-             <!--     <p class="comment-author">${comment.memberEntity.name}</p> -->
-                        <p class="comment-text">${comment.content}</p>
-                        <p class="comment-createTime">${comment.createTime}</p>
+                        <img src="${comment.memberEntity.profileImage}" loading="lazy" alt="Profile Image Preview" style="width: 50px; height: 50px; margin-right: 10px;">
+                        <span>${comment.memberEntity.name}</span>
+                     </div>
+                     <div style="display: flex;">
+                        <button type="button" class ="commentlike" id="commentlike-${comment.id}" name="commentlike">❤️ ${comment.totalLike}</button>
+                        <button type="button" class ="commentdislike" id="commentdislike-${comment.id}" name="commentdislike">🖤 ${comment.totalDislike}</button>
+                     </div>
+                     <p class="comment-text">${comment.content}</p>
+                     <p class="comment-createTime">${comment.createTime}</p>
                     `;
 
                     // 수정 및 삭제 버튼 추가
-                    if ((memberUserid === principalDetails)|| (comment.memberEntity.userid === principalDetails)) {
+                    if ((memberUserid === principalDetails) || (comment.memberEntity.userid === principalDetails)) {
                         const updateButton = document.createElement('button');
                         updateButton.textContent = '수정하기';
                         updateButton.addEventListener('click', () => updateComment(comment.id, comment.content));
@@ -64,6 +56,34 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
 
                     commentsList.appendChild(commentElement);
+
+                    // 좋아요 및 싫어요 버튼 이벤트 리스너 등록 (동적으로 추가)
+                    const commentlikeButton = document.getElementById(`commentlike-${comment.id}`);
+                    const commentdislikeButton = document.getElementById(`commentdislike-${comment.id}`);
+                    
+  					commentButtonEnable(`${comment.id}`,commentlikeButton,commentdislikeButton);
+  					
+                    commentlikeButton.addEventListener("click", () => {
+                        if (commentlikeButton.classList.contains("active")) {
+                            commenthandleUnlike(comment.id);
+                            commentlikeButton.classList.remove("active");
+                        } else {
+                            commenthandleLike(comment.id);
+                            commentlikeButton.classList.add("active");
+                            commentdislikeButton.classList.remove("active"); // 싫어요 취소
+                        }
+                    });
+
+                    commentdislikeButton.addEventListener("click", () => {
+                        if (commentdislikeButton.classList.contains("active")) {
+                            commenthandleUndislike(comment.id);
+                            commentdislikeButton.classList.remove("active");
+                        } else {
+                            commenthandleDislike(comment.id);
+                            commentdislikeButton.classList.add("active");
+                            commentlikeButton.classList.remove("active"); // 좋아요 취소
+                        }
+                    });
                 });
             })
             .catch(error => {
@@ -71,89 +91,157 @@ document.addEventListener('DOMContentLoaded', function () {
                 alert("댓글을 불러오는 데 실패했습니다. 서버 관리자에게 문의해 주세요.");
             });
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-//      // 댓글 수정하기
-//function updateComment(id, currentContent) {
-//        const newContent = prompt("수정할 내용을 입력하세요:", currentContent);
-//        if (!newContent) {
-//            alert("내용을 입력해야 합니다.");
-//            return;
-//        }
-//
-//        fetch(`http://localhost:8081/comments/${id}`, {
-//            method: 'PUT',
-//            headers: {
-//                'Content-Type': 'application/json;charset=UTF-8',
-//            },
-//            body: JSON.stringify({ content: newContent }),
-//        })
-//            .then(response => {
-//				console.log(response);
-//                if (!response.ok) {
-//                    throw new Error("댓글 수정 중 오류가 발생했습니다.");
-//                }
-//                return response.json();
-//            })
-//            .then(result => {
-//                alert("댓글이 성공적으로 수정되었습니다.");
-//                const commentText = document.querySelector(`#comment-${id} .comment-text`);
-//                if (commentText) commentText.textContent = newContent;
-//            })
-//            .catch(error => {
-//                console.error("Error:", error);
-//                alert("댓글 수정에 실패했습니다.");
-//            });
-//    }
-//    
-    
-    
-    
-    
-//     // 댓글 삭제하기
-// function deleteComment(id) {
-//        if (!confirm("정말로 댓글을 삭제하시겠습니까?")) {
-//            return;
-//        }
-//
-//        fetch(`http://localhost:8081/comments/${id}`, {
-//            method: 'DELETE',
-//        })
-//            .then(response => {
-//                if (!response.ok) {
-//                    throw new Error("댓글 삭제 중 오류가 발생했습니다.");
-//                }
-//                return response.json();
-//            })
-//            .then(result => {
-//                alert("댓글이 성공적으로 삭제되었습니다.");
-//                const commentElement = document.getElementById(`comment-${id}`);
-//                if (commentElement) commentElement.remove();
-//            })
-//            .catch(error => {
-//                console.error("Error:", error);
-//                alert("댓글 삭제에 실패했습니다.");
-//            });
-//    }
-//    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+    // 좋아요 요청 함수
+    const commenthandleLike = async (commentId) => {
+        try {
+            const response = await fetch(`/comment/${commentId}/like`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                updatecommentLikeDislikeUI(commentId, result[0], result[1]);
+            } else {
+                console.error("좋아요 요청 실패");
+            }
+        } catch (error) {
+            console.error("좋아요 요청 중 오류 발생:", error);
+        }
+    };
+
+    // 좋아요 취소 요청 함수
+    const commenthandleUnlike = async (commentId) => {
+        try {
+            const response = await fetch(`/comment/${commentId}/like`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                updatecommentLikeDislikeUI(commentId, result[0], result[1]);
+            } else {
+                console.error("좋아요 취소 요청 실패");
+            }
+        } catch (error) {
+            console.error("좋아요 취소 요청 중 오류 발생:", error);
+        }
+    };
+
+    // 싫어요 요청 함수
+    const commenthandleDislike = async (commentId) => {
+        try {
+            const response = await fetch(`/comment/${commentId}/dislike`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                updatecommentLikeDislikeUI(commentId, result[0], result[1]);
+            } else {
+                console.error("싫어요 요청 실패");
+            }
+        } catch (error) {
+            console.error("싫어요 요청 중 오류 발생:", error);
+        }
+    };
+
+    // 싫어요 취소 요청 함수
+    const commenthandleUndislike = async (commentId) => {
+        try {
+            const response = await fetch(`/comment/${commentId}/dislike`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                updatecommentLikeDislikeUI(commentId, result[0], result[1]);
+            } else {
+                console.error("싫어요 취소 요청 실패");
+            }
+        } catch (error) {
+            console.error("싫어요 취소 요청 중 오류 발생:", error);
+        }
+    };
+
+
+
+
+
+//버튼 활성화 확인 함수
+	
+	    const commentButtonEnable = async (commentId,commentlikeButton,commentdislikeButton) => {
+        try {
+            const response = await fetch(`/comment/${commentId}/buttonenable`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (response.ok) {
+//                alert("버튼 활성화 확인 성공");
+                const result = await response.text();
+                console.log(result);
+                
+                if(result === "ENABLE_LIKE"){
+					commentlikeButton.classList.add("active");
+					commentdislikeButton.classList.remove("active");
+				}else if (result === "ENABLE_DISLIKE"){
+					commentlikeButton.classList.remove("active");
+					commentdislikeButton.classList.add("active");
+				}else{
+					commentlikeButton.classList.remove("active");
+					commentdislikeButton.classList.remove("active");
+					
+				}
+                
+//                updateLikeDislikeUI(result[0], result[1]);
+            } else {
+//                alert("버튼 활성화 실패");
+            }
+        } catch (error) {
+            console.error("싫어요 요청 중 오류 발생:", error);
+        }
+    };
+
+
+
+
+
+
+    // UI 업데이트 함수
+    const updatecommentLikeDislikeUI = (commentId, totalLike, totalDislike) => {
+        const commentlikeButton = document.getElementById(`commentlike-${commentId}`);
+        const commentdislikeButton = document.getElementById(`commentdislike-${commentId}`);
+
+        commentlikeButton.textContent = `❤️ ${totalLike}`;
+        commentdislikeButton.textContent = `🖤 ${totalDislike}`;
+    };
+
+
+
+
+
+
+
+
+
+
+
+
 
     // 게시글 ID와 현재 사용자 정보 가져오기
     const boardId = document.getElementById('id').value;
@@ -161,4 +249,5 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // 댓글 불러오기 함수 호출
     loadComments(boardId, principalDetails);
+  
 });

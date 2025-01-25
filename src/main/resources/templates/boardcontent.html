@@ -82,6 +82,14 @@
 #dislike.active {
     background-color: red; /* 싫어요 버튼 활성화 시 배경색 (예: 연한 회색) */
 }
+
+        .commentlike.active {
+    background-color: red;; /* 좋아요 버튼 활성화 시 배경색 (예: 연한 빨간색) */
+}
+
+.commentdislike.active {
+    background-color: red; /* 싫어요 버튼 활성화 시 배경색 (예: 연한 회색) */
+}
         
     </style>
 </head>
@@ -139,7 +147,7 @@
     <!-- If the logged-in user's `userid` is the same as the board's owner, show Like and Dislike count only -->
     <div style="display: flex;">
         <p th:text="'좋아요 : ' + ${board.totalLike}">좋아요</p>
-        <span>&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;</span>
+        <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
         <p th:text="'싫어요 : ' + ${board.totalDislike}">싫어요</p>
     </div>
 </div>

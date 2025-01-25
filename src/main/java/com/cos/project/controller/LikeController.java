@@ -21,7 +21,6 @@ import com.cos.project.service.LikeService;
 import com.cos.project.service.MemberService;
 
 @RestController
-@RequestMapping("/board")
 public class LikeController {
 
     private final LikeService likeService;
@@ -31,7 +30,7 @@ public class LikeController {
     }
 
     
-    @PostMapping("/{boardId}/like")
+    @PostMapping("/board/{boardId}/like")
     public ResponseEntity<List<Integer>> likePost(
             @PathVariable(name = "boardId") Long boardId,
             @AuthenticationPrincipal PrincipalDetails principalDetails) {
@@ -41,7 +40,7 @@ public class LikeController {
     }
 
     // 좋아요 취소
-    @DeleteMapping("/{boardId}/like")
+    @DeleteMapping("/board/{boardId}/like")
     public ResponseEntity<List<Integer>> unlikePost(
             @PathVariable(name = "boardId") Long boardId,
             @AuthenticationPrincipal PrincipalDetails principalDetails) {
@@ -51,7 +50,7 @@ public class LikeController {
         }
 
     // 싫어요 추가
-    @PostMapping("/{boardId}/dislike")
+    @PostMapping("/board/{boardId}/dislike")
     public ResponseEntity<List<Integer>> dislikePost(
             @PathVariable(name = "boardId") Long boardId,
             @AuthenticationPrincipal PrincipalDetails principalDetails) {
@@ -61,7 +60,7 @@ public class LikeController {
     }
 
     // 싫어요 취소
-    @DeleteMapping("/{boardId}/dislike")
+    @DeleteMapping("/board/{boardId}/dislike")
     public ResponseEntity<List<Integer>> undislikePost(
             @PathVariable(name = "boardId") Long boardId,
             @AuthenticationPrincipal PrincipalDetails principalDetails) {
@@ -71,7 +70,7 @@ public class LikeController {
     }
     
     // 버튼 활성화
-    @PostMapping("/{boardId}/buttonenable")
+    @PostMapping("/board/{boardId}/buttonenable")
     public ResponseEntity<?> enableButton(
             @PathVariable(name = "boardId") Long boardId,
             @AuthenticationPrincipal PrincipalDetails principalDetails) {
@@ -81,6 +80,84 @@ public class LikeController {
     	System.out.println("버튼활성화 상태 도착");
     	return ResponseEntity.ok(result);
     }
+    
+    
+    
+    
+    
+    //=============================댓글 좋아요 컨트롤러
+    
+    
+    
+    
+    
+    
+    @PostMapping("/comment/{commentId}/like")
+    public ResponseEntity<List<Integer>> commentlikePost(
+            @PathVariable(name = "commentId") Long commentId,
+            @AuthenticationPrincipal PrincipalDetails principalDetails) {
+//        likeService.addLike(commentId, principalDetails.getMemberEntity().getId());
+    	List<Integer> totallike_dislike = likeService.commentToggleLike(commentId, principalDetails.getMemberEntity().getId());
+        return ResponseEntity.ok(totallike_dislike );
+    }
+
+    // 좋아요 취소
+    @DeleteMapping("/comment/{commentId}/like")
+    public ResponseEntity<List<Integer>> commentunlikePost(
+            @PathVariable(name = "commentId") Long commentId,
+            @AuthenticationPrincipal PrincipalDetails principalDetails) {
+//        likeService.removeLike(commentId, principalDetails.getMemberEntity().getId());
+    	List<Integer> totallike_dislike = likeService.commentToggleLike(commentId, principalDetails.getMemberEntity().getId());
+        return ResponseEntity.ok(totallike_dislike );
+        }
+
+    // 싫어요 추가
+    @PostMapping("/comment/{commentId}/dislike")
+    public ResponseEntity<List<Integer>> commentdislikePost(
+            @PathVariable(name = "commentId") Long commentId,
+            @AuthenticationPrincipal PrincipalDetails principalDetails) {
+//        likeService.addDislike(commentId, principalDetails.getMemberEntity().getId());
+    	List<Integer> totallike_dislike =  likeService.commentToggleDislike(commentId, principalDetails.getMemberEntity().getId());
+        return ResponseEntity.ok(totallike_dislike );
+    }
+
+    // 싫어요 취소
+    @DeleteMapping("/comment/{commentId}/dislike")
+    public ResponseEntity<List<Integer>> commentundislikePost(
+            @PathVariable(name = "commentId") Long commentId,
+            @AuthenticationPrincipal PrincipalDetails principalDetails) {
+//        likeService.removeDislike(commentId, principalDetails.getMemberEntity().getId());
+    	List<Integer> totallike_dislike = 	 likeService.commentToggleDislike(commentId, principalDetails.getMemberEntity().getId());
+        return ResponseEntity.ok(totallike_dislike );
+    }
+    
+    // 버튼 활성화
+    @PostMapping("/comment/{commentId}/buttonenable")
+    public ResponseEntity<?> commentenableButton(
+            @PathVariable(name = "commentId") Long commentId,
+            @AuthenticationPrincipal PrincipalDetails principalDetails) {
+    
+//        likeService.removeDislike(commentId, principalDetails.getMemberEntity().getId());
+String result = 	 likeService.comment_findMemberLike_Dislike(commentId, principalDetails.getMemberEntity().getId());
+    	System.out.println("버튼활성화 상태 도착");
+    	return ResponseEntity.ok(result);
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
 }
