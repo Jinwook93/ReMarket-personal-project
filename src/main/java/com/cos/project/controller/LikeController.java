@@ -69,4 +69,18 @@ public class LikeController {
     	List<Integer> totallike_dislike = 	 likeService.toggleDislike(boardId, principalDetails.getMemberEntity().getId());
         return ResponseEntity.ok(totallike_dislike );
     }
+    
+    // 버튼 활성화
+    @PostMapping("/{boardId}/buttonenable")
+    public ResponseEntity<?> enableButton(
+            @PathVariable(name = "boardId") Long boardId,
+            @AuthenticationPrincipal PrincipalDetails principalDetails) {
+    
+//        likeService.removeDislike(boardId, principalDetails.getMemberEntity().getId());
+    	String result = 	 likeService.findMemberLike_Dislike(boardId, principalDetails.getMemberEntity().getId());
+    	System.out.println("버튼활성화 상태 도착");
+    	return ResponseEntity.ok(result);
+    }
+    
+    
 }
