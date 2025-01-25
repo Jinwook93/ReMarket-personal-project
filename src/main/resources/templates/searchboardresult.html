@@ -109,7 +109,7 @@ tr:hover {
 </head>
 <body>
 	<div class="container">
-		<h1>게시판</h1>
+		<h1>게시판 (검색 결과)</h1>
 
 		
 
@@ -129,7 +129,7 @@ tr:hover {
 			</thead>
 			<tbody>
 				<!-- 게시글 데이터 반복 -->
-				<tr th:each="board : ${allBoards}">
+				<tr th:each="board : ${boards}">
 					<td th:text="${board.id}"></td>
 					<td th:text= "${board.category}"></td>
 					<td><a th:href="@{/board/view/{id}(id=${board.id})}" th:text="${board.title}"></a></td>
@@ -163,7 +163,7 @@ tr:hover {
 		<div class="search-container" align="center">
 			<form action="/search/board/result" method="get">
 				<!-- 카테고리 1 선택 -->
-				<select name="category1" >
+				<select name="category1">
 					<option value="">카테고리 선택</option>
 					<option value="예제A">예제A</option>
 					<option value="예제B">예제B</option>

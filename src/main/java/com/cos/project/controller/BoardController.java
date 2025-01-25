@@ -7,6 +7,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.cos.project.details.PrincipalDetails;
 import com.cos.project.dto.BoardDTO;
 import com.cos.project.entity.BoardEntity;
+import com.cos.project.entity.Category;
 import com.cos.project.entity.CommentEntity;
 import com.cos.project.entity.MemberEntity;
 import com.cos.project.repository.BoardLikeRepository;
@@ -18,6 +19,8 @@ import com.cos.project.service.MemberService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import net.bytebuddy.description.modifier.EnumerationState;
 
 import java.io.File;
 import java.io.IOException;
@@ -128,6 +131,7 @@ public String writeBoard(Model model, @AuthenticationPrincipal PrincipalDetails 
 public String writeBoard(@RequestParam(name = "title") String title, 
                          @RequestParam(name = "name") String name, 
                          @RequestParam(name = "userid") String userid, 
+                         @RequestParam(name = "category") String category,
                          @RequestParam(name = "boardFiles", required = false) MultipartFile[] boardFiles,
                          @RequestParam(name = "contents") String contents) throws IOException {
 
@@ -155,10 +159,13 @@ public String writeBoard(@RequestParam(name = "title") String title,
     // JSON 변환
     String boardFileJson = objectMapper.writeValueAsString(boardFilePath);
 
-
+    //String 타입, Enum으로 형변환
+    Category category_enum = Category.valueOf(category);
+    
     // BoardEntity 생성 및 저장
     BoardEntity boardEntity = BoardEntity.builder()
             .title(title)
+            .category(category_enum)
             .contents(contents)
             .boardFiles(boardFileJson)
             .build();
