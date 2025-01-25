@@ -38,7 +38,14 @@ $('#submitComment').click(function () {
             commentElement.classList.add('comment');
             commentElement.id = `comment-${data.id}`;
             commentElement.innerHTML = `
-                <p class="comment-author">${data.memberEntity.name}</p>
+                        <div style="display: flex; align-items: center;">
+                   ${data.memberEntity.profileImage != null
+							? `<img src="${data.memberEntity.profileImage}" loading="lazy" alt="Profile Image Preview" style="width: 50px; height: 50px; margin-right: 10px;">`
+							: `<img src="/boardimage/nullimage.jpg" loading="lazy" alt="Profile Image Preview" style="width: 50px; height: 50px; margin-right: 10px;">`
+						}
+
+                        <span>${data.memberEntity.name}</span>
+                     </div>
                 <p class="comment-text">${data.content}</p>
                 <p class="comment-createTime">${data.createTime}</p>
             `;

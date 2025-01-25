@@ -47,9 +47,18 @@
 <input type="file" id="profileImage" name="profileImage" required>
 
 <!-- 이미지 미리보기 -->
+	<div th:if="${member.profileImage != null}">
         <div id="imagePreview" style="margin-top: 10px;">
             <img id="previewImage" th:src="@{{imagePath}(imagePath=${member.profileImage})}" alt="Profile Image Preview" style="display: block; width: 100px; height: 100px;">
         </div>
+        </div>
+      
+   	<div th:if="${member.profileImage == null}">
+        <div id="imagePreview" style="margin-top: 10px;">
+            <img id="previewImage" src="/boardimage/nullimage.jpg" alt="no profile image" style="display: block; width: 100px; height: 100px;">
+        </div>
+        </div>     
+        
 <br>
 
 <!--         나이 -->

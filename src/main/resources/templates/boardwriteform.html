@@ -73,11 +73,21 @@
  <label for="name">작성자</label>
 <div style="display: flex; align-items: center;">
     <!-- 프로필 이미지 -->
+    
+    <div th:if="${profileImage!=null}">
     <img th:src="@{${profileImage}}" loading="lazy" alt="Profile Image Preview" style="width: 50px; height: 50px; margin-right: 10px;">
+    </div>
+        <div th:if="${profileImage==null}">
+    <img src="/boardimage/nullimage.jpg" loading="lazy" alt="no image" style="width: 50px; height: 50px; margin-right: 10px;">
+    </div>
     <!-- 이름 -->
     <span th:text="${name}" ></span>
         <input type="hidden" name="name", id ="name" th:value="${name}"/>
     <input type="hidden" name="userid", id ="userid" th:value="${userid}"/>
+    
+    
+    
+    
 </div>
             
             
@@ -91,13 +101,13 @@
 
 <!-- <br> -->
               
-<!--             <select id="member_id" name="member_id" required> -->
-<!--                 <option value="">작성자를 선택하세요</option> -->
+            <select id="category" name="category" required>
+                <option value="">품목을 선택하세요</option>
 <!--                 서버에서 작성자 목록을 동적으로 채워야 함 -->
-<!--                 <option value="1">작성자 1</option> -->
-<!--                 <option value="2">작성자 2</option> -->
-<!--                 <option value="3">작성자 3</option> -->
-<!--             </select> -->
+                <option value="exA">예제A</option>
+                <option value="exB">예제B</option>
+                <option value="exC">예제C</option>
+            </select>
 
 
 

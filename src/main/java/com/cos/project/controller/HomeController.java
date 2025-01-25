@@ -185,14 +185,21 @@ public class HomeController {
 		System.out.println("성별"+memberEntity.getGender());
 		System.out.println("이미지 : "+memberEntity.getProfileImage());
 //		System.out.println("이미지2 : "+memberService.convertByteArrayToString(memberEntity.getProfileImage()));		Base64
+		
+		
+		if(memberEntity.getProfileImage() != null) {
 		memberEntity.setProfileImage(memberEntity.getProfileImage().replace("\\", "/"));
 		System.out.println("수정된 이미지 : "+memberEntity.getProfileImage());
+		}
+		
+		
+		
 		if(memberEntity == null) {
 			model.addAttribute("message", "사용자 정보를 조회할 수 없습니다");
 		}
 		else {
-			
 			model.addAttribute("member", memberEntity);
+			System.out.println("이미지는 null이다");
 		}
 	
 		
@@ -204,7 +211,9 @@ public class HomeController {
 	@GetMapping("/updatemypage/{id}")
 	public String goUpdatemyPage(@PathVariable("id") Long id, Model model, @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		MemberEntity memberEntity = principalDetails.getMemberEntity();
+		if(memberEntity.getProfileImage() != null) {
 		memberEntity.setProfileImage(memberEntity.getProfileImage().replace("\\", "/"));
+		}
 		if(memberEntity == null) {
 			model.addAttribute("message", "사용자 정보를 조회할 수 없습니다");
 		}

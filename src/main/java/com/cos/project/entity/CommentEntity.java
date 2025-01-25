@@ -38,7 +38,7 @@ public class CommentEntity {
 	
 	String content;
 	
-	@ManyToOne(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "board_id")
 	@JsonBackReference("board-comments")
 	private BoardEntity boardEntity;

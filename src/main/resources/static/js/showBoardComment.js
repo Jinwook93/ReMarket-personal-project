@@ -1,3 +1,6 @@
+import { deleteComment } from "./deleteComment.js";
+import { updateComment } from "./updateComment.js";
+
 document.addEventListener('DOMContentLoaded', function() {
 	let memberUserid = document.getElementById("userid").value;
 
@@ -29,8 +32,12 @@ document.addEventListener('DOMContentLoaded', function() {
 					commentElement.classList.add('comment');
 					commentElement.id = `comment-${comment.id}`;
 					commentElement.innerHTML = `
-                     <div style="display: flex; align-items: center;">
-                        <img src="${comment.memberEntity.profileImage}" loading="lazy" alt="Profile Image Preview" style="width: 50px; height: 50px; margin-right: 10px;">
+                          <div style="display: flex; align-items: center;">
+                   ${comment.memberEntity.profileImage != null
+							? `<img src="${comment.memberEntity.profileImage}" loading="lazy" alt="Profile Image Preview" style="width: 50px; height: 50px; margin-right: 10px;">`
+							: `<img src="/boardimage/nullimage.jpg" loading="lazy" alt="Profile Image Preview" style="width: 50px; height: 50px; margin-right: 10px;">`
+						}
+
                         <span>${comment.memberEntity.name}</span>
                      </div>
                     ${comment.memberEntity.userid !== principalDetails ?
@@ -44,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     `;
 
 					// 수정 및 삭제 버튼 추가
-					if ((memberUserid === principalDetails) || (comment.memberEntity.userid === principalDetails)) {
+					if (comment.memberEntity.userid === principalDetails) {
 						const updateButton = document.createElement('button');
 						updateButton.textContent = '수정하기';
 						updateButton.addEventListener('click', () => updateComment(comment.id, comment.content));

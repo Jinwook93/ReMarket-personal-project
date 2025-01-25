@@ -59,7 +59,7 @@ public class BoardEntity {
     @JsonIncludeProperties({"id","name","profileImage"})
     private MemberEntity memberEntity; 
     
-    @OneToMany(mappedBy = "boardEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "boardEntity", cascade =  CascadeType.REMOVE, orphanRemoval = true)
     @JsonManagedReference("board-comments")
     private List<CommentEntity> comments = new ArrayList<>();
     

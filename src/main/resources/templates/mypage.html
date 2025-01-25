@@ -26,11 +26,28 @@
 
             <label for="name">작성자</label> 
              <div style="display: flex; align-items: center;">
+             <div th:if="${member.profileImage!=null}">
         <!-- 프로필 이미지 -->
         <img th:src="@{{imagePath}(imagePath=${member.profileImage})}" loading="lazy" alt="Profile Image Preview" style="width: 50px; height: 50px; margin-right: 10px;">
+        	</div>
+         <div th:if="${member.profileImage==null}">
+        <!-- 프로필 이미지 -->
+        <img src="/boardimage/nullimage.jpg" alt="첨부 파일 없음" style="display: block; width: 50px; height: 50px;">
+<!--             <p>첨부 파일이 없습니다.</p> -->
+        	</div>
         <!-- 이름 -->
         <span th:text="${member.name}"></span>
     </div>
+
+
+
+
+
+
+
+
+
+
 
 
 

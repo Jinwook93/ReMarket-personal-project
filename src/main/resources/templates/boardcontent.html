@@ -116,7 +116,19 @@
      <label for="name">작성자</label> 
              <div style="display: flex; align-items: center;">
         <!-- 프로필 이미지 -->
-        <img th:src="@{{imagePath}(imagePath=${board.memberEntity.profileImage})}" loading="lazy" alt="Profile Image Preview" style="width: 100px; height: 100px; margin-right: 10px;">
+        <div th:if="${board.memberEntity.profileImage != null}">
+        <div id="imagePreview" style="margin-top: 10px;">
+            <img id="previewImage" th:src="@{{imagePath}(imagePath=${board.memberEntity.profileImage})}" alt="Profile Image Preview" style="display: block; width: 50px; height: 50px; margin-right:10px;">
+        </div>
+        </div>
+      
+   	<div th:if="${board.memberEntity.profileImage == null}">
+        <div id="imagePreview" style="margin-top: 10px;">
+            <img id="previewImage" src="/boardimage/nullimage.jpg" alt="no profile image" style="display: block; width: 50px; height: 50px;margin-right:10px;">
+        </div>
+        </div>     
+        
+        
         <!-- 이름 -->
         <span th:text="${board.memberEntity.name}"></span>
     </div>
@@ -128,7 +140,7 @@
         
         <!-- 작성자 아이디 (hidden) -->
         <input type="hidden" th:value="${board.memberEntity.userid}" id="userid" name="userid">
-         <input type="hidden" th:value="${board.memberEntity.id}" id="id" name="id">
+         <input type="hidden" th:value="${board.memberEntity.id}" id="memberid" name="memberid">
         
         
 <div th:if="${board.memberEntity.userid != principalDetails.name}">
