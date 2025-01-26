@@ -1,7 +1,10 @@
 package com.cos.project.service;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,7 +98,7 @@ public class BoardService {
 	@Transactional
 	public List<BoardEntity> searchContents(String searchindex) { // 검색하기
 
-		List<BoardEntity> result = boardRepository.searchResult(searchindex);
+		List<BoardEntity> result = boardRepository.searchResult(searchindex).orElse(new ArrayList<>());
 
 		return result;
 
@@ -125,21 +128,37 @@ public class BoardService {
 	}
 
 	public List<BoardEntity> searchBoard(String category1, String category2, String search) {
-		List<BoardEntity> searchresult = new ArrayList<BoardEntity>();
-		Category category = Category.valueOf(category1);
-		System.out.println("검색창도착2");
-		if (category2.equals("title")) {
-			searchresult = boardRepository.findByCategoryAndTitleAndsearch(category, search);
-		} else if (category2.equals("contents")) {
-			searchresult = boardRepository.findByCategoryAndContentsAndsearch(category, search);
-		} else if (category2.equals("userid")) {
-			searchresult = boardRepository.findByCategoryAndUseridAndsearch(category, search);
-		} else if (category2.equals("name")) {
-			searchresult = boardRepository.findByCategoryAndNameAndsearch(category, search);
-		}
-		System.out.println("검색창도착3");
-		
-		return searchresult;
+	    List<BoardEntity> searchresult = new ArrayList<>();
+
+	    System.out.println("검색창도착2");
+
+	    if (category1.equals("")) {
+	        if (category2.equals("title")) {
+	            searchresult = boardRepository.searchResult(search).orElse(new ArrayList<>());
+	        } else if (category2.equals("contents")) {
+	            searchresult = boardRepository.searchContentsResult(search).orElse(new ArrayList<>());
+	        } else if (category2.equals("userid")) {
+	            searchresult = boardRepository.searchMemberUseridResult(search).orElse(new ArrayList<>());
+	        } else if (category2.equals("name")) {
+	            searchresult = boardRepository.searchMembernameResult(search).orElse(new ArrayList<>());
+	        }
+	    } else {
+	        Category category = Category.valueOf(category1);
+	        if (category2.equals("title")) {
+	            searchresult = boardRepository.findByCategoryAndTitleAndsearch(category, search).orElse(new ArrayList<>());
+	        } else if (category2.equals("contents")) {
+	            searchresult = boardRepository.findByCategoryAndContentsAndsearch(category, search).orElse(new ArrayList<>());
+	        } else if (category2.equals("userid")) {
+	            searchresult = boardRepository.findByCategoryAndUseridAndsearch(category, search).orElse(new ArrayList<>());
+	        } else if (category2.equals("name")) {
+	            searchresult = boardRepository.findByCategoryAndNameAndsearch(category, search).orElse(new ArrayList<>());
+	        }
+	    }
+
+	    System.out.println("검색창도착3");
+
+	    return searchresult;
 	}
+
 
 }

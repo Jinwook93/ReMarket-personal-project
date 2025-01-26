@@ -106,6 +106,13 @@
         <label for="title">글 번호</label>
         <input type="text" th:value="${board.id}" id="id" name="id" readonly>
         
+        <label for="category">품목</label>
+  <input type="text" th:value="${board.category}" id="category" name="category" readonly>
+  
+    <label for="category">등록일</label>
+  <input type="text" th:value="${#dates.format(board.createTime, 'yyyy-MM-dd HH:mm')}" id="createTime" name="createTime" readonly>
+        
+        
         <!-- 제목 입력 -->
         <label for="title">제목</label>
         <input type="text" th:value="${board.title}" id="title" name="title" placeholder="제목을 입력하세요" readonly>

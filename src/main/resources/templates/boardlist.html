@@ -113,8 +113,13 @@ tr:hover {
 
 		
 
-		<!-- 글쓰기 버튼 -->
-		<a href="/board/writeboard" class="write-btn" >글쓰기</a>
+<!-- 글쓰기 버튼 -->
+<div class="button-container">
+    <a href="/board/writeboard" class="write-btn">글쓰기</a>
+    <button type="button" onclick="window.location.href = '/board/allboard'" class="reset-btn">초기화</button>
+</div>
+
+
 
 		<table style="margin-bottom:20px;">
 			<thead>
@@ -164,14 +169,14 @@ tr:hover {
 			<form action="/search/board/result" method="get">
 				<!-- 카테고리 1 선택 -->
 				<select name="category1" >
-					<option value="">카테고리 선택</option>
+					<option value="">모든 카테고리</option>
 					<option value="예제A">예제A</option>
 					<option value="예제B">예제B</option>
 					<option value="예제C">예제C</option>
 				</select>
 				
 				<!-- 카테고리 2 선택 -->
-				<select name="category2">
+				<select name="category2" required>
 					<option value="">항목을 선택하세요</option>
 					<option value="title">제목</option>
 					<option value="userid">작성자 아이디</option>
@@ -199,5 +204,35 @@ tr:hover {
 			<a th:href="@{/board/list(page=3)}" th:text="'3'"></a>
 		</div>
 	</div>
+	
+	
+	
+	
+	
+	
+	<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const searchForm = document.querySelector("form[action='/search/board/result']");
+    searchForm.addEventListener("submit", function(event) {
+    	
+//         const category1 = searchForm.querySelector("select[name='category1']").value.trim();
+        const category2 = searchForm.querySelector("select[name='category2']").value.trim();
+        const search = searchForm.querySelector("input[name='search']").value.trim();
+
+        if (category2 === "" && search === "") {
+            alert("검색 조건을 입력해주세요.");
+            event.preventDefault(); // 폼 제출 중단
+        } else if (category2 === "") {
+            alert("항목을 선택해주세요.");
+            event.preventDefault(); // 폼 제출 중단
+        } else if (search === "") {
+            alert("검색어를 입력해주세요.");
+            event.preventDefault(); // 폼 제출 중단
+        }
+    });
+});
+</script>
+	
+	
 </body>
 </html>
