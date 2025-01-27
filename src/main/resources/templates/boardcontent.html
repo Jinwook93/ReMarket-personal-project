@@ -1,260 +1,286 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>게시글 작성</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 20px;
-            background-color: #f9f9f9;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-        form {
-            display: flex;
-            flex-direction: column;
-        }
-        label {
-            margin-top: 10px;
-            font-weight: bold;
-        }
-        input, textarea, select {
-            margin-top: 5px;
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        textarea {
-            height: 150px;
-            resize: none;
-        }
-        button {
-            margin-top: 20px;
-            padding: 10px;
-            font-size: 16px;
-            color: #fff;
-            background-color: #007bff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        .comment-section {
-            margin-top: 40px;
-            border-top: 2px solid #ddd;
-            padding-top: 20px;
-        }
-        .comment {
-            margin-bottom: 15px;
-            padding: 10px;
-            background-color: #f1f1f1;
-            border-radius: 4px;
-        }
-        .comment-author {
-            font-weight: bold;
-        }
-        .comment-text {
-            margin-top: 5px;
-        }
-        #like.active {
-    background-color: red;; /* 좋아요 버튼 활성화 시 배경색 (예: 연한 빨간색) */
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>게시글 작성</title>
+<style>
+body {
+	font-family: Arial, sans-serif;
+	line-height: 1.6;
+	margin: 0;
+	padding: 20px;
+	background-color: #f9f9f9;
+}
+
+.container {
+	max-width: 600px;
+	margin: 0 auto;
+	background: #fff;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+	text-align: center;
+	color: #333;
+}
+
+form {
+	display: flex;
+	flex-direction: column;
+}
+
+label {
+	margin-top: 10px;
+	font-weight: bold;
+}
+
+input, textarea, select {
+	margin-top: 5px;
+	padding: 10px;
+	font-size: 16px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+textarea {
+	height: 150px;
+	resize: none;
+}
+
+button {
+	margin-top: 20px;
+	padding: 10px;
+	font-size: 16px;
+	color: #fff;
+	background-color: #007bff;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+button:hover {
+	background-color: #0056b3;
+}
+
+.comment-section {
+	margin-top: 40px;
+	border-top: 2px solid #ddd;
+	padding-top: 20px;
+}
+
+.comment {
+	margin-bottom: 15px;
+	padding: 10px;
+	background-color: #f1f1f1;
+	border-radius: 4px;
+}
+
+.comment-author {
+	font-weight: bold;
+}
+
+.comment-text {
+	margin-top: 5px;
+}
+
+#like.active {
+	background-color: red;; /* 좋아요 버튼 활성화 시 배경색 (예: 연한 빨간색) */
 }
 
 #dislike.active {
-    background-color: red; /* 싫어요 버튼 활성화 시 배경색 (예: 연한 회색) */
+	background-color: red; /* 싫어요 버튼 활성화 시 배경색 (예: 연한 회색) */
 }
 
-        .commentlike.active {
-    background-color: red;; /* 좋아요 버튼 활성화 시 배경색 (예: 연한 빨간색) */
+.commentlike.active {
+	background-color: red;; /* 좋아요 버튼 활성화 시 배경색 (예: 연한 빨간색) */
 }
 
 .commentdislike.active {
-    background-color: red; /* 싫어요 버튼 활성화 시 배경색 (예: 연한 회색) */
+	background-color: red; /* 싫어요 버튼 활성화 시 배경색 (예: 연한 회색) */
 }
-        
-    </style>
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>게시글 작성</h1>
-        
-            <!--로그인 중인 유저 -->
-<!--         <label for="title">로그인 유저</label> -->
-        <input type="hidden" th:value="${principalDetails.name}" id="principalDetails" name="principalDetails" readonly>
-		
-        
-        <!-- 글 번호 -->
-        <label for="title">글 번호</label>
-        <input type="text" th:value="${board.id}" id="id" name="id" readonly>
-        
-        <label for="category">품목</label>
-  <input type="text" th:value="${board.category}" id="category" name="category" readonly>
-  
-    <label for="category">등록일</label>
-  <input type="text" th:value="${#dates.format(board.createTime, 'yyyy-MM-dd HH:mm')}" id="createTime" name="createTime" readonly>
-        
-        
-        <!-- 제목 입력 -->
-        <label for="title">제목</label>
-        <input type="text" th:value="${board.title}" id="title" name="title" placeholder="제목을 입력하세요" readonly>
-     
+	<div class="container">
+		<h1>게시글 작성</h1>
 
-        
-     <label for="name">작성자</label> 
-             <div style="display: flex; align-items: center;">
-        <!-- 프로필 이미지 -->
-        <div th:if="${board.memberEntity.profileImage != null}">
-        <div id="imagePreview" style="margin-top: 10px;">
-            <img id="previewImage" th:src="@{{imagePath}(imagePath=${board.memberEntity.profileImage})}" alt="Profile Image Preview" style="display: block; width: 50px; height: 50px; margin-right:10px;">
-        </div>
-        </div>
-      
-   	<div th:if="${board.memberEntity.profileImage == null}">
-        <div id="imagePreview" style="margin-top: 10px;">
-            <img id="previewImage" src="/boardimage/nullimage.jpg" alt="no profile image" style="display: block; width: 50px; height: 50px;margin-right:10px;">
-        </div>
-        </div>     
-        
-        
-        <!-- 이름 -->
-        <span th:text="${board.memberEntity.name}"></span>
-    </div>
-  
-<!--       첨부 파일 -->
-<!--             <label for="boardFile">첨부 파일</label> -->
-<!--             <input type ="file"  id="boardFile" name="boardFile" placeholder="내용을 입력하세요"  th:result=""/> -->
-  
-        
-        <!-- 작성자 아이디 (hidden) -->
-        <input type="hidden" th:value="${board.memberEntity.userid}" id="userid" name="userid">
-         <input type="hidden" th:value="${board.memberEntity.id}" id="memberid" name="memberid">
-        
-        
-<div th:if="${board.memberEntity.userid != principalDetails.name}">
-    <!-- If the logged-in user's `userid` is not the same as the board's owner, show Like and Dislike buttons -->
-    <div style="display: flex;">
-        <button type="button" id="like" name="like" th:text="'❤️ ' + ${board.totalLike}">
-            ❤️ Like
-        </button>
-        <button type="button" id="dislike" name="dislike" th:text="'🖤 ' + ${board.totalDislike}">
-            🖤 Dislike
-        </button>
-    </div>
-</div>
-
-<div th:unless="${board.memberEntity.userid != principalDetails.name}">
-    <!-- If the logged-in user's `userid` is the same as the board's owner, show Like and Dislike count only -->
-    <div style="display: flex;">
-        <p th:text="'좋아요 : ' + ${board.totalLike}">좋아요</p>
-        <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-        <p th:text="'싫어요 : ' + ${board.totalDislike}">싫어요</p>
-    </div>
-</div>
+		<!--로그인 중인 유저 -->
+		<!--         <label for="title">로그인 유저</label> -->
+		<input type="hidden" th:value="${principalDetails.name}"
+			id="principalDetails" name="principalDetails" readonly>
 
 
-        <br>    <br>  
-        <!-- 조회수 (disabled) -->
-        <label for="view">조회수</label>
-        <input type="text" th:value="${board.view}" id="view" name="view" disabled>
+		<!-- 글 번호 -->
+		<label for="title">글 번호</label> <input type="text"
+			th:value="${board.id}" id="id" name="id" readonly>
+			
+			<label
+			for="buy_Sell" >항목</label> <input type="text"
+			th:value="${board.buy_Sell}" id="buy_Sell" name="buy_Sell" readonly>
+			
+			 <label for="category">물품 종류</label>
+			  <input type="text" th:value="${board.category}" id="category" name="category" readonly>
+
+		<label for="createTime">등록일</label> <input type="text"
+			th:value="${#dates.format(board.createTime, 'yyyy-MM-dd HH:mm')}"
+			id="createTime" name="createTime" readonly>
+
+
+		<!-- 제목 입력 -->
+		<label for="title">제목</label> <input type="text"
+			th:value="${board.title}" id="title" name="title"
+			placeholder="제목을 입력하세요" readonly> <label for="name">작성자</label>
+		<div style="display: flex; align-items: center;">
+			<!-- 프로필 이미지 -->
+			<div th:if="${board.memberEntity.profileImage != null}">
+				<div id="imagePreview" style="margin-top: 10px;">
+					<img id="previewImage"
+						th:src="@{{imagePath}(imagePath=${board.memberEntity.profileImage})}"
+						alt="Profile Image Preview"
+						style="display: block; width: 50px; height: 50px; margin-right: 10px;">
+				</div>
+			</div>
+
+			<div th:if="${board.memberEntity.profileImage == null}">
+				<div id="imagePreview" style="margin-top: 10px;">
+					<img id="previewImage" src="/boardimage/nullimage.jpg"
+						alt="no profile image"
+						style="display: block; width: 50px; height: 50px; margin-right: 10px;">
+				</div>
+			</div>
+
+
+			<!-- 이름 -->
+			<span th:text="${board.memberEntity.name}"></span>
+		</div>
+
+		<!--       첨부 파일 -->
+		<!--             <label for="boardFile">첨부 파일</label> -->
+		<!--             <input type ="file"  id="boardFile" name="boardFile" placeholder="내용을 입력하세요"  th:result=""/> -->
+
+
+		<!-- 작성자 아이디 (hidden) -->
+		<input type="hidden" th:value="${board.memberEntity.userid}"
+			id="userid" name="userid"> <input type="hidden"
+			th:value="${board.memberEntity.id}" id="memberid" name="memberid">
+
+
+		<div th:if="${board.memberEntity.userid != principalDetails.name}">
+			<!-- If the logged-in user's `userid` is not the same as the board's owner, show Like and Dislike buttons -->
+			<div style="display: flex;">
+				<button type="button" id="like" name="like"
+					th:text="'❤️ ' + ${board.totalLike}">❤️ Like</button>
+				<button type="button" id="dislike" name="dislike"
+					th:text="'🖤 ' + ${board.totalDislike}">🖤 Dislike</button>
+			</div>
+		</div>
+
+		<div th:unless="${board.memberEntity.userid != principalDetails.name}">
+			<!-- If the logged-in user's `userid` is the same as the board's owner, show Like and Dislike count only -->
+			<div style="display: flex;">
+				<p th:text="'좋아요 : ' + ${board.totalLike}">좋아요</p>
+				<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+				<p th:text="'싫어요 : ' + ${board.totalDislike}">싫어요</p>
+			</div>
+		</div>
+		<!-- 물품명 입력 -->
+        <label for="product">물품</label>
+        <input type="text" th:value="${board.product}" id="product" name="product" placeholder="물건명을 입력하세요" readonly>
         
-<label for="boardFiles">첨부 파일</label>
-<div style="display: flex; flex-direction: row; flex-wrap: wrap; margin-top: 10px;">
-<!--     boardFiles 배열이 비어 있지 않은 경우 -->
-    <div th:if="${boardFiles != null and boardFiles.length > 0}" th:each="file : ${boardFiles}">
-        <div style="margin-right: 10px; margin-bottom: 10px;">
-            <a th:href="@{${file}}">
-                <img th:src="@{${file}}" alt="첨부 파일 미리보기" loading="lazy"
-                     style="display: block; width: 100px; height: 100px;">
-            </a>
-            
-            <a th:href="@{${file}}" download>다운로드</a>
-        </div>
-    </div>
+  <!-- 가격 입력 -->
+        <label for="title">가격</label>
+        <input type="text" th:value="${board.price}" id="price" name="price" placeholder="가격을 입력하세요" readonly>
 
-<!--     boardFiles 배열이 비어 있는 경우 -->
-    <div th:if="${boardFiles == null or boardFiles.length == 0}">
-        <div style="margin-right: 10px; margin-bottom: 10px;">
-            <img src="/boardimage/nullimage.jpg" alt="첨부 파일 없음"
-                 style="display: block; width: 100px; height: 100px;">
-            <p>첨부 파일이 없습니다.</p>
-        </div>
-    </div>
-</div>
+		<br> <br>
+		<!-- 조회수 (disabled) -->
+		<label for="view">조회수</label> <input type="text"
+			th:value="${board.view}" id="view" name="view" disabled> <label
+			for="boardFiles">첨부 파일</label>
+		<div
+			style="display: flex; flex-direction: row; flex-wrap: wrap; margin-top: 10px;">
+			<!--     boardFiles 배열이 비어 있지 않은 경우 -->
+			<div th:if="${boardFiles != null and boardFiles.length > 0}"
+				th:each="file : ${boardFiles}">
+				<div style="margin-right: 10px; margin-bottom: 10px;">
+					<a th:href="@{${file}}"> <img th:src="@{${file}}"
+						alt="첨부 파일 미리보기" loading="lazy"
+						style="display: block; width: 100px; height: 100px;">
+					</a> <a th:href="@{${file}}" download>다운로드</a>
+				</div>
+			</div>
 
-
-        
-        <!-- 내용 입력 -->
-        <label for="contents">내용</label>
-        <textarea id="contents" th:text="${board.contents}" name="contents" placeholder="내용을 입력하세요" required readonly></textarea>
-        
-	
-            <!-- boardFiles 배열을 반복하여 이미지를 출력 -->
-           
-
-        
-        
-        <!-- 수정/삭제 버튼 (조건부 표시) -->
-        <div th:if="${board.memberEntity.userid == principalDetails.name}">
-<!--             <button type="button" id="updateBoard"  onClick= "goUpdateForm()">수정하기</button>								전역스 코프로 처리하는 법 -->			
- <button type="button" id="updateBoard" >수정하기</button>
-            <button type="button" id="deleteBoard">삭제하기</button>
-        </div>
-
-        <!-- 댓글 작성 폼 -->
-        <div class="comment-section">
-            <h2>댓글</h2>
-<!--             <form id="commentForm"> -->
-                <label for="commentText">댓글 작성</label>
-                <textarea id="commentText" name="commentText" placeholder="댓글을 작성하세요" required></textarea>
-                <button type="button" id="submitComment">댓글 작성</button>
-<!--             </form> -->
-
-            <!-- 댓글 목록 -->
-            <div id="commentsList">
-<!--                 <div  class="comment"> -->
-<!--                     <p class="comment-author">홍길동</p> -->
-<!--                     <p class="comment-text">이것은 댓글 예시입니다.</p> -->
-<!--                 </div> -->
-                <!-- 다른 댓글이 여기에 추가됩니다. -->
-            </div>
-        </div>
-    </div>
-
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-
-<script src="/js/updateComment.js" type="module"></script>
-<script src="/js/deleteComment.js" type="module"></script>
-<script src="/js/deleteBoard.js" type="text/javascript"></script>
- <script src="/js/goUpdateBoardForm.js" type="module"></script> 
-<!-- <script type="module"> -->
-<!--     import { goUpdateForm } from '/js/goUpdateForm.js';			//모듈형추천 -->
-
-<!--     document.getElementById('updateBoard').addEventListener('click', goUpdateForm); -->
-<!-- </script> -->
+			<!--     boardFiles 배열이 비어 있는 경우 -->
+			<div th:if="${boardFiles == null or boardFiles.length == 0}">
+				<div style="margin-right: 10px; margin-bottom: 10px;">
+					<img src="/boardimage/nullimage.jpg" alt="첨부 파일 없음"
+						style="display: block; width: 100px; height: 100px;">
+					<p>첨부 파일이 없습니다.</p>
+				</div>
+			</div>
+		</div>
 
 
-<script src="/js/showBoardComment.js" type="module"></script>
-<script src="/js/addBoardComment.js" type="module"></script>
-<script src="/js/likeButton.js" type="module"></script>
+
+		<!-- 내용 입력 -->
+		<label for="contents">내용</label>
+		<textarea id="contents" th:text="${board.contents}" name="contents"
+			placeholder="내용을 입력하세요" required readonly></textarea>
+
+
+		<!-- boardFiles 배열을 반복하여 이미지를 출력 -->
+
+
+
+
+		<!-- 수정/삭제 버튼 (조건부 표시) -->
+		<div th:if="${board.memberEntity.userid == principalDetails.name}">
+			<!--             <button type="button" id="updateBoard"  onClick= "goUpdateForm()">수정하기</button>								전역스 코프로 처리하는 법 -->
+			<button type="button" id="updateBoard">수정하기</button>
+			<button type="button" id="deleteBoard">삭제하기</button>
+		</div>
+
+		<!-- 댓글 작성 폼 -->
+		<div class="comment-section">
+			<h2>댓글</h2>
+			<!--             <form id="commentForm"> -->
+			<label for="commentText">댓글 작성</label>
+			<textarea id="commentText" name="commentText" placeholder="댓글을 작성하세요"
+				required></textarea>
+			<button type="button" id="submitComment">댓글 작성</button>
+			<!--             </form> -->
+
+			<!-- 댓글 목록 -->
+			<div id="commentsList">
+				<!--                 <div  class="comment"> -->
+				<!--                     <p class="comment-author">홍길동</p> -->
+				<!--                     <p class="comment-text">이것은 댓글 예시입니다.</p> -->
+				<!--                 </div> -->
+				<!-- 다른 댓글이 여기에 추가됩니다. -->
+			</div>
+		</div>
+	</div>
+
+	<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+	<script src="/js/updateComment.js" type="module"></script>
+	<script src="/js/deleteComment.js" type="module"></script>
+	<script src="/js/deleteBoard.js" type="text/javascript"></script>
+	<script src="/js/goUpdateBoardForm.js" type="module"></script>
+	<!-- <script type="module"> -->
+	<!--     import { goUpdateForm } from '/js/goUpdateForm.js';			//모듈형추천 -->
+
+	<!--     document.getElementById('updateBoard').addEventListener('click', goUpdateForm); -->
+	<!-- </script> -->
+
+
+	<script src="/js/showBoardComment.js" type="module"></script>
+	<script src="/js/addBoardComment.js" type="module"></script>
+	<script src="/js/likeButton.js" type="module"></script>
 
 
 </body>

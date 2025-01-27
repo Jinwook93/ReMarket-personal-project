@@ -33,7 +33,6 @@ public interface BoardRepository extends JpaRepository<BoardEntity, Long>{
 
 	@Query(value = "SELECT b.* FROM board b JOIN member m ON b.member_id = m.id WHERE m.userid LIKE %:search%", nativeQuery = true)
 	Optional<List<BoardEntity>> searchMemberUseridResult(@Param("search") String search);
-
 	@Query(value = "SELECT b.* FROM board b JOIN member m ON b.member_id = m.id WHERE m.name LIKE %:search%", nativeQuery = true)
 	Optional<List<BoardEntity>> searchMembernameResult(@Param("search") String search);
 	

@@ -109,13 +109,21 @@ button:hover {
 		</div>
 		
 		
+		<label for="buy_Sell">항목</label> <select id="buy_Sell"
+				name="buy_Sell" required>
+				<option value="">항목을 선택하세요</option>
+				<!--                 서버에서 작성자 목록을 동적으로 채워야 함 -->
+				<option value="팝니다" th:selected="${board.buy_Sell == '팝니다'}">팝니다</option>
+				<option value="삽니다" th:selected="${board.buy_Sell ==  '삽니다'}">삽니다</option>
+			</select> 
 		
 		
 		
-		    <label for="category">항목</label> 
+		
+		    <label for="category">물품 종류</label> 
 			<select id="category" name="category">
 				<!-- 기본 선택 항목 -->
-				<option value="" th:if="${board.category == null}" selected>항목을
+				<option value="" th:if="${board.category == null}" selected>물품 종류를
 					선택하세요</option>
 
 				<!-- 예제 카테고리 목록 -->
@@ -123,7 +131,14 @@ button:hover {
 				<option value="예제B" th:selected="${board.category == '예제B'}">예제B</option>
 				<option value="예제C" th:selected="${board.category == '예제C'}">예제C</option>
 			</select>
-		
+			
+					<label for="price">물품명</label> 
+		<input type="text" id="product"
+				name="product" th:value="${board.product}" placeholder="물품명을 입력하세요" required />
+	
+		<label for="price">가격</label> 
+		<input type="text" id="price"
+				name="price" th:value="${board.price}" placeholder="가격을 입력하세요" required />
 		
 		
 		<!--             작성자 선택 -->

@@ -7,6 +7,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.cos.project.details.PrincipalDetails;
 import com.cos.project.dto.BoardDTO;
 import com.cos.project.entity.BoardEntity;
+import com.cos.project.entity.Buy_Sell;
 import com.cos.project.entity.Category;
 import com.cos.project.entity.CommentEntity;
 import com.cos.project.entity.MemberEntity;
@@ -130,8 +131,11 @@ public String writeBoard(Model model, @AuthenticationPrincipal PrincipalDetails 
 @PostMapping("/writeboard")
 public String writeBoard(@RequestParam(name = "title") String title, 
                          @RequestParam(name = "name") String name, 
+                         @RequestParam(name = "price") int price,
                          @RequestParam(name = "userid") String userid, 
                          @RequestParam(name = "category") String category,
+                         @RequestParam(name = "product") String product,
+                         @RequestParam(name = "buy_Sell") String buy_Sell,
                          @RequestParam(name = "boardFiles", required = false) MultipartFile[] boardFiles,
                          @RequestParam(name = "contents") String contents) throws IOException {
 
@@ -161,11 +165,15 @@ public String writeBoard(@RequestParam(name = "title") String title,
 
     //String 타입, Enum으로 형변환
     Category category_enum = Category.valueOf(category);
+    Buy_Sell buy_Sell_enum = Buy_Sell.valueOf(buy_Sell);
     
     // BoardEntity 생성 및 저장
     BoardEntity boardEntity = BoardEntity.builder()
             .title(title)
+            .price(price)
             .category(category_enum)
+            .product(product)
+            .buy_Sell(buy_Sell_enum)
             .contents(contents)
             .boardFiles(boardFileJson)
             .build();
@@ -278,6 +286,7 @@ public String goUpdateForm(@PathVariable(name = "id") Long id,  RedirectAttribut
 
 
 @PostMapping("/updateboard/{id}")
+@ResponseBody
 public String updateBoard(@PathVariable(name = "id") Long id,
                           @RequestPart(name = "boardData") String boardDataJson,
                           @RequestPart(value = "boardFiles", required = false) MultipartFile[] boardFiles,
@@ -315,8 +324,9 @@ public String updateBoard(@PathVariable(name = "id") Long id,
     boardService.updateContents(id, boardDTO, boardFileJson);
 
     // 리다이렉트 처리
-    redirectAttributes.addAttribute("id", id);
-    return "redirect:/board/view/{id}";
+  //  redirectAttributes.addAttribute("id", id);
+//    return "redirect:/board/view/{id}";
+    return "/board/view/"+id;
 }
 
 

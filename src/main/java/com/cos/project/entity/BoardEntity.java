@@ -53,6 +53,16 @@ public class BoardEntity {
     private String boardFiles;	// 첨부할 URL 추가
     
  
+    @Enumerated(EnumType.STRING)
+    private Buy_Sell buy_Sell;
+    
+    private String product;
+    
+    
+    private int price;
+    
+    
+    
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "member_id")
 //    @JsonBackReference("member-boards")

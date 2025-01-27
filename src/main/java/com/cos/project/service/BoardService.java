@@ -78,7 +78,11 @@ public class BoardService {
 		boardEntity.setTitle(boardDTO.getTitle());
 		boardEntity.setContents(boardDTO.getContents());
 		boardEntity.setBoardFiles(boardFiles);
-
+		boardEntity.setBuy_Sell(boardDTO.getBuy_Sell());
+		boardEntity.setPrice(boardDTO.getPrice());
+		boardEntity.setCategory(boardDTO.getCategory());
+		boardEntity.setProduct(boardDTO.getProduct());
+		
 		boardRepository.save(boardEntity);
 		System.out.println("게시글 수정이 완료되었습니다");
 		return "게시글 수정이 완료되었습니다";
@@ -127,11 +131,27 @@ public class BoardService {
 		return myboards;
 	}
 
-	public List<BoardEntity> searchBoard(String category1, String category2, String search) {
+	public List<BoardEntity> searchBoard(String buy_Sell, String category1, String category2, String search) {
 	    List<BoardEntity> searchresult = new ArrayList<>();
 
 	    System.out.println("검색창도착2");
 
+	    
+	    
+	    if(buy_Sell.equals("")) {
+	    	
+	    }
+	    else if (buy_Sell.equals("팝니다")) {
+	    	
+	    }   else if (buy_Sell.equals("삽니다")) {
+	    	
+	    }
+	    
+	    
+	    
+	    
+	    
+	    
 	    if (category1.equals("")) {
 	        if (category2.equals("title")) {
 	            searchresult = boardRepository.searchResult(search).orElse(new ArrayList<>());

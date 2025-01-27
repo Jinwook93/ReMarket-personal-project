@@ -3,6 +3,8 @@ package com.cos.project.dto;
 import java.sql.Timestamp;
 import java.util.List;
 
+import com.cos.project.entity.Buy_Sell;
+import com.cos.project.entity.Category;
 import com.cos.project.entity.CommentEntity;
 import com.cos.project.entity.MemberEntity;
 
@@ -26,4 +28,8 @@ public class BoardDTO {
 
     private MemberDTO member;         // 작성자 정보
     private List<CommentDTO> comments; // 댓글 리스트
+    private int price;
+    private Category category;
+    private Buy_Sell buy_Sell;
+    private String product;
 }

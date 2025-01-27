@@ -47,7 +47,7 @@ tr:hover {
 	background-color: #f1f1f1;
 }
 
-.write-btn {
+.write-btn, .reset-btn {
 	display: block;
 	width: 100px;
 	margin: 20px 0;
@@ -105,29 +105,78 @@ tr:hover {
 .search-container button:hover {
 	background-color: #0056b3;
 }
+
+/* 채팅창 스타일 */
+#chatBox {
+	display: none; /* 기본 상태 hidden */
+	position: fixed;
+	bottom: 20px;
+	right: 20px;
+	width: 300px;
+	height: 400px;
+	background: #fff;
+	border: 1px solid #ddd;
+	border-radius: 8px;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+	z-index: 1000;
+}
+
+#chatBox .header {
+	background: #007bff;
+	color: #fff;
+	padding: 10px;
+	text-align: center;
+	border-radius: 8px 8px 0 0;
+}
+
+#chatBox .content {
+	height: calc(100% - 60px);
+	overflow-y: auto;
+	padding: 10px;
+}
+
+#chatBox .footer {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	padding: 10px;
+	background: #f4f4f4;
+	border-radius: 0 0 8px 8px;
+}
+
+#chatBox .footer input {
+	width: calc(100% - 20px);
+	padding: 10px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+}
 </style>
 </head>
 <body>
 	<div class="container">
 		<h1>게시판</h1>
 
-		
-
-<!-- 글쓰기 버튼 -->
-<div class="button-container">
-    <a href="/board/writeboard" class="write-btn">글쓰기</a>
-    <button type="button" onclick="window.location.href = '/board/allboard'" class="reset-btn">초기화</button>
-</div>
 
 
+		<!-- 글쓰기 버튼 -->
+		<div class="button-container" style="display:flex;">
+			<a href="/board/writeboard" class="write-btn" >글쓰기</a>
+			<button type="button"
+				onclick="window.location.href = '/board/allboard'" class="reset-btn" style="color:white;background-color:green;margin-left : 30px;">초기화</button>
+		</div>
 
-		<table style="margin-bottom:20px;">
+
+
+		<table style="margin-bottom: 20px;">
 			<thead>
 				<tr>
 					<th>번호</th>
-					<th>항목</th>
+					<th>판매/구매</th>
+					<th>종류</th>
 					<th>제목</th>
 					<th>작성자</th>
+<!-- 					<th>상품명</th> -->
+					<th>가격</th>
 					<th>작성일</th>
 					<th>조회수</th>
 				</tr>
@@ -136,27 +185,45 @@ tr:hover {
 				<!-- 게시글 데이터 반복 -->
 				<tr th:each="board : ${allBoards}">
 					<td th:text="${board.id}"></td>
-					<td th:text= "${board.category}"></td>
-					<td><a th:href="@{/board/view/{id}(id=${board.id})}" th:text="${board.title}"></a></td>
+<!-- 					팝니다,삽니다 -->
+						<td th:text="${board.buy_Sell}"></td>
+					<td th:text="${board.category}"></td>
+					<td><a th:href="@{/board/view/{id}(id=${board.id})}"
+						th:text="${board.title}"></a></td>
 					<td>
-						<div style="display: flex; align-items: center;">
-							<!-- 프로필 이미지 -->
-							<div th:if="${board.memberEntity.profileImage != null}">
-								<div id="imagePreview" style="margin-top: 10px;">
-									<img id="previewImage" th:src="@{{imagePath}(imagePath=${board.memberEntity.profileImage})}" alt="Profile Image Preview" style="display: block; width: 50px; height: 50px; margin-right: 10px;">
+						<!-- 이름 -->
+						<div class="enterChatRoom" style="cursor: pointer;"
+							th:onClick="@{/chat/Chatroom/{id}(id=${board.id})}">
+
+							<div style="display: flex; align-items: center;">
+								<!-- 프로필 이미지 -->
+								<div th:if="${board.memberEntity.profileImage != null}">
+									<div id="imagePreview" style="margin-top: 10px;">
+										<img id="previewImage"
+											th:src="@{{imagePath}(imagePath=${board.memberEntity.profileImage})}"
+											alt="Profile Image Preview"
+											style="display: block; width: 50px; height: 50px; margin-right: 10px;">
+									</div>
 								</div>
+
+								<div th:if="${board.memberEntity.profileImage == null}">
+									<div id="imagePreview" style="margin-top: 10px;">
+										<img id="previewImage" src="/boardimage/nullimage.jpg"
+											alt="no profile image"
+											style="display: block; width: 50px; height: 50px; margin-right: 10px;">
+									</div>
+								</div>
+
+						
+								<span th:text="${board.memberEntity.name}"></span>
 							</div>
 
-							<div th:if="${board.memberEntity.profileImage == null}">
-								<div id="imagePreview" style="margin-top: 10px;">
-									<img id="previewImage" src="/boardimage/nullimage.jpg" alt="no profile image" style="display: block; width: 50px; height: 50px; margin-right: 10px;">
-								</div>
-							</div>
-							<!-- 이름 -->
-							<span th:text="${board.memberEntity.name}"></span>
 						</div>
 					</td>
-					<td th:text="${#dates.format(board.createTime, 'yyyy-MM-dd HH:mm')}"></td>
+<!-- 						<td th:text="${board.product}"></td> -->
+						<td th:text="${board.price}"></td>
+					<td
+						th:text="${#dates.format(board.createTime, 'yyyy-MM-dd HH:mm')}"></td>
 					<td th:text="${board.view}"></td>
 				</tr>
 			</tbody>
@@ -164,17 +231,34 @@ tr:hover {
 
 
 
-<!-- 검색창 -->
+		<!-- 검색창 -->
 		<div class="search-container" align="center">
+		
+		
+		
+		
 			<form action="/search/board/result" method="get">
+				<!-- 카테고리 0 선택 -->
+				<select name="buy_Sell">
+					<option value="">판매/구매</option>
+					<option value="팝니다">팝니다</option>
+					<option value="삽니다">삽니다</option>
+				</select>
+			
+			
+			
+			
+			
+			
+			
 				<!-- 카테고리 1 선택 -->
-				<select name="category1" >
+				<select name="category1">
 					<option value="">모든 카테고리</option>
 					<option value="예제A">예제A</option>
 					<option value="예제B">예제B</option>
 					<option value="예제C">예제C</option>
 				</select>
-				
+
 				<!-- 카테고리 2 선택 -->
 				<select name="category2" required>
 					<option value="">항목을 선택하세요</option>
@@ -183,8 +267,8 @@ tr:hover {
 					<option value="name">작성자 이름</option>
 					<option value="contents">내용</option>
 				</select>
-				
-				
+
+
 
 				<!-- 검색어 입력 -->
 				<input type="text" name="search" placeholder="검색어 입력" />
@@ -200,39 +284,80 @@ tr:hover {
 		<div class="pagination">
 			<!-- 페이지네이션 링크 예시 -->
 			<a th:href="@{/board/list(page=1)}" th:text="'1'" class="active"></a>
-			<a th:href="@{/board/list(page=2)}" th:text="'2'"></a>
-			<a th:href="@{/board/list(page=3)}" th:text="'3'"></a>
+			<a th:href="@{/board/list(page=2)}" th:text="'2'"></a> <a
+				th:href="@{/board/list(page=3)}" th:text="'3'"></a>
 		</div>
 	</div>
-	
-	
-	
-	
-	
-	
-	<script>
-document.addEventListener("DOMContentLoaded", function() {
-    const searchForm = document.querySelector("form[action='/search/board/result']");
-    searchForm.addEventListener("submit", function(event) {
-    	
-//         const category1 = searchForm.querySelector("select[name='category1']").value.trim();
-        const category2 = searchForm.querySelector("select[name='category2']").value.trim();
-        const search = searchForm.querySelector("input[name='search']").value.trim();
 
-        if (category2 === "" && search === "") {
-            alert("검색 조건을 입력해주세요.");
-            event.preventDefault(); // 폼 제출 중단
-        } else if (category2 === "") {
-            alert("항목을 선택해주세요.");
-            event.preventDefault(); // 폼 제출 중단
-        } else if (search === "") {
-            alert("검색어를 입력해주세요.");
-            event.preventDefault(); // 폼 제출 중단
-        }
-    });
-});
-</script>
-	
-	
+
+
+
+	<!-- 채팅창 -->
+	<div id="chatBox">
+		<div class="header">채팅</div>
+		<div class="content">
+			<p>채팅 내용이 여기에 표시됩니다.</p>
+		</div>
+		<div class="footer" style ="display: flex;">
+			<input type="text" placeholder="메시지를 입력하세요">
+			<button type = "button" style ="background-color:blue;color:white;"> 전송</button>		
+		</div>
+	</div>
+
+	<script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const chatBox = document.getElementById("chatBox");
+            const chatTriggers = document.querySelectorAll(".enterChatRoom");
+
+            chatTriggers.forEach(trigger => {
+                trigger.addEventListener("click", function () {
+                    if (chatBox.style.display === "none") {
+                        // 비동기로 필요한 데이터 로드 가능
+                        chatBox.style.display = "block";
+                    } else {
+                        chatBox.style.display = "none";
+                    }
+                });
+            });
+        });
+    </script>
+
+
+	<script>
+		document
+				.addEventListener(
+						"DOMContentLoaded",
+						function() {
+							const searchForm = document
+									.querySelector("form[action='/search/board/result']");
+							searchForm
+									.addEventListener(
+											"submit",
+											function(event) {
+
+												//         const category1 = searchForm.querySelector("select[name='category1']").value.trim();
+												const category2 = searchForm
+														.querySelector("select[name='category2']").value
+														.trim();
+												const search = searchForm
+														.querySelector("input[name='search']").value
+														.trim();
+
+												if (category2 === ""
+														&& search === "") {
+													alert("검색 조건을 입력해주세요.");
+													event.preventDefault(); // 폼 제출 중단
+												} else if (category2 === "") {
+													alert("항목을 선택해주세요.");
+													event.preventDefault(); // 폼 제출 중단
+												} else if (search === "") {
+													alert("검색어를 입력해주세요.");
+													event.preventDefault(); // 폼 제출 중단
+												}
+											});
+						});
+	</script>
+
+
 </body>
 </html>

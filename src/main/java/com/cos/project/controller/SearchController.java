@@ -27,13 +27,13 @@ public class SearchController {
 			private final MemberService memberService;
 				
 		@GetMapping("/board/result")
-		public String searchBoard(@RequestParam(name="category1") String category1, @RequestParam(name="category2") String category2,
+		public String searchBoard(@RequestParam(name="buy_Sell")String buy_Sell,@RequestParam(name="category1") String category1, @RequestParam(name="category2") String category2,
 				@RequestParam(name="search") String search, Model model){
 						
 				
 				
 			System.out.print("검색컨트롤러도착"+category1+"  " +category2+ "   "+ search);
-				List<BoardEntity> boardEntity = boardService.searchBoard(category1,category2,search);
+				List<BoardEntity> boardEntity = boardService.searchBoard(buy_Sell,category1,category2,search);
 			
 				
 					model.addAttribute("boards", boardEntity);
