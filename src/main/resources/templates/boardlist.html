@@ -14,7 +14,7 @@ body {
 }
 
 .container {
-	max-width: 800px;
+	max-width: 100%;
 	margin: 0 auto;
 	background: #fff;
 	padding: 20px;
@@ -159,10 +159,11 @@ tr:hover {
 
 
 		<!-- 글쓰기 버튼 -->
-		<div class="button-container" style="display:flex;">
-			<a href="/board/writeboard" class="write-btn" >글쓰기</a>
+		<div class="button-container" style="display: flex;">
+			<a href="/board/writeboard" class="write-btn">글쓰기</a>
 			<button type="button"
-				onclick="window.location.href = '/board/allboard'" class="reset-btn" style="color:white;background-color:green;margin-left : 30px;">초기화</button>
+				onclick="window.location.href = '/board/allboard'" class="reset-btn"
+				style="color: white; background-color: green; margin-left: 30px;">초기화</button>
 		</div>
 
 
@@ -175,18 +176,21 @@ tr:hover {
 					<th>종류</th>
 					<th>제목</th>
 					<th>작성자</th>
-<!-- 					<th>상품명</th> -->
+					<!-- 					<th>상품명</th> -->
 					<th>가격</th>
 					<th>작성일</th>
 					<th>조회수</th>
+					<th if="${principalDetails !=null}">수정/삭제/대화</th>
+
+
 				</tr>
 			</thead>
 			<tbody>
 				<!-- 게시글 데이터 반복 -->
 				<tr th:each="board : ${allBoards}">
 					<td th:text="${board.id}"></td>
-<!-- 					팝니다,삽니다 -->
-						<td th:text="${board.buy_Sell}"></td>
+					<!-- 					팝니다,삽니다 -->
+					<td th:text="${board.buy_Sell}"></td>
 					<td th:text="${board.category}"></td>
 					<td><a th:href="@{/board/view/{id}(id=${board.id})}"
 						th:text="${board.title}"></a></td>
@@ -214,17 +218,38 @@ tr:hover {
 									</div>
 								</div>
 
-						
+
 								<span th:text="${board.memberEntity.name}"></span>
 							</div>
 
 						</div>
 					</td>
-<!-- 						<td th:text="${board.product}"></td> -->
-						<td th:text="${board.price}"></td>
+					<!-- 						<td th:text="${board.product}"></td> -->
+					<td th:text="${board.price}"></td>
 					<td
 						th:text="${#dates.format(board.createTime, 'yyyy-MM-dd HH:mm')}"></td>
 					<td th:text="${board.view}"></td>
+
+
+					<!-- 수정/삭제 버튼 (조건부 표시) -->
+					<td th:if="${board.memberEntity.userid == principalDetails.name}">
+						<div style="display: flex;">
+							<!--             <button type="button" id="updateBoard"  onClick= "goUpdateForm()">수정하기</button>								전역스 코프로 처리하는 법 -->
+							<button type="button" th:id="|updateBoard-${board.id}|"
+								th:onclick="'window.location.href=\'/board/updateboard/' + ${board.id} + '\';'">
+								수정</button>
+
+							<button type="button" th:id="|deleteBoard-${board.id}|"
+								th:data-deleteBoardId="${board.id}">삭제</button>
+						</div>
+					</td>
+					<td
+						th:unless="${board.memberEntity.userid == principalDetails.name}">
+						<button type="button" th:id="|chatBoard-${board.id}|">대화하기</button>
+
+					</td>
+
+
 				</tr>
 			</tbody>
 		</table>
@@ -233,24 +258,25 @@ tr:hover {
 
 		<!-- 검색창 -->
 		<div class="search-container" align="center">
-		
-		
-		
-		
+
+
+
+
 			<form action="/search/board/result" method="get">
 				<!-- 카테고리 0 선택 -->
 				<select name="buy_Sell">
 					<option value="">판매/구매</option>
 					<option value="팝니다">팝니다</option>
 					<option value="삽니다">삽니다</option>
+					<option value="거래완료">거래완료</option>
 				</select>
-			
-			
-			
-			
-			
-			
-			
+
+
+
+
+
+
+
 				<!-- 카테고리 1 선택 -->
 				<select name="category1">
 					<option value="">모든 카테고리</option>
@@ -298,12 +324,14 @@ tr:hover {
 		<div class="content">
 			<p>채팅 내용이 여기에 표시됩니다.</p>
 		</div>
-		<div class="footer" style ="display: flex;">
+		<div class="footer" style="display: flex;">
 			<input type="text" placeholder="메시지를 입력하세요">
-			<button type = "button" style ="background-color:blue;color:white;"> 전송</button>		
+			<button type="button" style="background-color: blue; color: white;">
+				전송</button>
 		</div>
 	</div>
-
+	
+ <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script>
         document.addEventListener("DOMContentLoaded", function () {
             const chatBox = document.getElementById("chatBox");
@@ -357,6 +385,39 @@ tr:hover {
 											});
 						});
 	</script>
+	<script>
+	
+	document.addEventListener("DOMContentLoaded", function () {
+	    // 모든 삭제 버튼에 대해 이벤트 리스너 추가
+	    document.querySelectorAll("[id^='deleteBoard-']").forEach(function (button) {
+	        button.addEventListener("click", function () {
+	        	const boardId =this.getAttribute("data-deleteBoardId");
+					// 버튼에 설정된 board.id 가져오기
+					console.log("보드아이디"+boardId);
+	            if (confirm("정말로 이 게시글을 삭제하시겠습니까?")) { // 삭제 확인 팝업
+	                // AJAX 요청
+	                $.ajax({
+	                    url: `/board/deleteboard/${boardId}`, // 삭제 API 경로
+	                    type: "DELETE", // HTTP 메서드
+	                    contentType: "application/json", // 요청 Content-Type
+	                    success: function (response) {
+	                        alert("게시글이 삭제되었습니다.");
+	                        window.location.href = "/"; // 성공 시 리다이렉트 경로 설정
+	                    },
+	                    error: function (xhr, status, error) {
+	                        alert("게시글이 삭제되지 않았습니다. 다시 시도해주세요.");
+	                        console.error("Error:", error);
+	                    }
+	                });
+	            }
+	        });
+	    });
+	});
+
+
+
+</script>
+
 
 
 </body>

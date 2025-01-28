@@ -25,4 +25,11 @@ public interface CommentLikeRepository extends JpaRepository<CommentLikeEntity, 
 
 	    @Query("SELECT c FROM CommentLikeEntity c WHERE c.commentEntity.id = :comment_id AND c.flag = :flag")
 	    List<CommentLikeEntity> findByCommentId(@Param("comment_id") Long comment_id, @Param("flag") boolean flag);
+
+	    @Modifying
+	    @Transactional
+	    @Query("DELETE FROM CommentLikeEntity c WHERE c.commentEntity.id = :comment_id")
+	    void deleteByCommentId(@Param("comment_id") Long comment_id);
+
+
 }

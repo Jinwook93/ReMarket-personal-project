@@ -20,8 +20,10 @@ import org.springframework.ui.Model;
 import com.cos.project.details.PrincipalDetails;
 import com.cos.project.dto.BoardDTO;
 import com.cos.project.entity.BoardEntity;
+import com.cos.project.entity.BoardLikeEntity;
 import com.cos.project.entity.Category;
 import com.cos.project.entity.MemberEntity;
+import com.cos.project.repository.BoardLikeRepository;
 import com.cos.project.repository.BoardRepository;
 
 import jakarta.servlet.http.HttpSession;
@@ -32,12 +34,15 @@ public class BoardService {
 
 	private final BoardRepository boardRepository;
 
+	private final BoardLikeRepository boardLikeRepository;
 	@Autowired
 	private AuthenticationManager authenticationManager;
+	
 
 	@Autowired
-	public BoardService(BoardRepository boardRepository) {
+	public BoardService(BoardRepository boardRepository, BoardLikeRepository boardLikeRepository) {
 		this.boardRepository = boardRepository;
+		this.boardLikeRepository = boardLikeRepository;
 	}
 
 	@Autowired
@@ -91,8 +96,13 @@ public class BoardService {
 	@Transactional
 	public String deleteContents(Long id) throws IllegalArgumentException { // 삭제하기
 
+	
+		
+				
 		BoardEntity board = boardRepository.findById(id)
 				.orElseThrow(() -> new IllegalStateException("삭제할 게시글을 찾을 수 없습니다"));
+		
+		boardLikeRepository.deleteAllboardLikeEntityByBoardId(id);	//게시물과 연관된 좋아요, 삭제요 삭제
 
 		boardRepository.deleteById(id);
 

@@ -29,12 +29,12 @@ public class BoardLikeEntity {
 	
 			boolean flag;		//활성화 및 취소
 			
-			@ManyToOne(cascade = CascadeType.REMOVE)
+			@ManyToOne
 			@JoinColumn(name= "board_id" )
 			@JsonIncludeProperties({"id","title"})
 			BoardEntity boardEntity;
 			
-			@ManyToOne(cascade = CascadeType.REMOVE)
+			@ManyToOne
 			@JoinColumn(name= "member_id" )
 			@JsonIncludeProperties({"id","userid"})
 			MemberEntity memberEntity;

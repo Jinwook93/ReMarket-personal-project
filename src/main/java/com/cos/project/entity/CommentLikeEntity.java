@@ -29,12 +29,12 @@ public class CommentLikeEntity {
 	
 			boolean flag;
 			
-			@ManyToOne(cascade = CascadeType.REMOVE)
+			@ManyToOne
 			@JoinColumn(name= "comment_id" )
 			@JsonIncludeProperties({"id","content"})
 			CommentEntity commentEntity;
 			
-			@ManyToOne(cascade = CascadeType.REMOVE)
+			@ManyToOne
 			@JoinColumn(name= "member_id" )
 			@JsonIncludeProperties({"id","userid"})
 			MemberEntity memberEntity;

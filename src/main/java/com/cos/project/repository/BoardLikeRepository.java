@@ -25,4 +25,9 @@ public interface BoardLikeRepository extends JpaRepository<BoardLikeEntity, Long
 
     @Query("SELECT b FROM BoardLikeEntity b WHERE b.boardEntity.id = :board_id AND b.flag = :flag")
     List<BoardLikeEntity> findByBoardId(@Param("board_id") Long board_id, @Param("flag") boolean flag);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM BoardLikeEntity b WHERE b.boardEntity.id = :board_id")
+	void deleteAllboardLikeEntityByBoardId(@Param("board_id")Long id);
 }

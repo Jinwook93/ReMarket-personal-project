@@ -54,7 +54,13 @@ document.addEventListener('DOMContentLoaded', function() {
 					
 					
 					if (comment.memberEntity.userid === principalDetails) {
-						const updateButton = document.createElement('button');
+						const likeText = document.createElement('p');
+						likeText.innerText = comment.totalLike;
+							commentElement.appendChild(likeText);
+						const dislikeText = document.createElement('p');
+					      dislikeText.innerText= comment.totalDisike;
+					      commentElement.appendChild(dislikeText);
+					const updateButton = document.createElement('button');
 						updateButton.textContent = '수정하기';
 						updateButton.addEventListener('click', () => updateComment(comment.id, comment.content));
 
