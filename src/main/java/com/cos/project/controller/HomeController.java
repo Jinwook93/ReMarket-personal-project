@@ -63,15 +63,15 @@ public class HomeController {
 	@GetMapping("/")
 	public String mainPage(Model model, @AuthenticationPrincipal PrincipalDetails principal) {
 
-		   if (principal != null) {
-	        // Principal 정보 활용
-	        model.addAttribute("isLoggedIn", true);
-	        model.addAttribute("name", principal.getMemberEntity().getName());
-	        model.addAttribute("id", principal.getMemberEntity().getId());
-	    } else {
-	        // 비로그인 상태
-	        model.addAttribute("isLoggedIn", false);
-	    }
+//		   if (principal != null) {
+//	        // Principal 정보 활용
+//	        model.addAttribute("isLoggedIn", true);
+//	        model.addAttribute("name", principal.getMemberEntity().getName());
+//	        model.addAttribute("id", principal.getMemberEntity().getId());
+//	    } else {
+//	        // 비로그인 상태
+//	        model.addAttribute("isLoggedIn", false);
+//	    }
 	    return "index";
 	}
 

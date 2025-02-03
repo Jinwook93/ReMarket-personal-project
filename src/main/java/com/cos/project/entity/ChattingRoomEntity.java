@@ -6,6 +6,8 @@ import java.util.Set;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,20 +29,23 @@ public class ChattingRoomEntity {
 
     private int price;       // 가격 (옵션, 필요 없으면 제거)
 
-    private String content;  // 채팅방 내용
+//    private String content;  // 채팅방 내용
 
     @ManyToOne
     @JoinColumn(name = "member1_id")
+    @JsonIncludeProperties({"id","userid", "profileImage","name"})
     private MemberEntity member1;
 
     @ManyToOne
     @JoinColumn(name = "member2_id")
+    @JsonIncludeProperties({"id","userid", "profileImage","name"})
     private MemberEntity member2;
 
   
     
     @ManyToOne
     @JoinColumn(name = "board_id")
+    @JsonIncludeProperties({"id","title", "price"})
     private BoardEntity boardEntity;  // 게시판과 연결
 
     @CreationTimestamp

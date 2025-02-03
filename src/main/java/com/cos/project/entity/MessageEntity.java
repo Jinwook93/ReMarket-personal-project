@@ -4,8 +4,19 @@ import java.sql.Timestamp;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
+@Builder
 @Entity
 public class MessageEntity {
 
@@ -19,10 +30,13 @@ public class MessageEntity {
 
     @ManyToOne
     @JoinColumn(name = "sender_id")
+    @JsonIncludeProperties({"id","userid", "profileImage","name"})
     private MemberEntity sender;  // 메시지를 보낸 사람
 
     @ManyToOne
     @JoinColumn(name = "receiver_id")
+   // @JsonIncludeProperties({"id","userid", "profileImage","name"})
+    @JsonIgnore
     private MemberEntity receiver;  // 메시지를 받은 사람
 
     private String messageContent;  // 메시지 내용

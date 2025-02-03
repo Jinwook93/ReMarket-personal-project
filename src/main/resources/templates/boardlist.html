@@ -153,6 +153,7 @@ tr:hover {
 </style>
 </head>
 <body>
+	<div th:replace="~{header.html}"></div>
 	<div class="container">
 		<h1>게시판</h1>
 
@@ -245,8 +246,10 @@ tr:hover {
 					</td>
 					<td
 						th:unless="${board.memberEntity.userid == principalDetails.name}">
-						<button type="button" th:id="|chatBoard-${board.id}|">대화하기</button>
-
+						<div class="enterChatRoom" style="cursor: pointer;"
+							th:onClick="@{/chat/Chatroom/{id}(id=${board.id})}">
+							<button type="button" th:id="|chatBoard-${board.id}|">대화하기</button>
+						</div>
 					</td>
 
 
@@ -313,112 +316,128 @@ tr:hover {
 			<a th:href="@{/board/list(page=2)}" th:text="'2'"></a> <a
 				th:href="@{/board/list(page=3)}" th:text="'3'"></a>
 		</div>
-	</div>
+		<!-- 채팅창 -->
+<!-- 		<div style="display:none;" th:replace="~{chatroom}"></div> -->
 
 
 
 
-	<!-- 채팅창 -->
-	<div id="chatBox">
-		<div class="header">채팅</div>
-		<div class="content">
-			<p>채팅 내용이 여기에 표시됩니다.</p>
-		</div>
-		<div class="footer" style="display: flex;">
-			<input type="text" placeholder="메시지를 입력하세요">
-			<button type="button" style="background-color: blue; color: white;">
-				전송</button>
-		</div>
-	</div>
-	
- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-	<script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const chatBox = document.getElementById("chatBox");
-            const chatTriggers = document.querySelectorAll(".enterChatRoom");
+		<!-- 채팅창 -->
+		<!-- 	 <div style = "display:none;" th:replace="~{chatroom}"> -->
+		<!-- 	<div id="chatBox"> -->
+		<!-- 		<div class="header">채팅</div> -->
+		<!-- 		<div class="content"> -->
+		<!-- 			<p>채팅 내용이 여기에 표시됩니다.</p> -->
+		<!-- 		</div> -->
+		<!-- 		<div class="footer" style="display: flex;"> -->
+		<!-- 			<input type="text" placeholder="메시지를 입력하세요"> -->
+		<!-- 			<button type="button" style="background-color: blue; color: white;"> -->
+		<!-- 				전송</button> -->
+		<!-- 		</div> -->
+		<!-- 	</div> -->
 
-            chatTriggers.forEach(trigger => {
-                trigger.addEventListener("click", function () {
-                    if (chatBox.style.display === "none") {
-                        // 비동기로 필요한 데이터 로드 가능
-                        chatBox.style.display = "block";
-                    } else {
-                        chatBox.style.display = "none";
-                    }
-                });
-            });
-        });
-    </script>
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+		<script>
+			//         document.addEventListener("DOMContentLoaded", function () {
+			//             const chatBox = document.getElementById("chatBox");
+			//             const chatTriggers = document.querySelectorAll(".enterChatRoom");
 
-
-	<script>
-		document
-				.addEventListener(
-						"DOMContentLoaded",
-						function() {
-							const searchForm = document
-									.querySelector("form[action='/search/board/result']");
-							searchForm
-									.addEventListener(
-											"submit",
-											function(event) {
-
-												//         const category1 = searchForm.querySelector("select[name='category1']").value.trim();
-												const category2 = searchForm
-														.querySelector("select[name='category2']").value
-														.trim();
-												const search = searchForm
-														.querySelector("input[name='search']").value
-														.trim();
-
-												if (category2 === ""
-														&& search === "") {
-													alert("검색 조건을 입력해주세요.");
-													event.preventDefault(); // 폼 제출 중단
-												} else if (category2 === "") {
-													alert("항목을 선택해주세요.");
-													event.preventDefault(); // 폼 제출 중단
-												} else if (search === "") {
-													alert("검색어를 입력해주세요.");
-													event.preventDefault(); // 폼 제출 중단
-												}
-											});
-						});
-	</script>
-	<script>
-	
-	document.addEventListener("DOMContentLoaded", function () {
-	    // 모든 삭제 버튼에 대해 이벤트 리스너 추가
-	    document.querySelectorAll("[id^='deleteBoard-']").forEach(function (button) {
-	        button.addEventListener("click", function () {
-	        	const boardId =this.getAttribute("data-deleteBoardId");
-					// 버튼에 설정된 board.id 가져오기
-					console.log("보드아이디"+boardId);
-	            if (confirm("정말로 이 게시글을 삭제하시겠습니까?")) { // 삭제 확인 팝업
-	                // AJAX 요청
-	                $.ajax({
-	                    url: `/board/deleteboard/${boardId}`, // 삭제 API 경로
-	                    type: "DELETE", // HTTP 메서드
-	                    contentType: "application/json", // 요청 Content-Type
-	                    success: function (response) {
-	                        alert("게시글이 삭제되었습니다.");
-	                        window.location.href = "/"; // 성공 시 리다이렉트 경로 설정
-	                    },
-	                    error: function (xhr, status, error) {
-	                        alert("게시글이 삭제되지 않았습니다. 다시 시도해주세요.");
-	                        console.error("Error:", error);
-	                    }
-	                });
-	            }
-	        });
-	    });
-	});
+			//             chatTriggers.forEach(trigger => {
+			//                 trigger.addEventListener("click", function () {
+			//                     if (chatBox.style.display === "none") {
+			//                         // 비동기로 필요한 데이터 로드 가능
+			//                         chatBox.style.display = "block";
+			//                     } else {
+			//                         chatBox.style.display = "none";
+			//                     }
+			//                 });
+			//             });
+			//         });
+		</script>
 
 
+		<script>
+			document
+					.addEventListener(
+							"DOMContentLoaded",
+							function() {
+								const searchForm = document
+										.querySelector("form[action='/search/board/result']");
+								searchForm
+										.addEventListener(
+												"submit",
+												function(event) {
 
-</script>
+													//         const category1 = searchForm.querySelector("select[name='category1']").value.trim();
+													const category2 = searchForm
+															.querySelector("select[name='category2']").value
+															.trim();
+													const search = searchForm
+															.querySelector("input[name='search']").value
+															.trim();
 
-
-
+													if (category2 === ""
+															&& search === "") {
+														alert("검색 조건을 입력해주세요.");
+														event.preventDefault(); // 폼 제출 중단
+													} else if (category2 === "") {
+														alert("항목을 선택해주세요.");
+														event.preventDefault(); // 폼 제출 중단
+													} else if (search === "") {
+														alert("검색어를 입력해주세요.");
+														event.preventDefault(); // 폼 제출 중단
+													}
+												});
+							});
+		</script>
+		<script>
+			document
+					.addEventListener(
+							"DOMContentLoaded",
+							function() {
+								// 모든 삭제 버튼에 대해 이벤트 리스너 추가
+								document
+										.querySelectorAll(
+												"[id^='deleteBoard-']")
+										.forEach(
+												function(button) {
+													button
+															.addEventListener(
+																	"click",
+																	function() {
+																		const boardId = this
+																				.getAttribute("data-deleteBoardId");
+																		// 버튼에 설정된 board.id 가져오기
+																		console
+																				.log("보드아이디"
+																						+ boardId);
+																		if (confirm("정말로 이 게시글을 삭제하시겠습니까?")) { // 삭제 확인 팝업
+																			// AJAX 요청
+																			$
+																					.ajax({
+																						url : `/board/deleteboard/${boardId}`, // 삭제 API 경로
+																						type : "DELETE", // HTTP 메서드
+																						contentType : "application/json", // 요청 Content-Type
+																						success : function(
+																								response) {
+																							alert("게시글이 삭제되었습니다.");
+																							window.location.href = "/"; // 성공 시 리다이렉트 경로 설정
+																						},
+																						error : function(
+																								xhr,
+																								status,
+																								error) {
+																							alert("게시글이 삭제되지 않았습니다. 다시 시도해주세요.");
+																							console
+																									.error(
+																											"Error:",
+																											error);
+																						}
+																					});
+																		}
+																	});
+												});
+							});
+		</script>
 </body>
 </html>

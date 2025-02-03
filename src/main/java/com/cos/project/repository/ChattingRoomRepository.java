@@ -1,5 +1,7 @@
 package com.cos.project.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,7 +12,16 @@ import com.cos.project.entity.ChattingRoomEntity;
 @Repository
 public interface ChattingRoomRepository extends JpaRepository<ChattingRoomEntity, Long> {
 
-	@Query("SELECT c FROM ChattingRoomEntity c WHERE c.member1.id = :member1Id AND c.member2.id = :member2Id AND c.boardEntity.id = :boardId")
-	ChattingRoomEntity findEnableRoom(@Param("member1Id") Long member1Id, @Param("receiverId")Long member2Id, @Param("boardId")Long boardId);
+	@Query("SELECT c FROM ChattingRoomEntity c WHERE c.member1.id = :loggedId AND c.member2.id = :userId AND c.boardEntity.id = :boardId")
+	ChattingRoomEntity findEnableRoom(@Param("loggedId") Long loggedId, @Param("userId")Long userId, @Param("boardId")Long boardId);
 
+	@Query("SELECT c.member2.id FROM ChattingRoomEntity c WHERE c.id=:id AND c.member1.id = :loggedId")	//상대방의 id 검색
+	Long findMember2Id(@Param("id") Long id, @Param("loggedId") Long loggedId);
+
+	@Query("SELECT c  FROM ChattingRoomEntity c WHERE c.member1.id = :loggedId")	
+	List<ChattingRoomEntity> findAllByLoggedMember(@Param("loggedId") Long loggedId);
+
+	
+//	@Query("SELECT c  FROM ChattingRoomEntity c WHERE c.member1.id = :loggedId")	
+//	List<ChattingRoomEntity> findAllByLoggedId(@Param("loggedId") Long loggedId);
 }

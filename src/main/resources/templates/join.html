@@ -8,6 +8,7 @@
 </head>
 
 <body>
+    <div th:replace="~{header.html}"></div>
     <h2>회원가입</h2>
     <form action="/serverjoin" method="post"  enctype="multipart/form-data" onsubmit="return joinValidation(e)">	
 <!--     즉, 파일을 서버로 전달하기 위해서는 form 태그에 enctype="multipart/form-data" 속성을 추가해야 합니다. -->
