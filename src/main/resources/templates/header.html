@@ -1,233 +1,211 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Header</title>
-    
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Header</title>
 
-        #header-content {
-            background-color: #3a3a3a;
-            color: white;
-            padding: 10px 20px;
-        }
+<style>
+body {
+	font-family: Arial, sans-serif;
+	margin: 0;
+	padding: 0;
+	background-color: #f4f4f4;
+}
 
-        #header-content a {
-            color: white;
-            text-decoration: none;
-            margin-right: 15px;
-        }
+#header-content {
+	background-color: #3a3a3a;
+	color: white;
+	padding: 10px 20px;
+}
 
-        #header-content a:hover {
-            text-decoration: underline;
-        }
+#header-content a {
+	color: white;
+	text-decoration: none;
+	margin-right: 15px;
+}
 
-        .chattingRoomList {
-            display: none; /* 기본적으로 숨김 */
-            margin-top: 15px;
-            background-color: #fff;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-            padding: 15px;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-/*             color: #333; /* 글씨 색상 변경 */ 
-                color: black;
-        }
+#header-content a:hover {
+	text-decoration: underline;
+}
 
-        .chattingRoomList table {
-            width: 100%;
-            border-collapse: collapse;
-                color: black;
-        }
+.chattingRoomList {
+	display: none; /* 기본적으로 숨김 */
+	margin-top: 15px;
+	background-color: #fff;
+	border-radius: 5px;
+	border: 1px solid #ddd;
+	padding: 15px;
+	box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+	/*             color: #333; /* 글씨 색상 변경 */
+	color: black;
+}
 
-        .chattingRoomList table th, .chattingRoomList table td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #f2f2f2;
-            color: black;
-        }
+.chattingRoomList table {
+	width: 100%;
+	border-collapse: collapse;
+	color: black;
+}
 
-        .chattingRoomList table th {
-            background-color: #f4f4f4;
-            
-                 color: black;
-        }
+.chattingRoomList table th, .chattingRoomList table td {
+	padding: 10px;
+	text-align: left;
+	border-bottom: 1px solid #f2f2f2;
+	color: black;
+}
 
-        .chattingRoomList table tr:hover {
-            background-color: #f9f9f9;
-                 color: black;
-        }
+.chattingRoomList table th {
+	background-color: #f4f4f4;
+	color: black;
+}
 
-        #myChattingRoomList {
-            display: inline-block;
-            background-color: #007bff;
-            color: black;
-            padding: 8px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            text-decoration: none;
-        }
+.chattingRoomList table tr:hover {
+	background-color: #f9f9f9;
+	color: black;
+}
 
-        #myChattingRoomList:hover {
-            background-color: #0056b3;
-        }
+#myChattingRoomList {
+	display: inline-block;
+	background-color: #007bff;
+	color: black;
+	padding: 8px 15px;
+	border-radius: 4px;
+	cursor: pointer;
+	text-decoration: none;
+}
 
-        /* 로그인 상태 */
-        .logged-in p {
-            font-size: 16px;
-            margin: 0;
-        }
+#myChattingRoomList:hover {
+	background-color: #0056b3;
+}
 
-        .logged-in a {
-            color: white;
-            text-decoration: none;
-        }
+/* 로그인 상태 */
+.logged-in p {
+	font-size: 16px;
+	margin: 0;
+}
 
-        .logged-in a:hover {
-            text-decoration: underline;
-        }
-        
-         #chat-container { width: 400px; margin: 0 auto; border: 1px solid #ccc; padding: 10px; border-radius: 10px; }
-        #chat-box { height: 300px; overflow-y: auto; border-bottom: 1px solid #ccc; padding: 10px; }
-        #message-input { width: 80%; padding: 5px; }
-        #send-button { width: 15%; padding: 5px; }
-        
-        .message-right {
-    text-align: right;
-    background-color: #dcf8c6;
-    padding: 8px;
-    border-radius: 10px;
-    margin: 5px;
-    max-width: 60%;
+.logged-in a {
+	color: white;
+	text-decoration: none;
+}
+
+.logged-in a:hover {
+	text-decoration: underline;
+}
+
+#chat-container {
+	width: 400px;
+	margin: 0 auto;
+	border: 1px solid #ccc;
+	padding: 10px;
+	border-radius: 10px;
+}
+
+#chat-box {
+	height: 300px;
+	overflow-y: auto;
+	border-bottom: 1px solid #ccc;
+	padding: 10px;
+}
+
+#message-input {
+	width: 80%;
+	padding: 5px;
+}
+
+#send-button {
+	width: 15%;
+	padding: 5px;
+}
+
+.message-right {
+	text-align: right;
+	background-color: #dcf8c6;
+	padding: 8px;
+	border-radius: 10px;
+	margin: 5px;
+	max-width: 60%;
 }
 
 .message-left {
-    text-align: left;
-    background-color: #ffffff;
-    padding: 8px;
-    border-radius: 10px;
-    margin: 5px;
-    max-width: 60%;
+	text-align: left;
+	background-color: #ffffff;
+	padding: 8px;
+	border-radius: 10px;
+	margin: 5px;
+	max-width: 60%;
 }
-        
-    </style>
+</style>
 </head>
 <body>
-     <header th:fragment="header">
-        <div id="header-content" style = "display:flex;">
-            <!-- 로그인 상태인 경우 -->
-            <div th:if="${isLoggedIn}" class="logged-in">
-            <input type = "hidden" th:value="${isLoggedIn}" id = "isLoggedIn">
-                        <input type = "hidden"  th:value="${id}" id = "loggedId">
-                         <input type = "hidden"  th:value="${loggedUserId}" id = "loggedUserId">
-                <p>환영합니다, <span th:text="${name}"></span>님</p>
-                <a th:href="@{/logout}">로그아웃</a>
-                <a th:href="@{/mypage/{id}(id=${id})}">마이페이지</a>
-                <a th:href="@{/boardlist/{id}(id=${id})}">내가 쓴 게시글</a>
-                <a th:href="@{/commentlist/{id}(id=${id})}">내가 쓴 댓글</a>
-                
-                <!-- 나의 채팅방 버튼 -->
-                <a href="#" id="myChattingRoomList">나의 채팅방</a>
+	<header th:fragment="header">
+		<div id="header-content" style="display: flex;">
+			<!-- 로그인 상태인 경우 -->
+			<div th:if="${isLoggedIn}" class="logged-in">
+				<input type="hidden" th:value="${isLoggedIn}" id="isLoggedIn">
+				<input type="hidden" th:value="${id}" id="loggedId"> <input
+					type="hidden" th:value="${loggedUserId}" id="loggedUserId">
+				<p>
+					환영합니다, <span th:text="${name}"></span>님
+				</p>
+				<a th:href="@{/logout}">로그아웃</a> <a
+					th:href="@{/mypage/{id}(id=${id})}">마이페이지</a> <a
+					th:href="@{/boardlist/{id}(id=${id})}">내가 쓴 게시글</a> <a
+					th:href="@{/commentlist/{id}(id=${id})}">내가 쓴 댓글</a>
 
-                <!-- 채팅방 리스트 -->
-                <div class="chattingRoomList">
-                    <table>
-<!--                         <thead> -->
-<!--                             <tr> -->
-<!--                                 <th>채팅방 제목</th> -->
-<!--                                 <th>상대방</th> -->
-<!--                                 <th>입장</th> -->
-<!--                             </tr> -->
-<!--                         </thead> -->
-                        <tbody id="chattingRoomListBody">
-                            <!-- 채팅방 목록이 여기에 동적으로 추가됩니다 -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+				<!-- 나의 채팅방 버튼 -->
+				<a href="#" id="myChattingRoomList">나의 채팅방</a>
 
-            <!-- 기본 제목 표시 -->
-            <h1 th:text="${title}">기본 제목</h1>
+				<!-- 채팅방 리스트 -->
+				<div class="chattingRoomList">
+					<table>
+						<!--                         <thead> -->
+						<!--                             <tr> -->
+						<!--                                 <th>채팅방 제목</th> -->
+						<!--                                 <th>상대방</th> -->
+						<!--                                 <th>입장</th> -->
+						<!--                             </tr> -->
+						<!--                         </thead> -->
+						<tbody id="chattingRoomListBody">
+							<!-- 채팅방 목록이 여기에 동적으로 추가됩니다 -->
+						</tbody>
+					</table>
+				</div>
+			</div>
 
-            <!-- 비로그인 상태인 경우 -->
-            <div th:if="${!isLoggedIn}">
-                <a th:href="@{/formlogin}">로그인</a>
-                <a th:href="@{/join}">회원가입</a>
-                <a th:href="@{/findid}">아이디 찾기</a>
-                <a th:href="@{/findpassword}">비밀번호 찾기</a>
-            </div>
+			<!-- 기본 제목 표시 -->
+			<h1 th:text="${title}">기본 제목</h1>
 
-            <!-- 공통 메뉴 -->
-            <a href="/board/allboard">게시판</a>
-            <a href="/board/writeboard">글쓰기</a>
-        </div>
-    </header>
+			<!-- 비로그인 상태인 경우 -->
+			<div th:if="${!isLoggedIn}">
+				<a th:href="@{/formlogin}">로그인</a> <a th:href="@{/join}">회원가입</a> <a
+					th:href="@{/findid}">아이디 찾기</a> <a th:href="@{/findpassword}">비밀번호
+					찾기</a>
+			</div>
+
+			<!-- 공통 메뉴 -->
+			<a href="/board/allboard">게시판</a> <a href="/board/writeboard">글쓰기</a>
+		</div>
+	</header>
 
 
- 
-  <script type="module">
-    // 모듈에서 필요한 함수들을 import
-    import { openChatRoom, loadMessages, sendMessage } from '/js/chatModule.js';
+
+<script type="module">
+    import { loadChatRooms, setUpEnterRoomButton, setUpExitRoomButton, toggleChattingRoomList } from '/js/chatModule.js';
 
     document.addEventListener("DOMContentLoaded", async () => {
-        const myChattingRoomList = document.getElementById("myChattingRoomList");
-        const chattingRoomList = document.querySelector(".chattingRoomList");
-        const chattingRoomListBody = document.getElementById("chattingRoomListBody");
         const isLoggedIn = document.getElementById("isLoggedIn").value;
         const loggedId = document.getElementById("loggedId").value;
+        const loggedUserId = document.getElementById("loggedUserId").value;
+
         if (isLoggedIn === "true" || isLoggedIn === true) {
-            try {
-                const response = await fetch(`/chat/myChatRoom/${loggedId}`);
-                const datas = await response.json();
-                if (Array.isArray(datas) && datas.length > 0) {
-                    datas.forEach(data => {
-                        const row = document.createElement("tr");
-                        row.innerHTML = `
-                            <td>${data.title}</td>
-                            <td>${data.member2UserId}</td>
-                            <td>
-                                <button class="enterChat" 
-                                    data-room-id="${data.id}" 
-                                    data-title="${data.title}" 
-                                    data-userid="${data.member2UserId}">
-                                    입장
-                                </button>
-                            </td>
-                        `;
-                        chattingRoomListBody.appendChild(row);
-                    });
-                } else {
-                    console.warn('No chatting rooms available.');
-                }
-            } catch (error) {
-                console.error("Failed to fetch chat rooms:", error);
-            }
-
-            // '입장' 버튼 클릭 시 채팅방 열기
-            document.querySelectorAll(".enterChat").forEach(button => {
-                button.addEventListener("click", function () {
-                    const roomId = this.getAttribute("data-room-id");
-                    const title = this.getAttribute("data-title");
-                    const userid = this.getAttribute("data-userid");
-                    openChatRoom(roomId, title, userid);
-                });
-            });
+            await loadChatRooms(loggedId);
+            setUpEnterRoomButton(loggedUserId);
+            setUpExitRoomButton();
         }
 
-        if (myChattingRoomList && chattingRoomList) {
-            myChattingRoomList.addEventListener("click", (event) => {
-                event.preventDefault();
-                chattingRoomList.style.display = chattingRoomList.style.display === "none" ? "block" : "none";
-            });
-        }
+        toggleChattingRoomList();
     });
-  </script>
+</script>
 </body>
 </html>

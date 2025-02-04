@@ -5,15 +5,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import javax.sound.midi.Receiver;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.cos.project.details.PrincipalDetails;
 import com.cos.project.dto.ChattingRoomDTO;
 import com.cos.project.dto.MessageDTO;
@@ -84,35 +80,6 @@ public class ChatService {
 	
 	
 	
-	
-//	@Transactional			//채팅방 생성;   member1: 채팅방 '최초 생성' 사용자  member2: 채팅방 '수신' 사용자
-//	public ChattingRoomEntity createRoom(String title, String loggedId, String userId, Long boardId, int price) {
-//		BoardEntity boardEntity = boardRepository.findById(boardId).get();
-//		MemberEntity member1 = memberRepository.findByUserid(loggedId).get();
-//		MemberEntity member2 = memberRepository.findByUserid(userId)
-//				.orElseThrow(() -> new IllegalArgumentException("수신자를 조회할 수 없습니다"));
-//
-//		ChattingRoomEntity chattingRoomEntity = null;
-//		
-//		//채팅방 정보 조회 (만약 수신자가 채팅방 생성 사용자일 경우)
-//		chattingRoomEntity = chattingRoomRepository.findEnableRoom( member2.getId(), member1.getId(),boardId);
-//		
-//		if(chattingRoomEntity == null) {
-//			chattingRoomEntity = chattingRoomRepository.findEnableRoom( member1.getId(), member2.getId(),boardId);
-//			
-//		}
-//		
-//		
-//		if(chattingRoomEntity == null) {
-//		//채팅방이 없는 경우
-//		chattingRoomEntity = chattingRoomEntity.builder().title(title).member1(member1).member2(member2)
-//				.boardEntity(boardEntity).price(price).build();
-//
-//		chattingRoomRepository.save(chattingRoomEntity);
-//		}
-//		return chattingRoomEntity;
-//	}
-//
 	@Transactional
 	public boolean enterChatRoom(Long loggedId, Long userId, Long boardId) {
 		boolean flag = false;
@@ -205,14 +172,19 @@ public class ChatService {
 	@Transactional
 	public boolean addMessage(Long roomId, PrincipalDetails principalDetails, MessageDTO messageDTO) {
 
+		String receiverUserId = messageDTO.getReceiverUserId();
+		System.out.println("리시버아이디 테스트"+ receiverUserId);
+		
 	    // Retrieve the chatting room and sender information
 	    ChattingRoomEntity chattingRoomEntity = chattingRoomRepository.findById(roomId)
 	        .orElseThrow(() -> new RuntimeException("Chat room not found"));
 	    MemberEntity sender = principalDetails.getMemberEntity();
 	    
 	    // Use the existing receiver from the chatting room
-	    MemberEntity receiver = chattingRoomEntity.getBoardEntity().getMemberEntity();
-
+	    MemberEntity receiver = memberRepository.findByUserid(receiverUserId).get();
+	    System.out.println("리시버 아이디 :" +receiver.getUserid());
+	    
+	    
 	    // Check if the message content is valid
 	    if (messageDTO.getMessageContent() == null) {
 	        return false;
@@ -318,11 +290,35 @@ public class ChatService {
 	}
 
 	@Transactional
-	public boolean deleteMessage(Long id) {
+	public boolean deleteMessage(Long id) {	//선택한 메시지를 지움
 		 messageRepository.deleteById(id);
 		return true;
 		
 		
+	}
+
+
+
+
+
+
+
+	public boolean deleteRoom(Long id,Long senderId,  String receiverUserId) {
+		Long receiverId = memberRepository.findByUserid(receiverUserId).get().getId();
+		//Long senderId = memberRepository.findByUserid(senderUserId).get().getId();
+		 
+
+		
+		messageRepository.deleteAllByRoomAndSenderAndReceiver(id, senderId, receiverId);
+		
+		
+		//송신자,수신자가 바뀔 경우도 고려 
+		messageRepository.deleteAllByRoomAndSenderAndReceiver(id,  receiverId, senderId);
+		
+//		 this.deleteMessage(id);
+		 chattingRoomRepository.deleteById(id);
+		 
+		return true;
 	}
 	
 	

@@ -53,7 +53,7 @@ public class ChattingRoomEntity {
 
     private boolean liked;  // 좋아요 (개인적으로 메시지나 채팅방에 좋아요 기능 추가 가능)
     														//MySQL 예약어와 겹치므로 like로 생성 불가
-    @OneToMany(mappedBy = "chattingRoomEntity", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "chattingRoomEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<MessageEntity> messages = new HashSet<>();  // 메시지들
 
     // getters and setters

@@ -8,14 +8,14 @@ export async function loadMessages(roomId) {
 
     try {
         const response = await fetch(`/chat/loadmessages/${roomId}`);
-        console.log(`${roomId}`);
+//        console.log(`${roomId}`);
         if (!response.ok) {
             console.error("Server returned an error:", response.status, response.statusText);
             chatBox.innerHTML = "<div>Error loading messages.</div>";
             return;
         }
         const messages = await response.json();
-        console.log("Messages received:", messages);
+//        console.log("Messages received:", messages);
 
         // 기존 메시지 초기화
         chatBox.innerHTML = "";
@@ -30,7 +30,7 @@ messages.forEach(msg => {
     const messageElement = document.createElement("div");
     messageElement.textContent = `${msg.senderUserId}: ${msg.messageContent} ${msg.sendTime}`;
     
-    console.log("로그인한 유저:", loggedUserId, "메시지 보낸 유저:", msg.senderUserId);
+//    console.log("로그인한 유저:", loggedUserId, "메시지 보낸 유저:", msg.senderUserId);
 
     // 로그인한 사용자와 보낸 사용자가 동일하면 삭제 버튼 추가
     if (String(msg.senderUserId) === String(loggedUserId)) {
@@ -84,7 +84,7 @@ export async function sendMessage(roomId, userid) {
         await fetch(`/chat/send/${roomId}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ messageContent: message })
+            body: JSON.stringify({receiverUserId: userid , messageContent: message })
         });
 		
         messageInput.value = "";
@@ -94,8 +94,37 @@ export async function sendMessage(roomId, userid) {
     }
 }
 
+
+//메시지 기능삭제
+export async function deleteMessage(roomId, deleteRoomId) {
+    const messageInput = document.getElementById(`message-input-${roomId}`);
+    const message = messageInput.value.trim();
+    if (message === "") return;
+
+    try {
+        await fetch(`/chat/deleteroom/${roomId}`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+        //    body: JSON.stringify({ messageContent: message })
+        });
+		
+        messageInput.value = "";
+        loadMessages(roomId); // 전송 후 메시지 갱신
+    } catch (error) {
+        console.error("메시지 전송 중 오류 발생", error);
+    }
+}
+
+
+
+
+
+
+
+
+
 // 특정 채팅방을 열고 메시지 기능을 연결하는 함수
-export async function openChatRoom(roomId, title, userid) {
+export async function openChatRoom(roomId, title, loggedUserId, userid) {
     let chatWindow = document.getElementById(`chat-room-${roomId}`);
 
     if (chatWindow) {
@@ -109,6 +138,7 @@ export async function openChatRoom(roomId, title, userid) {
         const board = await boardresponse.json();
         
         	console.log(board);
+        	console.log(roomId,title,loggedUserId,userid);
         chatWindow.innerHTML = `
             <div id="chat-container">
                 <div style="display:flex;">
@@ -132,7 +162,7 @@ export async function openChatRoom(roomId, title, userid) {
 
         // 메시지 불러오기 및 새로고침
         loadMessages(roomId);
-        setInterval(() => loadMessages(roomId), 1000);
+        setInterval(() => loadMessages(roomId), 2000);
 
         // 메시지 전송 이벤트 추가
         document.getElementById(`send-button-${roomId}`).addEventListener("click", () => sendMessage(roomId, userid));
@@ -146,3 +176,157 @@ export async function openChatRoom(roomId, title, userid) {
         });
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// chatModule.js
+
+export async function loadChatRooms(loggedId) {
+    const chattingRoomListBody = document.getElementById("chattingRoomListBody");
+    
+    // 기존 목록 초기화 (중복 방지)
+    chattingRoomListBody.innerHTML = "";
+    
+    try {
+        const response = await fetch(`/chat/myChatRoom/${loggedId}`);
+        const datas = await response.json();
+        
+        if (Array.isArray(datas) && datas.length > 0) {
+            datas.forEach(data => {
+                // 반복문 내부에서 새로운 <tr> 요소를 생성합니다.
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${data.title}</td>
+                    <td>${data.member2UserId}</td>
+                    <td>
+                        <div style="display:flex;">
+                            <button class="enterChat" 
+                                data-room-id="${data.id}" 
+                                data-title="${data.title}" 
+                                data-userid="${data.member2UserId}">
+                                입장
+                            </button>
+                            <button class="deleteRoom" 
+                                data-deleteRoomId="${data.id}" 
+                                data-deleteTitle="${data.title}" 
+                                data-deleteUserid="${data.member2UserId}">
+                                나가기
+                            </button>
+                        </div>
+                    </td>
+                `;
+                chattingRoomListBody.appendChild(row);
+            });
+        } else {
+            console.warn('No chatting rooms available.');
+        }
+    } catch (error) {
+        console.error("Failed to fetch chat rooms:", error);
+    }
+}
+
+
+export function setUpEnterRoomButton(loggedUserId) {
+    document.querySelectorAll(".enterChat").forEach(button => {
+        button.addEventListener("click", function () {
+            const roomId = this.getAttribute("data-room-id");
+            const title = this.getAttribute("data-title");
+            const userid = this.getAttribute("data-userid");
+            openChatRoom(roomId, title, loggedUserId, userid);
+        });
+    });
+}
+
+export function setUpExitRoomButton() {
+    document.querySelectorAll(".deleteRoom").forEach(button => {
+        button.addEventListener("click", async function () {
+            const deleteRoomId = this.getAttribute("data-deleteRoomId");
+            const deleteUserId = this.getAttribute("data-deleteUserid");
+
+            try {
+                const response = await fetch(`/chat/exitRoom/${deleteRoomId}`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ receiver: deleteUserId })
+                });
+
+                if (response.ok) {
+                    this.closest("tr").remove();
+                    alert("채팅방을 나갔습니다.");
+                } else {
+                    alert("채팅방 나가기에 실패했습니다.");
+                }
+            } catch (error) {
+                console.error("Failed to exit chat room:", error);
+            }
+        });
+    });
+}
+
+export function toggleChattingRoomList() {
+    const myChattingRoomList = document.getElementById("myChattingRoomList");
+    const chattingRoomList = document.querySelector(".chattingRoomList");
+
+    if (myChattingRoomList && chattingRoomList) {
+        myChattingRoomList.addEventListener("click", (event) => {
+            event.preventDefault();
+            chattingRoomList.style.display = chattingRoomList.style.display === "none" ? "block" : "none";
+        });
+    }
+}
+
+
+
+
+export function showChattingRoomList() {
+  const chattingRoomList = document.querySelector(".chattingRoomList");
+  if (chattingRoomList) {
+    chattingRoomList.style.display = "block";
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

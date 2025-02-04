@@ -239,104 +239,74 @@
   
   <!-- 대화하기 버튼 클릭 시 채팅방 생성 요청 스크립트 -->
   <script type="module">
-  import { openChatRoom, loadMessages, sendMessage } from '/js/chatModule.js';
-    document.addEventListener('DOMContentLoaded', function() {
-      // "대화하기" 버튼들을 선택합니다.
-      const chatButtons = document.querySelectorAll('.createRoom');
+  import { loadMessages, openChatRoom, loadChatRooms, setUpEnterRoomButton, setUpExitRoomButton, toggleChattingRoomList, showChattingRoomList} from '/js/chatModule.js';
   
-      chatButtons.forEach(button => {
-        button.addEventListener('click', async function() {
-          // 버튼의 data 속성에서 boardId와 상대방 userid를 가져옵니다.
-          const boardId = this.getAttribute('data-id');
-          const member2UserId = this.getAttribute('data-member2');
-  
-          // 필수 데이터가 없는 경우 처리
-          if (!boardId || !member2UserId) {
-            alert('필수 데이터(boardId 또는 member2UserId)가 누락되었습니다.');
-            return;
+  document.addEventListener('DOMContentLoaded', async function() {
+    const loggedId = document.getElementById("loggedId")?.value;  // 로그인된 사용자 ID 가져오기
+    const isLoggedIn = document.getElementById("isLoggedIn").value;
+    const loggedUserId = document.getElementById("loggedUserId").value;
+    
+    if (!loggedId) {
+      console.error("로그인된 사용자 ID를 찾을 수 없습니다.");
+      return;
+    }
+
+    // "대화하기" 버튼 선택
+    const chatButtons = document.querySelectorAll('.createRoom');
+
+    chatButtons.forEach(button => {
+      button.addEventListener('click', async function() {
+        const boardId = this.getAttribute('data-id');
+        const member2UserId = this.getAttribute('data-member2');
+
+        if (!boardId || !member2UserId) {
+          alert('채팅방을 생성할 수 없습니다. (boardId 또는 member2UserId 누락)');
+          return;
+        }
+
+        const payload = {
+          boardId: boardId, // 추가 가능
+          member2UserId: member2UserId
+        };
+
+        try {
+          const response = await fetch(`/chat/Chatroom/${boardId}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`채팅방 생성 실패: ${errorText}`);
           }
-  
-          // 전송할 payload 구성 (필요한 ChattingRoomDTO 필드)
-          const payload = {
-            member2UserId: member2UserId
-          };
-  
-          try {
-            // POST 요청을 보내 채팅방 생성
-            const response = await fetch(`/chat/Chatroom/${boardId}`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(payload)
-            });
-  
-            if (response.ok) {
-              const data = await response.json();
-              console.log('채팅방 생성 성공:', data);
-              openChatRoom(data.id, data.title, data.member2.userid);
-              loadMessages(data.id);
-              // 채팅방 생성 후, 채팅방 목록에 추가하거나 채팅창을 열어주는 등 원하는 UI 업데이트를 진행합니다.
-              // 예: location.href = `/chat/room/${data.id}`; 로 채팅방으로 이동
-            } else {
-              console.error('채팅방 생성 실패:', response.statusText);
-            }
-          } catch (error) {
-            console.error('채팅방 생성 중 오류 발생:', error);
+
+          const data = await response.json();
+          console.log('채팅방 생성 성공:', data);
+
+          // 채팅방 목록 갱신 및 토글 (대화 목록을 보이도록)
+          if (isLoggedIn === "true" || isLoggedIn === true) {
+            await loadChatRooms(loggedId);
+            setUpEnterRoomButton(loggedUserId);
+            setUpExitRoomButton();
+         showChattingRoomList(); // 또는 showChattingRoomList(); 를 호출하여 강제로 보이게 함.
           }
-        });
-      });
-    });
-  </script>
-  
-  <!-- 검색, 삭제 등 기타 스크립트 -->
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const searchForm = document.querySelector("form[action='/search/board/result']");
-      searchForm.addEventListener("submit", function(event) {
-        const category2 = searchForm.querySelector("select[name='category2']").value.trim();
-        const search = searchForm.querySelector("input[name='search']").value.trim();
-  
-        if (category2 === "" && search === "") {
-          alert("검색 조건을 입력해주세요.");
-          event.preventDefault();
-        } else if (category2 === "") {
-          alert("항목을 선택해주세요.");
-          event.preventDefault();
-        } else if (search === "") {
-          alert("검색어를 입력해주세요.");
-          event.preventDefault();
+
+          // 채팅방 열기 및 메시지 로드
+          openChatRoom(data.id, data.title, loggedUserId, data.member2.userid);
+          loadMessages(data.id);
+
+        } catch (error) {
+          console.error('채팅방 생성 중 오류 발생:', error);
+          alert('채팅방을 생성하는 도중 오류가 발생했습니다.');
         }
       });
     });
-  </script>
-  
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      // 모든 삭제 버튼에 대해 이벤트 리스너 추가
-      document.querySelectorAll("[id^='deleteBoard-']").forEach(function(button) {
-        button.addEventListener("click", function() {
-          const boardId = this.getAttribute("data-deleteBoardId");
-          console.log("보드아이디: " + boardId);
-          if (confirm("정말로 이 게시글을 삭제하시겠습니까?")) {
-            $.ajax({
-              url: `/board/deleteboard/${boardId}`,
-              type: "DELETE",
-              contentType: "application/json",
-              success: function(response) {
-                alert("게시글이 삭제되었습니다.");
-                window.location.href = "/";
-              },
-              error: function(xhr, status, error) {
-                alert("게시글이 삭제되지 않았습니다. 다시 시도해주세요.");
-                console.error("Error:", error);
-              }
-            });
-          }
-        });
-      });
-    });
-  </script>
+  });
+</script>
+
   
 </body>
 </html>

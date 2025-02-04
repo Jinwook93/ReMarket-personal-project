@@ -116,65 +116,6 @@ public class ChatController {
 	
 	
 	
-//	@PostMapping("/createChatRoom")
-//	@ResponseBody
-//	public ResponseEntity<?> createChatRoom(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody Map<String, String> createChatRoomData
-//			,Model model) {
-//		
-//		
-//		
-//		/*
-//		{
-//			"title" : "title",
-//			"price" : "price",
-//			"member1_userid": "member1_userid",
-//			"member2_userid": "member2_userid",
-//			"boardId": "boardId"
-//			
-//		}
-//		*/
-//		ChattingRoomEntity chattingRoomEntity = null;
-//		
-//		String title = createChatRoomData.get("title");
-//		int price = Integer.parseInt(createChatRoomData.get("price"));
-//		String member1_userid = createChatRoomData.get("member1_userid");
-//		String member2_userid = createChatRoomData.get("member2_userid");
-//		Long boardId =  Long.valueOf(createChatRoomData.get("boardId"));
-//		
-//		if(principalDetails.getMemberEntity().getId() != null){
-//		chattingRoomEntity = 
-//		chatService.createRoom(title,member1_userid,member2_userid,boardId,price);
-//		}
-//		
-//		return ResponseEntity.ok(chattingRoomEntity);
-//		
-//	}
-//	
-//	@PostMapping("/enterChatRoom")
-//	@ResponseBody
-//	public ResponseEntity<?> enterChatRoom(@AuthenticationPrincipal PrincipalDetails principalDetails,
-//			@RequestBody Map<String, String> enterChatRoomData){
-//			
-//		/*
-//		{
-//			"member2_userid": "member2_userid",
-//			"boardId": "boardId"
-//			
-//		}
-//		*/
-//		
-//		
-////			Long member2Id,Long boardId){
-//		Long member1Id = principalDetails.getMemberEntity().getId();
-//		Long member2Id = Long.valueOf(enterChatRoomData.get("member2_userid"));
-//		Long boardId =  Long.valueOf(enterChatRoomData.get("boardId"));
-//		
-//		
-//		boolean flag = chatService.enterChatRoom(member1Id, member2Id,boardId);
-//		
-//		return ResponseEntity.ok(flag);
-//		
-//	}
 	
 	@PutMapping("/updateChatRoom/{id}") // board 작성자 (세션 로그인 한 유저)가 수정 가능
 	@ResponseBody
@@ -273,7 +214,7 @@ public class ChatController {
 //	}
 //	
 	
-    @GetMapping("/findBoard/{roomId}")
+    @GetMapping("/findBoard/{roomId}")			//채팅창과 관련된 게시물 반환
     @ResponseBody
     public ResponseEntity<?> findBoard(@PathVariable(name = "roomId")Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
     	BoardEntity boardEntity = chatService.findBoard(id);
@@ -290,5 +231,16 @@ public class ChatController {
     	return ResponseEntity.ok(flag);
     }
 
+    
+    @PostMapping("/exitRoom/{messageId}")
+    @ResponseBody
+    public ResponseEntity<?> deleteRoom(@PathVariable(name = "messageId")Long id, @AuthenticationPrincipal PrincipalDetails principalDetails
+    		, @RequestBody Map<String, String> data) {
+    	String receiverUserId = data.get("receiver");
+    	System.out.println("리시버 : " + receiverUserId);
+    	boolean flag = chatService.deleteRoom(id, principalDetails.getMemberEntity().getId(), receiverUserId);
+    	
+    	return ResponseEntity.ok(flag);
+    }
 	
 }
