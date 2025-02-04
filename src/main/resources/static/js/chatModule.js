@@ -28,12 +28,12 @@ export async function loadMessages(roomId) {
 			messageElement.classList.add("message-item");
 
 			// 메시지 내용과 좋아요 상태 처리
-	//		messageElement.textContent = `${msg.senderUserId}: ${msg.messageContent} ${msg.sendTime} ${msg.liked ? "❤️" : "🤍"}`;
+			//		messageElement.textContent = `${msg.senderUserId}: ${msg.messageContent} ${msg.sendTime} ${msg.liked ? "❤️" : "🤍"}`;
 
 
 			// 로그인한 사용자와 보낸 사용자가 동일하면 삭제 버튼 추가
-			
-				// 메시지 내용과 좋아요 상태 처리
+
+			// 메시지 내용과 좋아요 상태 처리
 			messageElement.textContent = `${msg.senderUserId}: ${msg.messageContent} ${msg.sendTime} ${msg.liked ? "❤️" : "🤍"}`;
 			if (String(msg.senderUserId) === String(loggedUserId)) {
 				messageElement.classList.add("message-right");
@@ -60,8 +60,22 @@ export async function loadMessages(roomId) {
 				};
 				messageElement.appendChild(deleteMessageButton);
 			} else {
-					messageElement.textContent = `${msg.senderUserId}: ${msg.messageContent} ${msg.sendTime}`;
+				messageElement.textContent = `${msg.senderUserId}: ${msg.messageContent} ${msg.sendTime}  ${msg.read? "<읽음>": "<읽지않음>"}`;
 				messageElement.classList.add("message-left");
+				  messageElement.dataset.messageId = msg.id;
+				  
+				  
+				  
+				  
+				  
+				  
+				  
+				  
+				  
+				  
+				  
+				  
+				  
 
 				// 좋아요 버튼 생성
 				const likeButton = document.createElement("button");
@@ -98,6 +112,55 @@ export async function loadMessages(roomId) {
 						console.error("좋아요 요청 중 오류 발생:", error);
 					}
 				});
+				
+				
+				
+				
+				
+				
+				//채팅 컨테이너 클릭 시 읽음으로 간주
+document.getElementById("chat-container").addEventListener("click", async function () {
+    const unreadMessages = document.querySelectorAll(".message-item:not(.read)"); // 아직 읽지 않은 메시지들 찾기
+
+    if (unreadMessages.length === 0) return; // 읽지 않은 메시지가 없으면 요청 안 함
+
+    try {
+        // 읽지 않은 메시지 ID 리스트 추출
+        const messageIds = [...unreadMessages].map(msg => msg.dataset.messageId);
+
+        // 서버로 읽음 처리 요청 (POST 요청)
+        const response = await fetch(`/chat/markAsRead`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ messageIds }) // ID 배열을 서버로 전송
+        });
+
+        if (response.ok) {
+            unreadMessages.forEach(msg => {
+                msg.classList.add("read"); // 읽음 표시 스타일 추가
+            });
+            console.log("📩 모든 메시지가 읽음 처리됨!");
+        } else {
+            console.error("❌ 읽음 처리 실패!");
+        }
+    } catch (error) {
+        console.error("⚠️ 메시지 읽음 처리 중 오류 발생:", error);
+    }
+});
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
 
 				messageElement.appendChild(likeButton);
 			}

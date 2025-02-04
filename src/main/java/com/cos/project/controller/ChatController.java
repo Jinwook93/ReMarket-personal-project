@@ -3,6 +3,7 @@ package com.cos.project.controller;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -242,5 +243,20 @@ public class ChatController {
     	
     	return ResponseEntity.ok(flag);
     }
+    
+    
+    @PostMapping("/markAsRead")
+    @ResponseBody
+    public ResponseEntity<?> markMessagesAsRead(@RequestBody Map<String, List<Long>> request) {
+        List<Long> messageIds = request.get("messageIds");
+        
+        if (messageIds == null || messageIds.isEmpty()) {
+            return ResponseEntity.badRequest().body("메시지 ID가 없습니다.");
+        }
+
+        boolean result = chatService.markMessagesAsRead(messageIds);
+        return ResponseEntity.ok(result);
+    }
+
 	
 }

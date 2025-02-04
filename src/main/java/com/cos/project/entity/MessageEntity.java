@@ -44,7 +44,7 @@ public class MessageEntity {
     private boolean liked = false;
     
     
-    
+    private boolean isRead = false;
     
     
     
@@ -53,7 +53,8 @@ public class MessageEntity {
 
     @CreationTimestamp
     private Timestamp sendTime;  // 메시지 전송 시간
-    
+
+
     
     
     

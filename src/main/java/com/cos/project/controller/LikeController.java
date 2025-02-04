@@ -173,18 +173,18 @@ String result = 	 likeService.comment_findMemberLike_Dislike(commentId, principa
     
     
     
-    // 버튼 활성화
-    @PostMapping("/chat/{messageId}/buttonenable")
-    public ResponseEntity<?> chatenableButton(
-            @PathVariable(name = "messageId") Long messageId,
-            @AuthenticationPrincipal PrincipalDetails principalDetails) {
-    
-//        likeService.removeDislike(commentId, principalDetails.getMemberEntity().getId());
-String result = 	 likeService.chat_findMemberLike_Dislike(messageId, principalDetails.getMemberEntity().getId());
-    	System.out.println("버튼활성화 상태 도착");
-    	return ResponseEntity.ok(result);
-    }
-    
+//    // 버튼 활성화
+//    @PostMapping("/chat/{messageId}/buttonenable")
+//    public ResponseEntity<?> chatenableButton(
+//            @PathVariable(name = "messageId") Long messageId,
+//            @AuthenticationPrincipal PrincipalDetails principalDetails) {
+//    
+////        likeService.removeDislike(commentId, principalDetails.getMemberEntity().getId());
+//String result = 	 likeService.chat_findMemberLike_Dislike(messageId, principalDetails.getMemberEntity().getId());
+//    	System.out.println("버튼활성화 상태 도착");
+//    	return ResponseEntity.ok(result);
+//    }
+//    
     
     
 }
