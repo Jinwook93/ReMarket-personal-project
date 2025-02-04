@@ -49,17 +49,26 @@ public class ChatController {
 	
 
 
-	    @GetMapping("/Chatroom/{boardId}")
-	    public String chatRoom(@PathVariable(name = "boardId") Long boardId, @RequestParam(name = "userId") String userId , @AuthenticationPrincipal PrincipalDetails principalDetails,Model model) {
-	    	MemberEntity memberEntity1 = principalDetails.getMemberEntity();
-	    	System.out.println("아이디확인"+userId);
-	    	ChattingRoomEntity chattingRoomEntity=chatService.findOrCreateRoom("채팅방 이름", memberEntity1.getUserid(), userId ,boardId, 0);
-	    	model.addAttribute("chatRoom", chattingRoomEntity);
-	     //   model.addAttribute("boardId", boardId);
-	        return "chatroom";
-	    }
+//	    @GetMapping("/Chatroom/{boardId}")
+//	    public String chatRoom(@PathVariable(name = "boardId") Long boardId, @RequestParam(name = "userId") String userId , @AuthenticationPrincipal PrincipalDetails principalDetails,Model model) {
+//	    	MemberEntity memberEntity1 = principalDetails.getMemberEntity();
+//	    	System.out.println("아이디확인"+userId);
+//	    	ChattingRoomEntity chattingRoomEntity=chatService.findOrCreateRoom("채팅방 이름", memberEntity1.getUserid(), userId ,boardId, 0);
+//	    	model.addAttribute("chatRoom", chattingRoomEntity);
+//	     //   model.addAttribute("boardId", boardId);
+//	        return "chatroom";
+//	    }
 	    
-	    
+    @PostMapping("/Chatroom/{boardId}")
+    @ResponseBody
+    public ResponseEntity<?> createChatRoom(@PathVariable(name = "boardId") Long boardId, @RequestBody ChattingRoomDTO chattingRoomDTO , @AuthenticationPrincipal PrincipalDetails principalDetails) {
+    	MemberEntity loggedUserId = principalDetails.getMemberEntity();
+    	System.out.println("아이디확인"+chattingRoomDTO.getMember2UserId());
+    	ChattingRoomEntity chattingRoomEntity=chatService.findOrCreateRoom("대화방", loggedUserId.getUserid(), chattingRoomDTO.getMember2UserId() ,boardId, 0);
+     //   model.addAttribute("boardId", boardId);
+    	return ResponseEntity.ok(chattingRoomEntity);
+    }
+    
 	    
 	    
 	    

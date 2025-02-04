@@ -66,7 +66,7 @@ public class ChatService {
 	    // 채팅방이 없으면 새로 생성
 	    if (chattingRoomEntity == null) {
 	        chattingRoomEntity = ChattingRoomEntity.builder()
-	            .title(title)
+	            .title(boardEntity.getTitle())
 	            .member1(member1)
 	            .member2(member2)
 	            .boardEntity(boardEntity)
@@ -243,8 +243,25 @@ public class ChatService {
 	
 	@Transactional
 	public List<ChattingRoomDTO> myChattingRoomList(Long id) {
-	    List<ChattingRoomEntity> chattingRoomEntities = chattingRoomRepository.findAllByLoggedMember(id);
-
+	    List<ChattingRoomEntity> chattingRoomEntities = 	chattingRoomRepository.findAllByLoggedMember2(id);
+	    		
+	    		if(chattingRoomEntities.isEmpty()) {
+	    			 chattingRoomEntities = 		chattingRoomRepository.findAllByLoggedMember(id);
+	    		}else {
+	    			for(ChattingRoomEntity room : chattingRoomEntities) {
+	    			
+	    				MemberEntity memberTmp = null;
+	    				memberTmp = room.getMember1();
+	    				
+	    				room.setMember1(room.getMember2());
+	    				
+	    				room.setMember2(memberTmp); 
+	    			}
+	    		}
+	    		if(chattingRoomEntities.isEmpty()) {
+	    			return Collections.EMPTY_LIST;
+	    		}
+	  
 	    return chattingRoomEntities.stream()
 	            .map((ChattingRoomEntity entity) -> {  // Explicitly specify the type here
 	                System.out.println("Mapping ChattingRoomEntity: " + entity.getTitle());
@@ -290,7 +307,7 @@ public class ChatService {
 	            })
 	            .collect(Collectors.toList());
 	}
-
+	
 
 
 

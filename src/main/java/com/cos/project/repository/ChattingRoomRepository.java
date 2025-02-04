@@ -22,6 +22,9 @@ public interface ChattingRoomRepository extends JpaRepository<ChattingRoomEntity
 	List<ChattingRoomEntity> findAllByLoggedMember(@Param("loggedId") Long loggedId);
 
 	
+	@Query("SELECT c  FROM ChattingRoomEntity c WHERE c.member2.id = :loggedId")	
+	List<ChattingRoomEntity> findAllByLoggedMember2(@Param("loggedId") Long loggedId);
+	
 //	@Query("SELECT c  FROM ChattingRoomEntity c WHERE c.member1.id = :loggedId")	
 //	List<ChattingRoomEntity> findAllByLoggedId(@Param("loggedId") Long loggedId);
 }

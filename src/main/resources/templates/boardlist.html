@@ -1,443 +1,339 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>게시판</title>
-<style>
-body {
-	font-family: Arial, sans-serif;
-	line-height: 1.6;
-	margin: 0;
-	padding: 20px;
-	background-color: #f9f9f9;
-}
-
-.container {
-	max-width: 100%;
-	margin: 0 auto;
-	background: #fff;
-	padding: 20px;
-	border-radius: 8px;
-	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-h1 {
-	text-align: center;
-	color: #333;
-}
-
-table {
-	width: 100%;
-	border-collapse: collapse;
-	margin-top: 20px;
-}
-
-th, td {
-	border: 1px solid #ddd;
-	text-align: center;
-	padding: 10px;
-}
-
-th {
-	background-color: #f4f4f4;
-}
-
-tr:hover {
-	background-color: #f1f1f1;
-}
-
-.write-btn, .reset-btn {
-	display: block;
-	width: 100px;
-	margin: 20px 0;
-	padding: 10px 20px;
-	text-align: center;
-	color: #fff;
-	background-color: #007bff;
-	border: none;
-	border-radius: 4px;
-	text-decoration: none;
-	font-size: 16px;
-}
-
-.write-btn:hover {
-	background-color: #0056b3;
-}
-
-.pagination {
-	text-align: center;
-	margin-top: 20px;
-}
-
-.pagination a {
-	margin: 0 5px;
-	text-decoration: none;
-	color: #007bff;
-}
-
-.pagination a.active {
-	font-weight: bold;
-	color: #0056b3;
-}
-
-.search-container {
-	display: flex;
-	justify-content: space-between;
-	margin-bottom: 20px;
-}
-
-.search-container select, .search-container input {
-	padding: 10px;
-	border-radius: 5px;
-	border: 1px solid #ccc;
-}
-
-.search-container button {
-	padding: 10px 20px;
-	background-color: #007bff;
-	color: white;
-	border-radius: 5px;
-	border: none;
-	cursor: pointer;
-}
-
-.search-container button:hover {
-	background-color: #0056b3;
-}
-
-/* 채팅창 스타일 */
-#chatBox {
-	display: none; /* 기본 상태 hidden */
-	position: fixed;
-	bottom: 20px;
-	right: 20px;
-	width: 300px;
-	height: 400px;
-	background: #fff;
-	border: 1px solid #ddd;
-	border-radius: 8px;
-	box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-	z-index: 1000;
-}
-
-#chatBox .header {
-	background: #007bff;
-	color: #fff;
-	padding: 10px;
-	text-align: center;
-	border-radius: 8px 8px 0 0;
-}
-
-#chatBox .content {
-	height: calc(100% - 60px);
-	overflow-y: auto;
-	padding: 10px;
-}
-
-#chatBox .footer {
-	position: absolute;
-	bottom: 0;
-	width: 100%;
-	padding: 10px;
-	background: #f4f4f4;
-	border-radius: 0 0 8px 8px;
-}
-
-#chatBox .footer input {
-	width: calc(100% - 20px);
-	padding: 10px;
-	border: 1px solid #ccc;
-	border-radius: 5px;
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>게시판</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 20px;
+      background-color: #f9f9f9;
+    }
+    .container {
+      max-width: 100%;
+      margin: 0 auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      text-align: center;
+      padding: 10px;
+    }
+    th {
+      background-color: #f4f4f4;
+    }
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+    .write-btn, .reset-btn {
+      display: block;
+      width: 100px;
+      margin: 20px 0;
+      padding: 10px 20px;
+      text-align: center;
+      color: #fff;
+      background-color: #007bff;
+      border: none;
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 16px;
+    }
+    .write-btn:hover {
+      background-color: #0056b3;
+    }
+    .pagination {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .pagination a {
+      margin: 0 5px;
+      text-decoration: none;
+      color: #007bff;
+    }
+    .pagination a.active {
+      font-weight: bold;
+      color: #0056b3;
+    }
+    .search-container {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .search-container select, .search-container input {
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    .search-container button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+    }
+    .search-container button:hover {
+      background-color: #0056b3;
+    }
+    /* 채팅창 스타일 (필요 시 사용) */
+    #chatBox {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 300px;
+      height: 400px;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+    }
+    #chatBox .header {
+      background: #007bff;
+      color: #fff;
+      padding: 10px;
+      text-align: center;
+      border-radius: 8px 8px 0 0;
+    }
+    #chatBox .content {
+      height: calc(100% - 60px);
+      overflow-y: auto;
+      padding: 10px;
+    }
+    #chatBox .footer {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      padding: 10px;
+      background: #f4f4f4;
+      border-radius: 0 0 8px 8px;
+    }
+    #chatBox .footer input {
+      width: calc(100% - 20px);
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+  </style>
 </head>
 <body>
-	<div th:replace="~{header.html}"></div>
-	<div class="container">
-		<h1>게시판</h1>
-
-
-
-		<!-- 글쓰기 버튼 -->
-		<div class="button-container" style="display: flex;">
-			<a href="/board/writeboard" class="write-btn">글쓰기</a>
-			<button type="button"
-				onclick="window.location.href = '/board/allboard'" class="reset-btn"
-				style="color: white; background-color: green; margin-left: 30px;">초기화</button>
-		</div>
-
-
-
-		<table style="margin-bottom: 20px;">
-			<thead>
-				<tr>
-					<th>번호</th>
-					<th>판매/구매</th>
-					<th>종류</th>
-					<th>제목</th>
-					<th>작성자</th>
-					<!-- 					<th>상품명</th> -->
-					<th>가격</th>
-					<th>작성일</th>
-					<th>조회수</th>
-					<th if="${principalDetails !=null}">수정/삭제/대화</th>
-
-
-				</tr>
-			</thead>
-			<tbody>
-				<!-- 게시글 데이터 반복 -->
-				<tr th:each="board : ${allBoards}">
-					<td th:text="${board.id}"></td>
-					<!-- 					팝니다,삽니다 -->
-					<td th:text="${board.buy_Sell}"></td>
-					<td th:text="${board.category}"></td>
-					<td><a th:href="@{/board/view/{id}(id=${board.id})}"
-						th:text="${board.title}"></a></td>
-					<td>
-						<!-- 이름 -->
-						<div class="enterChatRoom" style="cursor: pointer;"
-							th:onClick="@{/chat/Chatroom/{id}(id=${board.id})}">
-
-							<div style="display: flex; align-items: center;">
-								<!-- 프로필 이미지 -->
-								<div th:if="${board.memberEntity.profileImage != null}">
-									<div id="imagePreview" style="margin-top: 10px;">
-										<img id="previewImage"
-											th:src="@{{imagePath}(imagePath=${board.memberEntity.profileImage})}"
-											alt="Profile Image Preview"
-											style="display: block; width: 50px; height: 50px; margin-right: 10px;">
-									</div>
-								</div>
-
-								<div th:if="${board.memberEntity.profileImage == null}">
-									<div id="imagePreview" style="margin-top: 10px;">
-										<img id="previewImage" src="/boardimage/nullimage.jpg"
-											alt="no profile image"
-											style="display: block; width: 50px; height: 50px; margin-right: 10px;">
-									</div>
-								</div>
-
-
-								<span th:text="${board.memberEntity.name}"></span>
-							</div>
-
-						</div>
-					</td>
-					<!-- 						<td th:text="${board.product}"></td> -->
-					<td th:text="${board.price}"></td>
-					<td
-						th:text="${#dates.format(board.createTime, 'yyyy-MM-dd HH:mm')}"></td>
-					<td th:text="${board.view}"></td>
-
-
-					<!-- 수정/삭제 버튼 (조건부 표시) -->
-					<td th:if="${board.memberEntity.userid == principalDetails.name}">
-						<div style="display: flex;">
-							<!--             <button type="button" id="updateBoard"  onClick= "goUpdateForm()">수정하기</button>								전역스 코프로 처리하는 법 -->
-							<button type="button" th:id="|updateBoard-${board.id}|"
-								th:onclick="'window.location.href=\'/board/updateboard/' + ${board.id} + '\';'">
-								수정</button>
-
-							<button type="button" th:id="|deleteBoard-${board.id}|"
-								th:data-deleteBoardId="${board.id}">삭제</button>
-						</div>
-					</td>
-					<td
-						th:unless="${board.memberEntity.userid == principalDetails.name}">
-						<div class="enterChatRoom" style="cursor: pointer;"
-							th:onClick="@{/chat/Chatroom/{id}(id=${board.id})}">
-							<button type="button" th:id="|chatBoard-${board.id}|">대화하기</button>
-						</div>
-					</td>
-
-
-				</tr>
-			</tbody>
-		</table>
-
-
-
-		<!-- 검색창 -->
-		<div class="search-container" align="center">
-
-
-
-
-			<form action="/search/board/result" method="get">
-				<!-- 카테고리 0 선택 -->
-				<select name="buy_Sell">
-					<option value="">판매/구매</option>
-					<option value="팝니다">팝니다</option>
-					<option value="삽니다">삽니다</option>
-					<option value="거래완료">거래완료</option>
-				</select>
-
-
-
-
-
-
-
-				<!-- 카테고리 1 선택 -->
-				<select name="category1">
-					<option value="">모든 카테고리</option>
-					<option value="예제A">예제A</option>
-					<option value="예제B">예제B</option>
-					<option value="예제C">예제C</option>
-				</select>
-
-				<!-- 카테고리 2 선택 -->
-				<select name="category2" required>
-					<option value="">항목을 선택하세요</option>
-					<option value="title">제목</option>
-					<option value="userid">작성자 아이디</option>
-					<option value="name">작성자 이름</option>
-					<option value="contents">내용</option>
-				</select>
-
-
-
-				<!-- 검색어 입력 -->
-				<input type="text" name="search" placeholder="검색어 입력" />
-
-				<!-- 검색 버튼 -->
-				<button type="submit">검색</button>
-			</form>
-		</div>
-
-
-
-		<!-- 페이지네이션 -->
-		<div class="pagination">
-			<!-- 페이지네이션 링크 예시 -->
-			<a th:href="@{/board/list(page=1)}" th:text="'1'" class="active"></a>
-			<a th:href="@{/board/list(page=2)}" th:text="'2'"></a> <a
-				th:href="@{/board/list(page=3)}" th:text="'3'"></a>
-		</div>
-		<!-- 채팅창 -->
-<!-- 		<div style="display:none;" th:replace="~{chatroom}"></div> -->
-
-
-
-
-		<!-- 채팅창 -->
-		<!-- 	 <div style = "display:none;" th:replace="~{chatroom}"> -->
-		<!-- 	<div id="chatBox"> -->
-		<!-- 		<div class="header">채팅</div> -->
-		<!-- 		<div class="content"> -->
-		<!-- 			<p>채팅 내용이 여기에 표시됩니다.</p> -->
-		<!-- 		</div> -->
-		<!-- 		<div class="footer" style="display: flex;"> -->
-		<!-- 			<input type="text" placeholder="메시지를 입력하세요"> -->
-		<!-- 			<button type="button" style="background-color: blue; color: white;"> -->
-		<!-- 				전송</button> -->
-		<!-- 		</div> -->
-		<!-- 	</div> -->
-
-		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-		<script>
-			//         document.addEventListener("DOMContentLoaded", function () {
-			//             const chatBox = document.getElementById("chatBox");
-			//             const chatTriggers = document.querySelectorAll(".enterChatRoom");
-
-			//             chatTriggers.forEach(trigger => {
-			//                 trigger.addEventListener("click", function () {
-			//                     if (chatBox.style.display === "none") {
-			//                         // 비동기로 필요한 데이터 로드 가능
-			//                         chatBox.style.display = "block";
-			//                     } else {
-			//                         chatBox.style.display = "none";
-			//                     }
-			//                 });
-			//             });
-			//         });
-		</script>
-
-
-		<script>
-			document
-					.addEventListener(
-							"DOMContentLoaded",
-							function() {
-								const searchForm = document
-										.querySelector("form[action='/search/board/result']");
-								searchForm
-										.addEventListener(
-												"submit",
-												function(event) {
-
-													//         const category1 = searchForm.querySelector("select[name='category1']").value.trim();
-													const category2 = searchForm
-															.querySelector("select[name='category2']").value
-															.trim();
-													const search = searchForm
-															.querySelector("input[name='search']").value
-															.trim();
-
-													if (category2 === ""
-															&& search === "") {
-														alert("검색 조건을 입력해주세요.");
-														event.preventDefault(); // 폼 제출 중단
-													} else if (category2 === "") {
-														alert("항목을 선택해주세요.");
-														event.preventDefault(); // 폼 제출 중단
-													} else if (search === "") {
-														alert("검색어를 입력해주세요.");
-														event.preventDefault(); // 폼 제출 중단
-													}
-												});
-							});
-		</script>
-		<script>
-			document
-					.addEventListener(
-							"DOMContentLoaded",
-							function() {
-								// 모든 삭제 버튼에 대해 이벤트 리스너 추가
-								document
-										.querySelectorAll(
-												"[id^='deleteBoard-']")
-										.forEach(
-												function(button) {
-													button
-															.addEventListener(
-																	"click",
-																	function() {
-																		const boardId = this
-																				.getAttribute("data-deleteBoardId");
-																		// 버튼에 설정된 board.id 가져오기
-																		console
-																				.log("보드아이디"
-																						+ boardId);
-																		if (confirm("정말로 이 게시글을 삭제하시겠습니까?")) { // 삭제 확인 팝업
-																			// AJAX 요청
-																			$
-																					.ajax({
-																						url : `/board/deleteboard/${boardId}`, // 삭제 API 경로
-																						type : "DELETE", // HTTP 메서드
-																						contentType : "application/json", // 요청 Content-Type
-																						success : function(
-																								response) {
-																							alert("게시글이 삭제되었습니다.");
-																							window.location.href = "/"; // 성공 시 리다이렉트 경로 설정
-																						},
-																						error : function(
-																								xhr,
-																								status,
-																								error) {
-																							alert("게시글이 삭제되지 않았습니다. 다시 시도해주세요.");
-																							console
-																									.error(
-																											"Error:",
-																											error);
-																						}
-																					});
-																		}
-																	});
-												});
-							});
-		</script>
+  <div th:replace="~{header.html}"></div>
+  <div class="container">
+    <h1>게시판</h1>
+    <!-- 글쓰기 버튼 -->
+    <div class="button-container" style="display: flex;">
+      <a href="/board/writeboard" class="write-btn">글쓰기</a>
+      <button type="button" onclick="window.location.href='/board/allboard'" class="reset-btn" style="color: white; background-color: green; margin-left: 30px;">초기화</button>
+    </div>
+    <table style="margin-bottom: 20px;">
+      <thead>
+        <tr>
+          <th>번호</th>
+          <th>판매/구매</th>
+          <th>종류</th>
+          <th>제목</th>
+          <th>작성자</th>
+          <th>가격</th>
+          <th>작성일</th>
+          <th>조회수</th>
+          <th if="${principalDetails !=null}">수정/삭제/대화</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- 게시글 데이터 반복 -->
+        <tr th:each="board : ${allBoards}">
+          <td th:text="${board.id}"></td>
+          <td th:text="${board.buy_Sell}"></td>
+          <td th:text="${board.category}"></td>
+          <td>
+            <a th:href="@{/board/view/{id}(id=${board.id})}" th:text="${board.title}"></a>
+          </td>
+          <td>
+            <div class="enterChatRoom" style="cursor: pointer;" th:onClick="@{/chat/Chatroom/{id}(id=${board.id})}">
+              <div style="display: flex; align-items: center;">
+                <div th:if="${board.memberEntity.profileImage != null}">
+                  <div id="imagePreview" style="margin-top: 10px;">
+                    <img id="previewImage" th:src="@{{imagePath}(imagePath=${board.memberEntity.profileImage})}" alt="Profile Image Preview" style="display: block; width: 50px; height: 50px; margin-right: 10px;">
+                  </div>
+                </div>
+                <div th:if="${board.memberEntity.profileImage == null}">
+                  <div id="imagePreview" style="margin-top: 10px;">
+                    <img id="previewImage" src="/boardimage/nullimage.jpg" alt="no profile image" style="display: block; width: 50px; height: 50px; margin-right: 10px;">
+                  </div>
+                </div>
+                <span th:text="${board.memberEntity.name}"></span>
+              </div>
+            </div>
+          </td>
+          <td th:text="${board.price}"></td>
+          <td th:text="${#dates.format(board.createTime, 'yyyy-MM-dd HH:mm')}"></td>
+          <td th:text="${board.view}"></td>
+          <!-- 수정/삭제 버튼 (작성자와 로그인 사용자가 동일할 경우) -->
+          <td th:if="${board.memberEntity.userid == principalDetails.name}">
+            <div style="display: flex;">
+              <button type="button" th:id="|updateBoard-${board.id}|" th:onclick="'window.location.href=\'/board/updateboard/' + ${board.id} + '\';'">수정</button>
+              <button type="button" th:id="|deleteBoard-${board.id}|" th:data-deleteBoardId="${board.id}">삭제</button>
+            </div>
+          </td>
+          <!-- 작성자와 로그인 사용자가 다를 경우 대화하기 버튼 표시 -->
+          <td th:unless="${board.memberEntity.userid == principalDetails.name}">
+            <div class="enterChatRoom" style="cursor: pointer;">
+              <button type="button" class="createRoom" th:data-id="${board.id}" th:data-member2="${board.memberEntity.userid}">대화하기</button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <!-- 검색창 -->
+    <div class="search-container" align="center">
+      <form action="/search/board/result" method="get">
+        <select name="buy_Sell">
+          <option value="">판매/구매</option>
+          <option value="팝니다">팝니다</option>
+          <option value="삽니다">삽니다</option>
+          <option value="거래완료">거래완료</option>
+        </select>
+        <select name="category1">
+          <option value="">모든 카테고리</option>
+          <option value="예제A">예제A</option>
+          <option value="예제B">예제B</option>
+          <option value="예제C">예제C</option>
+        </select>
+        <select name="category2" required>
+          <option value="">항목을 선택하세요</option>
+          <option value="title">제목</option>
+          <option value="userid">작성자 아이디</option>
+          <option value="name">작성자 이름</option>
+          <option value="contents">내용</option>
+        </select>
+        <input type="text" name="search" placeholder="검색어 입력" />
+        <button type="submit">검색</button>
+      </form>
+    </div>
+    <!-- 페이지네이션 -->
+    <div class="pagination">
+      <a th:href="@{/board/list(page=1)}" th:text="'1'" class="active"></a>
+      <a th:href="@{/board/list(page=2)}" th:text="'2'"></a>
+      <a th:href="@{/board/list(page=3)}" th:text="'3'"></a>
+    </div>
+  </div>
+  
+  <!-- jQuery (AJAX 요청 등 사용 시) -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  
+  <!-- 대화하기 버튼 클릭 시 채팅방 생성 요청 스크립트 -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // "대화하기" 버튼들을 선택합니다.
+      const chatButtons = document.querySelectorAll('.createRoom');
+  
+      chatButtons.forEach(button => {
+        button.addEventListener('click', async function() {
+          // 버튼의 data 속성에서 boardId와 상대방 userid를 가져옵니다.
+          const boardId = this.getAttribute('data-id');
+          const member2UserId = this.getAttribute('data-member2');
+  
+          // 필수 데이터가 없는 경우 처리
+          if (!boardId || !member2UserId) {
+            alert('필수 데이터(boardId 또는 member2UserId)가 누락되었습니다.');
+            return;
+          }
+  
+          // 전송할 payload 구성 (필요한 ChattingRoomDTO 필드)
+          const payload = {
+            member2UserId: member2UserId
+          };
+  
+          try {
+            // POST 요청을 보내 채팅방 생성
+            const response = await fetch(`/chat/Chatroom/${boardId}`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(payload)
+            });
+  
+            if (response.ok) {
+              const data = await response.json();
+              console.log('채팅방 생성 성공:', data);
+              // 채팅방 생성 후, 채팅방 목록에 추가하거나 채팅창을 열어주는 등 원하는 UI 업데이트를 진행합니다.
+              // 예: location.href = `/chat/room/${data.id}`; 로 채팅방으로 이동
+            } else {
+              console.error('채팅방 생성 실패:', response.statusText);
+            }
+          } catch (error) {
+            console.error('채팅방 생성 중 오류 발생:', error);
+          }
+        });
+      });
+    });
+  </script>
+  
+  <!-- 검색, 삭제 등 기타 스크립트 -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const searchForm = document.querySelector("form[action='/search/board/result']");
+      searchForm.addEventListener("submit", function(event) {
+        const category2 = searchForm.querySelector("select[name='category2']").value.trim();
+        const search = searchForm.querySelector("input[name='search']").value.trim();
+  
+        if (category2 === "" && search === "") {
+          alert("검색 조건을 입력해주세요.");
+          event.preventDefault();
+        } else if (category2 === "") {
+          alert("항목을 선택해주세요.");
+          event.preventDefault();
+        } else if (search === "") {
+          alert("검색어를 입력해주세요.");
+          event.preventDefault();
+        }
+      });
+    });
+  </script>
+  
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      // 모든 삭제 버튼에 대해 이벤트 리스너 추가
+      document.querySelectorAll("[id^='deleteBoard-']").forEach(function(button) {
+        button.addEventListener("click", function() {
+          const boardId = this.getAttribute("data-deleteBoardId");
+          console.log("보드아이디: " + boardId);
+          if (confirm("정말로 이 게시글을 삭제하시겠습니까?")) {
+            $.ajax({
+              url: `/board/deleteboard/${boardId}`,
+              type: "DELETE",
+              contentType: "application/json",
+              success: function(response) {
+                alert("게시글이 삭제되었습니다.");
+                window.location.href = "/";
+              },
+              error: function(xhr, status, error) {
+                alert("게시글이 삭제되지 않았습니다. 다시 시도해주세요.");
+                console.error("Error:", error);
+              }
+            });
+          }
+        });
+      });
+    });
+  </script>
+  
 </body>
 </html>

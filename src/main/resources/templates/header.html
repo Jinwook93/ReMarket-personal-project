@@ -242,7 +242,7 @@
 
     	        // 메시지 불러오기 및 새로고침
     	        loadMessages(roomId);
-//     	        setInterval(() => loadMessages(roomId), 3000);
+     	        setInterval(() => loadMessages(roomId), 1000);
 
     	        // 메시지 전송 이벤트 추가
     	        document.getElementById(`send-button-${roomId}`).addEventListener("click", () => sendMessage(roomId,userid));
