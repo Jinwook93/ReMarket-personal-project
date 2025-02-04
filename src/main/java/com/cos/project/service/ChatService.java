@@ -151,6 +151,7 @@ public class ChatService {
 	                message.getSender().getUserid(),
 	                message.getReceiver().getUserid(),
 	                message.getMessageContent(),
+	                message.isLiked(),
 	                message.getSendTime()
 	            ))
 	            .collect(Collectors.toList());

@@ -149,14 +149,41 @@ String result = 	 likeService.comment_findMemberLike_Dislike(commentId, principa
     
     
     
+    //=============================채팅 좋아요 컨트롤러
+
+    @PostMapping("/chat/{messageId}/like")
+    public ResponseEntity<?> chatlikePost(
+            @PathVariable(name = "messageId") Long messageId,
+            @AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody boolean flag) {
+//        likeService.addLike(commentId, principalDetails.getMemberEntity().getId());
+    	boolean result = likeService.chatToggleLike(messageId, principalDetails.getMemberEntity().getId(), flag);
+        return ResponseEntity.ok(result );
+    }
+
+//    // 좋아요 취소
+//    @PostMapping("/chat/{messageId}/unlike")
+//    public ResponseEntity<List<Integer>> chatunlikePost(
+//            @PathVariable(name = "messageId") Long messageId,
+//            @AuthenticationPrincipal PrincipalDetails principalDetails) {
+////        likeService.removeLike(commentId, principalDetails.getMemberEntity().getId());
+//    	boolean result = likeService.chatToggleLike(messageId, principalDetails.getMemberEntity().getId());
+//        return ResponseEntity.ok(totallike_dislike );
+//        }
     
     
     
     
+    // 버튼 활성화
+    @PostMapping("/chat/{messageId}/buttonenable")
+    public ResponseEntity<?> chatenableButton(
+            @PathVariable(name = "messageId") Long messageId,
+            @AuthenticationPrincipal PrincipalDetails principalDetails) {
     
-    
-    
-    
+//        likeService.removeDislike(commentId, principalDetails.getMemberEntity().getId());
+String result = 	 likeService.chat_findMemberLike_Dislike(messageId, principalDetails.getMemberEntity().getId());
+    	System.out.println("버튼활성화 상태 도착");
+    	return ResponseEntity.ok(result);
+    }
     
     
     

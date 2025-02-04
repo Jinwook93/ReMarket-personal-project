@@ -19,7 +19,7 @@ public class MessageDTO {
     private String senderUserId;   // 보낸 사람 ID
     private String receiverUserId; // 받은 사람 ID
     private String messageContent; // 메시지 내용
-    
+    private boolean liked;	// 메시지 좋아요 활성화 상태
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private Timestamp sendTime;    // 메시지 전송 시간
 }

@@ -39,10 +39,24 @@ public class MessageEntity {
     @JsonIgnore
     private MemberEntity receiver;  // 메시지를 받은 사람
 
+    
+    
+    private boolean liked = false;
+    
+    
+    
+    
+    
+    
+    
     private String messageContent;  // 메시지 내용
 
     @CreationTimestamp
     private Timestamp sendTime;  // 메시지 전송 시간
+    
+    
+    
+    
 
     // getters and setters
 }

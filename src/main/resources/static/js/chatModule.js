@@ -3,116 +3,156 @@
 // 특정 채팅방(roomId) 메시지를 불러오는 함수
 export async function loadMessages(roomId) {
 	const loggedUserId = document.getElementById("loggedUserId").value;
-    const chatBox = document.getElementById(`chat-box-${roomId}`);
-    if (!chatBox) return;
+	const chatBox = document.getElementById(`chat-box-${roomId}`);
+	if (!chatBox) return;
 
-    try {
-        const response = await fetch(`/chat/loadmessages/${roomId}`);
-//        console.log(`${roomId}`);
-        if (!response.ok) {
-            console.error("Server returned an error:", response.status, response.statusText);
-            chatBox.innerHTML = "<div>Error loading messages.</div>";
-            return;
-        }
-        const messages = await response.json();
-//        console.log("Messages received:", messages);
+	try {
+		const response = await fetch(`/chat/loadmessages/${roomId}`);
+		if (!response.ok) {
+			console.error("Server returned an error:", response.status, response.statusText);
+			chatBox.innerHTML = "<div>Error loading messages.</div>";
+			return;
+		}
 
-        // 기존 메시지 초기화
-        chatBox.innerHTML = "";
-        
-        if (!Array.isArray(messages)) {
-            console.error("Expected messages to be an array, but got:", messages);
-            chatBox.innerHTML = "<div>Invalid message format.</div>";
-            return;
-        }
-        
-messages.forEach(msg => {
-    const messageElement = document.createElement("div");
-    messageElement.textContent = `${msg.senderUserId}: ${msg.messageContent} ${msg.sendTime}`;
-    
-//    console.log("로그인한 유저:", loggedUserId, "메시지 보낸 유저:", msg.senderUserId);
+		const messages = await response.json();
+		chatBox.innerHTML = ""; // 기존 메시지 초기화
 
-    // 로그인한 사용자와 보낸 사용자가 동일하면 삭제 버튼 추가
-    if (String(msg.senderUserId) === String(loggedUserId)) {
-        messageElement.classList.add("message-right");
+		if (!Array.isArray(messages)) {
+			console.error("Expected messages to be an array, but got:", messages);
+			chatBox.innerHTML = "<div>Invalid message format.</div>";
+			return;
+		}
 
-        // 삭제 버튼 생성
-        const deleteMessageButton = document.createElement("button");
-        deleteMessageButton.textContent = "삭제";
-        deleteMessageButton.classList.add("delete-button");
-        deleteMessageButton.onclick = async () => {
-            const confirmDelete = confirm("메시지를 삭제하시겠습니까?");
-            if (confirmDelete) {
-                try {
-                    const response = await fetch(`/chat/deleteMessage/${msg.id}`, { method: "DELETE" });
-                    if (response.ok) {
-                        messageElement.remove(); // 삭제 성공 시 메시지 삭제
-                        loadMessages(`${roomId}`);
-                    } else {
-                        alert("메시지 삭제에 실패했습니다.");
-                    }
-                } catch (error) {
-                    console.error("메시지 삭제 중 오류 발생", error);
-                }
-            }
-        };
+		messages.forEach(msg => {
+			const messageElement = document.createElement("div");
+			messageElement.classList.add("message-item");
 
-        messageElement.appendChild(deleteMessageButton);
-    } else {
-        messageElement.classList.add("message-left");
-    }
-
-    chatBox.appendChild(messageElement);
-});
+			// 메시지 내용과 좋아요 상태 처리
+	//		messageElement.textContent = `${msg.senderUserId}: ${msg.messageContent} ${msg.sendTime} ${msg.liked ? "❤️" : "🤍"}`;
 
 
-        // 스크롤 최하단으로 이동
-        chatBox.scrollTop = chatBox.scrollHeight;
-    } catch (error) {
-        console.error("Error loading messages:", error);
-        chatBox.innerHTML = "<div>Error loading messages.</div>";
-    }
+			// 로그인한 사용자와 보낸 사용자가 동일하면 삭제 버튼 추가
+			
+				// 메시지 내용과 좋아요 상태 처리
+			messageElement.textContent = `${msg.senderUserId}: ${msg.messageContent} ${msg.sendTime} ${msg.liked ? "❤️" : "🤍"}`;
+			if (String(msg.senderUserId) === String(loggedUserId)) {
+				messageElement.classList.add("message-right");
+
+				// 삭제 버튼 생성
+				const deleteMessageButton = document.createElement("button");
+				deleteMessageButton.textContent = "삭제";
+				deleteMessageButton.classList.add("delete-button");
+				deleteMessageButton.onclick = async () => {
+					const confirmDelete = confirm("메시지를 삭제하시겠습니까?");
+					if (confirmDelete) {
+						try {
+							const response = await fetch(`/chat/deleteMessage/${msg.id}`, { method: "DELETE" });
+							if (response.ok) {
+								messageElement.remove(); // 삭제 성공 시 메시지 삭제
+								loadMessages(roomId);
+							} else {
+								alert("메시지 삭제에 실패했습니다.");
+							}
+						} catch (error) {
+							console.error("메시지 삭제 중 오류 발생", error);
+						}
+					}
+				};
+				messageElement.appendChild(deleteMessageButton);
+			} else {
+					messageElement.textContent = `${msg.senderUserId}: ${msg.messageContent} ${msg.sendTime}`;
+				messageElement.classList.add("message-left");
+
+				// 좋아요 버튼 생성
+				const likeButton = document.createElement("button");
+				likeButton.textContent = msg.liked ? "❤️" : "🤍";
+				likeButton.classList.add("like-button");
+				if (msg.liked) likeButton.classList.add("liked");
+				likeButton.dataset.messageId = msg.id;
+
+				// 좋아요 버튼 이벤트 추가
+				likeButton.addEventListener("click", async function() {
+					const messageId = this.dataset.messageId;
+					const isLiked = this.classList.contains("liked"); // 현재 좋아요 상태 확인
+
+					try {
+						const response = await fetch(`/chat/${messageId}/like`, {
+							method: "POST",
+							headers: {
+								"Content-Type": "application/json",
+							},
+							body: JSON.stringify(!isLiked), // 반대 상태로 변경
+						});
+
+						if (response.ok) {
+							const result = await response.json();
+							if (result) {
+								this.classList.add("liked");
+								this.textContent = "❤️";
+							} else {
+								this.classList.remove("liked");
+								this.textContent = "🤍";
+							}
+						}
+					} catch (error) {
+						console.error("좋아요 요청 중 오류 발생:", error);
+					}
+				});
+
+				messageElement.appendChild(likeButton);
+			}
+
+			chatBox.appendChild(messageElement);
+		});
+
+		// 스크롤 최하단으로 이동
+		chatBox.scrollTop = chatBox.scrollHeight;
+	} catch (error) {
+		console.error("Error loading messages:", error);
+		chatBox.innerHTML = "<div>Error loading messages.</div>";
+	}
 }
+
 
 // 특정 채팅방(roomId)에 메시지를 전송하는 함수
 export async function sendMessage(roomId, userid) {
-    const messageInput = document.getElementById(`message-input-${roomId}`);
-    const message = messageInput.value.trim();
-    if (message === "") return;
+	const messageInput = document.getElementById(`message-input-${roomId}`);
+	const message = messageInput.value.trim();
+	if (message === "") return;
 
-    try {
-        await fetch(`/chat/send/${roomId}`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({receiverUserId: userid , messageContent: message })
-        });
-		
-        messageInput.value = "";
-        loadMessages(roomId); // 전송 후 메시지 갱신
-    } catch (error) {
-        console.error("메시지 전송 중 오류 발생", error);
-    }
+	try {
+		await fetch(`/chat/send/${roomId}`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ receiverUserId: userid, messageContent: message })
+		});
+
+		messageInput.value = "";
+		loadMessages(roomId); // 전송 후 메시지 갱신
+	} catch (error) {
+		console.error("메시지 전송 중 오류 발생", error);
+	}
 }
 
 
 //메시지 기능삭제
 export async function deleteMessage(roomId, deleteRoomId) {
-    const messageInput = document.getElementById(`message-input-${roomId}`);
-    const message = messageInput.value.trim();
-    if (message === "") return;
+	const messageInput = document.getElementById(`message-input-${roomId}`);
+	const message = messageInput.value.trim();
+	if (message === "") return;
 
-    try {
-        await fetch(`/chat/deleteroom/${roomId}`, {
-            method: "DELETE",
-            headers: { "Content-Type": "application/json" },
-        //    body: JSON.stringify({ messageContent: message })
-        });
-		
-        messageInput.value = "";
-        loadMessages(roomId); // 전송 후 메시지 갱신
-    } catch (error) {
-        console.error("메시지 전송 중 오류 발생", error);
-    }
+	try {
+		await fetch(`/chat/deleteroom/${roomId}`, {
+			method: "DELETE",
+			headers: { "Content-Type": "application/json" },
+			//    body: JSON.stringify({ messageContent: message })
+		});
+
+		messageInput.value = "";
+		loadMessages(roomId); // 전송 후 메시지 갱신
+	} catch (error) {
+		console.error("메시지 전송 중 오류 발생", error);
+	}
 }
 
 
@@ -125,21 +165,21 @@ export async function deleteMessage(roomId, deleteRoomId) {
 
 // 특정 채팅방을 열고 메시지 기능을 연결하는 함수
 export async function openChatRoom(roomId, title, loggedUserId, userid) {
-    let chatWindow = document.getElementById(`chat-room-${roomId}`);
+	let chatWindow = document.getElementById(`chat-room-${roomId}`);
 
-    if (chatWindow) {
-        chatWindow.remove(); // 이미 열려있으면 닫기
-    } else {
-        chatWindow = document.createElement("div");
-        chatWindow.id = `chat-room-${roomId}`;
-        chatWindow.className = "chat-window";
-           // board 정보 비동기 요청
-        const boardresponse = await fetch(`/chat/findBoard/${roomId}`);
-        const board = await boardresponse.json();
-        
-        	console.log(board);
-        	console.log(roomId,title,loggedUserId,userid);
-        chatWindow.innerHTML = `
+	if (chatWindow) {
+		chatWindow.remove(); // 이미 열려있으면 닫기
+	} else {
+		chatWindow = document.createElement("div");
+		chatWindow.id = `chat-room-${roomId}`;
+		chatWindow.className = "chat-window";
+		// board 정보 비동기 요청
+		const boardresponse = await fetch(`/chat/findBoard/${roomId}`);
+		const board = await boardresponse.json();
+
+		console.log(board);
+		console.log(roomId, title, loggedUserId, userid);
+		chatWindow.innerHTML = `
             <div id="chat-container">
                 <div style="display:flex;">
                     <h2>채팅</h2>
@@ -158,23 +198,23 @@ export async function openChatRoom(roomId, title, loggedUserId, userid) {
                 </div>
             </div>
         `;
-        document.body.appendChild(chatWindow);
+		document.body.appendChild(chatWindow);
 
-        // 메시지 불러오기 및 새로고침
-        loadMessages(roomId);
-        setInterval(() => loadMessages(roomId), 2000);
+		// 메시지 불러오기 및 새로고침
+		loadMessages(roomId);
+		setInterval(() => loadMessages(roomId), 2000);
 
-        // 메시지 전송 이벤트 추가
-        document.getElementById(`send-button-${roomId}`).addEventListener("click", () => sendMessage(roomId, userid));
-        document.getElementById(`message-input-${roomId}`).addEventListener("keypress", (event) => {
-            if (event.key === "Enter") sendMessage(roomId, userid);
-        });
+		// 메시지 전송 이벤트 추가
+		document.getElementById(`send-button-${roomId}`).addEventListener("click", () => sendMessage(roomId, userid));
+		document.getElementById(`message-input-${roomId}`).addEventListener("keypress", (event) => {
+			if (event.key === "Enter") sendMessage(roomId, userid);
+		});
 
-        // 닫기 버튼 이벤트 추가
-        chatWindow.querySelector(".close-chat").addEventListener("click", function () {
-            chatWindow.remove();
-        });
-    }
+		// 닫기 버튼 이벤트 추가
+		chatWindow.querySelector(".close-chat").addEventListener("click", function() {
+			chatWindow.remove();
+		});
+	}
 }
 
 
@@ -212,20 +252,20 @@ export async function openChatRoom(roomId, title, loggedUserId, userid) {
 // chatModule.js
 
 export async function loadChatRooms(loggedId) {
-    const chattingRoomListBody = document.getElementById("chattingRoomListBody");
-    
-    // 기존 목록 초기화 (중복 방지)
-    chattingRoomListBody.innerHTML = "";
-    
-    try {
-        const response = await fetch(`/chat/myChatRoom/${loggedId}`);
-        const datas = await response.json();
-        
-        if (Array.isArray(datas) && datas.length > 0) {
-            datas.forEach(data => {
-                // 반복문 내부에서 새로운 <tr> 요소를 생성합니다.
-                const row = document.createElement("tr");
-                row.innerHTML = `
+	const chattingRoomListBody = document.getElementById("chattingRoomListBody");
+
+	// 기존 목록 초기화 (중복 방지)
+	chattingRoomListBody.innerHTML = "";
+
+	try {
+		const response = await fetch(`/chat/myChatRoom/${loggedId}`);
+		const datas = await response.json();
+
+		if (Array.isArray(datas) && datas.length > 0) {
+			datas.forEach(data => {
+				// 반복문 내부에서 새로운 <tr> 요소를 생성합니다.
+				const row = document.createElement("tr");
+				row.innerHTML = `
                     <td>${data.title}</td>
                     <td>${data.member2UserId}</td>
                     <td>
@@ -245,76 +285,76 @@ export async function loadChatRooms(loggedId) {
                         </div>
                     </td>
                 `;
-                chattingRoomListBody.appendChild(row);
-            });
-        } else {
-            console.warn('No chatting rooms available.');
-        }
-    } catch (error) {
-        console.error("Failed to fetch chat rooms:", error);
-    }
+				chattingRoomListBody.appendChild(row);
+			});
+		} else {
+			console.warn('No chatting rooms available.');
+		}
+	} catch (error) {
+		console.error("Failed to fetch chat rooms:", error);
+	}
 }
 
 
 export function setUpEnterRoomButton(loggedUserId) {
-    document.querySelectorAll(".enterChat").forEach(button => {
-        button.addEventListener("click", function () {
-            const roomId = this.getAttribute("data-room-id");
-            const title = this.getAttribute("data-title");
-            const userid = this.getAttribute("data-userid");
-            openChatRoom(roomId, title, loggedUserId, userid);
-        });
-    });
+	document.querySelectorAll(".enterChat").forEach(button => {
+		button.addEventListener("click", function() {
+			const roomId = this.getAttribute("data-room-id");
+			const title = this.getAttribute("data-title");
+			const userid = this.getAttribute("data-userid");
+			openChatRoom(roomId, title, loggedUserId, userid);
+		});
+	});
 }
 
 export function setUpExitRoomButton() {
-    document.querySelectorAll(".deleteRoom").forEach(button => {
-        button.addEventListener("click", async function () {
-            const deleteRoomId = this.getAttribute("data-deleteRoomId");
-            const deleteUserId = this.getAttribute("data-deleteUserid");
+	document.querySelectorAll(".deleteRoom").forEach(button => {
+		button.addEventListener("click", async function() {
+			const deleteRoomId = this.getAttribute("data-deleteRoomId");
+			const deleteUserId = this.getAttribute("data-deleteUserid");
 
-            try {
-                const response = await fetch(`/chat/exitRoom/${deleteRoomId}`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ receiver: deleteUserId })
-                });
+			try {
+				const response = await fetch(`/chat/exitRoom/${deleteRoomId}`, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify({ receiver: deleteUserId })
+				});
 
-                if (response.ok) {
-                    this.closest("tr").remove();
-                    alert("채팅방을 나갔습니다.");
-                } else {
-                    alert("채팅방 나가기에 실패했습니다.");
-                }
-            } catch (error) {
-                console.error("Failed to exit chat room:", error);
-            }
-        });
-    });
+				if (response.ok) {
+					this.closest("tr").remove();
+					alert("채팅방을 나갔습니다.");
+				} else {
+					alert("채팅방 나가기에 실패했습니다.");
+				}
+			} catch (error) {
+				console.error("Failed to exit chat room:", error);
+			}
+		});
+	});
 }
 
 export function toggleChattingRoomList() {
-    const myChattingRoomList = document.getElementById("myChattingRoomList");
-    const chattingRoomList = document.querySelector(".chattingRoomList");
+	const myChattingRoomList = document.getElementById("myChattingRoomList");
+	const chattingRoomList = document.querySelector(".chattingRoomList");
 
-    if (myChattingRoomList && chattingRoomList) {
-        myChattingRoomList.addEventListener("click", (event) => {
-            event.preventDefault();
-            chattingRoomList.style.display = chattingRoomList.style.display === "none" ? "block" : "none";
-        });
-    }
+	if (myChattingRoomList && chattingRoomList) {
+		myChattingRoomList.addEventListener("click", (event) => {
+			event.preventDefault();
+			chattingRoomList.style.display = chattingRoomList.style.display === "none" ? "block" : "none";
+		});
+	}
 }
 
 
 
 
 export function showChattingRoomList() {
-  const chattingRoomList = document.querySelector(".chattingRoomList");
-  if (chattingRoomList) {
-    chattingRoomList.style.display = "block";
-  }
+	const chattingRoomList = document.querySelector(".chattingRoomList");
+	if (chattingRoomList) {
+		chattingRoomList.style.display = "block";
+	}
 }
 
 

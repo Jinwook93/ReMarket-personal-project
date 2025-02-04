@@ -5,16 +5,19 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cos.project.entity.BoardEntity;
 import com.cos.project.entity.BoardLikeEntity;import com.cos.project.entity.CommentEntity;
 import com.cos.project.entity.CommentLikeEntity;
 import com.cos.project.entity.MemberEntity;
+import com.cos.project.entity.MessageEntity;
 import com.cos.project.repository.BoardLikeRepository;
 import com.cos.project.repository.BoardRepository;
 import com.cos.project.repository.CommentLikeRepository;
 import com.cos.project.repository.CommentRepository;
 import com.cos.project.repository.MemberRepository;
+import com.cos.project.repository.MessageRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,7 +30,9 @@ public class LikeService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
     private final CommentRepository commentRepository;
-
+    private final MessageRepository messageRepository;
+    
+    @Transactional
     public List<Integer> toggleLike(Long boardId, Long memberId) {
         BoardEntity boardEntity = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다"));
@@ -70,6 +75,7 @@ public class LikeService {
         return Arrays.asList(boardEntity.getTotalLike(), boardEntity.getTotalDislike());
     }
 
+    @Transactional
     public List<Integer> toggleDislike(Long boardId, Long memberId) {
         BoardEntity boardEntity = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다"));
@@ -112,7 +118,7 @@ public class LikeService {
         return Arrays.asList(boardEntity.getTotalLike(), boardEntity.getTotalDislike());
     }																															//1 : LIKE 활성화 신호
 
-    
+    @Transactional
     public String findMemberLike_Dislike(Long boardId, Long memberId) {
     	BoardLikeEntity boardLikeEntity = boardLikeRepository.findBoardLikeEntity(boardId, memberId).get();
     		if(boardLikeEntity.getId() != null &&boardLikeEntity.isFlag() == true) {
@@ -129,7 +135,7 @@ public class LikeService {
     
     ///댓글에 관한 좋아요,싫어요 내용=========================
     
-    
+    @Transactional
     public List<Integer> commentToggleLike(Long commentId, Long memberId) {
         CommentEntity commentEntity = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다"));
@@ -172,6 +178,7 @@ public class LikeService {
         return Arrays.asList(commentEntity.getTotalLike(), commentEntity.getTotalDislike());
     }
 
+    @Transactional
     public List<Integer> commentToggleDislike(Long commentId, Long memberId) {
     	CommentEntity commentEntity = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다"));
@@ -214,7 +221,7 @@ public class LikeService {
         return Arrays.asList(commentEntity.getTotalLike(), commentEntity.getTotalDislike());
     }																															//1 : LIKE 활성화 신호
 
-    
+    @Transactional
     public String comment_findMemberLike_Dislike(Long commentId, Long memberId) {
     	CommentLikeEntity commentLikeEntity = commentLikeRepository.findCommentLikeEntity(commentId, memberId).get();
     		if(commentLikeEntity.getId() != null &&commentLikeEntity.isFlag() == true) {
@@ -225,6 +232,35 @@ public class LikeService {
     			return "DISABLE";
     		}
     }
+
+    
+    
+    
+    
+    //메시지 좋아요
+    @Transactional
+    public boolean chatToggleLike(Long messageId, Long id, boolean flag) {
+        // 메시지 존재 여부 확인
+        MessageEntity messageEntity = messageRepository.findById(messageId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid message ID"));
+
+        // flag와 상관없이 liked 상태를 반전
+        messageEntity.setLiked(!messageEntity.isLiked());
+
+        // 변경된 내용 저장
+        messageRepository.save(messageEntity);
+
+        // 변경된 liked 값 반환
+        return messageEntity.isLiked();
+    }
+
+
+    @Transactional
+	//버튼 활성화
+	public String chat_findMemberLike_Dislike(Long messageId, Long id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
     
     
