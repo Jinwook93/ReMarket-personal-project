@@ -15,6 +15,7 @@ public class GlobalControllerAdvice {
         if (principal != null) {
             model.addAttribute("isLoggedIn", true);
             model.addAttribute("name", principal.getMemberEntity().getName());
+            model.addAttribute("loggedUserId", principal.getMemberEntity().getUserid());
             model.addAttribute("id", principal.getMemberEntity().getId());
         } else {
             model.addAttribute("isLoggedIn", false);

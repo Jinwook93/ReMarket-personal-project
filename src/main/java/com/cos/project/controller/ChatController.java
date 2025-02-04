@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cos.project.details.PrincipalDetails;
 import com.cos.project.dto.ChattingRoomDTO;
 import com.cos.project.dto.MessageDTO;
+import com.cos.project.entity.BoardEntity;
 import com.cos.project.entity.ChattingRoomEntity;
 import com.cos.project.entity.MemberEntity;
 import com.cos.project.entity.MessageEntity;
@@ -272,7 +273,22 @@ public class ChatController {
 //	}
 //	
 	
+    @GetMapping("/findBoard/{roomId}")
+    @ResponseBody
+    public ResponseEntity<?> findBoard(@PathVariable(name = "roomId")Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+    	BoardEntity boardEntity = chatService.findBoard(id);
+    	
+    	
+    	return ResponseEntity.ok(boardEntity);
+    }
+
+    @DeleteMapping("/deleteMessage/{messageId}")
+    @ResponseBody
+    public ResponseEntity<?> deleteMessage(@PathVariable(name = "messageId")Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+    	boolean flag = chatService.deleteMessage(id);
 	
-	
+    	return ResponseEntity.ok(flag);
+    }
+
 	
 }

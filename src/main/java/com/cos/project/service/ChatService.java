@@ -264,23 +264,23 @@ public class ChatService {
 	  
 	    return chattingRoomEntities.stream()
 	            .map((ChattingRoomEntity entity) -> {  // Explicitly specify the type here
-	                System.out.println("Mapping ChattingRoomEntity: " + entity.getTitle());
+//	                System.out.println("Mapping ChattingRoomEntity: " + entity.getTitle());
 	                
 	                // Log member1 and member2 user IDs
 	                String member1UserId = entity.getMember1() != null ? entity.getMember1().getUserid() : null;
 	                String member2UserId = entity.getMember2() != null ? entity.getMember2().getUserid() : null;
-	                System.out.println("member1UserId: " + member1UserId + ", member2UserId: " + member2UserId);
+//	                System.out.println("member1UserId: " + member1UserId + ", member2UserId: " + member2UserId);
 	                
 	                // Log boardId
 	                String boardId = entity.getBoardEntity() != null ? String.valueOf(entity.getBoardEntity().getId()) : null;
-	                System.out.println("boardId: " + boardId);
+//	                System.out.println("boardId: " + boardId);
 
 	                // Log messages inside the ChattingRoomDTO
 	                List<MessageEntity> messageEntities = messageRepository.findByChattingRoomEntity(id);
 	                
 	                Set<MessageDTO> messageDTOs = messageEntities.stream()
 	                        .map((MessageEntity message) -> {
-	                            System.out.println("Mapping MessageEntity: " + message.getMessageContent());
+//	                            System.out.println("Mapping MessageEntity: " + message.getMessageContent());
 	                            return MessageDTO.builder()
 	                                    .id(message.getId())
 	                                    .roomId(message.getChattingRoomEntity().getId())
@@ -291,7 +291,7 @@ public class ChatService {
 	                        })
 	                        .collect(Collectors.toSet());
 
-	                System.out.println("Messages mapped: " + messageDTOs);
+//	                System.out.println("Messages mapped: " + messageDTOs);
 
 	                return ChattingRoomDTO.builder()
 	                        .id(entity.getId())
@@ -309,9 +309,21 @@ public class ChatService {
 	}
 	
 
+	@Transactional
+	public BoardEntity findBoard (Long id) {
+		ChattingRoomEntity chattingRoomEntity = chattingRoomRepository.findById(id).get();
+		return chattingRoomEntity.getBoardEntity();
+		
+		
+	}
 
-
-
+	@Transactional
+	public boolean deleteMessage(Long id) {
+		 messageRepository.deleteById(id);
+		return true;
+		
+		
+	}
 	
 	
 }

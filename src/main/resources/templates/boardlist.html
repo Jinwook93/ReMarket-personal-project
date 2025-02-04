@@ -238,7 +238,8 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   
   <!-- 대화하기 버튼 클릭 시 채팅방 생성 요청 스크립트 -->
-  <script>
+  <script type="module">
+  import { openChatRoom, loadMessages, sendMessage } from '/js/chatModule.js';
     document.addEventListener('DOMContentLoaded', function() {
       // "대화하기" 버튼들을 선택합니다.
       const chatButtons = document.querySelectorAll('.createRoom');
@@ -273,6 +274,8 @@
             if (response.ok) {
               const data = await response.json();
               console.log('채팅방 생성 성공:', data);
+              openChatRoom(data.id, data.title, data.member2.userid);
+              loadMessages(data.id);
               // 채팅방 생성 후, 채팅방 목록에 추가하거나 채팅창을 열어주는 등 원하는 UI 업데이트를 진행합니다.
               // 예: location.href = `/chat/room/${data.id}`; 로 채팅방으로 이동
             } else {

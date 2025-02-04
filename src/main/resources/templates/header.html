@@ -98,6 +98,25 @@
         #chat-box { height: 300px; overflow-y: auto; border-bottom: 1px solid #ccc; padding: 10px; }
         #message-input { width: 80%; padding: 5px; }
         #send-button { width: 15%; padding: 5px; }
+        
+        .message-right {
+    text-align: right;
+    background-color: #dcf8c6;
+    padding: 8px;
+    border-radius: 10px;
+    margin: 5px;
+    max-width: 60%;
+}
+
+.message-left {
+    text-align: left;
+    background-color: #ffffff;
+    padding: 8px;
+    border-radius: 10px;
+    margin: 5px;
+    max-width: 60%;
+}
+        
     </style>
 </head>
 <body>
@@ -107,6 +126,7 @@
             <div th:if="${isLoggedIn}" class="logged-in">
             <input type = "hidden" th:value="${isLoggedIn}" id = "isLoggedIn">
                         <input type = "hidden"  th:value="${id}" id = "loggedId">
+                         <input type = "hidden"  th:value="${loggedUserId}" id = "loggedUserId">
                 <p>환영합니다, <span th:text="${name}"></span>님</p>
                 <a th:href="@{/logout}">로그아웃</a>
                 <a th:href="@{/mypage/{id}(id=${id})}">마이페이지</a>
@@ -152,181 +172,62 @@
 
 
  
-      <script>
-      document.addEventListener("DOMContentLoaded", async () => {
-    	    const myChattingRoomList = document.getElementById("myChattingRoomList");
-    	    const chattingRoomList = document.querySelector(".chattingRoomList");
-    	    const chattingRoomListBody = document.getElementById("chattingRoomListBody");
-    	    const isLoggedIn = document.getElementById("isLoggedIn").value;
-    	    const loggedId = document.getElementById("loggedId").value;
-    	    if (isLoggedIn === "true" || isLoggedIn === true) {
-    	        try {
-    	            const response = await fetch(`/chat/myChatRoom/${loggedId}`);
-    	            const datas = await response.json();
-    	            if (Array.isArray(datas) && datas.length > 0) {
-    	                datas.forEach(data => {
-    	                        console.log(data);
-    	                        const row = document.createElement("tr");
-    	                        row.innerHTML = `
-    	                            <td>${data.title}</td>
-    	                            <td>${data.member2UserId}</td>
-    	                            <td>
-    	                                <button class="enterChat" 
-    	                                    data-room-id="${data.id}" 
-    	                                    data-title="${data.title}" 
-    	                                    data-userid="${data.member2UserId}"  >
-    	                                    입장
-    	                                </button>
-    	                            </td>
-    	                        `;
-    	                        chattingRoomListBody.appendChild(row);
-    	                     console.log(data);
-    	                });
-    	            } else {
-    	                console.warn('No chatting rooms available.');
-    	            }
-    	        } catch (error) {
-    	            console.error("Failed to fetch chat rooms:", error);
-    	        }
+  <script type="module">
+    // 모듈에서 필요한 함수들을 import
+    import { openChatRoom, loadMessages, sendMessage } from '/js/chatModule.js';
 
-    	        // '입장' 버튼 클릭 시 채팅방 열기
-    	        document.querySelectorAll(".enterChat").forEach(button => {
-    	            button.addEventListener("click", function () {
-    	                const roomId = this.getAttribute("data-room-id");
-    	                const title = this.getAttribute("data-title");
-    	                const userid = this.getAttribute("data-userid");
-    	          //    const id = this.getAttribute("data-id");
-    	                openChatRoom(roomId, title, userid);
-    	            });
-    	        });
-    	    }
+    document.addEventListener("DOMContentLoaded", async () => {
+        const myChattingRoomList = document.getElementById("myChattingRoomList");
+        const chattingRoomList = document.querySelector(".chattingRoomList");
+        const chattingRoomListBody = document.getElementById("chattingRoomListBody");
+        const isLoggedIn = document.getElementById("isLoggedIn").value;
+        const loggedId = document.getElementById("loggedId").value;
+        if (isLoggedIn === "true" || isLoggedIn === true) {
+            try {
+                const response = await fetch(`/chat/myChatRoom/${loggedId}`);
+                const datas = await response.json();
+                if (Array.isArray(datas) && datas.length > 0) {
+                    datas.forEach(data => {
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
+                            <td>${data.title}</td>
+                            <td>${data.member2UserId}</td>
+                            <td>
+                                <button class="enterChat" 
+                                    data-room-id="${data.id}" 
+                                    data-title="${data.title}" 
+                                    data-userid="${data.member2UserId}">
+                                    입장
+                                </button>
+                            </td>
+                        `;
+                        chattingRoomListBody.appendChild(row);
+                    });
+                } else {
+                    console.warn('No chatting rooms available.');
+                }
+            } catch (error) {
+                console.error("Failed to fetch chat rooms:", error);
+            }
 
-    	    if (myChattingRoomList && chattingRoomList) {
-    	        myChattingRoomList.addEventListener("click", (event) => {
-    	            event.preventDefault(); // 기본 이동 방지
-    	            chattingRoomList.style.display = chattingRoomList.style.display === "none" ? "block" : "none";
-    	        });
-    	    }
-    	});
+            // '입장' 버튼 클릭 시 채팅방 열기
+            document.querySelectorAll(".enterChat").forEach(button => {
+                button.addEventListener("click", function () {
+                    const roomId = this.getAttribute("data-room-id");
+                    const title = this.getAttribute("data-title");
+                    const userid = this.getAttribute("data-userid");
+                    openChatRoom(roomId, title, userid);
+                });
+            });
+        }
 
-
-    	/**
-    	 * 🟢 특정 채팅방을 열고 메시지 기능을 연결하는 함수
-    	 */
-    	function openChatRoom(roomId, title, userid) {
-    	    let chatWindow = document.getElementById(`chat-room-${roomId}`);
-
-    	    if (chatWindow) {
-    	        chatWindow.remove(); // 이미 열린 경우 닫기
-    	    } else {
-    	        chatWindow = document.createElement("div");
-    	        chatWindow.id = `chat-room-${roomId}`;
-    	        chatWindow.className = "chat-window";
-    	        chatWindow.innerHTML = `
-    	            <div id="chat-container">
-    	        		<div style ="display:flex;">
-    	                <h2>채팅</h2>
-    	                <button class="close-chat" data-room-id="${roomId}">닫기</button>
-    	                </div>
-    	                <span>${title} (대화 상대: ${userid})</span>
-    	                <div class="chat-header">
-    	                </div>
-    	                <div id="chat-box-${roomId}" class="chat-box"></div>
-    	                <div class="chat-input">
-    	                    <input type="text" id="message-input-${roomId}" placeholder="메시지를 입력하세요">
-    	                    <button id="send-button-${roomId}" data-room-id="${roomId}">전송</button>
-    	                </div>
-    	            </div>
-    	        `;
-    	        document.body.appendChild(chatWindow);
-
-    	        // 메시지 불러오기 및 새로고침
-    	        loadMessages(roomId);
-     	        setInterval(() => loadMessages(roomId), 1000);
-
-    	        // 메시지 전송 이벤트 추가
-    	        document.getElementById(`send-button-${roomId}`).addEventListener("click", () => sendMessage(roomId,userid));
-    	        document.getElementById(`message-input-${roomId}`).addEventListener("keypress", (event) => {
-    	            if (event.key === "Enter") sendMessage(roomId);
-    	        });
-
-    	        // 닫기 버튼 이벤트 추가
-    	        chatWindow.querySelector(".close-chat").addEventListener("click", function () {
-    	            chatWindow.remove();
-    	        });
-    	    }
-    	}
-
-    	/**
-    	 * 🔵 특정 채팅방(roomId) 메시지를 불러오는 함수
-    	 */
-    	 async function loadMessages(roomId) {
-    		    const chatBox = document.getElementById(`chat-box-${roomId}`);
-    		    if (!chatBox) return;
-
-    		    try {
-    		        const response = await fetch(`/chat/loadmessages/${roomId}`);
-    		        console.log(`${roomId}`);
-    		        // Check if the response is OK (status code 200-299)
-    		        if (!response.ok) {
-    		            console.error("Server returned an error:", response.status, response.statusText);
-    		            chatBox.innerHTML = "<div>Error loading messages.</div>";
-    		            return;
-    		        }
-    		        const messages = await response.json();
-    		        console.log("Messages received:", messages);
-
-    		        // Clear previous messages
-    		        chatBox.innerHTML = "";
-    		        
-    		        // Ensure messages is an array
-    		        if (!Array.isArray(messages)) {
-    		            console.error("Expected messages to be an array, but got:", messages);
-    		            chatBox.innerHTML = "<div>Invalid message format.</div>";
-    		            return;
-    		        }
-    		        
-    		        // Append each message to the chat box
-    		        messages.forEach(msg => {
-    		            const messageElement = document.createElement("div");
-    		            console.log(msg);
-    		            // Ensure msg.sender exists and has a userid
-//     		            const senderId = msg.sender ? msg.senderuserId : "unknown";
-    		            messageElement.textContent = `${msg.senderUserId}: ${msg.messageContent}`;
-    		            chatBox.appendChild(messageElement);
-    		        });
-
-    		        // Scroll to the bottom
-    		        chatBox.scrollTop = chatBox.scrollHeight;
-    		    } catch (error) {
-    		        console.error("Error loading messages:", error);
-    		        chatBox.innerHTML = "<div>Error loading messages.</div>";
-    		    }
-    		}
-
-
-    	/**
-    	 * 🟡 특정 채팅방(roomId)에 메시지를 전송하는 함수
-    	 */
-    	async function sendMessage(roomId,userid) {
-    	    const messageInput = document.getElementById(`message-input-${roomId}`);
-    	    const message = messageInput.value.trim();
-    	    if (message === "") return;
-
-    	    try {
-    	        await fetch(`/chat/send/${roomId}`, {
-    	            method: "POST",
-    	            headers: { "Content-Type": "application/json" },
-    	            body: JSON.stringify({messageContent: message })
-    	        });
-				
-    	        messageInput.value = "";
-    	        loadMessages(roomId); // 전송 후 메시지 갱신
-    	    } catch (error) {
-    	        console.error("메시지 전송 중 오류 발생", error);
-    	    }
-    	}
-
-    </script>
+        if (myChattingRoomList && chattingRoomList) {
+            myChattingRoomList.addEventListener("click", (event) => {
+                event.preventDefault();
+                chattingRoomList.style.display = chattingRoomList.style.display === "none" ? "block" : "none";
+            });
+        }
+    });
+  </script>
 </body>
 </html>
