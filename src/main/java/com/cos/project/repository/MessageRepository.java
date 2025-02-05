@@ -25,4 +25,5 @@ public interface MessageRepository extends JpaRepository<MessageEntity, Long>{
         @Param("receiver") Long receiver
     );
 
+
 }

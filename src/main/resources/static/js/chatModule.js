@@ -3,6 +3,7 @@
 // 특정 채팅방(roomId) 메시지를 불러오는 함수
 export async function loadMessages(roomId) {
 	const loggedUserId = document.getElementById("loggedUserId").value;
+	const loggedId = document.getElementById("loggedId").value;
 	const chatBox = document.getElementById(`chat-box-${roomId}`);
 	if (!chatBox) return;
 
@@ -24,15 +25,15 @@ export async function loadMessages(roomId) {
 		}
 
 		messages.forEach(msg => {
+			 if (msg.exitedSenderId !== null && String(msg.exitedSenderId) === String(loggedId)) {
+        return; // 현재 메시지는 출력하지 않고 다음 메시지로 이동
+    }
 			const messageElement = document.createElement("div");
 			messageElement.classList.add("message-item");
 
-			// 메시지 내용과 좋아요 상태 처리
-			//		messageElement.textContent = `${msg.senderUserId}: ${msg.messageContent} ${msg.sendTime} ${msg.liked ? "❤️" : "🤍"}`;
 
-
+//${msg.exitedSenderId != null && msg.exitedSenderId === loggedUserId?  해당 메시지 출력 :  해당 메시지 미추}
 			// 로그인한 사용자와 보낸 사용자가 동일하면 삭제 버튼 추가
-
 			// 메시지 내용과 좋아요 상태 처리
 			messageElement.textContent = `${msg.senderUserId}: ${msg.messageContent} ${msg.sendTime} ${msg.liked ? "❤️" : "🤍"}`;
 			if (String(msg.senderUserId) === String(loggedUserId)) {
@@ -60,7 +61,7 @@ export async function loadMessages(roomId) {
 				};
 				messageElement.appendChild(deleteMessageButton);
 			} else {
-				messageElement.textContent = `${msg.senderUserId}: ${msg.messageContent} ${msg.sendTime}  ${msg.read? "<읽음>": "<읽지않음>"}`;
+				messageElement.textContent = `${msg.exited ? '나간 사용자' : msg.senderUserId}: ${msg.messageContent} ${msg.sendTime}  ${msg.read? "<읽음>": "<읽지않음>"}`;
 				messageElement.classList.add("message-left");
 				  messageElement.dataset.messageId = msg.id;
 				  
@@ -167,6 +168,20 @@ document.getElementById("chat-container").addEventListener("click", async functi
 
 			chatBox.appendChild(messageElement);
 		});
+
+//msg 끝
+
+
+
+
+
+
+
+
+
+
+
+
 
 		// 스크롤 최하단으로 이동
 		chatBox.scrollTop = chatBox.scrollHeight;

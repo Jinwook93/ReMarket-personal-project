@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -42,32 +43,67 @@ public class ChatService {
 	private final MessageRepository messageRepository;
 
 	@Transactional
-	public ChattingRoomEntity findOrCreateRoom(String title, String loggedId, String userId, Long boardId, int price) {
-		BoardEntity boardEntity = boardRepository.findById(boardId)
-				.orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+	public ChattingRoomDTO findOrCreateRoom(String title, String loggedId, String userId, Long boardId, int price) {
+	    BoardEntity boardEntity = boardRepository.findById(boardId)
+	        .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
 
-		MemberEntity member1 = memberRepository.findByUserid(loggedId)
-				.orElseThrow(() -> new IllegalArgumentException("송신자를 찾을 수 없습니다."));
+	    MemberEntity member1 = memberRepository.findByUserid(loggedId)
+	        .orElseThrow(() -> new IllegalArgumentException("송신자를 찾을 수 없습니다."));
 
-		MemberEntity member2 = memberRepository.findByUserid(userId)
-				.orElseThrow(() -> new IllegalArgumentException("수신자를 찾을 수 없습니다."));
+	    MemberEntity member2 = memberRepository.findByUserid(userId)
+	        .orElseThrow(() -> new IllegalArgumentException("수신자를 찾을 수 없습니다."));
 
-		// 기존 채팅방이 있는지 확인
-		ChattingRoomEntity chattingRoomEntity = chattingRoomRepository.findEnableRoom(member2.getId(), member1.getId(),
-				boardId);
-		if (chattingRoomEntity == null) {
-			chattingRoomEntity = chattingRoomRepository.findEnableRoom(member1.getId(), member2.getId(), boardId);
-		}
+	    // 기존 채팅방이 있는지 확인
+	    ChattingRoomEntity chattingRoomEntity = chattingRoomRepository.findEnableRoom(member1.getId(), member2.getId(), boardId);
+	    
+	    if (chattingRoomEntity == null) {
+	        chattingRoomEntity = chattingRoomRepository.findEnableRoom(member2.getId(), member1.getId(), boardId);
+	    }
 
-		// 채팅방이 없으면 새로 생성
-		if (chattingRoomEntity == null) {
-			chattingRoomEntity = ChattingRoomEntity.builder().title(boardEntity.getTitle()).member1(member1)
-					.member2(member2).boardEntity(boardEntity).price(price).build();
-			chattingRoomRepository.save(chattingRoomEntity);
-		}
+	    // ⚠️ chattingRoomEntity가 null인지 먼저 체크 후 getExitedmemberId() 호출해야 함
+	    if (chattingRoomEntity != null) {
+	        if (chattingRoomEntity.getExitedmemberId() != null && chattingRoomEntity.getExitedmemberId().equals(member2.getId())) {
+	            chattingRoomEntity.setExitedmemberId(null);
+	            resetExitedMessages(chattingRoomEntity);
+	        } else if (chattingRoomEntity.getExitedmemberId() != null && chattingRoomEntity.getExitedmemberId().equals(member1.getId())) {
+	            chattingRoomEntity.setExitedmemberId(null);
+	            resetExitedMessages(chattingRoomEntity);
+	        }
+	    }
 
-		return chattingRoomEntity;
+	    // 채팅방이 없으면 새로 생성
+	    if (chattingRoomEntity == null) {
+	        chattingRoomEntity = ChattingRoomEntity.builder()
+	            .title(boardEntity.getTitle())
+	            .member1(member1)
+	            .member2(member2)
+	            .boardEntity(boardEntity)
+	            .price(price)
+	            .build();
+	        chattingRoomRepository.save(chattingRoomEntity);
+	    }
+
+	   ChattingRoomDTO responseDTO = ChattingRoomDTO.builder()
+	            .id(chattingRoomEntity.getId())
+	            .title(chattingRoomEntity.getTitle())
+	            .price(chattingRoomEntity.getPrice())
+	            .member1UserId(chattingRoomEntity.getMember1().getUserid())
+	            .member2UserId(chattingRoomEntity.getMember2().getUserid())
+	            .boardId(String.valueOf(chattingRoomEntity.getBoardEntity().getId()))
+	            .build();
+	   
+	   return responseDTO;
 	}
+	
+	@Transactional
+	private void resetExitedMessages(ChattingRoomEntity chattingRoomEntity) {
+	    List<MessageEntity> messages = messageRepository.findByChattingRoomEntity(chattingRoomEntity.getId());
+	    for (MessageEntity message : messages) {
+	        message.setExited(false);
+	    }
+	    messageRepository.saveAll(messages);
+	}
+
 
 	@Transactional
 	public boolean enterChatRoom(Long loggedId, Long userId, Long boardId) {
@@ -136,10 +172,12 @@ public class ChatService {
 		return messages.stream()
 				.map(message -> new MessageDTO(message.getId(), message.getChattingRoomEntity().getId(),
 						message.getSender().getUserid(), message.getReceiver().getUserid(), message.getMessageContent(),
-						message.isLiked(), message.isRead(), message.getSendTime()))
+						message.isLiked(), message.isRead(), message.isExited(), message.getExitedSenderId(),
+						message.getSendTime()))
 				.collect(Collectors.toList());
 	}
 
+	
 	@Transactional
 	public Long findMember2Id(Long id, Long loggedId) {
 		Long member2Id = chattingRoomRepository.findMember2Id(id, loggedId);
@@ -247,19 +285,61 @@ public class ChatService {
 
 	}
 
+//	@Transactional
+//	public boolean deleteRoom(Long id, Long senderId, String receiverUserId) {
+//		Long receiverId = memberRepository.findByUserid(receiverUserId).get().getId();
+//		// Long senderId = memberRepository.findByUserid(senderUserId).get().getId();
+//
+//		messageRepository.deleteAllByRoomAndSenderAndReceiver(id, senderId, receiverId);
+//
+//		// 송신자,수신자가 바뀔 경우도 고려
+//		messageRepository.deleteAllByRoomAndSenderAndReceiver(id, receiverId, senderId);
+//
+////		 this.deleteMessage(id);
+//		chattingRoomRepository.deleteById(id);
+//
+//		return true;
+//	}
+	
+	
 	@Transactional
-	public boolean deleteRoom(Long id, Long senderId, String receiverUserId) {
+	public boolean deleteRoom(Long roomId, Long senderId, String receiverUserId) {
 		Long receiverId = memberRepository.findByUserid(receiverUserId).get().getId();
 		// Long senderId = memberRepository.findByUserid(senderUserId).get().getId();
 
-		messageRepository.deleteAllByRoomAndSenderAndReceiver(id, senderId, receiverId);
+		
+
+		ChattingRoomEntity chattingRoomEntity = chattingRoomRepository.findById(roomId).get();
+		List<MessageEntity> messages = messageRepository.findByChattingRoomEntity(roomId);
+		
+		if(senderId != null) {
+		chattingRoomEntity.setExitedmemberId(senderId);
+	//	chattingRoomEntity.setMember1(null);
+		
+		chattingRoomRepository.save(chattingRoomEntity);
+		
+
+		
+		List<MessageEntity> filteredMessages = messages.stream()
+			    .filter(message -> message.getReceiver().getId() == receiverId) // ID 비교 수정
+			    .peek(message -> {
+			//    message.setSender(null);
+			    message.setExited(true);
+			    message.setExitedSenderId(chattingRoomEntity.getExitedmemberId());
+			    }) // setter 사용 시 peek() 활용
+			    .collect(Collectors.toList()); // Collectors로 수정
+				
+			messageRepository.saveAll(filteredMessages);
+		}
+			else if(chattingRoomEntity.getExitedmemberId() != null) {	
+		messageRepository.deleteAllByRoomAndSenderAndReceiver(roomId, senderId, receiverId);
 
 		// 송신자,수신자가 바뀔 경우도 고려
-		messageRepository.deleteAllByRoomAndSenderAndReceiver(id, receiverId, senderId);
+		messageRepository.deleteAllByRoomAndSenderAndReceiver(roomId, receiverId, senderId);
 
 //		 this.deleteMessage(id);
-		chattingRoomRepository.deleteById(id);
-
+		chattingRoomRepository.deleteById(roomId);
+		}
 		return true;
 	}
 
@@ -274,5 +354,17 @@ public class ChatService {
 	        messages.forEach(msg -> msg.setRead(true)); // 읽음 처리
 	        return true; // 성공
 	    }
+	  
+	  
+	  
+//	  @Transactional			//채팅창 재방문시
+//	    public boolean ReEnterChatRoom(List<Long> messageIds) {
+//	        List<MessageEntity> messages = messageRepository.findAllById(messageIds);
+//	        
+//	        if (messages.isEmpty()) return false; // 메시지가 없으면 false 반환
+//	        
+//	        messages.forEach(msg -> msg.setRead(true)); // 읽음 처리
+//	        return true; // 성공
+//	    }
 
 }

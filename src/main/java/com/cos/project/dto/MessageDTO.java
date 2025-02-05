@@ -20,7 +20,9 @@ public class MessageDTO {
     private String receiverUserId; // 받은 사람 ID
     private String messageContent; // 메시지 내용
     private boolean liked;	// 메시지 좋아요 활성화 상태
-    private boolean isRead;
+    private boolean isRead;			//읽음 표시
+    private boolean exited;				//나갔다 들어온 상태 확인
+    private Long exitedSenderId;	//대화방을 나간 유저의 Id(식별번호)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private Timestamp sendTime;    // 메시지 전송 시간
 }

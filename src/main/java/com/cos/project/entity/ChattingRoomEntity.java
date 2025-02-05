@@ -41,7 +41,7 @@ public class ChattingRoomEntity {
     @JsonIncludeProperties({"id","userid", "profileImage","name"})
     private MemberEntity member2;
 
-  
+  private Long exitedmemberId;
     
     @ManyToOne
     @JoinColumn(name = "board_id")

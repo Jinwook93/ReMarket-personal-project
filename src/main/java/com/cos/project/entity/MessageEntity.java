@@ -47,7 +47,8 @@ public class MessageEntity {
     private boolean isRead = false;
     
     
-    
+    private boolean exited = false;				//나갔다 들어온 상태 확인
+    private Long exitedSenderId;	//대화방을 나간 유저의 Id(식별번호)
     
     private String messageContent;  // 메시지 내용
 

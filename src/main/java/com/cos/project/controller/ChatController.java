@@ -66,9 +66,9 @@ public class ChatController {
     public ResponseEntity<?> createChatRoom(@PathVariable(name = "boardId") Long boardId, @RequestBody ChattingRoomDTO chattingRoomDTO , @AuthenticationPrincipal PrincipalDetails principalDetails) {
     	MemberEntity loggedUserId = principalDetails.getMemberEntity();
     	System.out.println("아이디확인"+chattingRoomDTO.getMember2UserId());
-    	ChattingRoomEntity chattingRoomEntity=chatService.findOrCreateRoom("대화방", loggedUserId.getUserid(), chattingRoomDTO.getMember2UserId() ,boardId, 0);
+    	ChattingRoomDTO responseDTO =chatService.findOrCreateRoom("대화방", loggedUserId.getUserid(), chattingRoomDTO.getMember2UserId() ,boardId, 0);
      //   model.addAttribute("boardId", boardId);
-    	return ResponseEntity.ok(chattingRoomEntity);
+    	return ResponseEntity.ok(responseDTO);
     }
     
 	    
@@ -233,9 +233,22 @@ public class ChatController {
     }
 
     
-    @PostMapping("/exitRoom/{messageId}")
+//    @PostMapping("/exitRoom/{deleteRoomId}")
+//    @ResponseBody
+//    public ResponseEntity<?> deleteRoom(@PathVariable(name = "deleteRoomId")Long id, @AuthenticationPrincipal PrincipalDetails principalDetails
+//    		, @RequestBody Map<String, String> data) {
+//    	String receiverUserId = data.get("receiver");
+//    	System.out.println("리시버 : " + receiverUserId);
+//    	boolean flag = chatService.deleteRoom(id, principalDetails.getMemberEntity().getId(), receiverUserId);
+//    	
+//    	return ResponseEntity.ok(flag);
+//    }
+    
+    
+    
+    @PostMapping("/exitRoom/{deleteRoomId}")
     @ResponseBody
-    public ResponseEntity<?> deleteRoom(@PathVariable(name = "messageId")Long id, @AuthenticationPrincipal PrincipalDetails principalDetails
+    public ResponseEntity<?> deleteRoom(@PathVariable(name = "deleteRoomId")Long id, @AuthenticationPrincipal PrincipalDetails principalDetails
     		, @RequestBody Map<String, String> data) {
     	String receiverUserId = data.get("receiver");
     	System.out.println("리시버 : " + receiverUserId);
@@ -243,6 +256,11 @@ public class ChatController {
     	
     	return ResponseEntity.ok(flag);
     }
+    
+    
+    
+    
+    
     
     
     @PostMapping("/markAsRead")

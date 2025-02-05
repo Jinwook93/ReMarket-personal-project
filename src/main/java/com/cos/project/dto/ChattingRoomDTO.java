@@ -28,7 +28,7 @@ public class ChattingRoomDTO {
     private String member1UserId;
     private String member2UserId;
     private String boardId;
-    
+    private Long exitedmemberId;
     
     
     private Set<MessageDTO> messages;
