@@ -321,7 +321,10 @@ public class ChatService {
 
 		
 		List<MessageEntity> filteredMessages = messages.stream()
-			    .filter(message -> message.getReceiver().getId() == receiverId) // ID 비교 수정
+				  .filter(message -> 
+			        message.getSender().getId().equals(senderId) &&
+			        message.getReceiver().getId().equals(receiverId) // ID 비교 수정
+			    )
 			    .peek(message -> {
 			//    message.setSender(null);
 			    message.setExited(true);
@@ -330,6 +333,33 @@ public class ChatService {
 			    .collect(Collectors.toList()); // Collectors로 수정
 				
 			messageRepository.saveAll(filteredMessages);
+			
+			
+			
+			List<MessageEntity> filteredMessages2 = messages.stream()
+					  .filter(message -> 
+				        message.getSender().getId().equals(receiverId) &&
+				        message.getReceiver().getId().equals(senderId) // ID 비교 수정
+				    )
+				    .peek(message -> {
+				//    message.setSender(null);
+				   // message.setExited(true);
+				    message.setExitedSenderId(chattingRoomEntity.getExitedmemberId());
+				    }) // setter 사용 시 peek() 활용
+				    .collect(Collectors.toList()); // Collectors로 수정
+					
+				messageRepository.saveAll(filteredMessages2);
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
 		}
 			else if(chattingRoomEntity.getExitedmemberId() != null) {	
 		messageRepository.deleteAllByRoomAndSenderAndReceiver(roomId, senderId, receiverId);

@@ -32,7 +32,6 @@ export async function loadMessages(roomId) {
 			messageElement.classList.add("message-item");
 
 
-//${msg.exitedSenderId != null && msg.exitedSenderId === loggedUserId?  해당 메시지 출력 :  해당 메시지 미추}
 			// 로그인한 사용자와 보낸 사용자가 동일하면 삭제 버튼 추가
 			// 메시지 내용과 좋아요 상태 처리
 			messageElement.textContent = `${msg.senderUserId}: ${msg.messageContent} ${msg.sendTime} ${msg.liked ? "❤️" : "🤍"}`;
