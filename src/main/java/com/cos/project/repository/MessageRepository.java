@@ -25,5 +25,18 @@ public interface MessageRepository extends JpaRepository<MessageEntity, Long>{
         @Param("receiver") Long receiver
     );
 
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM MessageEntity m WHERE m.chattingRoomEntity.id = :roomid")
+    void deleteByRoomId(@Param("roomid") Long roomid);
+
+    
+    
+        @Query("SELECT m FROM MessageEntity m WHERE m.chattingRoomEntity.id = :roomid AND m.sender.id = :sender AND m.receiver.id = :receiver")
+        List<MessageEntity> findAllByRoomAndSenderAndReceiver(
+            @Param("roomid") Long roomid, 
+            @Param("sender") Long sender, 
+            @Param("receiver") Long receiver
+        );
 
 }

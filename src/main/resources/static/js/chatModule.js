@@ -25,9 +25,9 @@ export async function loadMessages(roomId) {
 		}
 
 		messages.forEach(msg => {
-			 if (msg.exitedSenderId !== null && String(msg.exitedSenderId) === String(loggedId)) {
-        return; // 현재 메시지는 출력하지 않고 다음 메시지로 이동
-    }
+//			 if (msg.exitedSenderId !== null && String(msg.exitedSenderId) === String(loggedId)) {
+//        return; // 현재 메시지는 출력하지 않고 다음 메시지로 이동
+//    }
 			const messageElement = document.createElement("div");
 			messageElement.classList.add("message-item");
 
@@ -211,26 +211,6 @@ export async function sendMessage(roomId, userid) {
 	}
 }
 
-
-//메시지 기능삭제
-export async function deleteMessage(roomId, deleteRoomId) {
-	const messageInput = document.getElementById(`message-input-${roomId}`);
-	const message = messageInput.value.trim();
-	if (message === "") return;
-
-	try {
-		await fetch(`/chat/deleteroom/${roomId}`, {
-			method: "DELETE",
-			headers: { "Content-Type": "application/json" },
-			//    body: JSON.stringify({ messageContent: message })
-		});
-
-		messageInput.value = "";
-		loadMessages(roomId); // 전송 후 메시지 갱신
-	} catch (error) {
-		console.error("메시지 전송 중 오류 발생", error);
-	}
-}
 
 
 

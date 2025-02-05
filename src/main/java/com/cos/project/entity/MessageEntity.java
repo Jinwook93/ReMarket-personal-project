@@ -24,7 +24,7 @@ public class MessageEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "chatting_id")
     private ChattingRoomEntity chattingRoomEntity;  // 메시지가 속한 채팅방
 
@@ -51,6 +51,9 @@ public class MessageEntity {
     private Long exitedSenderId;	//대화방을 나간 유저의 Id(식별번호)
     
     private String messageContent;  // 메시지 내용
+    
+//    private boolean exitMemberRendering = true;		//채팅방 재접속시 렌더링 할지에 대한 유무			
+    
 
     @CreationTimestamp
     private Timestamp sendTime;  // 메시지 전송 시간

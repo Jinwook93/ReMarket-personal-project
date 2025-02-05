@@ -295,8 +295,13 @@
           }
 
           // 채팅방 열기 및 메시지 로드
+		if(loggedUserId !== data.member2UserId){	
           openChatRoom(data.id, data.title, loggedUserId, data.member2UserId);
-          loadMessages(data.id);
+        }else{
+          openChatRoom(data.id, data.title, loggedUserId, data.member1UserId);
+		}
+		
+  loadMessages(data.id);
 
         } catch (error) {
           console.error('채팅방 생성 중 오류 발생:', error);

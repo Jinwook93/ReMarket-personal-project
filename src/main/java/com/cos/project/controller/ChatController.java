@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.cos.project.details.PrincipalDetails;
 import com.cos.project.dto.ChattingRoomDTO;
 import com.cos.project.dto.MessageDTO;
@@ -32,7 +30,6 @@ import com.cos.project.service.BoardService;
 import com.cos.project.service.ChatService;
 import com.cos.project.service.MemberService;
 import com.cos.project.service.MessageService;
-
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -78,10 +75,7 @@ public class ChatController {
 	    @GetMapping("/myChatRoom/{loggedId}")
 	    @ResponseBody
 	    public ResponseEntity<?> myChatRoom(@PathVariable(name = "loggedId")Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
-	    	  System.out.println("컨트롤러진입1?");
-	    	//	System.out.println("로그인된아이디:"+id);
 	    	List<ChattingRoomDTO> chattingRoomList = new ArrayList<>(chatService.myChattingRoomList(id));
-	      System.out.println("컨트롤러진입2?");
 	    	return ResponseEntity.ok(chattingRoomList);
 	    }
 
@@ -149,30 +143,30 @@ public class ChatController {
 		
 	}
 	
-	@DeleteMapping("/deleteChatRoom/{id}")		//결제 완료 시 
-	@ResponseBody
-	public ResponseEntity<?> enterChatRoom(@PathVariable(name = "id") Long id ,@AuthenticationPrincipal PrincipalDetails principalDetails,
-			@RequestBody Map<String, String> deleteChatRoomData){
-//			Long member2Id,Long boardId){
-		
-		
-		/*
-		{
-			"member2_userid": "member2_userid",
-			"boardId": "boardId",
-		}
-		*/
-		
-		
-		Long member1Id = principalDetails.getMemberEntity().getId();
-		Long member2Id = Long.valueOf(deleteChatRoomData.get("member2_userid"));
-		Long boardId =  Long.valueOf(deleteChatRoomData.get("boardId"));
-		
-		boolean flag = chatService.deleteChatRoom(id, member1Id, member2Id,boardId);
-		
-		return ResponseEntity.ok(flag);
-		
-	}
+//	@DeleteMapping("/deleteChatRoom/{id}")		//결제 완료 시 
+//	@ResponseBody
+//	public ResponseEntity<?> deleteChatRoom(@PathVariable(name = "id") Long id ,@AuthenticationPrincipal PrincipalDetails principalDetails,
+//			@RequestBody Map<String, String> deleteChatRoomData){
+////			Long member2Id,Long boardId){
+//		
+//		
+//		/*
+//		{
+//			"member2_userid": "member2_userid",
+//			"boardId": "boardId",
+//		}
+//		*/
+//		
+//		
+//		Long member1Id = principalDetails.getMemberEntity().getId();
+//		Long member2Id = Long.valueOf(deleteChatRoomData.get("member2_userid"));
+//		Long boardId =  Long.valueOf(deleteChatRoomData.get("boardId"));
+//		
+//		boolean flag = chatService.deleteChatRoom(id, member1Id, member2Id,boardId);
+//		
+//		return ResponseEntity.ok(flag);
+//		
+//	}
 	
 	@PostMapping("/disableChatRoom/{id}")		//board 작성자가 채팅창을 비활성화
 	@ResponseBody
@@ -194,6 +188,19 @@ public class ChatController {
 		return ResponseEntity.ok(flag);
 		
 	}
+	
+//	@GetMapping("/findRoom/{roomId}")		
+//	@ResponseBody
+//	public ResponseEntity<?> findChatRoom(@PathVariable(name = "roomId") Long roomId, @AuthenticationPrincipal PrincipalDetails principalDetails
+//			){
+//		Long member1Id = principalDetails.getMemberEntity().getId();
+//		Optional<ChattingRoomEntity> room = chatService.findChatRoom(roomId);
+//		
+////		return ResponseEntity.ok(room.get().isExitMemberRendering());
+//		
+//	}
+	
+	
 //	
 //	@PostMapping("/EndChatRoom")		//결제 완료 시 비활성화
 //	@ResponseBody
@@ -228,7 +235,7 @@ public class ChatController {
     @ResponseBody
     public ResponseEntity<?> deleteMessage(@PathVariable(name = "messageId")Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
     	boolean flag = chatService.deleteMessage(id);
-	
+    	System.out.println("왜 삭제 안돼");
     	return ResponseEntity.ok(flag);
     }
 

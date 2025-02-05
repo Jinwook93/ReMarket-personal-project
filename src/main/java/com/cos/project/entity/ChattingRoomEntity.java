@@ -42,7 +42,9 @@ public class ChattingRoomEntity {
     private MemberEntity member2;
 
   private Long exitedmemberId;
-    
+//  private Long renderingMessageIndex;		//채팅방 재접속시 렌더링 할지에 대한 유무			  
+  
+  
     @ManyToOne
     @JoinColumn(name = "board_id")
     @JsonIncludeProperties({"id","title", "price"})
