@@ -65,9 +65,26 @@ public class ChatService {
 	        if (chattingRoomEntity.getExitedmemberId() != null && chattingRoomEntity.getExitedmemberId().equals(member2.getId())) {
 	            chattingRoomEntity.setExitedmemberId(null);
 	            resetExitedMessages(chattingRoomEntity);
+	            Long messagesCount = (long) messageRepository.findByChattingRoomEntity(chattingRoomEntity.getId()).size();
+	            System.out.println("멤버2 문자 일치 확인 1: "+member2.getId());
+	            System.out.println("멤버2 문자 일치 확인 2: "+chattingRoomEntity.getExitedmemberId());
+	            System.out.println("메시지테스트 갯수2 : "+ messagesCount);
+	            chattingRoomEntity.setMessageIndex2(messagesCount); // 메시지 수에 맞게 messageIndex 업데이트
+	            chattingRoomRepository.save(chattingRoomEntity);
+	          
 	        } else if (chattingRoomEntity.getExitedmemberId() != null && chattingRoomEntity.getExitedmemberId().equals(member1.getId())) {
-	            chattingRoomEntity.setExitedmemberId(null);
-	            resetExitedMessages(chattingRoomEntity);
+	           
+	        	chattingRoomEntity.setExitedmemberId(null);
+	          
+	        	resetExitedMessages(chattingRoomEntity);
+	            
+	        	Long messagesCount = (long) messageRepository.findByChattingRoomEntity(chattingRoomEntity.getId()).size();
+
+	            System.out.println("멤버1 문자 일치 확인 1: "+member2.getId());
+	            System.out.println("멤버1  문자 일치 확인 2: "+chattingRoomEntity.getExitedmemberId());
+	            System.out.println("메시지테스트 갯수1 : "+ messagesCount);
+	            chattingRoomEntity.setMessageIndex1(messagesCount); // 메시지 수에 맞게 messageIndex 업데이트
+	            chattingRoomRepository.save(chattingRoomEntity);
 	        }
 	    }
 
@@ -78,6 +95,8 @@ public class ChatService {
 	            .member1(member1)
 	            .member2(member2)
 	            .boardEntity(boardEntity)
+	            .messageIndex1(0L)
+	            .messageIndex2(0L)
 	            .price(price)
 	            .build();
 	        chattingRoomRepository.save(chattingRoomEntity);
@@ -90,6 +109,9 @@ public class ChatService {
 	            .member1UserId(chattingRoomEntity.getMember1().getUserid())
 	            .member2UserId(chattingRoomEntity.getMember2().getUserid())
 	            .boardId(String.valueOf(chattingRoomEntity.getBoardEntity().getId()))
+	            .recentExitedmemberId(chattingRoomEntity.getRecentExitedmemberId())
+	            .messageIndex1(chattingRoomEntity.getMessageIndex1())
+	            .messageIndex2(chattingRoomEntity.getMessageIndex2())
 	            .build();
 	   
 	   return responseDTO;
@@ -203,6 +225,8 @@ public class ChatService {
 		ChattingRoomEntity chattingRoomEntity = chattingRoomRepository.findById(roomId)
 				.orElseThrow(() -> new RuntimeException("Chat room not found"));
 		MemberEntity sender = principalDetails.getMemberEntity();
+		
+		
 		
 		
 		// Use the existing receiver from the chatting room
@@ -335,7 +359,7 @@ public class ChatService {
 	    // 채팅방을 나가면서 메시지 상태 업데이트
 	    if (chattingRoomEntity.getExitedmemberId() == null) {
 	        chattingRoomEntity.setExitedmemberId(senderId);
-
+	        	chattingRoomEntity.setRecentExitedmemberId(senderId);
 	        // 🟢 채팅방을 먼저 저장하여 영속 상태로 만듦
 	        chattingRoomRepository.saveAndFlush(chattingRoomEntity);  
 
@@ -377,6 +401,29 @@ public class ChatService {
 	        messages.forEach(msg -> msg.setRead(true)); // 읽음 처리
 	        return true; // 성공
 	    }
+
+	
+	  @Transactional
+	public Long findMessagesByRoomId(Long roomId, MemberEntity memberEntity) {
+		  Optional<ChattingRoomEntity> room =chattingRoomRepository.findById(roomId);
+		  List<MessageEntity> messages = (List<MessageEntity>) room.get().getMessages() ;
+	//	  memberEntity.getId()
+		  System.out.println("메시지 갯수" +messages.size());
+	       return (long) (messages.isEmpty()?0 : messages.size());
+	}
+
+	  
+	  @Transactional
+	public String findMemberPosition(Long roomId, MemberEntity memberEntity) {
+		  Optional<ChattingRoomEntity> room =chattingRoomRepository.findById(roomId);
+		 if(memberEntity.getId().equals(room.get().getMember1())) {	
+			 return "logged1";
+		 }else  if(memberEntity.getId().equals(room.get().getMember2())) {
+			 return "logged2";
+		 }
+		 
+		  return null;
+	}
 	  
 	  
 	  

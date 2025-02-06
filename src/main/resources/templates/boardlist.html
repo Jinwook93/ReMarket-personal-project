@@ -294,14 +294,17 @@
          showChattingRoomList(); // 또는 showChattingRoomList(); 를 호출하여 강제로 보이게 함.
           }
 
+		
+
+
           // 채팅방 열기 및 메시지 로드
 		if(loggedUserId !== data.member2UserId){	
-          openChatRoom(data.id, data.title, loggedUserId, data.member2UserId);
+          openChatRoom(data.id, data.title, loggedUserId, data.member2UserId, "logged1");
         }else{
-          openChatRoom(data.id, data.title, loggedUserId, data.member1UserId);
+          openChatRoom(data.id, data.title, loggedUserId, data.member1UserId,"logged2");
 		}
 		
-  loadMessages(data.id);
+  	//	loadMessages(data.id);
 
         } catch (error) {
           console.error('채팅방 생성 중 오류 발생:', error);

@@ -1,9 +1,12 @@
 package com.cos.project.controller;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -189,16 +192,26 @@ public class ChatController {
 		
 	}
 	
-//	@GetMapping("/findRoom/{roomId}")		
-//	@ResponseBody
-//	public ResponseEntity<?> findChatRoom(@PathVariable(name = "roomId") Long roomId, @AuthenticationPrincipal PrincipalDetails principalDetails
-//			){
-//		Long member1Id = principalDetails.getMemberEntity().getId();
-//		Optional<ChattingRoomEntity> room = chatService.findChatRoom(roomId);
-//		
-////		return ResponseEntity.ok(room.get().isExitMemberRendering());
-//		
-//	}
+	@GetMapping("/findRoom/{roomId}")		
+	@ResponseBody
+	public ResponseEntity<?> findChatRoom(@PathVariable(name = "roomId") Long roomId, @AuthenticationPrincipal PrincipalDetails principalDetails
+			){
+		Long member1Id = principalDetails.getMemberEntity().getId();
+		Optional<ChattingRoomEntity> room = chatService.findChatRoom(roomId);
+		
+		ChattingRoomDTO responseDTO = null;
+		responseDTO =responseDTO.builder()
+				.id(room.get().getId())
+				.member1UserId(room.get().getMember1().getUserid())
+				.member2UserId(room.get().getMember2().getUserid())
+				.messageIndex1(room.get().getMessageIndex1())
+				.messageIndex2(room.get().getMessageIndex2())
+				.recentExitedmemberId(room.get().getRecentExitedmemberId())
+				.build();
+		
+		return ResponseEntity.ok(responseDTO);
+		
+	}
 	
 	
 //	
@@ -231,7 +244,7 @@ public class ChatController {
     	return ResponseEntity.ok(boardEntity);
     }
 
-    @DeleteMapping("/deleteMessage/{messageId}")
+    @DeleteMapping("/deleteMessage/{messageId}")		//메시지 삭제
     @ResponseBody
     public ResponseEntity<?> deleteMessage(@PathVariable(name = "messageId")Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
     	boolean flag = chatService.deleteMessage(id);
@@ -253,7 +266,7 @@ public class ChatController {
     
     
     
-    @PostMapping("/exitRoom/{deleteRoomId}")
+    @PostMapping("/exitRoom/{deleteRoomId}")		// 채팅방 나가기
     @ResponseBody
     public ResponseEntity<?> deleteRoom(@PathVariable(name = "deleteRoomId")Long id, @AuthenticationPrincipal PrincipalDetails principalDetails
     		, @RequestBody Map<String, String> data) {
@@ -270,7 +283,7 @@ public class ChatController {
     
     
     
-    @PostMapping("/markAsRead")
+    @PostMapping("/markAsRead")		//읽기 표시
     @ResponseBody
     public ResponseEntity<?> markMessagesAsRead(@RequestBody Map<String, List<Long>> request) {
         List<Long> messageIds = request.get("messageIds");
@@ -283,5 +296,31 @@ public class ChatController {
         return ResponseEntity.ok(result);
     }
 
+    
+    
+    
+    @GetMapping("/findMessageCount/{roomId}")			//메시지 수 파악
+    @ResponseBody
+    public ResponseEntity<?> findMessageCount(@PathVariable(name = "roomId") Long roomId, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+       Long messageCount = chatService.findMessagesByRoomId(roomId, principalDetails.getMemberEntity());
+       	System.out.println("갔나여");
+        return ResponseEntity.ok(messageCount);
+    }
+    
+    
+    
+    
+    @GetMapping("/chat/findMember1or2/{roomId}")			//메시지 수 파악
+    @ResponseBody
+    public ResponseEntity<?> findMember1or2(@PathVariable(name = "roomId") Long roomId, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+       String result = chatService.findMemberPosition(roomId, principalDetails.getMemberEntity());
+ 
+        return ResponseEntity.ok(result);
+    }
+    
+    
+    
+    
+    
 	
 }

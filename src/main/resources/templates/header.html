@@ -217,7 +217,7 @@ body {
         if (isLoggedIn === "true" || isLoggedIn === true) {
             await loadChatRooms(loggedId);
             setUpEnterRoomButton(loggedUserId);
-            setUpExitRoomButton();
+            setUpExitRoomButton(loggedId);
         }
 
         toggleChattingRoomList();
