@@ -310,10 +310,17 @@ export async function openChatRoom(roomId, title, loggedUserId, userid, loggedFl
 		const room = await roomresponse.json();
 //		let messageIndex = 0;
 
+
+        // ✅ 기존 setInterval이 존재하면 삭제 후 새롭게 설정
+        if (intervalId) {
+            clearInterval(intervalId);
+            console.log("기존 interval 제거 완료");
+        }
+
 //		console.log(room);
 		if (loggedFlag === "logged1") {
 //			let messageIndex = Number(room.messageIndex1);
-		loadMessages(Number(roomId), Number(room.messageIndex1), room.recentExitedmemberId);
+	//	loadMessages(Number(roomId), Number(room.messageIndex1), room.recentExitedmemberId);
 			 intervalId = setInterval(() => loadMessages(Number(roomId), Number(room.messageIndex1),Number( room.recentExitedmemberId)), 2000);
 			// 메시지 전송 이벤트 추가
 //		intervalId = setInterval(() => loadMessages(Number(roomId), messageIndex, recentExitedmemberId), 2000);
@@ -326,7 +333,7 @@ export async function openChatRoom(roomId, title, loggedUserId, userid, loggedFl
 		
 		} else if (loggedFlag === "logged2") {
 //			let messageIndex = Number(room.messageIndex2);
-					loadMessages(Number(roomId), Number(room.messageIndex2), room.recentExitedmemberId);
+			//		loadMessages(Number(roomId), Number(room.messageIndex2), room.recentExitedmemberId);
 				 intervalId = setInterval(() => loadMessages(Number(roomId), Number(room.messageIndex2), Number(room.recentExitedmemberId)), 2000);
 		// 메시지 전송 이벤트 추가
 		document.getElementById(`send-button-${roomId}`).addEventListener("click", () => sendMessage(roomId, userid, Number(room.messageIndex2),Number( room.recentExitedmemberId)));
@@ -447,7 +454,7 @@ export function setUpExitRoomButton(loggedId) {
 		button.addEventListener("click", async function() {
 			const deleteRoomId = this.getAttribute("data-deleteRoomId");
 			const deleteUserId = this.getAttribute("data-deleteUserid");
-		let chatWindow = document.getElementById(`chat-room-${deleteRoomId}`);
+			let chatWindow = document.getElementById(`chat-room-${deleteRoomId}`);
 
 			try {
 				const response = await fetch(`/chat/exitRoom/${deleteRoomId}`, {
@@ -469,9 +476,10 @@ export function setUpExitRoomButton(loggedId) {
  			 
 					loadChatRooms(loggedId);
 					toggleChattingRoomList();
-					chatWindow.remove(); 
+					chatWindow.remove();
 					alert("채팅방을 나갔습니다.");
-					location.reload();			//새로고침
+						
+//					location.reload();			//새로고침
 				} else {
 					alert("채팅방 나가기에 실패했습니다.");
 				}

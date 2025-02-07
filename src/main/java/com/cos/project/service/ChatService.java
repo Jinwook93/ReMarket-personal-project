@@ -26,8 +26,16 @@ import com.cos.project.repository.ChattingRoomRepository;
 import com.cos.project.repository.MemberRepository;
 import com.cos.project.repository.MessageRepository;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+
+
+
+
+
+
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +50,12 @@ public class ChatService {
 
 	private final MessageRepository messageRepository;
 
+	
+	 @PersistenceContext
+	    private EntityManager entityManager;
+	
+	
+	
 	@Transactional
 	public ChattingRoomDTO findOrCreateRoom(String title, String loggedId, String userId, Long boardId, int price) {
 	    BoardEntity boardEntity = boardRepository.findById(boardId)
@@ -375,21 +389,35 @@ public class ChatService {
 
 	        // 🟢 변경된 메시지 저장
 	        messageRepository.saveAll(filteredMessages);
-
+	        entityManager.flush();  // 메시지 삭제 즉시 반영
+    	    entityManager.clear();  // 영속성 컨텍스트 초기화
 	    } else {
-	        // 🟢 메시지 삭제
-	        messageRepository.deleteByRoomId(roomId);
-	        messageRepository.flush();
-	        // 🟢 채팅방 삭제
-	        chattingRoomRepository.deleteById(roomId);
-	        chattingRoomRepository.flush();
-	  
+	    	System.out.println("else 삭제 되는건가요?????????");
+	    	  forceDeleteRoom(roomId);
+	    	  
+	    		System.out.println("결국 else 삭제 되는건가요?????????");
+//	        // 🟢 메시지 삭제
+//	        messageRepository.deleteByRoomId(roomId);
+//	        messageRepository.flush();
+//	        // 🟢 채팅방 삭제
+////	        chattingRoomRepository.deleteById(roomId);
+////	        chattingRoomRepository.flush();
+////	  
 	    }
 	    
 	    return true;
 	}
 
+    @Transactional		//강제 삭제
+    public void forceDeleteRoom(Long roomId) {
+    	   messageRepository.deleteByRoomId(roomId);
+    	    entityManager.flush();  // 메시지 삭제 즉시 반영
+    	    entityManager.clear();  // 영속성 컨텍스트 초기화
 
+    	    chattingRoomRepository.deleteById(roomId);
+    	    entityManager.flush();  // 채팅방 삭제 즉시 반영
+    	    entityManager.clear();
+    }
 
 
 	  @Transactional
