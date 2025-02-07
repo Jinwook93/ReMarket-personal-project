@@ -244,11 +244,11 @@ public class ChatController {
     	return ResponseEntity.ok(boardEntity);
     }
 
-    @DeleteMapping("/deleteMessage/{messageId}")		//메시지 삭제
+//    @DeleteMapping("/deleteMessage/{messageId}")		//메시지 삭제
+    @PutMapping("/deleteMessage/{messageId}")	//삭제가 아닌 수정으로 변경
     @ResponseBody
     public ResponseEntity<?> deleteMessage(@PathVariable(name = "messageId")Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
     	boolean flag = chatService.deleteMessage(id);
-    	System.out.println("왜 삭제 안돼");
     	return ResponseEntity.ok(flag);
     }
 

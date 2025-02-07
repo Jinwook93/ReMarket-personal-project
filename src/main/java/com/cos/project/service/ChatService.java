@@ -218,7 +218,7 @@ public class ChatService {
 				.map(message -> new MessageDTO(message.getId(), message.getChattingRoomEntity().getId(),
 						message.getSender().getUserid(), message.getReceiver().getUserid(), message.getMessageContent(),
 						message.isLiked(), message.isRead(), message.isExited(), message.getExitedSenderId(),
-						message.getSendTime()))
+						message.isDeleted(), message.getSendTime()))
 				.collect(Collectors.toList());
 	}
 
@@ -331,7 +331,10 @@ public class ChatService {
 	    try {
 	        System.out.println("삭제되는 ID: " + id);
 	        if (messageRepository.existsById(id)) {
-	            messageRepository.deleteById(id);
+	        	MessageEntity message = messageRepository.findById(id).get();				//삭제 시 메시지 List index가 밀리므로, 삭제 대신 대체 내용으로 수정함
+	        	message.setMessageContent("⚠️삭제된 메시지입니다");
+	        	message.setDeleted(true);
+	        	//           messageRepository.deleteById(id);											//삭제 메시지
 	            return true;
 	        } else {
 	            System.out.println("삭제할 메시지가 없습니다.");
