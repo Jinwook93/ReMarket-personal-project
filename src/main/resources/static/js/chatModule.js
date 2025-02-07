@@ -28,16 +28,16 @@ export async function loadMessages(roomId, messageIndex, recentExitedmemberId) {
 			return;
 		}
 
-		const filteredMessages = messages.filter((msg, index) => {
-			// 조건을 만족하지 않으면 메시지를 제외
-			if (recentExitedmemberId && Number(recentExitedmemberId) === Number(loggedId) && messageIndex > 0 && index < messageIndex) {
-				return false; // 해당 메시지는 제외
-			}
-			return true; // 조건에 맞는 메시지는 포함
-		});
+//		const filteredMessages = messages.filter((msg, index) => {
+//			// 조건을 만족하지 않으면 메시지를 제외
+//			if (recentExitedmemberId && Number(recentExitedmemberId) === Number(loggedId) && messageIndex > 0 && index < messageIndex) {
+//				return false; // 해당 메시지는 제외
+//			}
+//			return true; // 조건에 맞는 메시지는 포함
+//		});
 
-
-		filteredMessages.forEach((msg, index) => {
+		messages.forEach((msg, index) => {
+//		filteredMessages.forEach((msg, index) => {
 			//			 if (msg.exitedSenderId !== null && String(msg.exitedSenderId) === String(loggedId)) {
 			//        return; // 현재 메시지는 출력하지 않고 다음 메시지로 이동
 			//    }
@@ -48,10 +48,10 @@ export async function loadMessages(roomId, messageIndex, recentExitedmemberId) {
 			//                return; // 해당 사용자의 메시지는 렌더링하지 않음
 			//            }
 
-			//		if(recentExitedmemberId && String(recentExitedmemberId) === String(loggedId) && (messageIndex>0 &&
-			//		  index< messageIndex)){
-			//			return;
-			//		 }
+					if(recentExitedmemberId && Number(recentExitedmemberId) ===Number(loggedId) && (messageIndex>0 &&
+					  index< messageIndex)){
+						return;
+					 }
 
 
 			//			console.log('recentExitedmemberId:', recentExitedmemberId);
@@ -67,7 +67,11 @@ export async function loadMessages(roomId, messageIndex, recentExitedmemberId) {
 
 			// 로그인한 사용자와 보낸 사용자가 동일하면 삭제 버튼 추가
 			// 메시지 내용과 좋아요 상태 처리
-			messageElement.textContent = `${msg.senderUserId}: ${msg.messageContent} ${msg.sendTime} ${msg.liked ? "❤️" : "🤍"}`;
+			if (msg.messageContent === "⚠️삭제된 메시지입니다" && msg.deleted) {
+				messageElement.textContent = `${msg.senderUserId}: ${msg.messageContent} ${msg.sendTime}`;
+			} else {
+				messageElement.textContent = `${msg.senderUserId}: ${msg.messageContent} ${msg.sendTime} ${msg.liked ? "❤️" : "🤍"}`;
+			}
 			if (String(msg.senderUserId) === String(loggedUserId)) {
 				messageElement.classList.add("message-right");
 
@@ -116,42 +120,47 @@ export async function loadMessages(roomId, messageIndex, recentExitedmemberId) {
 
 
 				// 좋아요 버튼 생성
+
+
 				const likeButton = document.createElement("button");
-				likeButton.textContent = msg.liked ? "❤️" : "🤍";
-				likeButton.classList.add("like-button");
-				if (msg.liked) likeButton.classList.add("liked");
-				likeButton.dataset.messageId = msg.id;
+				if (msg.messageContent === "⚠️삭제된 메시지입니다" && msg.deleted) {
+					likeButton.style.display = "none";
+				} else {
+					likeButton.textContent = msg.liked ? "❤️" : "🤍";
+					likeButton.classList.add("like-button");
+					if (msg.liked) likeButton.classList.add("liked");
+					likeButton.dataset.messageId = msg.id;
 
-				// 좋아요 버튼 이벤트 추가
-				likeButton.addEventListener("click", async function() {
-					const messageId = this.dataset.messageId;
-					const isLiked = this.classList.contains("liked"); // 현재 좋아요 상태 확인
+					// 좋아요 버튼 이벤트 추가
+					likeButton.addEventListener("click", async function() {
+						const messageId = this.dataset.messageId;
+						const isLiked = this.classList.contains("liked"); // 현재 좋아요 상태 확인
 
-					try {
-						const response = await fetch(`/chat/${messageId}/like`, {
-							method: "POST",
-							headers: {
-								"Content-Type": "application/json",
-							},
-							body: JSON.stringify(!isLiked), // 반대 상태로 변경
-						});
+						try {
+							const response = await fetch(`/chat/${messageId}/like`, {
+								method: "POST",
+								headers: {
+									"Content-Type": "application/json",
+								},
+								body: JSON.stringify(!isLiked), // 반대 상태로 변경
+							});
 
-						if (response.ok) {
-							const result = await response.json();
-							if (result) {
-								this.classList.add("liked");
-								this.textContent = "❤️";
-							} else {
-								this.classList.remove("liked");
-								this.textContent = "🤍";
+							if (response.ok) {
+								const result = await response.json();
+								if (result) {
+									this.classList.add("liked");
+									this.textContent = "❤️";
+								} else {
+									this.classList.remove("liked");
+									this.textContent = "🤍";
+								}
 							}
+						} catch (error) {
+							console.error("좋아요 요청 중 오류 발생:", error);
 						}
-					} catch (error) {
-						console.error("좋아요 요청 중 오류 발생:", error);
-					}
-				});
+					});
 
-
+				}
 
 
 
