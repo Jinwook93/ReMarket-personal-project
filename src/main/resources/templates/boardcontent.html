@@ -246,7 +246,8 @@ button:hover {
 <!-- 			<button type="button" id="deleteBoard">삭제</button> -->
 			
 			 <button type="button" th:id="|updateBoard-${board.id}|"  th:data-updateBoardId="${board.id}"  th:onclick="'window.location.href=\'/board/updateboard/' + ${board.id} + '\';'">수정</button>
-              <button type="button" th:id="|deleteBoard-${board.id}|" th:data-deleteBoardId="${board.id}">삭제</button>
+              <button type="button"  style = "background-color:red";
+              th:id="|deleteBoard-${board.id}|" th:data-deleteBoardId="${board.id}">삭제</button>
 		</div>
 
 		<!-- 댓글 작성 폼 -->
@@ -281,7 +282,8 @@ button:hover {
 
 	<script src="/js/getComment.js" type="module"></script>
 	<script src="/js/addComment.js" type="module"></script>
-	<script src="/js/likeButton.js" type="module"></script>
+<!-- 	<script type="module" src="/js/commentLike.js"></script> -->
+	<script src="/js/boardLike.js" type="module"></script>
 
 
 </body>

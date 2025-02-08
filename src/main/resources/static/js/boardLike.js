@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-	//버튼 활성화 확인 함수
+	//버튼 활성화 확인 함수 (게시판)
 	
 	    const ButtonEnable = async () => {
         try {
@@ -151,7 +151,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 버튼 이벤트 리스너 등록
     likeButton.addEventListener("click", () => {
-        if (likeButton.classList.contains("active")) {
+        if (likeButton.classList.contains("active")) {ㄴ
             handleUnlike();
             likeButton.classList.remove("active");
         } else {

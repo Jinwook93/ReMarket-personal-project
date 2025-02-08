@@ -1,110 +1,111 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Like & Dislike</title>
-    <style>
-        .button {
-            padding: 10px 20px;
-            font-size: 16px;
-            margin: 5px;
-            cursor: pointer;
-            border: none;
-            border-radius: 5px;
-        }
-        .like {
-            background-color: #4CAF50;
-            color: white;
-        }
-        .dislike {
-            background-color: #f44336;
-            color: white;
-        }
-        .active {
-            box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.3);
-        }
-    </style>
-</head>
-<body>
-    <div>
-        <button id="likeButton" class="button like">Like</button>
-        <button id="dislikeButton" class="button dislike">Dislike</button>
-    </div>
+<!-- <!DOCTYPE html> -->
+<!-- <html lang="en"> -->
+<!-- <head> -->
+<!--     <meta charset="UTF-8"> -->
+<!--     <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+<!--     <title>Like & Dislike</title> -->
+<!--     <style> -->
+/*         .button { */
+/*             padding: 10px 20px; */
+/*             font-size: 16px; */
+/*             margin: 5px; */
+/*             cursor: pointer; */
+/*             border: none; */
+/*             border-radius: 5px; */
+/*         } */
+/*         .like { */
+/*             background-color: #4CAF50; */
+/*             color: white; */
+/*         } */
+/*         .dislike { */
+/*             background-color: #f44336; */
+/*             color: white; */
+/*         } */
+/*         .active { */
+/*             box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.3); */
+/*         } */
+<!--     </style> -->
+<!-- </head> -->
+<!-- <body> -->
+<!--     <div> -->
+<!--         <button id="likeButton" class="button like">Like</button> -->
+<!--         <button id="dislikeButton" class="button dislike">Dislike</button> -->
+<!--     </div> -->
 
-    <script>
-        const likeButton = document.getElementById('likeButton');
-        const dislikeButton = document.getElementById('dislikeButton');
+<!--     <script> -->
+//     //게시글 좋아요,싫어요 함수
+//         const likeButton = document.getElementById('likeButton');
+//         const dislikeButton = document.getElementById('dislikeButton');
         
-        // 현재 상태 변수
-        let isLiked = false;
-        let isDisliked = false;
+//         // 현재 상태 변수
+//         let isLiked = false;
+//         let isDisliked = false;
 
-        // 좋아요 버튼 클릭 이벤트
-        likeButton.addEventListener('click', async () => {
-            const boardId = 1; // 게시글 ID (예시)
-            const url = isLiked ? '/board/dislike' : `/board/like/${boardId}`;
+//         // 좋아요 버튼 클릭 이벤트
+//         likeButton.addEventListener('click', async () => {
+//             const boardId = 1; // 게시글 ID (예시)
+//             const url = isLiked ? '/board/dislike' : `/board/like/${boardId}`;
 
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(!isLiked)
-                });
+//             try {
+//                 const response = await fetch(url, {
+//                     method: 'POST',
+//                     headers: {
+//                         'Content-Type': 'application/json'
+//                     },
+//                     body: JSON.stringify(!isLiked)
+//                 });
 
-                if (response.ok) {
-                    isLiked = !isLiked;
-                    isDisliked = false;
-                    updateButtonStyles();
-                } else {
-                    console.error('Error liking the post.');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-            }
-        });
+//                 if (response.ok) {
+//                     isLiked = !isLiked;
+//                     isDisliked = false;
+//                     updateButtonStyles();
+//                 } else {
+//                     console.error('Error liking the post.');
+//                 }
+//             } catch (error) {
+//                 console.error('Error:', error);
+//             }
+//         });
 
-        // 싫어요 버튼 클릭 이벤트
-        dislikeButton.addEventListener('click', async () => {
-            const boardId = 1; // 게시글 ID (예시)
-            const url = isDisliked ? '/board/like/' : `/board/dislike`;
+//         // 싫어요 버튼 클릭 이벤트
+//         dislikeButton.addEventListener('click', async () => {
+//             const boardId = 1; // 게시글 ID (예시)
+//             const url = isDisliked ? '/board/like/' : `/board/dislike`;
 
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(!isDisliked)
-                });
+//             try {
+//                 const response = await fetch(url, {
+//                     method: 'POST',
+//                     headers: {
+//                         'Content-Type': 'application/json'
+//                     },
+//                     body: JSON.stringify(!isDisliked)
+//                 });
 
-                if (response.ok) {
-                    isDisliked = !isDisliked;
-                    isLiked = false;
-                    updateButtonStyles();
-                } else {
-                    console.error('Error disliking the post.');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-            }
-        });
+//                 if (response.ok) {
+//                     isDisliked = !isDisliked;
+//                     isLiked = false;
+//                     updateButtonStyles();
+//                 } else {
+//                     console.error('Error disliking the post.');
+//                 }
+//             } catch (error) {
+//                 console.error('Error:', error);
+//             }
+//         });
 
-        // 버튼 스타일 업데이트
-        function updateButtonStyles() {
-            if (isLiked) {
-                likeButton.classList.add('active');
-                dislikeButton.classList.remove('active');
-            } else if (isDisliked) {
-                dislikeButton.classList.add('active');
-                likeButton.classList.remove('active');
-            } else {
-                likeButton.classList.remove('active');
-                dislikeButton.classList.remove('active');
-            }
-        }
-    </script>
-</body>
-</html>
+//         // 버튼 스타일 업데이트
+//         function updateButtonStyles() {
+//             if (isLiked) {
+//                 likeButton.classList.add('active');
+//                 dislikeButton.classList.remove('active');
+//             } else if (isDisliked) {
+//                 dislikeButton.classList.add('active');
+//                 likeButton.classList.remove('active');
+//             } else {
+//                 likeButton.classList.remove('active');
+//                 dislikeButton.classList.remove('active');
+//             }
+//         }
+<!--     </script> -->
+<!-- </body> -->
+<!-- </html> -->
