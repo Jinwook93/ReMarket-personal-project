@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import org.aspectj.weaver.ast.Instanceof;
 import org.springframework.stereotype.Service;
 
 import com.cos.project.dto.AlarmDTO;
@@ -93,25 +94,43 @@ public class AlarmService {
 	
 
 	
-	@Transactional		//알람 등록
-	public void postAlarm (Long loggedId,Long member1Id, Long member2Id, String type, String childType, String object, String action, String priority) {
+	@Transactional  // 알람 등록
+	public void postAlarm(Long loggedId, Long member1Id, Long member2Id, String type, String childType, String object, String action, String priority) {
+	    AlarmDTO alarmDTO = null;
+	    AlarmEntity alarmEntity = null;
+	    
+	    // Case 1: When both member1Id and member2Id are null, it's a login alarm
+	    if (member1Id == null && member2Id == null) {
+	        member1Id = loggedId;
+	        System.out.println("d여기가 문제?");
+	        alarmDTO = alarmConstructor(loggedId, member1Id, member2Id, type, childType, object, action, priority);
+	        MemberEntity member1 = memberRepository.findById(member1Id).orElseThrow(() -> new IllegalAccessError("사용자를 조회할 수 없습니다"));
+	        MemberEntity member2 = null;  // No member2 in this case (login alarm)
+	        System.out.println("d여기가 문제?");
+	        alarmEntity = alarmDTO.toEntity(member1, member2);
+	    } else {
+	        // Case 2: Both member1Id and member2Id are provided
+	        MemberEntity member1 = memberRepository.findById(member1Id)
+	                .orElseThrow(() -> new IllegalAccessError("사용자를 조회할 수 없습니다"));
+	        MemberEntity member2 = memberRepository.findById(member2Id)
+	                .orElseThrow(() -> new IllegalAccessError("사용자를 조회할 수 없습니다"));
 
-		MemberEntity member1 = memberRepository.findById(member1Id).orElseThrow(() -> new IllegalAccessError("사용자를 조회할 수 없습니다"));
-		MemberEntity member2 = memberRepository.findById(member2Id).orElseThrow(() -> new IllegalAccessError("사용자를 조회할 수 없습니다"));
-		
-		 AlarmDTO alarmDTO = null;
-		 AlarmEntity alarmEntity = null;
-		if (loggedId.equals(member1Id)) {
-			 alarmDTO = alarmConstructor(loggedId, member1Id, member2Id, type, childType, object, action, priority);
-			 alarmEntity	=	alarmDTO.toEntity(member1,  member2);
-		} else if (loggedId.equals(member2Id)) {
-			alarmDTO =	alarmConstructor(loggedId, member2Id, member1Id, type, childType, object, action, priority);
-			 alarmEntity	=	alarmDTO.toEntity(member2,  member1);
-		}
-
-		alarmRepository.saveAndFlush(alarmEntity);
-		
+	        if (loggedId.equals(member1Id)) {
+	            alarmDTO = alarmConstructor(loggedId, member1Id, member2Id, type, childType, object, action, priority);
+	            alarmEntity = alarmDTO.toEntity(member1, member2);
+	        } else if (loggedId.equals(member2Id)) {
+	            alarmDTO = alarmConstructor(loggedId, member2Id, member1Id, type, childType, object, action, priority);
+	            alarmEntity = alarmDTO.toEntity(member2, member1);
+	        } else {
+	            // You can handle any additional cases where neither member1 nor member2 matches the logged-in user
+	            throw new IllegalArgumentException("Logged user doesn't match any member IDs.");
+	        }
+	    }
+	    
+	    // Save the alarm entity to the database
+	    alarmRepository.saveAndFlush(alarmEntity);
 	}
+
 
 	@Transactional // 알림 숨김 (삭제)
 	public boolean hideAlarm(Long alarmId, Long loggedId, Long member1Id, Long member2Id) {
@@ -163,18 +182,19 @@ public class AlarmService {
 	@Transactional
 	public AlarmDTO alarmConstructor(Long loggedId,Long member1Id, Long member2Id, String type, String childType, String object, String action, String priority) {
 		Optional<MemberEntity> member1 = memberRepository.findById(member1Id);
-		Optional<MemberEntity> member2 = memberRepository.findById(member2Id);
-
+		Optional<MemberEntity> member2 = null;
+		if(member2Id != null) {
+			member2 = memberRepository.findById(member2Id);
+		}
 		String member1Content= "";
 		String member2Content = "";  
 		if( type.equals("LOGIN")) {
 			member1Content="로그인에 성공하였습니다";
-			
 		}
-		
+	
 		
 		else if (type.equals("BOARD")) { // 게시판
-			if (childType.equals("게시판") && member2Id.equals(null) && action.equals("등록")) {
+			if (childType.equals("게시판")  && action.equals("등록")) {
 				List <BoardEntity> boards = boardRepository.findByMemberID(member1Id);
 				BoardEntity filteredBoard = boards.stream().filter(board -> board.getMemberEntity().getId().equals(member1Id))
 						.max(Comparator.comparing(BoardEntity :: getCreateTime))
@@ -184,11 +204,11 @@ public class AlarmService {
 				member1Content = member1.get().getUserid()+"님의 게시글이 등록되었습니다"+ filteredBoard.getId();
 				}
 			//	member1Content = member1.get().getUserid() + "님의 게시글이 등록되었습니다";
-			} else if (childType.equals("게시판") && member2Id.equals(null) && action.equals("삭제")) {
+			} else if (childType.equals("게시판") && action.equals("삭제")) {
 
 //				member1Content = member1.get().getUserid()+"님의 게시글이 삭제되었습니다"+ filteredBoard.getId();
 				member1Content = member1.get().getUserid() + "님의 게시글이 삭제되었습니다";
-			} else if (childType.equals("게시판") && member2Id.equals(null) && action.equals("수정")) {
+			} else if (childType.equals("게시판") &&  action.equals("수정")) {
 //				member1Content = member1.get().getUserid()+"님의 게시글이 수정되었습니다"+ filteredBoard.getId(); 
 				member1Content = member1.get().getUserid() + "님의 게시글이 수정되었습니다";
 			}else if (childType.equals("게시판") && object.equals("좋아요")   && action.equals("활성화")) {
@@ -266,11 +286,13 @@ public class AlarmService {
 				.action(action)
 				.type(childType)
 				.object(object)
+				.type(type)
 				.childType(childType)
 				.member1Id(member1Id)
 				.member2Id(member2Id)
 				.member1Content(member1Content)
 				.member2Content(member2Content)
+				.priority("MEDIUM")
 				.build();
 		
 		return alarmDTO;

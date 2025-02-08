@@ -111,7 +111,7 @@ button:hover {
 		
 		
 		<label for="buy_Sell">항목</label> <select id="buy_Sell"
-				name="buy_Sell" required>
+				name="buy_Sell" required selected>
 				<option value="">항목을 선택하세요</option>
 				<!--                 서버에서 작성자 목록을 동적으로 채워야 함 -->
 				<option value="팝니다" th:selected="${board.buy_Sell == '팝니다'}">팝니다</option>
@@ -201,6 +201,7 @@ button:hover {
 	<script>
 		// Listen for clicks on "X" buttons dynamically
 		document.addEventListener('click', function(event) {
+			console.log(board.category);
 			if (event.target && event.target.id === 'displayButton') {
 				// Get the parent image preview div and remove it from the DOM
 				const imagePreview = event.target.closest('#imagePreview');

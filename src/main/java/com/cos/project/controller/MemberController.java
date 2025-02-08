@@ -72,6 +72,18 @@ public class MemberController {
 //	
     
     
+    @PostMapping("/validateMember")			//없어도 무방하나 로그인 알람때문에 만듬
+    @ResponseBody
+    public ResponseEntity<?> postMethodName(@RequestBody LoginRequest loginData) {
+    	Long loggedId = memberService.checkLogin(loginData);
+    	System.out.println(loggedId);
+        return ResponseEntity.ok(loggedId);
+    }
+    
+    
+    
+    
+    
     @PostMapping("/loginmember")			//   (요청 -> filterchain -> 인증/인가 -> 컨트롤러 순서 )
     																//시큐리티가 가로채서 loginProcessingUrl("/loginMember") POST 요청을 실행 
     															//  만약 Spring Security가 요청을 처리하면, 컨트롤러에 도달하지 않습니다. 따라서 , 이 컨트롤러는 구현을 할 수 없다

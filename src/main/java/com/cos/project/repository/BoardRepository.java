@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import com.cos.project.entity.BoardEntity;
 import com.cos.project.entity.Category;
 import com.cos.project.entity.CommentEntity;
+import com.cos.project.entity.MemberEntity;
 
 @Repository
 public interface BoardRepository extends JpaRepository<BoardEntity, Long>{
@@ -44,5 +45,9 @@ public interface BoardRepository extends JpaRepository<BoardEntity, Long>{
 	Optional<List<BoardEntity>>findByCategoryAndUseridAndsearch(@Param("category")Category category, @Param("search")String search);
 	@Query("SELECT b FROM BoardEntity b WHERE b.category = :category AND b.memberEntity.name LIKE %:search%")	
 	Optional<List<BoardEntity>> findByCategoryAndNameAndsearch(@Param("category")Category category,  @Param("search")String search);
+
+
+	@Query("SELECT b FROM BoardEntity b WHERE b.memberEntity.id = :memberId ORDER BY b.createTime DESC")
+	Optional<BoardEntity> findLatestBoardByMember(@Param("memberId") Long memberId);
 	
 }

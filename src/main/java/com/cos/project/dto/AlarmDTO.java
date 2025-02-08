@@ -48,9 +48,9 @@ public class AlarmDTO {
 	                .object(this.object)
 	                .action(this.action)
 	                .priority(this.priority)
-	                .member1Read(this.status.equals("UNREAD") ? "UNREAD" : "READ") // member1Read 설정
-	                .member2Read(this.status.equals("UNREAD") ? "UNREAD" : "READ") // member2Read 설정
-	                .targetId(this.targetId)
+	                .member1Read(this.equals("UNREAD") ? "UNREAD" : "READ") // member1Read 설정
+	                .member2Read(this.equals("UNREAD") ? "UNREAD" : "READ") // member2Read 설정
+//	                .targetId(this.targetId)
 	                .member1(member1)
 	                .member2(member2)
 	                .build();

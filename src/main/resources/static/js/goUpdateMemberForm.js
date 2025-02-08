@@ -1,3 +1,17 @@
+
+document.getElementById("updateMember").addEventListener("click", function () {
+    const memberId = document.getElementById("id").value; // 숨겨진 input에서 boardId 가져오기
+    window.location.href = `/updatemypage/${memberId}`;
+});
+
+
+
+
+
+
+
+
+
 //export function goUpdateForm(){
 //	
 //	const boardId = document.getElementById("id").value;
@@ -8,10 +22,6 @@
 //	
 //}
 
-document.getElementById("updateMember").addEventListener("click", function () {
-    const memberId = document.getElementById("id").value; // 숨겨진 input에서 boardId 가져오기
-    window.location.href = `/updatemypage/${memberId}`;
-});
 
 
 

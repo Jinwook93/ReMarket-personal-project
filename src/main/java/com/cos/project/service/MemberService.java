@@ -80,7 +80,7 @@ public class MemberService {
     
     @Transactional
     //로그인
-    public String  checkLogin(LoginRequest loginRequest) {
+    public Long checkLogin(LoginRequest loginRequest) {
     	  UsernamePasswordAuthenticationToken authenticationToken = 
                   new UsernamePasswordAuthenticationToken(loginRequest.getUserid(), loginRequest.getPassword());
 
@@ -89,8 +89,13 @@ public class MemberService {
           
           PrincipalDetails principalDetails =(PrincipalDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
          
+          return principalDetails.getMemberEntity().getId();
           
-          return   principalDetails.getUsername();
+//          if(principalDetails != null) {
+//          return   principalDetails.getUsername();
+//          }else {
+//        	  return "로그인 실패!";
+//          }
     }
     
     

@@ -28,10 +28,10 @@ public class AlarmEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(nullable = true, columnDefinition = "TEXT")
     String member1Content;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(nullable = true, columnDefinition = "TEXT")
     String member2Content;
 
     boolean member1Visible = true; // 삭제보다는 숨김 처리
@@ -41,20 +41,26 @@ public class AlarmEntity {
     @Column(updatable = false)
     private Timestamp createTime;
 
+    // member1 and member2 are ManyToOne relationships with MemberEntity
     @ManyToOne
     @JoinColumn(name = "member1_id")
     MemberEntity member1; // 로그인한 유저
 
     @ManyToOne
-    @JoinColumn(name = "member2_id")
+    @JoinColumn(name = "member2_id", nullable = true)
     MemberEntity member2; // 상대방
 
     @Column(nullable = false)
     String type; // 알람 타입 (게시판, 댓글, 메시지, 좋아요 등)
 
+    @Column(nullable = true)
     String childType; // 세부 타입 (게시판의 댓글, 댓글의 게시판 등)
-    String object; // 대상의 목적어 (좋아요, 싫어요 등)
-    String action; // 실제 행동 (좋아요, 댓글 등)
+    
+    @Column(nullable = true)
+    String object ; // 대상의 목적어 (좋아요, 싫어요 등)
+    
+    @Column(nullable = true)
+    String action ; // 실제 행동 (좋아요, 댓글 등)
 
     @Column(nullable = false)
     String member1Read = "UNREAD"; // 알람 상태 (READ, UNREAD 등)
@@ -65,6 +71,8 @@ public class AlarmEntity {
     @Column(nullable = false)
     String priority = "MEDIUM"; // 우선순위 (LOW, MEDIUM, HIGH)
 
-    @Column(nullable = false)
-    String targetId; // 알람 대상 ID (로그인 유저, 관리자 등)
+//    @Column(nullable = false)
+//    String targetId; // 알람 대상 ID (로그인 유저, 관리자 등)
+
+    // You can add additional fields for member1Id and member2Id if you need them to be separately stored
 }

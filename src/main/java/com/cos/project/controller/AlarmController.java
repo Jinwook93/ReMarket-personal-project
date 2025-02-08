@@ -1,10 +1,10 @@
 package com.cos.project.controller;
 
-import org.springframework.web.bind.annotation.RestController;
-
 import com.cos.project.details.PrincipalDetails;
 import com.cos.project.dto.AlarmDTO;
+import com.cos.project.dto.LoginRequest;
 import com.cos.project.entity.AlarmEntity;
+import com.cos.project.repository.MemberRepository;
 import com.cos.project.service.AlarmService;
 
 import java.util.List;
@@ -12,11 +12,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +26,10 @@ public class AlarmController {
 
     private final AlarmService alarmService;
 
+	private final MemberRepository memberRepository;
+   
+    
+    
     // 특정 유저의 알림 목록 조회
     @GetMapping("/list/{loggedId}")
     public ResponseEntity<List<AlarmEntity>> getUserAlarms(@PathVariable(name = "loggedId") Long loggedId,@AuthenticationPrincipal PrincipalDetails principalDetail) {
@@ -84,4 +83,27 @@ public class AlarmController {
 //        alarmService.deleteAllAlarms(principalDetail.getUser().getId());
 //        return ResponseEntity.ok().build();
 //    }
+    
+    
+    
+    //로그인 알람
+    @PostMapping("/loginSuccess/{loggedId}")			// 로그인 알람
+    @ResponseBody
+    public ResponseEntity<?> loginAlarm(@PathVariable(name = "loggedId") Long loggedId, @RequestBody AlarmDTO alarmDTO, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+//    	Long loggedId = principalDetails.getMemberEntity().getId();
+    	System.out.println("갔나요?"+ loggedId);
+    	
+    	alarmService.postAlarm(loggedId,alarmDTO.getMember1Id(), alarmDTO.getMember2Id(), alarmDTO.getType(), alarmDTO.getChildType(), alarmDTO.getObject(), alarmDTO.getAction(), alarmDTO.getPriority());
+    	String result = "success";
+        return ResponseEntity.ok(result);
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
 }

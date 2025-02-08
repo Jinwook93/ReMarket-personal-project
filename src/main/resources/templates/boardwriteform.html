@@ -72,7 +72,7 @@ button:hover {
     <div th:replace="~{header.html}"></div>
 	<div class="container">
 		<h1>게시글 작성</h1>
-		<form action="/board/writeboard" enctype="multipart/form-data"
+		<form id = "boardForm"  action="/board/writeboard" enctype="multipart/form-data"
 			method="POST">
 			<!-- 제목 입력 -->
 			<label for="title">제목</label> <input type="text" id="title"
@@ -155,5 +155,18 @@ button:hover {
 			<button type="submit">작성</button>
 		</form>
 	</div>
+	
+		<script>
+		document.getElementById("boardForm").addEventListener("submit", (e) => {
+		    e.preventDefault();  // 기본 동작을 막음
+		    alert("게시글이 등록되었습니다");
+		    e.target.submit();  // 폼을 실제로 제출
+		});
+
+		
+		</script>
+	
+	
+	
 </body>
 </html>
