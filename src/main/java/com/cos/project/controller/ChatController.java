@@ -51,15 +51,6 @@ public class ChatController {
 	
 
 
-//	    @GetMapping("/Chatroom/{boardId}")
-//	    public String chatRoom(@PathVariable(name = "boardId") Long boardId, @RequestParam(name = "userId") String userId , @AuthenticationPrincipal PrincipalDetails principalDetails,Model model) {
-//	    	MemberEntity memberEntity1 = principalDetails.getMemberEntity();
-//	    	System.out.println("아이디확인"+userId);
-//	    	ChattingRoomEntity chattingRoomEntity=chatService.findOrCreateRoom("채팅방 이름", memberEntity1.getUserid(), userId ,boardId, 0);
-//	    	model.addAttribute("chatRoom", chattingRoomEntity);
-//	     //   model.addAttribute("boardId", boardId);
-//	        return "chatroom";
-//	    }
 	    
     @PostMapping("/Chatroom/{boardId}")
     @ResponseBody
@@ -146,30 +137,7 @@ public class ChatController {
 		
 	}
 	
-//	@DeleteMapping("/deleteChatRoom/{id}")		//결제 완료 시 
-//	@ResponseBody
-//	public ResponseEntity<?> deleteChatRoom(@PathVariable(name = "id") Long id ,@AuthenticationPrincipal PrincipalDetails principalDetails,
-//			@RequestBody Map<String, String> deleteChatRoomData){
-////			Long member2Id,Long boardId){
-//		
-//		
-//		/*
-//		{
-//			"member2_userid": "member2_userid",
-//			"boardId": "boardId",
-//		}
-//		*/
-//		
-//		
-//		Long member1Id = principalDetails.getMemberEntity().getId();
-//		Long member2Id = Long.valueOf(deleteChatRoomData.get("member2_userid"));
-//		Long boardId =  Long.valueOf(deleteChatRoomData.get("boardId"));
-//		
-//		boolean flag = chatService.deleteChatRoom(id, member1Id, member2Id,boardId);
-//		
-//		return ResponseEntity.ok(flag);
-//		
-//	}
+
 	
 	@PostMapping("/disableChatRoom/{id}")		//board 작성자가 채팅창을 비활성화
 	@ResponseBody
@@ -253,16 +221,6 @@ public class ChatController {
     }
 
     
-//    @PostMapping("/exitRoom/{deleteRoomId}")
-//    @ResponseBody
-//    public ResponseEntity<?> deleteRoom(@PathVariable(name = "deleteRoomId")Long id, @AuthenticationPrincipal PrincipalDetails principalDetails
-//    		, @RequestBody Map<String, String> data) {
-//    	String receiverUserId = data.get("receiver");
-//    	System.out.println("리시버 : " + receiverUserId);
-//    	boolean flag = chatService.deleteRoom(id, principalDetails.getMemberEntity().getId(), receiverUserId);
-//    	
-//    	return ResponseEntity.ok(flag);
-//    }
     
     
     
