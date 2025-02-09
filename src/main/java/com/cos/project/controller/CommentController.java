@@ -1,6 +1,7 @@
 package com.cos.project.controller;
 
 import com.cos.project.details.PrincipalDetails;
+import com.cos.project.dto.CommentDTO;
 import com.cos.project.entity.CommentEntity;
 import com.cos.project.service.CommentService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -32,11 +33,11 @@ public class CommentController {
     @PostMapping("/board/{id}")
     public ResponseEntity<?> addComment(
         @PathVariable("id") Long id,
-        @RequestBody CommentEntity commentEntity,
+        @RequestBody CommentDTO commentDTO,
         @AuthenticationPrincipal PrincipalDetails principalDetails
     ) throws JsonProcessingException {
 
-        CommentEntity result = commentService.addComment(id, commentEntity, principalDetails.getMemberEntity());
+        CommentEntity result = commentService.addComment(id, commentDTO, principalDetails.getMemberEntity());
 
         	System.out.println("확인:"+result.getMemberEntity().getName());
         
@@ -45,6 +46,26 @@ public class CommentController {
         
 
     }
+    
+    
+    
+    // 대댓글(자식 댓글) 추가
+    @PostMapping("/comment/{parentCommentId}")
+    public ResponseEntity<?> addChildComment(
+        @PathVariable("parentCommentId") Long id,
+        @RequestBody CommentDTO commentDTO,
+        @AuthenticationPrincipal PrincipalDetails principalDetails
+    ) throws JsonProcessingException {
+        CommentEntity result = commentService.addChildComment(commentDTO,principalDetails.getMemberEntity());
+
+        	System.out.println("확인:"+result.getMemberEntity().getName());
+        
+
+       return ResponseEntity.ok(result);
+        
+
+    }
+    
 
 
 

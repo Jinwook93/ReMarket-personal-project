@@ -16,8 +16,8 @@
         <button type="submit">Login</button>
     </form>
 </body>
-	 <script>
-	
+	 <script type="module">
+	import {loginAlarm} from "./js/alarmModule.js";
 	 document.getElementById("formlogin").addEventListener("submit", async (e) => {
 		    e.preventDefault(); // 기본 제출 방지
 
@@ -42,13 +42,16 @@
 
 		        alert("로그인에 성공하였습니다");
 
-		        // 🔹 3. 로그인 성공 알람 요청
-		        await fetch(`/alarm/loginSuccess/${responseData}`, {
-		            method: "POST",
-		            headers: { 'Content-Type': 'application/json' },
-// 		            credentials: "include", // ✅ 세션 유지 필수
-		            body: JSON.stringify({ type: "LOGIN" })
-		        });
+		        
+		        
+		        loginAlarm(responseData);
+// 		        // 🔹 3. 로그인 성공 알람 요청
+// 		        await fetch(`/alarm/loginSuccess/${responseData}`, {
+// 		            method: "POST",
+// 		            headers: { 'Content-Type': 'application/json' },
+// // 		            credentials: "include", // ✅ 세션 유지 필수
+// 		            body: JSON.stringify({ type: "LOGIN" })
+// 		        });
 
 		        // 🔹 4. 폼 제출
 		        e.target.submit(); 

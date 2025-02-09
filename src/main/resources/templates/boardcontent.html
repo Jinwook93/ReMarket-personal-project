@@ -168,7 +168,8 @@ button:hover {
 
 		<!-- 작성자 아이디 (hidden) -->
 		<input type="hidden" th:value="${board.memberEntity.userid}"
-			id="userid" name="userid"> <input type="hidden"
+			id="userid" name="userid">
+			 <input type="hidden"
 			th:value="${board.memberEntity.id}" id="memberid" name="memberid">
 
 
@@ -257,7 +258,7 @@ button:hover {
 			<label for="commentText">댓글 작성</label>
 			<textarea id="commentText" name="commentText" placeholder="댓글을 작성하세요"
 				required></textarea>
-			<button type="button" id="submitComment">댓글 작성</button>
+			<button type="button"  id="submitComment">댓글 작성</button>
 			<!--             </form> -->
 
 			<!-- 댓글 목록 -->
@@ -282,6 +283,7 @@ button:hover {
 
 	<script src="/js/getComment.js" type="module"></script>
 	<script src="/js/addComment.js" type="module"></script>
+<!-- 		<script src="/js/addChildComment.js" type="module"></script> -->
 <!-- 	<script type="module" src="/js/commentLike.js"></script> -->
 	<script src="/js/boardLike.js" type="module"></script>
 

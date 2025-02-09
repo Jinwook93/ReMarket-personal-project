@@ -1,6 +1,7 @@
 import { loadComments } from "./loadComments.js";
 
 let boardId = document.getElementById("id").value;
+let boardUserId = document.getElementById("memberid").value;
 const principalDetails = document.getElementById('principalDetails').value;
 
 $('#submitComment').click(function() {
@@ -19,7 +20,7 @@ $('#submitComment').click(function() {
 		},
 		method: 'POST',
 		body: JSON.stringify({
-			content: commentText,
+			content: commentText
 		}),
 	})
 		.then(response => {
@@ -32,7 +33,7 @@ $('#submitComment').click(function() {
 			alert("댓글이 추가되었습니다.");
 			  $('#commentText').val('');
 			// 댓글 불러오기 함수 호출
-			loadComments(boardId, principalDetails);
+			loadComments(boardId, boardUserId,principalDetails);
 		
 		})
 		.catch(error => {

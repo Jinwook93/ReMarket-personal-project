@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -51,6 +52,14 @@ public class CommentEntity {
 	
 	private int totalLike=0;
 	private int totalDislike=0;
+	
+	
+	@Column(nullable = true)
+	private Long parentCommentId;			//부모 댓글 아이디(ID) 
+	
+	private boolean PRIVATE =false;			//비밀댓글
+	
+	private boolean blind =false;			//비공개댓글
 	
 	
 	@CreationTimestamp

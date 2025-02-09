@@ -1,6 +1,7 @@
 package com.cos.project.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -8,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.cos.project.entity.BoardEntity;
 import com.cos.project.entity.CommentEntity;
 
 import jakarta.transaction.Transactional;
@@ -29,4 +31,6 @@ public interface CommentRepository extends JpaRepository<CommentEntity, Long>  {
 	@Transactional
 	@Query("DELETE FROM CommentEntity c WHERE c.boardEntity.id = :boardId")
 	void deleteAllCommentsAboutBoard(@Param("boardId") Long boardId);
+
+	List<CommentEntity> findByParentCommentId(Long parentCommentId);
 }
