@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -38,36 +40,15 @@ public class CommentService {
 	
 	private final CommentLikeRepository commentLikeRepository;
 
-	@Transactional
-	public List<CommentEntity> getAllCommentAboutBoard(Long id) {
-
-//		BoardEntity boardEntity = boardRepository.findById(id).orElseThrow(() -> 
-//		new IllegalArgumentException("게시글을 찾을 수 없습니다"));
-
-		List<CommentEntity> comments = commentRepository.findAllCommentsAboutBoard(id);
-
-		List<CommentEntity> childComments = commentRepository.findAllCommentsAboutBoard(id);
-		
-		if (comments == null) {
-			return null;
-		} else {
-			return comments;
-		}
-	}
 //	@Transactional
-//	public List<CommentEntity> getAllCommentAboutBoard(Long id) {
+//	public List<CommentEntity> getAllCommentAboutBoard(Long id) {				//모든 댓글
 //
 ////		BoardEntity boardEntity = boardRepository.findById(id).orElseThrow(() -> 
 ////		new IllegalArgumentException("게시글을 찾을 수 없습니다"));
 //
 //		List<CommentEntity> comments = commentRepository.findAllCommentsAboutBoard(id);
 //
-//		for(CommentEntity comment : comments) {
-//			if (comment.getParentComment() != null) {
-//				
-//			}
-//			
-//		}
+//		List<CommentEntity> childComments = commentRepository.findAllCommentsAboutBoard(id);
 //		
 //		if (comments == null) {
 //			return null;
@@ -75,6 +56,36 @@ public class CommentService {
 //			return comments;
 //		}
 //	}
+	
+	
+	@Transactional
+	public List<CommentEntity> getAllCommentAboutBoard(Long boardid) {				//parentCommentId==NULL인 모든 댓글
+
+		List<CommentEntity> comments = commentRepository.findByBoardIdAndParentCommentIsNull(boardid);
+
+		if (comments == null) {
+			return null;
+		} else {
+			return comments;
+		}
+	}
+	
+	@Transactional
+	public List<CommentEntity> getChildComment(Long parentCommentId) { 
+	    List<CommentEntity> comments = commentRepository.findByParentCommentId(parentCommentId);
+
+	    // 자식 댓글을 ID 기준으로 역순 정렬 (최신순)
+	    return comments.stream()
+	            .sorted(Comparator.comparing(CommentEntity::getId).reversed())  
+	            .collect(Collectors.toList());
+	}
+	
+	
+	
+	
+	
+	
+
 	@Transactional
 	public CommentEntity addComment(CommentDTO commentDTO, MemberEntity memberEntity) {
 

@@ -24,9 +24,20 @@ public class CommentController {
     private final CommentService commentService;
 
     // 게시글에 대한 댓글 조회
-    @GetMapping("/board/{id}")
+//    @GetMapping("/board/{id}")
+//    public List<CommentEntity> getAllCommentsAboutBoard(@PathVariable("id") Long id) {
+//        return commentService.getAllCommentAboutBoard(id);
+//    }
+    
+    @GetMapping("/board/{id}")			//부모 댓글이 없는 댓글들을 역순으로 나열
     public List<CommentEntity> getAllCommentsAboutBoard(@PathVariable("id") Long id) {
         return commentService.getAllCommentAboutBoard(id);
+    }
+    
+    @GetMapping("/board/child/{parentCommentId}")			//부모 댓글에 대한 자식 댓글들을 역순으로 나열
+    public List<CommentEntity> getChildComments(@PathVariable("parentCommentId") Long parentCommentId) {
+    	System.out.println("자식 테스트!!!!!!!!!!!!"+parentCommentId);
+        return commentService.getChildComment(parentCommentId);
     }
 
     // 댓글 추가
