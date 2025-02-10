@@ -1,74 +1,23 @@
 import { deleteComment } from "./deleteComment.js";
 import { updateComment } from "./updateComment.js";
 import * as commentLike from "./commentLike.js";
-//import { submitReply } from "./addChildComment.js";
+import { addComment } from "./addComment.js";
 
-				// 🟢 대댓글 입력창 토글 함수
-				function toggleReplyInput(commentId) {
-					const replyContainer = document.getElementById(`reply-container-${commentId}`);
-					if (replyContainer.style.display === 'none') {
-						replyContainer.style.display = 'block';
-					} else {
-						replyContainer.style.display = 'none';
-					}
-					
-						const submitVisible = document.getElementById(`submit-${commentId}`);
-					if (submitVisible.style.display === 'none') {
-						submitVisible.style.display = 'block';
-					} else {
-						submitVisible.style.display = 'none';
-					}
-				}
+// 🟢 대댓글 입력창 토글 함수
+function toggleReplyInput(commentId) {
+	const replyContainer = document.getElementById(`reply-container-${commentId}`);
+	const submitVisible = document.getElementById(`submit-${commentId}`);
 
-								// 🟢 대댓글 입력창 토글 함수
-				function toggleSubmitButton(commentId) {
-//					const submitVisible = document.getElementById(`submit-${commentId}`);
-//					if (submitVisible.style.display === 'none') {
-//						submitVisible.style.display = 'block';
-//					} else {
-//						submitVisible.style.display = 'none';
-//					}
-				}
-
-
-function submitReply(boardId, parentCommentId, principalDetails) {
-    const replyInput = document.getElementById(`reply-input-${parentCommentId}`);
-    const replyContent = replyInput.value.trim();
-
-    if (!replyContent) {
-        alert("답글을 입력해주세요.");
-        return;
-    }
-
-    fetch(`http://localhost:8081/comments/comment/${parentCommentId}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            content: replyContent,
-            parentCommentId: parentCommentId,
-            boardId : boardId
-        }),
-    })
-    .then(response => {
-        if (!response.ok) throw new Error("답글 저장 실패");
-        return response.json();
-    })
-    .then(data => {
-		       console.log(data);
-        alert("답글이 등록되었습니다.");
- 		replyInput.value="";
-        loadComments(String(boardId), data.memberEntity.userid, principalDetails); // 댓글 새로고침
-    })
-    .catch(error => {
-        console.error("Error:", error);
-        alert("답글을 등록하는 중 오류가 발생했습니다.");
-        	replyInput.value="";
-    });
+	if (replyContainer.style.display === 'none') {
+		replyContainer.style.display = 'block';
+		submitVisible.style.display = 'block';
+	} else {
+		replyContainer.style.display = 'none';
+		submitVisible.style.display = 'none';
+	}
 
 }
-
-
-//				 
+ 
 
 // 댓글 불러오기 함수 정의
 export function loadComments(boardId, boardUserId, principalDetails) {
@@ -119,13 +68,6 @@ export function loadComments(boardId, boardUserId, principalDetails) {
 
 
 
-
-
-
-
-
-
-
 				// 수정 및 삭제 버튼 추가
 
 
@@ -162,10 +104,6 @@ export function loadComments(boardId, boardUserId, principalDetails) {
 
 
 
-
-
-
-
 				// 🟢 대댓글 버튼 추가
 				const replyButton = document.createElement('button');
 				replyButton.textContent = '답글 달기';
@@ -178,33 +116,24 @@ export function loadComments(boardId, boardUserId, principalDetails) {
 				replyContainer.style.display = 'none'; // 기본적으로 숨김
 				replyContainer.innerHTML = `
                 <input type="text" id="reply-input-${comment.id}" placeholder="답글을 입력하세요" style="width: 80%;" />`;
-//			 <button onclick="submitReply('${comment.id}', '${principalDetails}')">등록</button>`;
-					const submitButton = document.createElement('button');
-					submitButton.id = `submit-${comment.id}`;
-				submitButton.style.display=replyContainer.style.display;
+				//			 <button onclick="submitReply('${comment.id}', '${principalDetails}')">등록</button>`;				오류 발생 -> innerHTML에 있다고 해서 곧바로  DOM이 등록되는 건 아님. innerHTML을 사용하면 브라우저가 HTML 문자열을 해석하고 새로운 DOM 요소를 생성하는 과정이 필요합니다.
+				//자바스크립트는 곧바로 다음줄을 실행시킴
+				const submitButton = document.createElement('button');
+				submitButton.id = `submit-${comment.id}`;
+				submitButton.style.display = replyContainer.style.display;
 				submitButton.textContent = '등록';
-				
-				submitButton.addEventListener('click', () => submitReply(boardId,comment.id, principalDetails));
-//				replyButton.addEventListener('click', () => toggleSubmitButton(comment.id));
-//				replyContainer.innerHTML += submitButton;
+
+				submitButton.addEventListener('click', () => addComment(boardId, comment.id, principalDetails));
+				//				replyButton.addEventListener('click', () => toggleSubmitButton(comment.id));
+				//				replyContainer.innerHTML += submitButton;
 				commentElement.appendChild(submitButton);
-			
-			
-    // Ensure that this is after the page is loaded
+
+
+				// Ensure that this is after the page is loaded
 
 
 
 				commentElement.appendChild(replyContainer);
-
-
-
-
-
-
-
-
-
-
 
 
 				commentsList.appendChild(commentElement);
@@ -240,12 +169,12 @@ export function loadComments(boardId, boardUserId, principalDetails) {
 					});
 				}
 			});
-			
+
 		})
 		.catch(error => {
 			console.error("Error:", error);
 			alert("댓글을 불러오는 데 실패했습니다. 서버 관리자에게 문의해 주세요.");
 		});
-		
-		
+
+
 }

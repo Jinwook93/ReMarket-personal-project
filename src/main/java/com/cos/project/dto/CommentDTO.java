@@ -43,7 +43,7 @@ public class CommentDTO {
                 .memberProfileImage(entity.getMemberEntity() != null ? entity.getMemberEntity().getProfileImage() : null)
                 .totalLike(entity.getTotalLike())
                 .totalDislike(entity.getTotalDislike())
-                .parentCommentId(entity.getParentCommentId())
+                .parentCommentId(entity.getParentComment().getId())
                 .isPrivate(entity.isPRIVATE())
                 .isBlind(entity.isBlind())
                 .createTime(entity.getCreateTime())
@@ -51,7 +51,7 @@ public class CommentDTO {
     }
     
  // DTO → Entity 변환
-    public CommentEntity toEntity(BoardEntity boardEntity, MemberEntity memberEntity) {
+    public CommentEntity toEntity(BoardEntity boardEntity, MemberEntity memberEntity, CommentEntity commentEntity) {
         return CommentEntity.builder()
                 .id(this.id)
                 .content(this.content)
@@ -59,7 +59,7 @@ public class CommentDTO {
                 .memberEntity(memberEntity)
                 .totalLike(this.totalLike)
                 .totalDislike(this.totalDislike)
-                .parentCommentId(this.parentCommentId)
+                .parentComment(commentEntity)
                 .PRIVATE(this.isPrivate)
                 .blind(this.isBlind)
                 .createTime(this.createTime != null ? this.createTime : new Timestamp(System.currentTimeMillis()))

@@ -1,6 +1,8 @@
 package com.cos.project.entity;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -19,6 +21,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -54,12 +57,26 @@ public class CommentEntity {
 	private int totalDislike=0;
 	
 	
-	@Column(nullable = true)
-	private Long parentCommentId;			//부모 댓글 아이디(ID) 
+//	@Column(nullable = true)
+//	private Long parentCommentId;			//부모 댓글 아이디(ID) 
 	
 	private boolean PRIVATE =false;			//비밀댓글
 	
 	private boolean blind =false;			//비공개댓글
+	
+	
+	
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_comment_id",nullable = true)
+	@JsonBackReference  // 부모 댓글이 자식 댓글을 직렬화하지 않도록
+    private CommentEntity parentComment; // 부모 댓글
+
+    @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL)
+    @JsonManagedReference  // 자식 댓글에서 부모 댓글을 직렬화할 수 있도록
+    private List<CommentEntity> childComments = new ArrayList<>(); // 자식 댓글들
+	
+	
 	
 	
 	@CreationTimestamp

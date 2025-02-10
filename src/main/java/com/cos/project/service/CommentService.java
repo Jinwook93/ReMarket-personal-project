@@ -1,6 +1,7 @@
 package com.cos.project.service;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,53 +46,50 @@ public class CommentService {
 
 		List<CommentEntity> comments = commentRepository.findAllCommentsAboutBoard(id);
 
+		List<CommentEntity> childComments = commentRepository.findAllCommentsAboutBoard(id);
+		
 		if (comments == null) {
 			return null;
 		} else {
 			return comments;
 		}
 	}
-
-	@Transactional
-	public CommentEntity addComment(Long id, CommentDTO commentDTO, MemberEntity memberEntity) {
-
-		BoardEntity boardEntity = boardRepository.findById(id)
-				.orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다"));
-
-		MemberEntity managedMemberEntity = memberRepository.findById(memberEntity.getId())
-				.orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다"));
-
-//		if(parentCommentId != null) {
-//			commentEntity.setparentCommentId(parentCommentId);
+//	@Transactional
+//	public List<CommentEntity> getAllCommentAboutBoard(Long id) {
+//
+////		BoardEntity boardEntity = boardRepository.findById(id).orElseThrow(() -> 
+////		new IllegalArgumentException("게시글을 찾을 수 없습니다"));
+//
+//		List<CommentEntity> comments = commentRepository.findAllCommentsAboutBoard(id);
+//
+//		for(CommentEntity comment : comments) {
+//			if (comment.getParentComment() != null) {
+//				
+//			}
+//			
 //		}
-		
-		
-		CommentEntity commentEntity = commentDTO.toEntity(boardEntity, managedMemberEntity);
-//		commentDTO.setBoardEntity(boardEntity);
-//		commentDTO.setMemberEntity(managedMemberEntity);
-		commentRepository.save(commentEntity);
-		System.out.println("저장 완료...");
-
-		return commentEntity;
-	}
-	
-	
+//		
+//		if (comments == null) {
+//			return null;
+//		} else {
+//			return comments;
+//		}
+//	}
 	@Transactional
-	public CommentEntity addChildComment( CommentDTO commentDTO, MemberEntity memberEntity) {
+	public CommentEntity addComment(CommentDTO commentDTO, MemberEntity memberEntity) {
 
-		
 		BoardEntity boardEntity = boardRepository.findById(commentDTO.getBoardId())
 				.orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다"));
 
 		MemberEntity managedMemberEntity = memberRepository.findById(memberEntity.getId())
 				.orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다"));
 
-//		if(commentDTO.getParentCommentId() != null) {
-//			commentEntity.setParentCommentId(commentDTO.getParentCommentId());
-//		}
+		CommentEntity parentComment = null;
+		if(commentDTO.getParentCommentId() != null) {
+		 parentComment = commentRepository.findById(commentDTO.getParentCommentId()).orElse(null);
+		}
 		
-		
-		CommentEntity commentEntity = commentDTO.toEntity(boardEntity, memberEntity);
+		CommentEntity commentEntity = commentDTO.toEntity(boardEntity, managedMemberEntity, parentComment);
 //		commentDTO.setBoardEntity(boardEntity);
 //		commentDTO.setMemberEntity(managedMemberEntity);
 		commentRepository.save(commentEntity);
@@ -99,6 +97,32 @@ public class CommentService {
 
 		return commentEntity;
 	}
+	
+	
+//	@Transactional
+//	public CommentEntity addChildComment( CommentDTO commentDTO, MemberEntity memberEntity) {
+//
+//		
+//		BoardEntity boardEntity = boardRepository.findById(commentDTO.getBoardId())
+//				.orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다"));
+//
+//		MemberEntity managedMemberEntity = memberRepository.findById(memberEntity.getId())		//댓글을 작성한 사용자
+//				.orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다"));
+//
+////		if(commentDTO.getParentCommentId() != null) {
+////			commentEntity.setParentCommentId(commentDTO.getParentCommentId());
+////		}
+//		CommentEntity parentComment = commentRepository.findById(commentDTO.getParentCommentId()).orElseThrow(() -> new IllegalArgumentException("부모 댓글이 없습니다"));
+//		
+//		
+//		CommentEntity commentEntity = commentDTO.toEntity(boardEntity, memberEntity, parentComment);
+////		commentDTO.setBoardEntity(boardEntity);
+////		commentDTO.setMemberEntity(managedMemberEntity);
+//		commentRepository.save(commentEntity);
+//		System.out.println("저장 완료...");
+//
+//		return commentEntity;
+//	}
 	
 	
 	
@@ -197,9 +221,10 @@ public class CommentService {
 	
 	@Transactional 		//대댓글 설정 (자식 댓글 기입)
 	public Long addChildComment(Long commentId, Long parentCommentId, Long loggedId, Long boardId, Long member2Id) {
-		CommentEntity comment = commentRepository.findById(commentId).get();
-		comment.setParentCommentId(parentCommentId);
-		return comment.getParentCommentId();
+		CommentEntity comment = commentRepository.findById(commentId).get();			//자식
+		CommentEntity parentComment = commentRepository.findById(parentCommentId).orElse(null);		
+		comment.setParentComment(parentComment);
+		return comment.getParentComment().getId();
 	}
 	
 	

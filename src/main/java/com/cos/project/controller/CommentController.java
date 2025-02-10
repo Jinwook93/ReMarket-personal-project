@@ -32,12 +32,12 @@ public class CommentController {
     // 댓글 추가
     @PostMapping("/board/{id}")
     public ResponseEntity<?> addComment(
-        @PathVariable("id") Long id,
+        @PathVariable("id") Long boardId,
         @RequestBody CommentDTO commentDTO,
         @AuthenticationPrincipal PrincipalDetails principalDetails
     ) throws JsonProcessingException {
-
-        CommentEntity result = commentService.addComment(id, commentDTO, principalDetails.getMemberEntity());
+    	System.out.println("TEST : " + commentDTO.getBoardId());
+        CommentEntity result = commentService.addComment(commentDTO, principalDetails.getMemberEntity());
 
         	System.out.println("확인:"+result.getMemberEntity().getName());
         
@@ -49,22 +49,22 @@ public class CommentController {
     
     
     
-    // 대댓글(자식 댓글) 추가
-    @PostMapping("/comment/{parentCommentId}")
-    public ResponseEntity<?> addChildComment(
-        @PathVariable("parentCommentId") Long id,
-        @RequestBody CommentDTO commentDTO,
-        @AuthenticationPrincipal PrincipalDetails principalDetails
-    ) throws JsonProcessingException {
-        CommentEntity result = commentService.addChildComment(commentDTO,principalDetails.getMemberEntity());
-
-        	System.out.println("확인:"+result.getMemberEntity().getName());
-        
-
-       return ResponseEntity.ok(result);
-        
-
-    }
+//    // 대댓글(자식 댓글) 추가
+//    @PostMapping("/comment/{parentCommentId}")
+//    public ResponseEntity<?> addChildComment(
+//        @PathVariable("parentCommentId") Long id,
+//        @RequestBody CommentDTO commentDTO,
+//        @AuthenticationPrincipal PrincipalDetails principalDetails
+//    ) throws JsonProcessingException {
+//        CommentEntity result = commentService.addComment(commentDTO,principalDetails.getMemberEntity());
+//
+//        	System.out.println("확인:"+result.getMemberEntity().getName());
+//        
+//
+//       return ResponseEntity.ok(result);
+//        
+//
+//    }
     
 
 
