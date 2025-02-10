@@ -97,7 +97,7 @@ public class CommentController {
     // 댓글 삭제
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteComment(@PathVariable("id") Long id) {
-       boolean result = commentService.deleteComment(id);   	
+       List<Long> result = commentService.deleteComment(id);   	
         return ResponseEntity.ok(result);
     }
     

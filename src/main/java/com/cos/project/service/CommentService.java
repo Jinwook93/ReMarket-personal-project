@@ -173,10 +173,40 @@ public class CommentService {
 	}
 
 	@Transactional
-	public boolean deleteComment(Long id) {
-		commentLikeRepository.deleteByCommentId(id);	//댓글에 달린 좋아요,싫어요 삭제
-		commentRepository.deleteById(id);
-		return true;
+	public List<Long> deleteComment(Long id) {
+		
+		  // 1. 댓글 엔터티 조회
+	    CommentEntity parentComment = commentRepository.findById(id)
+	        .orElseThrow(() -> new IllegalArgumentException("댓글이 존재하지 않습니다."));
+
+	    // 2. 자식 댓글 목록 조회
+	    List<CommentEntity> childComments = parentComment.getChildComments();
+
+	    // 3. 자식 댓글 ID 리스트 추출
+	    List<Long> childCommentIds = childComments.stream()
+	        .map(CommentEntity::getId)
+	        .collect(Collectors.toList());
+
+	    // 4. 자식 댓글의 좋아요/싫어요 삭제
+	    if (!childCommentIds.isEmpty()) {
+	        commentLikeRepository.deleteAllByCommentIdIn(childCommentIds);
+	    }
+
+	    // 5. 부모 댓글의 좋아요/싫어요 삭제
+	    commentLikeRepository.deleteByCommentId(id);
+
+	    // 6. 자식 댓글 삭제
+	    commentRepository.deleteAll(childComments);
+
+	    // 7. 부모 댓글 삭제
+	    commentRepository.deleteById(id);
+		
+		
+		
+		
+//		commentLikeRepository.deleteByCommentId(id);	//댓글에 달린 좋아요,싫어요 삭제
+//		commentRepository.deleteById(id);
+		return childCommentIds;
 
 	}
 
