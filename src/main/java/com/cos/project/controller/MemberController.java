@@ -10,6 +10,7 @@ import com.cos.project.dto.MemberDTO;
 import com.cos.project.entity.CommentEntity;
 import com.cos.project.entity.Gender;
 import com.cos.project.entity.MemberEntity;
+import com.cos.project.service.AlarmService;
 import com.cos.project.service.BoardService;
 import com.cos.project.service.CommentService;
 import com.cos.project.service.MemberService;
@@ -64,7 +65,8 @@ public class MemberController {
     @Autowired
     private CommentService commentService;
     
-    
+    @Autowired
+    private AlarmService alarmService;
 //	@GetMapping("/")
 //	public String  home() {
 //		return "메인 페이지";
@@ -76,6 +78,9 @@ public class MemberController {
     @ResponseBody
     public ResponseEntity<?> postMethodName(@RequestBody LoginRequest loginData) {
     	Long loggedId = memberService.checkLogin(loginData);
+    	if(loggedId != null) {
+    	alarmService.postAlarm(loggedId,null, null, "LOGIN", null, null, null, null);				//로그인 한 사용자에 로그인 알람 추가
+    	}
     	System.out.println(loggedId);
         return ResponseEntity.ok(loggedId);
     }

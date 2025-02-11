@@ -88,7 +88,8 @@ public class CommentService {
 
 	@Transactional
 	public CommentEntity addComment(CommentDTO commentDTO, MemberEntity memberEntity) {
-
+		
+		System.out.println("게시자 개인 댓글 테스트 : "+ commentDTO.getIsPrivate());
 		BoardEntity boardEntity = boardRepository.findById(commentDTO.getBoardId())
 				.orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다"));
 
@@ -243,14 +244,7 @@ public class CommentService {
 	
 	
 	
-	@Transactional			//보드 작성자의 댓글 작성자 블라인드
-	public boolean EnableBlind(Long commentId, Long loggedId, Long boardId, Long member2Id) {
-		MemberEntity member1 = boardRepository.findById(boardId).get().getMemberEntity();
-		MemberEntity member2 = boardRepository.findById(member2Id).get().getMemberEntity();
-		CommentEntity comment = commentRepository.findById(commentId).get();
-		comment.setBlind(!comment.isBlind());
-		return comment.isBlind();
-	}
+
 	
 	@Transactional			//부모 댓글에 대한 대댓글 조회
 	public List<CommentEntity> childCommentList(Long parentCommentId, Long loggedId, Long boardId, Long member2Id) {
@@ -267,6 +261,17 @@ public class CommentService {
 		comment.setParentComment(parentComment);
 		return comment.getParentComment().getId();
 	}
+
+	
+	@Transactional 		//댓글 블라인드
+	public Boolean blindComment(Long commentId, Boolean isBlind) {
+		CommentEntity comment = commentRepository.findById(commentId).get();	
+		comment.setBlind(!isBlind);
+		commentRepository.saveAndFlush(comment);
+		return comment.isBlind();
+	}
+	
+
 	
 	
 }

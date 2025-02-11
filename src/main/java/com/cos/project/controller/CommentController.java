@@ -47,12 +47,10 @@ public class CommentController {
         @RequestBody CommentDTO commentDTO,
         @AuthenticationPrincipal PrincipalDetails principalDetails
     ) throws JsonProcessingException {
-    	System.out.println("TEST : " + commentDTO.getBoardId());
+    	System.out.println("Private"+commentDTO.getIsPrivate());
         CommentEntity result = commentService.addComment(commentDTO, principalDetails.getMemberEntity());
 
-        	System.out.println("확인:"+result.getMemberEntity().getName());
         
-
        return ResponseEntity.ok(result);
         
 
@@ -90,6 +88,17 @@ public class CommentController {
 	      
         return ResponseEntity.ok(result);
     }
+    
+   
+    // 댓글 블라인드
+    @PutMapping("/blind/{id}")
+    public ResponseEntity<?> blindComment(
+        @PathVariable("id") Long id
+       , @RequestBody CommentDTO commentDTO
+    ) {
+        boolean result = commentService.blindComment(id, commentDTO.getIsBlind());
+        return ResponseEntity.ok(result);
+    }  
     
     
     

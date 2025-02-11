@@ -1,6 +1,7 @@
   // 댓글 수정하기
- export function updateComment(id, currentContent) {
+ export function updateComment(id, currentContent,blind) {
     const commentElement = document.getElementById(`comment-${id}`);
+    childIsPrivate = document.getElementById(`IsPrivate-${parentCommentId}`)?.checked ?? false;
     if (!commentElement) return;
 
     // 기존 텍스트 숨기기
@@ -13,7 +14,7 @@
     // 입력 필드 추가
     const inputField = document.createElement("input");
     inputField.type = "text";
-    inputField.value = currentContent;
+    inputField.value = blind?"":currentContent;
     inputField.classList.add("comment-edit-input");
     inputField.style.marginRight = "5px";
 

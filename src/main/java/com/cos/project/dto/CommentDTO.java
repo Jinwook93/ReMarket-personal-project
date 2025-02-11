@@ -27,8 +27,8 @@ public class CommentDTO {
     private int totalLike;
     private int totalDislike;
     private Long parentCommentId;
-    private boolean isPrivate;
-    private boolean isBlind;
+    private Boolean isPrivate;
+    private Boolean isBlind;
     private Timestamp createTime;
 
     // Entity → DTO 변환 메서드
@@ -44,7 +44,7 @@ public class CommentDTO {
                 .totalLike(entity.getTotalLike())
                 .totalDislike(entity.getTotalDislike())
                 .parentCommentId(entity.getParentComment().getId())
-                .isPrivate(entity.isPRIVATE())
+                .isPrivate(entity.isPrivate())
                 .isBlind(entity.isBlind())
                 .createTime(entity.getCreateTime())
                 .build();
@@ -60,7 +60,7 @@ public class CommentDTO {
                 .totalLike(this.totalLike)
                 .totalDislike(this.totalDislike)
                 .parentComment(commentEntity)
-                .PRIVATE(this.isPrivate)
+                .Private(this.isPrivate)
                 .blind(this.isBlind)
                 .createTime(this.createTime != null ? this.createTime : new Timestamp(System.currentTimeMillis()))
                 .build();

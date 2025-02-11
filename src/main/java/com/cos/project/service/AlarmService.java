@@ -102,11 +102,9 @@ public class AlarmService {
 	    // Case 1: When both member1Id and member2Id are null, it's a login alarm
 	    if (member1Id == null && member2Id == null) {
 	        member1Id = loggedId;
-	        System.out.println("d여기가 문제?");
 	        alarmDTO = alarmConstructor(loggedId, member1Id, member2Id, type, childType, object, action, priority);
 	        MemberEntity member1 = memberRepository.findById(member1Id).orElseThrow(() -> new IllegalAccessError("사용자를 조회할 수 없습니다"));
 	        MemberEntity member2 = null;  // No member2 in this case (login alarm)
-	        System.out.println("d여기가 문제?");
 	        alarmEntity = alarmDTO.toEntity(member1, member2);
 	    } else {
 	        // Case 2: Both member1Id and member2Id are provided

@@ -86,17 +86,17 @@ public class AlarmController {
     
     
     
-    //로그인 알람
-    @PostMapping("/loginSuccess/{loggedId}")			// 로그인 알람
-    @ResponseBody
-    public ResponseEntity<?> loginAlarm(@PathVariable(name = "loggedId") Long loggedId, @RequestBody AlarmDTO alarmDTO, @AuthenticationPrincipal PrincipalDetails principalDetails) {
-//    	Long loggedId = principalDetails.getMemberEntity().getId();
-    	System.out.println("갔나요?"+ loggedId);
-    	
-    	alarmService.postAlarm(loggedId,alarmDTO.getMember1Id(), alarmDTO.getMember2Id(), alarmDTO.getType(), alarmDTO.getChildType(), alarmDTO.getObject(), alarmDTO.getAction(), alarmDTO.getPriority());
-    	String result = "success";
-        return ResponseEntity.ok(result);
-    }
+//    //로그인 알람
+//    @PostMapping("/loginSuccess/{loggedId}")			// 로그인 알람
+//    @ResponseBody
+//    public ResponseEntity<?> loginAlarm(@PathVariable(name = "loggedId") Long loggedId, @RequestBody AlarmDTO alarmDTO, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+////    	Long loggedId = principalDetails.getMemberEntity().getId();
+//    	System.out.println("갔나요?"+ loggedId);
+//    	
+//    	alarmService.postAlarm(loggedId,alarmDTO.getMember1Id(), alarmDTO.getMember2Id(), alarmDTO.getType(), alarmDTO.getChildType(), alarmDTO.getObject(), alarmDTO.getAction(), alarmDTO.getPriority());
+//    	String result = "success";
+//        return ResponseEntity.ok(result);
+//    }
     
     
     

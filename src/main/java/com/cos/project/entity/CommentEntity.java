@@ -60,9 +60,9 @@ public class CommentEntity {
 //	@Column(nullable = true)
 //	private Long parentCommentId;			//부모 댓글 아이디(ID) 
 	
-	private boolean PRIVATE =false;			//비밀댓글
+	private boolean Private;			//비밀댓글		(!!!!!!!!! private로 인식한다)
 	
-	private boolean blind =false;			//비공개댓글
+	private boolean blind;			//비공개댓글
 	
 	
 	

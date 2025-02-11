@@ -103,11 +103,30 @@ button:hover {
 .commentdislike.active {
 	background-color: red; /* 싫어요 버튼 활성화 시 배경색 (예: 연한 회색) */
 }
+
+/* 모든 텍스트 입력 필드 */
+input:not([type="checkbox"]) {
+	/*   background-color: lightgray; */
+	border: 1px solid black;
+}
+
+/* 모든 체크박스 스타일 */
+input[type="checkbox"] {
+	width: 20px;
+	height: 20px;
+}
+
+/* 특정 체크박스 스타일 */
+#isPrivate {
+	width: 18px;
+	height: 18px;
+	accent-color: blue;
+}
 </style>
 </head>
 <body>
 
-    <div th:replace="~{header.html}"></div>
+	<div th:replace="~{header.html}"></div>
 	<div class="container">
 		<h1>게시글 작성</h1>
 
@@ -119,14 +138,12 @@ button:hover {
 
 		<!-- 글 번호 -->
 		<label for="title">글 번호</label> <input type="text"
-			th:value="${board.id}" id="id" name="id" readonly>
-			
-			<label
-			for="buy_Sell" >항목</label> <input type="text"
+			th:value="${board.id}" id="id" name="id" readonly> <label
+			for="buy_Sell">항목</label> <input type="text"
 			th:value="${board.buy_Sell}" id="buy_Sell" name="buy_Sell" readonly>
-			
-			 <label for="category">물품 종류</label>
-			  <input type="text" th:value="${board.category}" id="category" name="category" readonly>
+
+		<label for="category">물품 종류</label> <input type="text"
+			th:value="${board.category}" id="category" name="category" readonly>
 
 		<label for="createTime">등록일</label> <input type="text"
 			th:value="${#dates.format(board.createTime, 'yyyy-MM-dd HH:mm')}"
@@ -168,8 +185,7 @@ button:hover {
 
 		<!-- 작성자 아이디 (hidden) -->
 		<input type="hidden" th:value="${board.memberEntity.userid}"
-			id="userid" name="userid">
-			 <input type="hidden"
+			id="userid" name="userid"> <input type="hidden"
 			th:value="${board.memberEntity.id}" id="memberid" name="memberid">
 
 
@@ -192,14 +208,14 @@ button:hover {
 			</div>
 		</div>
 		<!-- 물품명 입력 -->
-        <label for="product">물품</label>
-        <input type="text" th:value="${board.product}" id="product" name="product" placeholder="물건명을 입력하세요" readonly>
-        
-  <!-- 가격 입력 -->
-        <label for="title">가격</label>
-        <input type="text" th:value="${board.price}" id="price" name="price" placeholder="가격을 입력하세요" readonly>
+		<label for="product">물품</label> <input type="text"
+			th:value="${board.product}" id="product" name="product"
+			placeholder="물건명을 입력하세요" readonly>
 
-		<br> <br>
+		<!-- 가격 입력 -->
+		<label for="title">가격</label> <input type="text"
+			th:value="${board.price}" id="price" name="price"
+			placeholder="가격을 입력하세요" readonly> <br> <br>
 		<!-- 조회수 (disabled) -->
 		<label for="view">조회수</label> <input type="text"
 			th:value="${board.view}" id="view" name="view" disabled> <label
@@ -243,22 +259,31 @@ button:hover {
 		<!-- 수정/삭제 버튼 (조건부 표시) -->
 		<div th:if="${board.memberEntity.userid == principalDetails.name}">
 			<!--             <button type="button" id="updateBoard"  onClick= "goUpdateForm()">수정하기</button>								전역스 코프로 처리하는 법 -->
-<!-- 			<button type="button" id="updateBoard">수정</button> -->
-<!-- 			<button type="button" id="deleteBoard">삭제</button> -->
-			
-			 <button type="button" th:id="|updateBoard-${board.id}|"  th:data-updateBoardId="${board.id}"  th:onclick="'window.location.href=\'/board/updateboard/' + ${board.id} + '\';'">수정</button>
-              <button type="button"  style = "background-color:red";
-              th:id="|deleteBoard-${board.id}|" th:data-deleteBoardId="${board.id}">삭제</button>
+			<!-- 			<button type="button" id="updateBoard">수정</button> -->
+			<!-- 			<button type="button" id="deleteBoard">삭제</button> -->
+
+			<button type="button" th:id="|updateBoard-${board.id}|"
+				th:data-updateBoardId="${board.id}"
+				th:onclick="'window.location.href=\'/board/updateboard/' + ${board.id} + '\';'">수정</button>
+			<button type="button" style="background-color: red"
+				;
+              th:id="|deleteBoard-${board.id}|"
+				th:data-deleteBoardId="${board.id}">삭제</button>
 		</div>
 
 		<!-- 댓글 작성 폼 -->
 		<div class="comment-section">
-			<h2>댓글</h2>
 			<!--             <form id="commentForm"> -->
-			<label for="commentText">댓글 작성</label>
+			<label for="commentText">댓글</label>
 			<textarea id="commentText" name="commentText" placeholder="댓글을 작성하세요"
 				required></textarea>
-			<button type="button"  id="submitComment">댓글 작성</button>
+	<div style="display: flex; gap: 10px; align-items: center;">
+    <label style="display: flex; align-items: center; gap: 5px;">
+        <input type="checkbox" id="isPrivate">게시자만 보기
+    </label>
+    <button type="button" id="submitComment" style="margin-top: 8px;">작성</button>
+</div>
+<br>
 			<!--             </form> -->
 
 			<!-- 댓글 목록 -->
@@ -281,7 +306,7 @@ button:hover {
 
 	<script src="/js/getComment.js" type="module"></script>
 	<script src="/js/addComment.js" type="module"></script>
-<!-- 	<script type="module" src="/js/commentLike.js"></script> -->
+	<!-- 	<script type="module" src="/js/commentLike.js"></script> -->
 	<script src="/js/boardLike.js" type="module"></script>
 
 
