@@ -302,16 +302,16 @@ public class BoardController {
 	}
 
 	@GetMapping("/view/{id}")
-	public String viewContent(@PathVariable(name = "id") Long id, Model model)
+	public String viewContent(@PathVariable(name = "id") Long id, Model model, @AuthenticationPrincipal PrincipalDetails principalDetails)
 			throws JsonMappingException, JsonProcessingException {
 		BoardEntity boardEntity = boardService.viewContent(id, false);
-		List<CommentEntity> comments = commentService.getAllCommentAboutBoard(id);
-
+//		List<CommentEntity> comments = commentService.getAllCommentAboutBoard(id);
+//		List<CommentEntity> comments = commentService.getFilteredComments(id, principalDetails.getMemberEntity().getUserid());
 		ObjectMapper om = new ObjectMapper();
 		String[] boardFiles = om.readValue(boardEntity.getBoardFiles(), String[].class);
 
 		model.addAttribute("board", boardEntity);
-		model.addAttribute("comments", comments);
+//		model.addAttribute("comments", comments);
 
 //		if(boardFiles[0].equals("/boardimage/nullimage.jpg")) {
 //			boardFiles = new String[0];

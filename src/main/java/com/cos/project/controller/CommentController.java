@@ -14,7 +14,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController  // RESTful API로 사용
 @RequiredArgsConstructor
@@ -34,6 +36,17 @@ public class CommentController {
         return commentService.getAllCommentAboutBoard(id);
     }
     
+//    @GetMapping("/board/{boardId}")
+//    public List<CommentEntity> getComments(@PathVariable(name = "boardId") Long boardId, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+//        String loggedInUserId = (principalDetails != null) ? principalDetails.getMemberEntity().getUserid() : null;
+//        List<CommentEntity> filteredComments = commentService.getFilteredComments(boardId, loggedInUserId);
+//        return filteredComments;
+//    }
+    
+    
+    
+    
+    
     @GetMapping("/board/child/{parentCommentId}")			//부모 댓글에 대한 자식 댓글들을 역순으로 나열
     public List<CommentEntity> getChildComments(@PathVariable("parentCommentId") Long parentCommentId) {
     	System.out.println("자식 테스트!!!!!!!!!!!!"+parentCommentId);
@@ -41,7 +54,7 @@ public class CommentController {
     }
 
     // 댓글 추가
-    @PostMapping("/board/{id}")
+    @PostMapping("/board/{id}")									//게시글을 쓴 아이디를 반환
     public ResponseEntity<?> addComment(
         @PathVariable("id") Long boardId,
         @RequestBody CommentDTO commentDTO,
@@ -49,9 +62,9 @@ public class CommentController {
     ) throws JsonProcessingException {
     	System.out.println("Private"+commentDTO.getIsPrivate());
         CommentEntity result = commentService.addComment(commentDTO, principalDetails.getMemberEntity());
-
+        String boardUserId = result.getBoardEntity().getMemberEntity().getUserid();
         
-       return ResponseEntity.ok(result);
+       return ResponseEntity.ok(boardUserId);
         
 
     }
@@ -82,9 +95,12 @@ public class CommentController {
     @PutMapping("/{id}")
     public ResponseEntity<?> updateComment(
         @PathVariable("id") Long id,
-        @RequestBody CommentEntity commentEntity
+        @RequestBody CommentDTO commentDTO
     ) {
-        boolean result = commentService.updateComment(id, commentEntity);
+       	System.out.println("수정된 댓글 ID:"+id);
+    	System.out.println("수정된 댓글 내용:"+commentDTO.getContent());
+    	System.out.println("수정된 댓글 : 비밀? "+commentDTO.getIsPrivate());
+        Boolean result = commentService.updateComment(id, commentDTO);
 	      
         return ResponseEntity.ok(result);
     }
@@ -110,7 +126,21 @@ public class CommentController {
         return ResponseEntity.ok(result);
     }
     
-    
+    //부모 댓글 찾기
+    @GetMapping("/parent/{id}")
+    public ResponseEntity<?> findParentComment(@PathVariable("id") Long id) {
+        CommentEntity parentComment = commentService.findParentComment(id);
+
+        // 부모 댓글에서 필요한 속성만 가져와서 Map에 담기
+        Map<String, Object> parentObject = new HashMap<>();
+        parentObject.put("id", parentComment.getId());
+        parentObject.put("loggedId", parentComment.getMemberEntity().getId());
+        parentObject.put("userid", parentComment.getMemberEntity().getUserid());
+
+        // Map을 응답으로 반환
+        return ResponseEntity.ok(parentObject);
+    }
+
     
     
 }

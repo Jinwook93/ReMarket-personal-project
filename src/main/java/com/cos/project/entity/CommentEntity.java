@@ -64,13 +64,16 @@ public class CommentEntity {
 	
 	private boolean blind;			//비공개댓글
 	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "parent_comment_id", nullable = true)
+	@JsonIncludeProperties({"id","memberEntity"}) // parentComment의 id와 memberEntity를 포함
+	private CommentEntity parentComment;
 	
 	
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_comment_id",nullable = true)
-	@JsonBackReference  // 부모 댓글이 자식 댓글을 직렬화하지 않도록
-    private CommentEntity parentComment; // 부모 댓글
+//	@ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "parent_comment_id",nullable = true)
+//	@JsonBackReference  // 부모 댓글이 자식 댓글을 직렬화하지 않도록
+//    private CommentEntity parentComment; // 부모 댓글
 
     @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL)
     @JsonManagedReference  // 자식 댓글에서 부모 댓글을 직렬화할 수 있도록

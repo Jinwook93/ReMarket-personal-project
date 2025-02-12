@@ -35,7 +35,8 @@ public interface CommentRepository extends JpaRepository<CommentEntity, Long>  {
 	List<CommentEntity> findByParentCommentId(Long parentCommentId);
 	
 	 // parentComment가 NULL인 댓글만 조회 (최신순 정렬)
-	@Query("SELECT c FROM CommentEntity c WHERE c.boardEntity.id = :boardId AND c.parentComment IS NULL ORDER BY c.id DESC")
+	@Query("SELECT c FROM CommentEntity c WHERE c.boardEntity.id = :boardId AND c.parentComment IS NULL")
+																																														// ORDER BY c.id DESC
 	List<CommentEntity> findByBoardIdAndParentCommentIsNull(@Param("boardId") Long boardId);
 
 }

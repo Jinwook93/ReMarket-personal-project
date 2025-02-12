@@ -24,6 +24,8 @@ import com.cos.project.repository.CommentLikeRepository;
 import com.cos.project.repository.CommentRepository;
 import com.cos.project.repository.MemberRepository;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +41,9 @@ public class CommentService {
 	private final MemberRepository memberRepository;
 	
 	private final CommentLikeRepository commentLikeRepository;
+	
+	@PersistenceContext
+	private final EntityManager entityManager;
 
 //	@Transactional
 //	public List<CommentEntity> getAllCommentAboutBoard(Long id) {				//모든 댓글
@@ -69,6 +74,51 @@ public class CommentService {
 			return comments;
 		}
 	}
+	
+	
+//	@Transactional
+//	public List<CommentEntity> getFilteredComments(Long boardId, String loggedInUserId, Boolean childFlag) {
+//	    List<CommentEntity> comments = boardRepository.findById(boardId)
+//	                                                   .get()
+//	                                                   .getComments();
+//
+//	    return comments.stream()
+//	            .filter(comment -> comment.getParentComment() == null) // Only consider parent comments
+//	            .map(comment -> {
+//	                // Check if the logged-in user is the owner of the comment, board, or parent comment
+//	                boolean isOwner = comment.getMemberEntity().getUserid().equals(loggedInUserId);
+//	                boolean isBoardOwner = comment.getBoardEntity().getMemberEntity().getUserid().equals(loggedInUserId);
+//	                boolean isParentOwner = (comment.getParentComment() != null) && 
+//	                                        comment.getParentComment().getMemberEntity().getUserid().equals(loggedInUserId);
+//
+//	                // Determine if the user has permission to view the comment
+//	                boolean canView = !comment.isPrivate() || isOwner || isBoardOwner || isParentOwner;
+//
+//	                // Create a new CommentEntity with the filtered content
+//	                return new CommentEntity(
+//	                    comment.getId(),
+//	                    canView ? comment.getContent() : "🔐 비밀 댓글입니다", // Show "🔐 비밀 댓글입니다" if the user cannot view
+//	                    comment.getBoardEntity(),
+//	                    comment.getMemberEntity(),
+//	                    comment.getTotalLike(),
+//	                    comment.getTotalDislike(),
+//	                    comment.isPrivate(),
+//	                    comment.isBlind(),
+//	                    comment.getParentComment(),
+//	                    comment.getChildComments(),
+//	                    comment.getCreateTime()
+//	                );
+//	            })
+//	            .collect(Collectors.toList());
+//	}
+
+
+
+	
+	
+	
+	
+	
 	
 	@Transactional
 	public List<CommentEntity> getChildComment(Long parentCommentId) { 
@@ -212,13 +262,14 @@ public class CommentService {
 	}
 
 	@Transactional
-	public boolean updateComment(Long id, CommentEntity commentEntity) {
-		CommentEntity comment_before = commentRepository.findById(id)
+	public Boolean updateComment(Long id, CommentDTO commentDTO) {
+		CommentEntity comment = commentRepository.findById(id)
 				.orElseThrow(() -> new IllegalArgumentException("댓글 데이터를 찾을 수 없습니다"));
 
-		comment_before.setContent(commentEntity.getContent());
-
-		commentRepository.save(comment_before);
+		comment.setContent(commentDTO.getContent());
+		comment.setPrivate(commentDTO.getIsPrivate());
+		
+		commentRepository.save(comment);
 
 		return true;
 	}
@@ -269,6 +320,14 @@ public class CommentService {
 		comment.setBlind(!isBlind);
 		commentRepository.saveAndFlush(comment);
 		return comment.isBlind();
+	}
+	
+	
+	@Transactional	//부모 댓글 ID찾기
+	public CommentEntity findParentComment(Long commentId) {
+		CommentEntity child = commentRepository.findById(commentId).orElse(null);	
+	
+		return child.getParentComment();
 	}
 	
 

@@ -51,8 +51,8 @@ export function addComment(boardId, parentCommentId, principalDetails) {
 			if (!response.ok) throw new Error("답글 저장 실패");
 			return response.json();
 		})
-		.then(data => {
-			console.log(data);
+		.then(data => {			//게시글 작성 UserID
+			console.log(data);			
 			alert("답글이 등록되었습니다.");
 
 			// 댓글 입력 후 텍스트 초기화
@@ -61,9 +61,9 @@ export function addComment(boardId, parentCommentId, principalDetails) {
 			} else if (commentText) {
 				document.getElementById("commentText").value = "";
 			}
-
+//			console.log(String(boardId), data.boardEntity.userid, principalDetails);
 			// 댓글 새로고침
-			loadComments(String(boardId), data.memberEntity.userid, principalDetails);
+			loadComments(String(boardId), data, principalDetails);
 		})
 		.catch(error => {
 			console.error("Error:", error);
