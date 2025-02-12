@@ -56,6 +56,9 @@ public class MessageEntity {
     private boolean deleted = false;
     
     
+    @Column(nullable = true)
+    private Long parentMessageId;
+    
 //    private boolean exitMemberRendering = true;		//채팅방 재접속시 렌더링 할지에 대한 유무			
     
 

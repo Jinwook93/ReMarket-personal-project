@@ -218,7 +218,7 @@ public class ChatService {
 				.map(message -> new MessageDTO(message.getId(), message.getChattingRoomEntity().getId(),
 						message.getSender().getUserid(), message.getReceiver().getUserid(), message.getMessageContent(),
 						message.isLiked(), message.isRead(), message.isExited(), message.getExitedSenderId(),
-						message.isDeleted(), message.getSendTime()))
+						message.isDeleted(), message.getParentMessageId(), message.getSendTime()))
 				.collect(Collectors.toList());
 	}
 
@@ -234,7 +234,7 @@ public class ChatService {
 
 		String receiverUserId = messageDTO.getReceiverUserId();
 		System.out.println("리시버아이디 테스트" + receiverUserId);
-
+		System.out.println("부모 메시지 테스트" + messageDTO.getParentMessageId());	
 		// Retrieve the chatting room and sender information
 		ChattingRoomEntity chattingRoomEntity = chattingRoomRepository.findById(roomId)
 				.orElseThrow(() -> new RuntimeException("Chat room not found"));
@@ -254,6 +254,7 @@ public class ChatService {
 			// Create a new MessageEntity and save it to the database
 			MessageEntity messageEntity = MessageEntity.builder().chattingRoomEntity(chattingRoomEntity).sender(sender)
 					.receiver(receiver) // Directly use the managed receiver
+					.parentMessageId(messageDTO.getParentMessageId())
 					.messageContent(messageDTO.getMessageContent()).build();
 
 			messageRepository.save(messageEntity);
@@ -455,6 +456,13 @@ public class ChatService {
 		 
 		  return null;
 	}
+	  
+	  
+
+	  
+	  
+	  
+	  
 	  
 	  
 	  

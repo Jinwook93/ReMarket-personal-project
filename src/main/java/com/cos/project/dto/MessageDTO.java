@@ -24,6 +24,7 @@ public class MessageDTO {
     private boolean exited;				//나갔다 들어온 상태 확인
     private Long exitedSenderId;	//대화방을 나간 유저의 Id(식별번호)
     private boolean deleted;
+    private Long parentMessageId;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private Timestamp sendTime;    // 메시지 전송 시간
 }
