@@ -257,43 +257,43 @@ input[type="checkbox"] {
 <!-- 				 삽니다 카테고리의 경우 구매 중/ 예약/ 구매완료 버튼  -->
 
 
-<!-- <!-- '삽니다' 카테고리 --> 
-<!-- <div th:if="${board.memberEntity.userid eq principalDetails.name  and board.buy_Sell eq '삽니다'}"> -->
-<!--     <button type="button" -->
-<!--             th:id="|updateBoard-${board.id}|" -->
-<!--             th:data-updateBoardId="${board.id}" -->
-<!--             th:onclick="'window.location.href=\'/board/updateboard/' + ${board.id} + '\';'"> -->
-<!--         구매 중 -->
-<!--     </button> -->
-<!-- </div> -->
+<!-- '삽니다' 카테고리 -->
+<div th:if="${board.memberEntity.userid eq principalDetails.name  and board.buy_Sell eq '삽니다'}">
+    <button type="button"
+            th:id="|updateBoard-${board.id}|"
+            th:data-updateBoardId="${board.id}"
+            th:onclick="'window.location.href=\'/board/updateboard/' + ${board.id} + '\';'">
+        구매 중
+    </button>
+</div>
 
-<!-- <div th:if="${board.memberEntity.userid ne principalDetails.name and board.buy_Sell eq '삽니다'}"> -->
-<!--     <button type="button" -->
-<!--             th:id="|updateBoard-${board.id}|" -->
-<!--             th:data-updateBoardId="${board.id}" -->
-<!--             th:onclick="'window.location.href=\'/board/updateboard/' + ${board.id} + '\';'"> -->
-<!--         판매 요청 -->
-<!--     </button> -->
-<!-- </div> -->
+<div th:if="${board.memberEntity.userid ne principalDetails.name and board.buy_Sell eq '삽니다'}">
+    <button type="button"
+            th:id="|updateBoard-${board.id}|"
+            th:data-updateBoardId="${board.id}"
+            th:onclick="'window.location.href=\'/board/updateboard/' + ${board.id} + '\';'">
+        판매 요청
+    </button>
+</div>
 
-<!-- <!-- '팝니다' 카테고리 --> 
-<!-- <div th:if="${board.memberEntity.userid eq principalDetails.name and board.buy_Sell eq '팝니다'}"> -->
-<!--     <button type="button" -->
-<!--             th:id="|updateBoard-${board.id}|" -->
-<!--             th:data-updateBoardId="${board.id}" -->
-<!--             th:onclick="'window.location.href=\'/board/updateboard/' + ${board.id} + '\';'"> -->
-<!--         판매 중 -->
-<!--     </button> -->
-<!-- </div> -->
+<!-- '팝니다' 카테고리 
+<div th:if="${board.memberEntity.userid eq principalDetails.name and board.buy_Sell eq '팝니다'}">
+    <button type="button"
+            th:id="|updateBoard-${board.id}|"
+            th:data-updateBoardId="${board.id}"
+            th:onclick="'window.location.href=\'/board/updateboard/' + ${board.id} + '\';'">
+        판매 중
+    </button>
+</div>
 
-<!-- <div th:if="${board.memberEntity.userid ne principalDetails.name and board.buy_Sell eq '팝니다'}"> -->
-<!--     <button type="button" -->
-<!--             th:id="|updateBoard-${board.id}|" -->
-<!--             th:data-updateBoardId="${board.id}" -->
-<!--             th:onclick="'window.location.href=\'/board/updateboard/' + ${board.id} + '\';'"> -->
-<!--         구매 요청 -->
-<!--     </button> -->
-<!-- </div> -->
+<div th:if="${board.memberEntity.userid ne principalDetails.name and board.buy_Sell eq '팝니다'}">
+    <button type="button"
+            th:id="|updateBoard-${board.id}|"
+            th:data-updateBoardId="${board.id}"
+            th:onclick="'window.location.href=\'/board/updateboard/' + ${board.id} + '\';'">
+        구매 요청
+    </button>
+</div>
 
 
 

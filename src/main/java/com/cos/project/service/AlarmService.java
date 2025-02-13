@@ -190,8 +190,13 @@ public class AlarmService {
 		}
 		String member1Content= "";
 		String member2Content = "";  
+		
+		Boolean member1Visible =true;
+		Boolean member2Visible=true;
+		
 		if( type.equals("LOGIN")) {
 			member1Content="로그인에 성공하였습니다";
+			member2Visible=false;
 		}
 	
 		
@@ -285,14 +290,22 @@ public class AlarmService {
 			}else if (childType.equals("채팅방") && action.equals("완전삭제")) {
 					member1Content = member1Content = member1.get().getUserid() +"와 " +member2.get().getUserid()+"님의 채팅창이 삭제되었습니다";
 					member2Content = member1Content = member2.get().getUserid() +"와 " +member1.get().getUserid()+"님의 채팅창이 삭제되었습니다";
-				} 
-			else if (childType.equals("메시지") && action.equals("삭제")) {
-				member1Content = member1.get().getUserid()+"님의 메시지가 삭제되었습니다";
-//				member2Content = member2.get().getUserid() + "님의 게시글이 삭제되었습니다";
-			} else if (childType.equals("메시지") && action.equals("송수신")) {
-				member1Content =  member2.get().getUserid() +"님에게 메시지를 보냈습니다"; 
+					member2Visible = false;
+				}  else if (childType.equals("메시지") && action.equals("송수신")) {
+				ChattingRoomEntity chattingRoomEntity =chattingRoomRepository.findById(Long.valueOf(object)).orElse(null);
+					
+					member1Content =  member2.get().getUserid() +"님에게 메시지를 보냈습니다"; 
 				member2Content = "새로운 메시지 : "+member1.get().getUserid();
+				
+				if(chattingRoomEntity.getExitedmemberId() == member2Id) {
+				member2Visible= false;
+				}
 			}
+//		else if (childType.equals("메시지") && action.equals("삭제")) {
+//			member1Content = member1.get().getUserid()+"님의 메시지가 삭제되었습니다";
+//			member2Content = member2.get().getUserid() + "님의 게시글이 삭제되었습니다";
+//		}
+			
 //			else if (childType.equals("메시지") && object.equals("좋아요")   && action.equals("활성화")) {
 //				member1Content = member2.get().getUserid()+"님이" + member1.get().getUserid() + "님의 메시지를 좋아합니다";
 //				member2Content = member1.get().getUserid() + "님의 메시지에 좋아요를 눌렀습니다";
@@ -315,6 +328,8 @@ public class AlarmService {
 				.member2Id(member2Id)
 				.member1Content(member1Content)
 				.member2Content(member2Content)
+				.member1Visible(member1Visible)
+				.member2Visible(member2Visible)
 				.priority("MEDIUM")
 				.build();
 		
