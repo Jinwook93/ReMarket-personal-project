@@ -279,22 +279,27 @@ public class AlarmService {
 			if (childType.equals("채팅방") && action.equals("채팅방 만듬")) {
 				member1Content = member1.get().getUserid() +"와 " +member2.get().getUserid()+"님의 채팅창이 등록되었습니다";
 				member2Content = 	member1Content = member2.get().getUserid() +"와 " +member1.get().getUserid()+"님의 채팅창이 등록되었습니다";
-			} else if (childType.equals("채팅방") && action.equals("삭제")) {
-				member1Content = member1Content = member1.get().getUserid() +"와 " +member2.get().getUserid()+"님의 채팅창이 삭제되었습니다";
-				member2Content = member1Content = member2.get().getUserid() +"와 " +member1.get().getUserid()+"님의 채팅창이 삭제되었습니다";
-			} else if (childType.equals("메시지") && action.equals("삭제")) {
+			} else if (childType.equals("채팅방") && action.equals("나가기")) {
+				member1Content =  member1.get().getUserid() +"와 " +member2.get().getUserid()+"님의  채팅방을 나갔습니다";
+				member2Content =  member1.get().getUserid() +"이 "+object+"번 채팅창을 나갔습니다";
+			}else if (childType.equals("채팅방") && action.equals("완전삭제")) {
+					member1Content = member1Content = member1.get().getUserid() +"와 " +member2.get().getUserid()+"님의 채팅창이 삭제되었습니다";
+					member2Content = member1Content = member2.get().getUserid() +"와 " +member1.get().getUserid()+"님의 채팅창이 삭제되었습니다";
+				} 
+			else if (childType.equals("메시지") && action.equals("삭제")) {
 				member1Content = member1.get().getUserid()+"님의 메시지가 삭제되었습니다";
 //				member2Content = member2.get().getUserid() + "님의 게시글이 삭제되었습니다";
-			} else if (childType.equals("메시지") && member2Id.equals(null) && action.equals("송수신")) {
+			} else if (childType.equals("메시지") && action.equals("송수신")) {
 				member1Content =  member2.get().getUserid() +"님에게 메시지를 보냈습니다"; 
-				member2Content = member1.get().getUserid()+"님이  메시지를 보냈습니다";
-			}else if (childType.equals("메시지") && object.equals("좋아요")   && action.equals("활성화")) {
-				member1Content = member2.get().getUserid()+"님이" + member1.get().getUserid() + "님의 메시지를 좋아합니다";
-				member2Content = member1.get().getUserid() + "님의 메시지에 좋아요를 눌렀습니다";
-			}else if (childType.equals("메시지") && object.equals("좋아요")   && action.equals("취소")) {
-				member1Content = member2.get().getUserid()+"님이" + member1.get().getUserid() + "님의 게시글의 메시지를 취소하였습니다";
-				member2Content = member1.get().getUserid() + "님의 메시지에 좋아요를 취소하였습니다";
+				member2Content = "새로운 메시지 : "+member1.get().getUserid();
 			}
+//			else if (childType.equals("메시지") && object.equals("좋아요")   && action.equals("활성화")) {
+//				member1Content = member2.get().getUserid()+"님이" + member1.get().getUserid() + "님의 메시지를 좋아합니다";
+//				member2Content = member1.get().getUserid() + "님의 메시지에 좋아요를 눌렀습니다";
+//			}else if (childType.equals("메시지") && object.equals("좋아요")   && action.equals("취소")) {
+//				member1Content = member2.get().getUserid()+"님이" + member1.get().getUserid() + "님의 게시글의 메시지를 취소하였습니다";
+//				member2Content = member1.get().getUserid() + "님의 메시지에 좋아요를 취소하였습니다";
+//			}
 			
 
 

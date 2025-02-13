@@ -54,13 +54,15 @@ public class ChatController {
 
 
 	    
-    @PostMapping("/Chatroom/{boardId}")
+    @PostMapping("/Chatroom/{boardId}")		//채팅방 개설
     @ResponseBody
     public ResponseEntity<?> createChatRoom(@PathVariable(name = "boardId") Long boardId, @RequestBody ChattingRoomDTO chattingRoomDTO , @AuthenticationPrincipal PrincipalDetails principalDetails) {
     	MemberEntity loggedUserId = principalDetails.getMemberEntity();
     	System.out.println("아이디확인"+chattingRoomDTO.getMember2UserId());
+    	Long member2Id = memberService.findByUserId(chattingRoomDTO.getMember2UserId()).getId();		//상대방의 Id
     	ChattingRoomDTO responseDTO =chatService.findOrCreateRoom("대화방", loggedUserId.getUserid(), chattingRoomDTO.getMember2UserId() ,boardId, 0);
      //   model.addAttribute("boardId", boardId);
+    	alarmService.postAlarm(loggedUserId.getId(), loggedUserId.getId(), member2Id, "MESSAGE", "채팅방", null, "채팅방 만듬", null);
     	return ResponseEntity.ok(responseDTO);
     }
     
@@ -91,16 +93,17 @@ public class ChatController {
 			
 		}
 	
-		@PostMapping("/send/{roomId}")
+		@PostMapping("/send/{roomId}")			
 		@ResponseBody
 		public ResponseEntity<?> sendMessage(@PathVariable(name = "roomId") Long roomId, @AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody MessageDTO messageDTO){
 
 			Long loggedId = principalDetails.getMemberEntity().getId();
-			
+			Long member2Id =	memberService.findByUserId( messageDTO.getReceiverUserId()).getId();	//상대방 ID
 			
 			boolean flag = chatService.addMessage(roomId,principalDetails ,messageDTO);		//roomId의 id를 조회
 			
-			
+			alarmService.postAlarm(loggedId, loggedId, member2Id, "MESSAGE", "메시지", null, "송수신", null);
+			//송수신 알람
 			return ResponseEntity.ok(flag);
 			
 		}
@@ -233,7 +236,7 @@ public class ChatController {
     	String receiverUserId = data.get("receiver");
     	System.out.println("리시버 : " + receiverUserId);
     	boolean flag = chatService.deleteRoom(id, principalDetails.getMemberEntity().getId(), receiverUserId);
-    	
+//    	alarmService.postAlarm(loggedUserId.getId(), loggedUserId.getId(), member2Id, "MESSAGE", "채팅방", null, "삭제", null);
     	return ResponseEntity.ok(flag);
     }
     

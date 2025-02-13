@@ -257,7 +257,7 @@ input[type="checkbox"] {
 <!-- 				 삽니다 카테고리의 경우 구매 중/ 예약/ 구매완료 버튼  -->
 
 
-<!-- <!-- '삽니다' 카테고리 --> -->
+<!-- <!-- '삽니다' 카테고리 --> 
 <!-- <div th:if="${board.memberEntity.userid eq principalDetails.name  and board.buy_Sell eq '삽니다'}"> -->
 <!--     <button type="button" -->
 <!--             th:id="|updateBoard-${board.id}|" -->
@@ -276,7 +276,7 @@ input[type="checkbox"] {
 <!--     </button> -->
 <!-- </div> -->
 
-<!-- <!-- '팝니다' 카테고리 --> -->
+<!-- <!-- '팝니다' 카테고리 --> 
 <!-- <div th:if="${board.memberEntity.userid eq principalDetails.name and board.buy_Sell eq '팝니다'}"> -->
 <!--     <button type="button" -->
 <!--             th:id="|updateBoard-${board.id}|" -->
@@ -352,7 +352,6 @@ input[type="checkbox"] {
 	<script src="/js/addComment.js" type="module"></script>
 	<!-- 	<script type="module" src="/js/commentLike.js"></script> -->
 	<script src="/js/boardLike.js" type="module"></script>
-
-
+<!-- 	 <th:block th:replace="/footer :: footerFragment"></th:block> -->
 </body>
 </html>

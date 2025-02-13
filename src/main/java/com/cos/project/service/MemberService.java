@@ -477,6 +477,16 @@ public MemberDTO EntitytoDTO(MemberEntity memberEntity) {
 //                .build();
 //         }
      
+
+@Transactional
+public MemberEntity findByUserId(String userid) {
+    return memberRepository.findByUserid(userid).orElse(null); // Return null if no image data exists
+}
+
+
+
+
+
     @Transactional
     //String -> byte[]
     public byte[] convertStringToByteArray(String profileImage) {

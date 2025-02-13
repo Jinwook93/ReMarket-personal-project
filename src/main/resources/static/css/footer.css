@@ -1,0 +1,81 @@
+/* Footer 전체 스타일 */
+#spacemyfooter {
+  background-color: #2D3748;
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+  font-family: 'Source Sans Pro', sans-serif;
+}
+
+/* 링크 스타일 */
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.footer-links a {
+  color: #FFF4A3;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+  color: #FFD700;
+}
+
+/* 오류 메시지 스타일 */
+#err_message {
+  padding: 10px 20px;
+  border-radius: 5px;
+  display: none;
+  background-color: #2D3748;
+  color: #FFF4A3;
+  margin-top: 10px;
+  text-align: left;
+  position: relative;
+}
+
+#err_message h2 {
+  font-size: 16px;
+  margin: 5px 0;
+}
+
+#err_message p {
+  font-size: 14px;
+  color: #f1f1f1;
+}
+
+/* 닫기 버튼 스타일 */
+#close_err_message {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  font-size: 20px;
+  cursor: pointer;
+  color: #fff;
+  background-color: transparent;
+  border: none;
+}
+
+#close_err_message:hover {
+  color: #FFD700;
+}
+
+/* 하단 텍스트 */
+.footer-text {
+  font-size: 12px;
+  margin-top: 10px;
+  color: #ddd;
+}
+
+.footer-text a {
+  color: #FFF4A3;
+  text-decoration: none;
+}
+
+.footer-text a:hover {
+  color: #FFD700;
+}

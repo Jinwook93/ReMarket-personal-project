@@ -54,7 +54,7 @@ public class ChatService {
 	 @PersistenceContext
 	    private EntityManager entityManager;
 	
-	
+	private final AlarmService alarmService; 
 	
 	@Transactional
 	public ChattingRoomDTO findOrCreateRoom(String title, String loggedId, String userId, Long boardId, int price) {
@@ -395,11 +395,13 @@ public class ChatService {
 	        messageRepository.saveAll(filteredMessages);
 	        entityManager.flush();  // 메시지 삭제 즉시 반영
     	    entityManager.clear();  // 영속성 컨텍스트 초기화
+        	alarmService.postAlarm(senderId, senderId, receiverId, "MESSAGE", "채팅방", String.valueOf(roomId), "나가기", null);
 	    } else {
 	    	System.out.println("else 삭제 되는건가요?????????");
 	    	  forceDeleteRoom(roomId);
 	    	  
 	    		System.out.println("결국 else 삭제 되는건가요?????????");
+	    		alarmService.postAlarm(senderId, senderId, receiverId, "MESSAGE", "채팅방", String.valueOf(roomId), "완전삭제", null);
 //	        // 🟢 메시지 삭제
 //	        messageRepository.deleteByRoomId(roomId);
 //	        messageRepository.flush();

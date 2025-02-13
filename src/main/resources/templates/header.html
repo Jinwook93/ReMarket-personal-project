@@ -72,6 +72,7 @@ body {
 	border-radius: 4px;
 	cursor: pointer;
 	text-decoration: none;
+
 }
 
 #myChattingRoomList:hover {
@@ -81,10 +82,14 @@ body {
 #alarmButton {
 	display: inline-block;
 	background-color: #ff9900;
-	color: black;
+	color: white;
 	padding: 8px 15px;
-	border-radius: 4px;
+	border-radius: 5px;
 	cursor: pointer;
+	text-decoration: none;
+		  width: auto; /* 크기 자동 조절 */
+    height: auto;
+    line-height: normal;
 }
 
 #alarmButton:hover {
@@ -177,8 +182,13 @@ body {
 					th:href="@{/commentlist/{id}(id=${id})}">내가 쓴 댓글</a>
 
 				<!-- 나의 채팅방 버튼 -->
-				<a href="#" id="myChattingRoomList">나의 채팅방</a>
-				<button type="button" id="alarmButton">알림</button>
+				<a href="#" id="myChattingRoomList"> <img
+					src="/icon/comment.png" alt="나의 채팅방" width="20" height="20"  style="margin-Top:1px;" />
+
+				</a>
+				<button type="button" id="alarmButton">
+					<img src="/icon/bell.png" alt="알림" width="20" height="20" />
+				</button>
 
 				<div style="display: flex;">
 					<!-- 채팅방 리스트 -->
