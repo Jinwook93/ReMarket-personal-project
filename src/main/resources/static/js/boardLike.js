@@ -151,7 +151,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 버튼 이벤트 리스너 등록
     likeButton.addEventListener("click", () => {
-        if (likeButton.classList.contains("active")) {ㄴ
+        if (likeButton.classList.contains("active")) {
             handleUnlike();
             likeButton.classList.remove("active");
         } else {

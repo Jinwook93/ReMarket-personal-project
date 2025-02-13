@@ -113,6 +113,9 @@ public class AlarmService {
 	        MemberEntity member2 = memberRepository.findById(member2Id)
 	                .orElseThrow(() -> new IllegalAccessError("사용자를 조회할 수 없습니다"));
 
+//	        alarmDTO = alarmConstructor(loggedId, member1Id, member2Id, type, childType, object, action, priority);
+//            alarmEntity = alarmDTO.toEntity(member1, member2);
+	        
 	        if (loggedId.equals(member1Id)) {
 	            alarmDTO = alarmConstructor(loggedId, member1Id, member2Id, type, childType, object, action, priority);
 	            alarmEntity = alarmDTO.toEntity(member1, member2);
@@ -181,6 +184,7 @@ public class AlarmService {
 	public AlarmDTO alarmConstructor(Long loggedId,Long member1Id, Long member2Id, String type, String childType, String object, String action, String priority) {
 		Optional<MemberEntity> member1 = memberRepository.findById(member1Id);
 		Optional<MemberEntity> member2 = null;
+//		Long Object_id = null;
 		if(member2Id != null) {
 			member2 = memberRepository.findById(member2Id);
 		}
@@ -199,56 +203,72 @@ public class AlarmService {
 						.get();
 				
 				if(!filteredBoard.getId().equals(null) ) {
-				member1Content = member1.get().getUserid()+"님의 게시글이 등록되었습니다"+ filteredBoard.getId();
+				member1Content = member1.get().getUserid()+"님이 "+filteredBoard.getId() +"번 게시물을 등록하였습니다";
 				}
-			//	member1Content = member1.get().getUserid() + "님의 게시글이 등록되었습니다";
 			} else if (childType.equals("게시판") && action.equals("삭제")) {
-
-//				member1Content = member1.get().getUserid()+"님의 게시글이 삭제되었습니다"+ filteredBoard.getId();
-				member1Content = member1.get().getUserid() + "님의 게시글이 삭제되었습니다";
+				member1Content = member1.get().getUserid() + "님의 "+ object +"번 게시글이 삭제되었습니다";
 			} else if (childType.equals("게시판") &&  action.equals("수정")) {
-//				member1Content = member1.get().getUserid()+"님의 게시글이 수정되었습니다"+ filteredBoard.getId(); 
-				member1Content = member1.get().getUserid() + "님의 게시글이 수정되었습니다";
+				member1Content = member1.get().getUserid() + "님의 "+object +"번 게시글이 수정되었습니다";
 			}else if (childType.equals("게시판") && object.equals("좋아요")   && action.equals("활성화")) {
-//				member1Content = member1.get().getUserid()+"님의 게시글이 수정되었습니다"+ filteredBoard.getId(); 
-				member1Content = member2.get().getUserid()+"님이" + member1.get().getUserid() + "님의 게시글을 좋아합니다";
-				member2Content = member1.get().getUserid() + "님의 게시글에 좋아요를 눌렀습니다";
+				member1Content = member1.get().getUserid()+"님이" + member2.get().getUserid() + "님의 게시글을 좋아합니다";
+				member2Content = member2.get().getUserid() + "님의 게시글에 좋아요를 눌렀습니다";
 			}else if (childType.equals("게시판") && object.equals("좋아요")   && action.equals("취소")) {
-//				member1Content = member1.get().getUserid()+"님의 게시글이 수정되었습니다"+ filteredBoard.getId(); 
-				member1Content = member2.get().getUserid()+"님이" + member1.get().getUserid() + "님의 게시글의 좋아요를 취소하였습니다";
-				member2Content = member1.get().getUserid() + "님의 게시글에 좋아요를 취소하였습니다";
+				member1Content = member1.get().getUserid()+"님이" + member2.get().getUserid() + "님의 게시글의 좋아요를 취소하였습니다";
+				member2Content = member2.get().getUserid() + "님의 게시글에 좋아요를 취소하였습니다";
 			}else if (childType.equals("게시판") && object.equals("싫어요")   && action.equals("활성화")) {
-//				member1Content = member1.get().getUserid()+"님의 게시글이 수정되었습니다"+ filteredBoard.getId(); 
-				member1Content = member2.get().getUserid()+"님이" + member1.get().getUserid() + "님의 게시글을 싫어합니다";
-				member2Content = member1.get().getUserid() + "님의 게시글에 싫어요를 눌렀습니다";
+				member1Content = member1.get().getUserid()+"님이" + member2.get().getUserid() + "님의 게시글을 싫어합니다";
+				member2Content = member2.get().getUserid() + "님의 게시글에 싫어요를 눌렀습니다";
 			}else if (childType.equals("게시판") && object.equals("싫어요")   && action.equals("취소")) {
-//				member1Content = member1.get().getUserid()+"님의 게시글이 수정되었습니다"+ filteredBoard.getId(); 
-				member1Content = member2.get().getUserid()+"님이" + member1.get().getUserid() + "님의 게시글의 싫어요를 취소하였습니다";
-				member2Content = member1.get().getUserid() + "님의 게시글에 싫어요를 취소하였습니다";
+				member1Content = member1.get().getUserid()+"님이" + member2.get().getUserid() + "님의 게시글의 싫어요를 취소하였습니다";
+				member2Content = member2.get().getUserid() + "님의 게시글에 싫어요를 취소하였습니다";
 			}
 			
 			else if (childType.equals("댓글")  && action.equals("등록")) {//member1, member2 의 정보를 다 받아와야 함
-				member1Content = member2.get().getUserid() + "님의 댓글이 "+member1.get().getUserid()+"님의 게시글에 등록되었습니다";
-				member2Content = member2.get().getUserid() + "님의 댓글이 "+member1.get().getUserid()+"님의 게시글에 등록되었습니다";
+				member1Content = member1.get().getUserid() + " 님의 댓글이 "+member2.get().getUserid()+"님의 "+object+"번 게시글에 등록되었습니다";
+				member2Content = member2.get().getUserid() + " 님의 댓글이 "+member1.get().getUserid()+"님의 게시글에 등록되었습니다";
 			} else if (childType.equals("댓글")  && action.equals("삭제")) {
-				member1Content = member2.get().getUserid() + "님의 댓글이 "+member1.get().getUserid()+"님의 게시글에서 삭제되었습니다";
-				member2Content = member2.get().getUserid() + "님의 댓글이 "+member1.get().getUserid()+"님의 게시글에서 삭제되었습니다";
+				member1Content = member1.get().getUserid() + " 님의 댓글이 "+member2.get().getUserid()+"님의 "+object+"번 게시글에서 삭제되었습니다";
+				member2Content = member2.get().getUserid() + " 님의 댓글이 "+member1.get().getUserid()+"님의 게시글에서 삭제되었습니다";
 			} else if (childType.equals("댓글")  && action.equals("수정")) {
-				member1Content = member2.get().getUserid() + "님의 댓글이 수정되었습니다";
-				member2Content = member2.get().getUserid() + "님의 댓글이 수정되었습니다";
+				member1Content = member1.get().getUserid() + " 님의 댓글이 수정되었습니다";
+				member2Content = member1.get().getUserid() + " 님의 댓글이 수정되었습니다";
 			} else if (childType.equals("댓글")  && object.equals("좋아요")&& action.equals("활성화")) {		//3자
-				member1Content = member2.get().getUserid()+"님이" + member1.get().getUserid() + "님의 댓글의 좋아요를 눌렀습니다";
-				member2Content = member1.get().getUserid() + "님의 댓글에 좋아요를 눌렀습니다";
+				member1Content = member1.get().getUserid()+" 님이" + member2.get().getUserid() + "님의 댓글의 좋아요를 눌렀습니다";
+				member2Content = member2.get().getUserid() + "님의 댓글에 좋아요를 눌렀습니다";
 			}else if (childType.equals("댓글") && object.equals("좋아요")   && action.equals("취소")) {
-				member1Content = member2.get().getUserid()+"님이" + member1.get().getUserid() + "님의 댓글의 좋아요를 취소하였습니다";
-				member2Content = member1.get().getUserid() + "님의 댓글에 좋아요를 취소하였습니다";
+				member1Content = member1.get().getUserid()+" 님이" + member2.get().getUserid() + "님의 댓글의 좋아요를 취소하였습니다";
+				member2Content = member2.get().getUserid() + "님의 댓글에 좋아요를 취소하였습니다";
 			}else if (childType.equals("댓글") && object.equals("싫어요")   && action.equals("활성화")) {
-				member1Content = member2.get().getUserid()+"님이" + member1.get().getUserid() + "님의 댓글을 싫어합니다";
-				member2Content = member1.get().getUserid() + "님의 댓글에 싫어요를 눌렀습니다";
+				member1Content = member1.get().getUserid()+" 님이" + member2.get().getUserid() + "님의 댓글을 싫어합니다";
+				member2Content = member2.get().getUserid() + "님의 댓글에 싫어요를 눌렀습니다";
 			}else if (childType.equals("댓글") && object.equals("싫어요")   && action.equals("취소")) {
-				member1Content = member2.get().getUserid()+"님이" + member1.get().getUserid() + "님의 댓글의 싫어요를 취소하였습니다";
-				member2Content = member1.get().getUserid() + "님의 댓글에 싫어요를 취소하였습니다";
+				member1Content = member2.get().getUserid()+" 님이" + member1.get().getUserid() + "님의 댓글의 싫어요를 취소하였습니다";
+				member2Content = member1.get().getUserid() + " 님의 댓글에 싫어요를 취소하였습니다";
 			}
+			
+			
+//			else if (childType.equals("대댓글")  && action.equals("등록")) {//member1, member2 의 정보를 다 받아와야 함
+//				member1Content = member2.get().getUserid() + "님이 "+member1.get().getUserid()+"님의 댓글에 답하였습니다";
+//				member2Content = member2.get().getUserid() + "님의 댓글이 "+member1.get().getUserid()+"님의 게시글에 등록되었습니다";
+//			} else if (childType.equals("대댓글")  && action.equals("삭제")) {
+//				member1Content = member2.get().getUserid() + "님의 댓글이 "+member1.get().getUserid()+"님의 게시글에서 삭제되었습니다";
+//				member2Content = member2.get().getUserid() + "님의 댓글이 "+member1.get().getUserid()+"님의 게시글에서 삭제되었습니다";
+//			} else if (childType.equals("대댓글")  && action.equals("수정")) {
+//				member1Content = member2.get().getUserid() + "님의 댓글이 수정되었습니다";
+//				member2Content = member2.get().getUserid() + "님의 댓글이 수정되었습니다";
+//			} else if (childType.equals("대댓글")  && object.equals("좋아요")&& action.equals("활성화")) {		//3자
+//				member1Content = member2.get().getUserid()+"님이" + member1.get().getUserid() + "님의 댓글의 좋아요를 눌렀습니다";
+//				member2Content = member1.get().getUserid() + "님의 댓글에 좋아요를 눌렀습니다";
+//			}else if (childType.equals("대댓글") && object.equals("좋아요")   && action.equals("취소")) {
+//				member1Content = member2.get().getUserid()+"님이" + member1.get().getUserid() + "님의 댓글의 좋아요를 취소하였습니다";
+//				member2Content = member1.get().getUserid() + "님의 댓글에 좋아요를 취소하였습니다";
+//			}else if (childType.equals("대댓글") && object.equals("싫어요")   && action.equals("활성화")) {
+//				member1Content = member2.get().getUserid()+"님이" + member1.get().getUserid() + "님의 댓글을 싫어합니다";
+//				member2Content = member1.get().getUserid() + "님의 댓글에 싫어요를 눌렀습니다";
+//			}else if (childType.equals("대댓글") && object.equals("싫어요")   && action.equals("취소")) {
+//				member1Content = member2.get().getUserid()+"님이" + member1.get().getUserid() + "님의 댓글의 싫어요를 취소하였습니다";
+//				member2Content = member1.get().getUserid() + "님의 댓글에 싫어요를 취소하였습니다";
+//			}
 
 		}
 		

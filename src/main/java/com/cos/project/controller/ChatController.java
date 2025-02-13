@@ -29,6 +29,7 @@ import com.cos.project.entity.BoardEntity;
 import com.cos.project.entity.ChattingRoomEntity;
 import com.cos.project.entity.MemberEntity;
 import com.cos.project.entity.MessageEntity;
+import com.cos.project.service.AlarmService;
 import com.cos.project.service.BoardService;
 import com.cos.project.service.ChatService;
 import com.cos.project.service.MemberService;
@@ -48,7 +49,8 @@ public class ChatController {
 	@Autowired
 	private BoardService boardService;
 	
-	
+	@Autowired
+	private AlarmService alarmService;
 
 
 	    

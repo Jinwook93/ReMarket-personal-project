@@ -218,7 +218,7 @@ body {
 	<script type="module">
     import { loadChatRooms, setUpEnterRoomButton, setUpExitRoomButton, toggleChattingRoomList } from '/js/chatModule.js';
 	import { toggleAlarmList, checkUserAlarmCount, checkUserAlarmList,markAsRead } from '/js/alarmModule.js';
-
+	import { formatDate } from "/js/formatDate.js";
 
 
 
@@ -259,13 +259,17 @@ body {
             if (alarmList && alarmList.length > 0) {
                 alarmListBody.innerHTML = '';
 
+			alarmList.sort((a, b) => Number(b.id) - Number(a.id));
+				
                 alarmList.forEach(alarm => {
+					
                     const row = document.createElement("tr");
                     row.innerHTML = `
 						<td>${alarm.id}</td>
  						<td>${alarm.priority}</td>
-                        <td>${alarm.member1Content}</td>
-                        <td>${alarm.createTime}</td>
+                        <td>${Number(alarm.member1.id) === Number(loggedId)? 
+							alarm.member1Content:alarm.member2Content }</td>
+                        <td>${formatDate(alarm.createTime)}</td>
 					  <td>${alarm.member1Read}</td>
                         <td>
                             <button onclick="markAsRead(${alarm.id})">읽음 처리</button>

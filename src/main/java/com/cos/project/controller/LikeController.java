@@ -16,6 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cos.project.details.PrincipalDetails;
 import com.cos.project.entity.BoardEntity;
+import com.cos.project.entity.CommentEntity;
+import com.cos.project.repository.BoardRepository;
+import com.cos.project.repository.CommentRepository;
+import com.cos.project.repository.MemberRepository;
+import com.cos.project.service.AlarmService;
+import com.cos.project.service.BoardService;
+import com.cos.project.service.CommentService;
 import com.cos.project.service.LikeService;
 import com.cos.project.service.LikeService;
 import com.cos.project.service.MemberService;
@@ -29,6 +36,26 @@ public class LikeController {
         this.likeService = likeService;
     }
 
+    @Autowired
+    private AlarmService alarmService;
+    
+    @Autowired
+    private MemberService memberService;
+    
+    @Autowired
+    private BoardService boardService;
+    
+    @Autowired
+    private CommentService commentService;
+    
+    @Autowired
+    private MemberRepository memberRepository ;
+    
+    @Autowired
+    private BoardRepository boardRepository;
+    
+    @Autowired
+    private CommentRepository commentRepository;
     
     @PostMapping("/board/{boardId}/like")
     public ResponseEntity<List<Integer>> likePost(
@@ -36,7 +63,15 @@ public class LikeController {
             @AuthenticationPrincipal PrincipalDetails principalDetails) {
 //        likeService.addLike(boardId, principalDetails.getMemberEntity().getId());
     	List<Integer> totallike_dislike = likeService.toggleLike(boardId, principalDetails.getMemberEntity().getId());
-        return ResponseEntity.ok(totallike_dislike );
+   
+    	
+    	Long loggedId = principalDetails.getMemberEntity().getId();
+    	BoardEntity boardEntity = boardRepository.findById(boardId).get();
+    	Long member2Id = boardEntity.getMemberEntity().getId();
+		alarmService.postAlarm(loggedId,loggedId, member2Id, "BOARD", "게시판", "좋아요", "활성화", null);	
+    	
+    	
+    	return ResponseEntity.ok(totallike_dislike );
     }
 
     // 좋아요 취소
@@ -46,7 +81,13 @@ public class LikeController {
             @AuthenticationPrincipal PrincipalDetails principalDetails) {
 //        likeService.removeLike(boardId, principalDetails.getMemberEntity().getId());
     	List<Integer> totallike_dislike = likeService.toggleLike(boardId, principalDetails.getMemberEntity().getId());
-        return ResponseEntity.ok(totallike_dislike );
+       
+      	Long loggedId = principalDetails.getMemberEntity().getId();
+    	BoardEntity boardEntity = boardRepository.findById(boardId).get();
+    	Long member2Id = boardEntity.getMemberEntity().getId();
+		alarmService.postAlarm(loggedId,loggedId, member2Id, "BOARD", "게시판", "좋아요", "취소", null);	
+    	
+    	return ResponseEntity.ok(totallike_dislike );
         }
 
     // 싫어요 추가
@@ -56,7 +97,15 @@ public class LikeController {
             @AuthenticationPrincipal PrincipalDetails principalDetails) {
 //        likeService.addDislike(boardId, principalDetails.getMemberEntity().getId());
     	List<Integer> totallike_dislike =  likeService.toggleDislike(boardId, principalDetails.getMemberEntity().getId());
-        return ResponseEntity.ok(totallike_dislike );
+
+      	Long loggedId = principalDetails.getMemberEntity().getId();
+    	BoardEntity boardEntity = boardRepository.findById(boardId).get();
+    	Long member2Id = boardEntity.getMemberEntity().getId();
+		alarmService.postAlarm(loggedId,loggedId, member2Id, "BOARD",  "게시판", "싫어요","활성화", null);	
+    	
+    	
+    	
+    	return ResponseEntity.ok(totallike_dislike );
     }
 
     // 싫어요 취소
@@ -66,7 +115,13 @@ public class LikeController {
             @AuthenticationPrincipal PrincipalDetails principalDetails) {
 //        likeService.removeDislike(boardId, principalDetails.getMemberEntity().getId());
     	List<Integer> totallike_dislike = 	 likeService.toggleDislike(boardId, principalDetails.getMemberEntity().getId());
-        return ResponseEntity.ok(totallike_dislike );
+     
+      	Long loggedId = principalDetails.getMemberEntity().getId();
+    	BoardEntity boardEntity = boardRepository.findById(boardId).get();
+    	Long member2Id = boardEntity.getMemberEntity().getId();
+		alarmService.postAlarm(loggedId,loggedId, member2Id, "BOARD", "게시판", "싫어요", "취소", null);	
+    	
+    	return ResponseEntity.ok(totallike_dislike );
     }
     
     // 버튼 활성화
@@ -91,14 +146,23 @@ public class LikeController {
     
     
     
-    
-    @PostMapping("/comment/{commentId}/like")
+    //좋아요 활성화
+    @PostMapping("/comment/{commentId}/like")				
     public ResponseEntity<List<Integer>> commentlikePost(
             @PathVariable(name = "commentId") Long commentId,
             @AuthenticationPrincipal PrincipalDetails principalDetails) {
-//        likeService.addLike(commentId, principalDetails.getMemberEntity().getId());
-    	List<Integer> totallike_dislike = likeService.commentToggleLike(commentId, principalDetails.getMemberEntity().getId());
-        return ResponseEntity.ok(totallike_dislike );
+  
+        
+    	CommentEntity commentEntity = commentRepository.findById(commentId).orElse(null);
+    	
+     	Long loggedId = principalDetails.getMemberEntity().getId();
+    	Long member2Id = commentEntity.getMemberEntity().getId();
+    	
+      	List<Integer> totallike_dislike = likeService.commentToggleLike(commentId, principalDetails.getMemberEntity().getId());
+		alarmService.postAlarm(loggedId,loggedId, member2Id, "BOARD", "댓글", "좋아요", "활성화", null);	
+    	
+    	
+    	return ResponseEntity.ok(totallike_dislike );
     }
 
     // 좋아요 취소
@@ -106,9 +170,15 @@ public class LikeController {
     public ResponseEntity<List<Integer>> commentunlikePost(
             @PathVariable(name = "commentId") Long commentId,
             @AuthenticationPrincipal PrincipalDetails principalDetails) {
-//        likeService.removeLike(commentId, principalDetails.getMemberEntity().getId());
+    	CommentEntity commentEntity = commentRepository.findById(commentId).orElse(null);
+    	
+     	Long loggedId = principalDetails.getMemberEntity().getId();
+    	Long member2Id = commentEntity.getMemberEntity().getId();
     	List<Integer> totallike_dislike = likeService.commentToggleLike(commentId, principalDetails.getMemberEntity().getId());
-        return ResponseEntity.ok(totallike_dislike );
+		alarmService.postAlarm(loggedId,loggedId, member2Id, "BOARD", "댓글", "좋아요", "취소", null);	
+    	
+    	
+    	return ResponseEntity.ok(totallike_dislike );
         }
 
     // 싫어요 추가
@@ -116,9 +186,14 @@ public class LikeController {
     public ResponseEntity<List<Integer>> commentdislikePost(
             @PathVariable(name = "commentId") Long commentId,
             @AuthenticationPrincipal PrincipalDetails principalDetails) {
-//        likeService.addDislike(commentId, principalDetails.getMemberEntity().getId());
+      
+    	CommentEntity commentEntity = commentRepository.findById(commentId).orElse(null);
+    	
+     	Long loggedId = principalDetails.getMemberEntity().getId();
+    	Long member2Id = commentEntity.getMemberEntity().getId();
     	List<Integer> totallike_dislike =  likeService.commentToggleDislike(commentId, principalDetails.getMemberEntity().getId());
-        return ResponseEntity.ok(totallike_dislike );
+		alarmService.postAlarm(loggedId,loggedId, member2Id, "BOARD", "댓글", "싫어요", "활성화", null);	
+    	return ResponseEntity.ok(totallike_dislike );
     }
 
     // 싫어요 취소
@@ -126,9 +201,14 @@ public class LikeController {
     public ResponseEntity<List<Integer>> commentundislikePost(
             @PathVariable(name = "commentId") Long commentId,
             @AuthenticationPrincipal PrincipalDetails principalDetails) {
-//        likeService.removeDislike(commentId, principalDetails.getMemberEntity().getId());
+    	CommentEntity commentEntity = commentRepository.findById(commentId).orElse(null);
+     	Long loggedId = principalDetails.getMemberEntity().getId();
+     	Long member2Id = commentEntity.getMemberEntity().getId();
     	List<Integer> totallike_dislike = 	 likeService.commentToggleDislike(commentId, principalDetails.getMemberEntity().getId());
-        return ResponseEntity.ok(totallike_dislike );
+		alarmService.postAlarm(loggedId,loggedId, member2Id, "BOARD", "댓글", "싫어요", "취소", null);	
+    	
+    	
+    	return ResponseEntity.ok(totallike_dislike );
     }
     
     // 버튼 활성화
@@ -157,34 +237,16 @@ String result = 	 likeService.comment_findMemberLike_Dislike(commentId, principa
             @AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody boolean flag) {
 //        likeService.addLike(commentId, principalDetails.getMemberEntity().getId());
     	boolean result = likeService.chatToggleLike(messageId, principalDetails.getMemberEntity().getId(), flag);
+    	
+//    	if(result == true) {
+//    		alarmService.postAlarm(loggedId,loggedId, member2Id, "BOARD", "댓글", "싫어요", "활성화", null);	
+//    	}else {
+//    		alarmService.postAlarm(loggedId,loggedId, member2Id, "BOARD", "댓글", "싫어요", "활성화", null);	
+//    	}
+    	
         return ResponseEntity.ok(result );
     }
-
-//    // 좋아요 취소
-//    @PostMapping("/chat/{messageId}/unlike")
-//    public ResponseEntity<List<Integer>> chatunlikePost(
-//            @PathVariable(name = "messageId") Long messageId,
-//            @AuthenticationPrincipal PrincipalDetails principalDetails) {
-////        likeService.removeLike(commentId, principalDetails.getMemberEntity().getId());
-//    	boolean result = likeService.chatToggleLike(messageId, principalDetails.getMemberEntity().getId());
-//        return ResponseEntity.ok(totallike_dislike );
-//        }
-    
-    
-    
-    
-//    // 버튼 활성화
-//    @PostMapping("/chat/{messageId}/buttonenable")
-//    public ResponseEntity<?> chatenableButton(
-//            @PathVariable(name = "messageId") Long messageId,
-//            @AuthenticationPrincipal PrincipalDetails principalDetails) {
-//    
-////        likeService.removeDislike(commentId, principalDetails.getMemberEntity().getId());
-//String result = 	 likeService.chat_findMemberLike_Dislike(messageId, principalDetails.getMemberEntity().getId());
-//    	System.out.println("버튼활성화 상태 도착");
-//    	return ResponseEntity.ok(result);
-//    }
-//    
+ 
     
     
 }

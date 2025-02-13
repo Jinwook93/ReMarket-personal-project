@@ -2,8 +2,14 @@ package com.cos.project.controller;
 
 import com.cos.project.details.PrincipalDetails;
 import com.cos.project.dto.CommentDTO;
+import com.cos.project.entity.BoardEntity;
 import com.cos.project.entity.CommentEntity;
+import com.cos.project.entity.MemberEntity;
+import com.cos.project.repository.CommentRepository;
+import com.cos.project.service.AlarmService;
+import com.cos.project.service.BoardService;
 import com.cos.project.service.CommentService;
+import com.cos.project.service.MemberService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -24,7 +30,12 @@ import java.util.Map;
 public class CommentController {
 
     private final CommentService commentService;
+    private final AlarmService alarmService;
+    private final BoardService boardService;
+    private final MemberService memberService;
 
+    private final CommentRepository commentRepository;
+    
     // 게시글에 대한 댓글 조회
 //    @GetMapping("/board/{id}")
 //    public List<CommentEntity> getAllCommentsAboutBoard(@PathVariable("id") Long id) {
@@ -63,7 +74,20 @@ public class CommentController {
     	System.out.println("Private"+commentDTO.getIsPrivate());
         CommentEntity result = commentService.addComment(commentDTO, principalDetails.getMemberEntity());
         String boardUserId = result.getBoardEntity().getMemberEntity().getUserid();
+        Long boardMemberId =  result.getBoardEntity().getMemberEntity().getId();			//보드 작성자
         
+        String boardId_String = String.valueOf(boardId);
+        String parentCommentId_String = String.valueOf(commentDTO.getParentCommentId());
+        
+    	Long loggedId = principalDetails.getMemberEntity().getId();		// 로그인 유저
+    	alarmService.postAlarm(loggedId,loggedId, boardMemberId, "BOARD", "댓글", boardId_String, "등록", null);	
+//    	if(commentDTO.getParentCommentId() ==null) {
+//		alarmService.postAlarm(loggedId,loggedId, boardMemberId, "BOARD", "댓글", boardId_String, "등록", null);	
+//    	}else {
+//    		alarmService.postAlarm(loggedId,loggedId, boardMemberId, "BOARD", "대댓글", parentCommentId_String , "등록", null);
+//    		alarmService.postAlarm(loggedId,loggedId, boardMemberId, "BOARD", "대댓글", parentCommentId_String , "등록", null);
+//    	}
+//        
        return ResponseEntity.ok(boardUserId);
         
 
@@ -95,13 +119,22 @@ public class CommentController {
     @PutMapping("/{id}")
     public ResponseEntity<?> updateComment(
         @PathVariable("id") Long id,
-        @RequestBody CommentDTO commentDTO
+        @RequestBody CommentDTO commentDTO,
+        @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
        	System.out.println("수정된 댓글 ID:"+id);
     	System.out.println("수정된 댓글 내용:"+commentDTO.getContent());
     	System.out.println("수정된 댓글 : 비밀? "+commentDTO.getIsPrivate());
         Boolean result = commentService.updateComment(id, commentDTO);
-	      
+        BoardEntity boardEntity = commentRepository.findById(id).orElse(null).getBoardEntity();
+       Long member2Id = boardEntity.getMemberEntity().getId(); //보드 관리자
+       
+       Long member1Id = commentRepository.findById(id).get().getMemberEntity().getId();	//댓글작성자
+   
+       Long loggedId = principalDetails.getMemberEntity().getId();		//로그인 유저
+       
+        String id_String = String.valueOf(id);
+    	alarmService.postAlarm(loggedId,member1Id,member2Id, "BOARD", "댓글", id_String, "수정", null);	  
         return ResponseEntity.ok(result);
     }
     
@@ -121,8 +154,26 @@ public class CommentController {
     
     // 댓글 삭제
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteComment(@PathVariable("id") Long id) {
-       List<Long> result = commentService.deleteComment(id);   	
+    public ResponseEntity<?> deleteComment(@PathVariable("id") Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+    	
+       
+       
+       	
+       
+       BoardEntity boardEntity = commentRepository.findById(id).orElse(null).getBoardEntity();
+       Long member2Id = boardEntity.getMemberEntity().getId(); //보드 관리자
+       
+       Long member1Id = commentRepository.findById(id).get().getMemberEntity().getId();	//댓글작성자
+   
+       Long loggedId = principalDetails.getMemberEntity().getId();		//로그인 유저
+       System.out.println("댓글 작성자"+member1Id);
+       System.out.println("보드 관리자"+member2Id);
+        String id_String = String.valueOf(id);
+        List<Long> result = commentService.deleteComment(id);   
+    	alarmService.postAlarm(loggedId,member1Id,member2Id, "BOARD", "댓글", id_String, "삭제", null);	  
+       
+       
+       
         return ResponseEntity.ok(result);
     }
     

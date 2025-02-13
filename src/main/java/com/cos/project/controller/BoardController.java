@@ -14,6 +14,7 @@ import com.cos.project.entity.MemberEntity;
 import com.cos.project.repository.BoardLikeRepository;
 import com.cos.project.repository.BoardRepository;
 import com.cos.project.repository.MemberRepository;
+import com.cos.project.service.AlarmService;
 import com.cos.project.service.BoardService;
 import com.cos.project.service.CommentService;
 import com.cos.project.service.MemberService;
@@ -85,6 +86,10 @@ public class BoardController {
 
 	@Autowired
 	private MemberService memberService;
+	
+	@Autowired
+	private AlarmService alarmService;
+
 
 	@GetMapping("/allboard")
 	public String allBoard(Model model) {
@@ -106,6 +111,7 @@ public class BoardController {
 		model.addAttribute("name", principal.getMemberEntity().getName());
 		model.addAttribute("userid", principal.getMemberEntity().getUserid());
 		model.addAttribute("profileImage", principal.getMemberEntity().getProfileImage());
+		
 		return "boardwriteform";
 	}
 
@@ -115,7 +121,8 @@ public class BoardController {
 			@RequestParam(name = "category") String category, @RequestParam(name = "product") String product,
 			@RequestParam(name = "buy_Sell") String buy_Sell,
 			@RequestParam(name = "boardFiles", required = false) MultipartFile[] boardFiles,
-			@RequestParam(name = "contents") String contents) throws IOException {
+			@RequestParam(name = "contents") String contents,
+			@AuthenticationPrincipal PrincipalDetails principalDetails) throws IOException {
 
 		ObjectMapper objectMapper = new ObjectMapper();
 		String[] boardFilePath;
@@ -150,68 +157,12 @@ public class BoardController {
 				.product(product).buy_Sell(buy_Sell_enum).contents(contents).boardFiles(boardFileJson).build();
 
 		boardService.writeContents(boardEntity);
-
+		Long loggedId = principalDetails.getMemberEntity().getId();
+		alarmService.postAlarm(loggedId,null, null, "BOARD", "게시판", null, "등록", null);	
 		return "redirect:allboard";
 	}
 
-//@PostMapping("/board/write")
-//public String writeBoard(@RequestParam String title, 
-//                         @RequestParam Long member_id, 
-//                         @RequestParam String contents) {
-//    MemberEntity member = memberService.findById(member_id); // 작성자 조회
-//    BoardEntity board = BoardEntity.builder()
-//                                   .title(title)
-//                                   .contents(contents)
-//                                   .memberEntity(member)
-//                                   .build();
-//    boardService.save(board); // 게시글 저장
-//    return "redirect:/allboard"; // 작성 후 게시글 목록 페이지로 이동
-//}
 
-//@Autowired
-//BoardRepository boardRepository;
-
-//@PostMapping("/write")
-//public String writeBoard2(@RequestBody BoardEntity boardEntity) {
-//	
-//
-//    // Get the current authenticated user
-//    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//    PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
-//    
-//    	boardEntity.setMemberEntity(principalDetails.getMemberEntity());
-//
-//    boardRepository.save(boardEntity);
-//
-//    return "게시글 작성 완료!";
-//}
-//
-//@GetMapping("/logininfo")
-//public ResponseEntity<?> loginInfo() {
-//    // Get the authentication object from the security context
-//    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//    
-//    // Extract the PrincipalDetails (custom UserDetails implementation) from the Authentication object
-//    PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
-//    
-//    // Return the MemberEntity associated with the logged-in user
-//    return ResponseEntity.status(200).body(principalDetails.getMemberEntity());
-//}
-
-//@PutMapping("/updateboard/{id}")
-//public ResponseEntity<?> updateBoard(@PathVariable(name = "id") Long id, @RequestBody BoardEntity boardEntity) {
-//   String result =  boardService.updateContents(id, boardEntity);
-//	
-//    return ResponseEntity.status(200).body(result);
-//}
-
-//@PutMapping("/updateboard/{id}")
-//public String updateBoard(@PathVariable(name = "id") Long id, @RequestBody BoardEntity boardEntity) {
-//   String result =  boardService.updateContents(id, boardEntity);
-//	
-////    return ResponseEntity.status(200).body(result);
-//   return "redirect:view/{id}";
-//}
 
 	@GetMapping("/updateboard/{id}")
 //public String updateBoard(@PathVariable(name = "id") Long id, @RequestBody BoardEntity boardEntity, RedirectAttributes redirectAttributes) {
@@ -226,6 +177,7 @@ public class BoardController {
 
 		model.addAttribute("boardFiles", boardFiles);
 
+		
 		return "updateboardwriteform";
 	}
 
@@ -237,7 +189,8 @@ public class BoardController {
 	@ResponseBody
 	public String updateBoard(@PathVariable(name = "id") Long id, @RequestPart(name = "boardData") String boardDataJson,
 			@RequestPart(value = "boardFiles", required = false) MultipartFile[] boardFiles,
-			RedirectAttributes redirectAttributes) throws IOException {
+			RedirectAttributes redirectAttributes,
+			@AuthenticationPrincipal PrincipalDetails principalDetails) throws IOException {
 
 		ObjectMapper objectMapper = new ObjectMapper();
 		BoardDTO boardDTO = objectMapper.readValue(boardDataJson, BoardDTO.class);
@@ -273,31 +226,23 @@ public class BoardController {
 		// 리다이렉트 처리
 		// redirectAttributes.addAttribute("id", id);
 //    return "redirect:/board/view/{id}";
+		String id_String = String.valueOf(id);
+		Long loggedId = principalDetails.getMemberEntity().getId();
+		alarmService.postAlarm(loggedId,null, null, "BOARD", "게시판", id_String, "수정", null);	
 		return "/board/view/" + id;
 	}
 
-//@PutMapping("/updateboard/{id}")
-//public String updateBoard(@PathVariable(name = "id") Long id, @RequestBody BoardEntity boardEntity, RedirectAttributes redirectAttributes) {
-//    String result = boardService.updateContents(id, boardEntity);
-//    
-//    // Adding the id to the redirect URL
-//    redirectAttributes.addAttribute("id", id); // id 값을 URL 파라미터로 추가
-//
-//    // Log to check if it's properly passed
-//    System.out.println("Redirecting to: /board/view/" + id);
-//    
-//    // Redirect to the view page after the update
-//    return "redirect:/board/view/{id}"; // {id}는 addAttribute에서 전달된 id로 치환됩니다.
-//}
 
 	@DeleteMapping("/deleteboard/{id}")
-	public ResponseEntity<?> deleteBoard(@PathVariable(name = "id") Long id) {
+	public ResponseEntity<?> deleteBoard(@PathVariable(name = "id") Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		commentService.deleteAllCommentAboutBoard(id);
-
-		// commentService.deleteAllCommentAboutBoard(id)
 		System.out.println("삭제되는중?" + id);
 		String result = boardService.deleteContents(id);
 		System.out.println("삭제되는중2?" + id);
+		
+		String id_String = String.valueOf(id);
+		Long loggedId = principalDetails.getMemberEntity().getId();
+		alarmService.postAlarm(loggedId,null, null, "BOARD", "게시판", id_String, "삭제", null);	
 		return ResponseEntity.status(200).body(result);
 	}
 
@@ -322,20 +267,6 @@ public class BoardController {
 		return "boardcontent";
 	}
 
-//
-//@GetMapping("/delete/{id}")
-//public @ResponseBody String deleteFile(@PathVariable(name = "id") String path) throws JsonMappingException, JsonProcessingException {
-//	   BoardEntity boardEntity =  boardService.viewContent(id,false);
-//	   List<CommentEntity> comments = commentService.getAllCommentAboutBoard(id);
-//	   
-//	   ObjectMapper om = new ObjectMapper();
-//	   String [] boardFiles = om.readValue(boardEntity.getBoardFiles(), String[].class);                                 
-//	   
-//		model.addAttribute("board", boardEntity);
-//		model.addAttribute("comments", comments);
-//		model.addAttribute("boardFiles", boardFiles);
-//    //return ResponseEntity.status(200).body(result);
-//		return "boardcontent";
-//}
+
 
 }

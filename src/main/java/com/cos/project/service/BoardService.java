@@ -66,6 +66,7 @@ public class BoardService {
 			PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
 			boardEntity.setMemberEntity(principalDetails.getMemberEntity());
 			boardRepository.save(boardEntity);
+			
 		}
 
 	}
