@@ -2,9 +2,11 @@ package com.cos.project.controller;
 
 import com.cos.project.details.PrincipalDetails;
 import com.cos.project.dto.CommentDTO;
+import com.cos.project.entity.AlarmEntity;
 import com.cos.project.entity.BoardEntity;
 import com.cos.project.entity.CommentEntity;
 import com.cos.project.entity.MemberEntity;
+import com.cos.project.repository.AlarmRepository;
 import com.cos.project.repository.CommentRepository;
 import com.cos.project.service.AlarmService;
 import com.cos.project.service.BoardService;
@@ -35,7 +37,7 @@ public class CommentController {
     private final MemberService memberService;
 
     private final CommentRepository commentRepository;
-    
+    private final AlarmRepository alarmRepository;
     // 게시글에 대한 댓글 조회
 //    @GetMapping("/board/{id}")
 //    public List<CommentEntity> getAllCommentsAboutBoard(@PathVariable("id") Long id) {
@@ -76,18 +78,19 @@ public class CommentController {
         String boardUserId = result.getBoardEntity().getMemberEntity().getUserid();
         Long boardMemberId =  result.getBoardEntity().getMemberEntity().getId();			//보드 작성자
         
+        
         String boardId_String = String.valueOf(boardId);
-        String parentCommentId_String = String.valueOf(commentDTO.getParentCommentId());
+ 
         
     	Long loggedId = principalDetails.getMemberEntity().getId();		// 로그인 유저
-    	alarmService.postAlarm(loggedId,loggedId, boardMemberId, "BOARD", "댓글", boardId_String, "등록", null);	
-//    	if(commentDTO.getParentCommentId() ==null) {
-//		alarmService.postAlarm(loggedId,loggedId, boardMemberId, "BOARD", "댓글", boardId_String, "등록", null);	
-//    	}else {
-//    		alarmService.postAlarm(loggedId,loggedId, boardMemberId, "BOARD", "대댓글", parentCommentId_String , "등록", null);
-//    		alarmService.postAlarm(loggedId,loggedId, boardMemberId, "BOARD", "대댓글", parentCommentId_String , "등록", null);
-//    	}
-//        
+    	AlarmEntity alarmEntity_Board =alarmService.postAlarm(loggedId,loggedId, boardMemberId, "BOARD", "댓글", boardId_String, "등록", null);	
+    	if(commentDTO.getParentCommentId() !=null) {
+ 	       String parentCommentId_String = String.valueOf(commentDTO.getParentCommentId());
+ 	       	MemberEntity parentCommentMember = commentRepository.findById(commentDTO.getParentCommentId()).get().getMemberEntity();	//부모 댓글을 쓴 유저
+    		alarmService.postAlarm(loggedId,loggedId, parentCommentMember.getId(), "BOARD", "대댓글",parentCommentId_String, "등록", null);	
+    		alarmEntity_Board.setMember1Visible(false);		//대댓글, 보드댓글 내용이 겹침
+       		alarmRepository.save(alarmEntity_Board);
+    	}
        return ResponseEntity.ok(boardUserId);
         
 
@@ -133,8 +136,19 @@ public class CommentController {
    
        Long loggedId = principalDetails.getMemberEntity().getId();		//로그인 유저
        
+       CommentEntity commentEntity = commentRepository.findById(id).orElse(null);
+       
         String id_String = String.valueOf(id);
-    	alarmService.postAlarm(loggedId,member1Id,member2Id, "BOARD", "댓글", id_String, "수정", null);	  
+    	AlarmEntity alarmEntity_Board = alarmService.postAlarm(loggedId,member1Id,member2Id, "BOARD", "댓글", id_String, "수정", null);	  
+    	//보드 관리자에게도 알려야 함
+    	
+     	if(commentEntity.getParentComment()!=null) {
+  	       String parentCommentId_String = String.valueOf(commentEntity.getParentComment().getId());
+  	       	MemberEntity parentCommentMember = commentRepository.findById(commentEntity.getParentComment().getId()).get().getMemberEntity();	//부모 댓글을 쓴 유저
+     		alarmService.postAlarm(loggedId,loggedId, parentCommentMember.getId(), "BOARD", "대댓글",parentCommentId_String, "수정", null);	
+     		alarmEntity_Board.setMember1Visible(false);		//대댓글, 보드댓글 내용이 겹침
+        		alarmRepository.save(alarmEntity_Board);
+     	}
         return ResponseEntity.ok(result);
     }
     
@@ -143,9 +157,21 @@ public class CommentController {
     @PutMapping("/blind/{id}")
     public ResponseEntity<?> blindComment(
         @PathVariable("id") Long id
-       , @RequestBody CommentDTO commentDTO
+       , @RequestBody CommentDTO commentDTO,
+       @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
         boolean result = commentService.blindComment(id, commentDTO.getIsBlind());
+   
+        CommentEntity commentEntity = commentRepository.findById(id).get();
+        
+        Long loggedId = principalDetails.getMemberEntity().getId();
+        
+        if(result) {
+        	alarmService.postAlarm(loggedId,loggedId, commentEntity.getMemberEntity().getId(), "BOARD", "댓글",String.valueOf(id), "블라인드", null);	
+        }else {
+        	alarmService.postAlarm(loggedId,loggedId, commentEntity.getMemberEntity().getId(), "BOARD", "댓글",String.valueOf(id), "블라인드 취소", null);	
+        }
+        
         return ResponseEntity.ok(result);
     }  
     
@@ -168,11 +194,11 @@ public class CommentController {
        Long loggedId = principalDetails.getMemberEntity().getId();		//로그인 유저
        System.out.println("댓글 작성자"+member1Id);
        System.out.println("보드 관리자"+member2Id);
-        String id_String = String.valueOf(id);
+        String id_String = String.valueOf(id);			//댓글 id
         List<Long> result = commentService.deleteComment(id);   
     	alarmService.postAlarm(loggedId,member1Id,member2Id, "BOARD", "댓글", id_String, "삭제", null);	  
        
-       
+       //대댓글 관련 내용은 추가하지 않음
        
         return ResponseEntity.ok(result);
     }

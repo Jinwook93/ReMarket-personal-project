@@ -501,9 +501,15 @@ export async function loadChatRooms(loggedId) {
 				chattingRoomListBody.appendChild(row);
 			});
 		} else {
+			const row = document.createElement("tr");
+			row.innerHTML = `<td>채팅방이 존재하지 않습니다 </td>`;
+				chattingRoomListBody.appendChild(row);
 			console.warn("No chatting rooms available.");
 		}
 	} catch (error) {
+		const row = document.createElement("tr");
+		row.innerHTML =	`<td>	채팅방 데이터 수집에 실패하였습니다 </td>`;
+			chattingRoomListBody.appendChild(row);
 		console.error("Failed to fetch chat rooms:", error);
 	}
 }

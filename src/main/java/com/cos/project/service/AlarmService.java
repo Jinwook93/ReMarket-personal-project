@@ -95,7 +95,7 @@ public class AlarmService {
 
 	
 	@Transactional  // 알람 등록
-	public void postAlarm(Long loggedId, Long member1Id, Long member2Id, String type, String childType, String object, String action, String priority) {
+	public AlarmEntity postAlarm(Long loggedId, Long member1Id, Long member2Id, String type, String childType, String object, String action, String priority) {
 	    AlarmDTO alarmDTO = null;
 	    AlarmEntity alarmEntity = null;
 	    
@@ -130,6 +130,7 @@ public class AlarmService {
 	    
 	    // Save the alarm entity to the database
 	    alarmRepository.saveAndFlush(alarmEntity);
+	    return alarmEntity;
 	}
 
 
@@ -229,51 +230,76 @@ public class AlarmService {
 			}
 			
 			else if (childType.equals("댓글")  && action.equals("등록")) {//member1, member2 의 정보를 다 받아와야 함
-				member1Content = member1.get().getUserid() + " 님의 댓글이 "+member2.get().getUserid()+"님의 "+object+"번 게시글에 등록되었습니다";
-				member2Content = member2.get().getUserid() + " 님의 댓글이 "+member1.get().getUserid()+"님의 게시글에 등록되었습니다";
+				member1Content = member1.get().getUserid() + " 님의 댓글이 등록되었습니다";
+				member2Content = member1.get().getUserid() + " 님의 댓글이 "+member2.get().getUserid()+"님의 "+object+"번 게시글에 등록되었습니다";
+				if(member1Id.equals(member2Id)) {
+					member1Content = member1.get().getUserid() + " 님의 댓글이 등록되었습니다";
+					member2Content =   member1.get().getUserid() + " 님의 댓글이 등록되었습니다";
+				}
+			
 			} else if (childType.equals("댓글")  && action.equals("삭제")) {
-				member1Content = member1.get().getUserid() + " 님의 댓글이 "+member2.get().getUserid()+"님의 "+object+"번 게시글에서 삭제되었습니다";
-				member2Content = member2.get().getUserid() + " 님의 댓글이 "+member1.get().getUserid()+"님의 게시글에서 삭제되었습니다";
+				member1Content = member1.get().getUserid() + " 님의 댓글이 삭제되었습니다";
+				member2Content = member1.get().getUserid() + " 님의 댓글이 "+member2.get().getUserid()+"님의 "+ object+"번 게시글에서 삭제되었습니다";
+				if(member1Id.equals(member2Id)) {
+					member1Content = member1.get().getUserid() + " 님의 댓글이 삭제되었습니다";
+					member2Content =   member1.get().getUserid() + " 님의 댓글이 삭제되었습니다";
+				}
+			
 			} else if (childType.equals("댓글")  && action.equals("수정")) {
 				member1Content = member1.get().getUserid() + " 님의 댓글이 수정되었습니다";
 				member2Content = member1.get().getUserid() + " 님의 댓글이 수정되었습니다";
 			} else if (childType.equals("댓글")  && object.equals("좋아요")&& action.equals("활성화")) {		//3자
-				member1Content = member1.get().getUserid()+" 님이" + member2.get().getUserid() + "님의 댓글의 좋아요를 눌렀습니다";
-				member2Content = member2.get().getUserid() + "님의 댓글에 좋아요를 눌렀습니다";
+				member1Content = member2.get().getUserid() + "님의 댓글에 좋아요를 눌렀습니다";
+				member2Content = member1.get().getUserid()+" 님이" + member2.get().getUserid() + "님의 댓글의 좋아요를 눌렀습니다";
 			}else if (childType.equals("댓글") && object.equals("좋아요")   && action.equals("취소")) {
-				member1Content = member1.get().getUserid()+" 님이" + member2.get().getUserid() + "님의 댓글의 좋아요를 취소하였습니다";
-				member2Content = member2.get().getUserid() + "님의 댓글에 좋아요를 취소하였습니다";
+				member1Content = member2.get().getUserid() + "님의 댓글에 좋아요를 취소하였습니다";
+				member2Content = member1.get().getUserid()+" 님이" + member2.get().getUserid() + "님의 댓글의 좋아요를 취소하였습니다";
+
 			}else if (childType.equals("댓글") && object.equals("싫어요")   && action.equals("활성화")) {
-				member1Content = member1.get().getUserid()+" 님이" + member2.get().getUserid() + "님의 댓글을 싫어합니다";
-				member2Content = member2.get().getUserid() + "님의 댓글에 싫어요를 눌렀습니다";
+				member1Content = member2.get().getUserid() + "님의 댓글에 싫어요를 눌렀습니다";
+				member2Content = member1.get().getUserid()+" 님이" + member2.get().getUserid() + "님의 댓글을 싫어합니다";
+
 			}else if (childType.equals("댓글") && object.equals("싫어요")   && action.equals("취소")) {
-				member1Content = member2.get().getUserid()+" 님이" + member1.get().getUserid() + "님의 댓글의 싫어요를 취소하였습니다";
-				member2Content = member1.get().getUserid() + " 님의 댓글에 싫어요를 취소하였습니다";
+				member1Content = member1.get().getUserid() + " 님의 댓글에 싫어요를 취소하였습니다";
+				member2Content = member1.get().getUserid()+" 님이" + member2.get().getUserid() + "님의 댓글의 싫어요를 취소하였습니다";
+			}
+			
+			else if (childType.equals("댓글")  && action.equals("블라인드")) {
+				member1Content = member2.get().getUserid()+"  님의 댓글을 블라인드 하였습니다";
+				member2Content =  member1.get().getUserid() + " 님이 " +member2.get().getUserid()+"  님의 "+object+"번 댓글을 블라인드하였습니다";
+			}else if (childType.equals("댓글")   && action.equals("블라인드 취소")) {
+				member1Content = member2.get().getUserid()+"  님의 댓글을 블라인드 해제하였습니다";
+				member2Content = member1.get().getUserid()+" 님이 " + member2.get().getUserid() +"  님의 "+object+"번 댓글을 블라인드 해제하였습니다";
 			}
 			
 			
-//			else if (childType.equals("대댓글")  && action.equals("등록")) {//member1, member2 의 정보를 다 받아와야 함
-//				member1Content = member2.get().getUserid() + "님이 "+member1.get().getUserid()+"님의 댓글에 답하였습니다";
-//				member2Content = member2.get().getUserid() + "님의 댓글이 "+member1.get().getUserid()+"님의 게시글에 등록되었습니다";
-//			} else if (childType.equals("대댓글")  && action.equals("삭제")) {
-//				member1Content = member2.get().getUserid() + "님의 댓글이 "+member1.get().getUserid()+"님의 게시글에서 삭제되었습니다";
-//				member2Content = member2.get().getUserid() + "님의 댓글이 "+member1.get().getUserid()+"님의 게시글에서 삭제되었습니다";
-//			} else if (childType.equals("대댓글")  && action.equals("수정")) {
-//				member1Content = member2.get().getUserid() + "님의 댓글이 수정되었습니다";
-//				member2Content = member2.get().getUserid() + "님의 댓글이 수정되었습니다";
-//			} else if (childType.equals("대댓글")  && object.equals("좋아요")&& action.equals("활성화")) {		//3자
-//				member1Content = member2.get().getUserid()+"님이" + member1.get().getUserid() + "님의 댓글의 좋아요를 눌렀습니다";
-//				member2Content = member1.get().getUserid() + "님의 댓글에 좋아요를 눌렀습니다";
-//			}else if (childType.equals("대댓글") && object.equals("좋아요")   && action.equals("취소")) {
-//				member1Content = member2.get().getUserid()+"님이" + member1.get().getUserid() + "님의 댓글의 좋아요를 취소하였습니다";
-//				member2Content = member1.get().getUserid() + "님의 댓글에 좋아요를 취소하였습니다";
-//			}else if (childType.equals("대댓글") && object.equals("싫어요")   && action.equals("활성화")) {
-//				member1Content = member2.get().getUserid()+"님이" + member1.get().getUserid() + "님의 댓글을 싫어합니다";
-//				member2Content = member1.get().getUserid() + "님의 댓글에 싫어요를 눌렀습니다";
-//			}else if (childType.equals("대댓글") && object.equals("싫어요")   && action.equals("취소")) {
-//				member1Content = member2.get().getUserid()+"님이" + member1.get().getUserid() + "님의 댓글의 싫어요를 취소하였습니다";
-//				member2Content = member1.get().getUserid() + "님의 댓글에 싫어요를 취소하였습니다";
-//			}
+			else if (childType.equals("대댓글")  && action.equals("등록")) {//member1, member2 의 정보를 다 받아와야 함
+				member1Content = member1.get().getUserid() + "님의 댓글이 등록되었습니다";
+				member2Content = member1.get().getUserid() + "님이 "+member2.get().getUserid()+"님의 댓글에 답하였습니다";
+			} else if (childType.equals("대댓글")  && action.equals("삭제")) {
+				member1Content = member1.get().getUserid()  + "님의 댓글이 삭제되었습니다";
+				member2Content = member1.get().getUserid() + "님의 댓글이 "+member2.get().getUserid()+"님의 댓글에서 삭제되었습니다";
+				member2Visible = false;
+			} else if (childType.equals("대댓글")  && action.equals("수정")) {
+				member1Content = member1.get().getUserid() + "님의 댓글이 수정되었습니다";
+				member2Content = member1.get().getUserid() + "님의 댓글이 수정되었습니다";
+			} else if (childType.equals("대댓글")  && object.equals("좋아요")&& action.equals("활성화")) {		//3자
+				member1Content = member2.get().getUserid() + "님의 댓글에 좋아요를 눌렀습니다";
+				member2Content = member1.get().getUserid()+"님이 " + member2.get().getUserid() + "님의 댓글의 좋아요를 눌렀습니다";
+				
+			}else if (childType.equals("대댓글") && object.equals("좋아요")   && action.equals("취소")) {
+				member1Content = member2.get().getUserid() + "님의 댓글에 좋아요를 취소하였습니다";
+				member2Content = member1.get().getUserid()+"님이 " + member2.get().getUserid() + "님의 댓글의 좋아요를 취소하였습니다";
+			}else if (childType.equals("대댓글") && object.equals("싫어요")   && action.equals("활성화")) {
+				member1Content = member2.get().getUserid() + "님의 댓글에 싫어요를 눌렀습니다";
+				member2Content = member1.get().getUserid()+"님이 " + member2.get().getUserid() + "님의 댓글을 싫어합니다";
+
+			}else if (childType.equals("대댓글") && object.equals("싫어요")   && action.equals("취소")) {
+				member1Content = member2.get().getUserid() + "님의 댓글에 싫어요를 취소하였습니다";
+				member2Content = member1.get().getUserid()+"님이 " + member2.get().getUserid() + "님의 댓글의 싫어요를 취소하였습니다";
+				
+			} 
+			
 
 		}
 		
@@ -282,14 +308,14 @@ public class AlarmService {
 		
 		else if (type.equals("MESSAGE")) { // 메시지
 			if (childType.equals("채팅방") && action.equals("채팅방 만듬")) {
-				member1Content = member1.get().getUserid() +"와 " +member2.get().getUserid()+"님의 채팅창이 등록되었습니다";
-				member2Content = 	member1Content = member2.get().getUserid() +"와 " +member1.get().getUserid()+"님의 채팅창이 등록되었습니다";
+				member1Content = member1.get().getUserid() +"와 " +member2.get().getUserid()+"님의 채팅방이 등록되었습니다";
+				member2Content = 	member1Content = member2.get().getUserid() +" 님과 " +member1.get().getUserid()+"님의 채팅방이 등록되었습니다";
 			} else if (childType.equals("채팅방") && action.equals("나가기")) {
-				member1Content =  member1.get().getUserid() +"와 " +member2.get().getUserid()+"님의  채팅방을 나갔습니다";
-				member2Content =  member1.get().getUserid() +"이 "+object+"번 채팅창을 나갔습니다";
+				member1Content =  member1.get().getUserid() +"님과 " +member2.get().getUserid()+"님의  채팅방을 나갔습니다";
+				member2Content =  member1.get().getUserid() +"님이 "+object+"번 채팅창을 나갔습니다";
 			}else if (childType.equals("채팅방") && action.equals("완전삭제")) {
-					member1Content = member1Content = member1.get().getUserid() +"와 " +member2.get().getUserid()+"님의 채팅창이 삭제되었습니다";
-					member2Content = member1Content = member2.get().getUserid() +"와 " +member1.get().getUserid()+"님의 채팅창이 삭제되었습니다";
+					member1Content = member1Content = member1.get().getUserid() +"님과 " +member2.get().getUserid()+"님의 채팅창이 삭제되었습니다";
+					member2Content = member1Content = member2.get().getUserid() +"님과 " +member1.get().getUserid()+"님의 채팅창이 삭제되었습니다";
 					member2Visible = false;
 				}  else if (childType.equals("메시지") && action.equals("송수신")) {
 				ChattingRoomEntity chattingRoomEntity =chattingRoomRepository.findById(Long.valueOf(object)).orElse(null);
@@ -317,6 +343,12 @@ public class AlarmService {
 
 
 		}
+		
+		
+		if(member1Id.equals(member2Id)) {	//메시지가 양쪽 다 뜨는 것을 방지
+			member2Visible = false;
+		}
+		
 		
 		AlarmDTO alarmDTO = new AlarmDTO().builder()
 				.action(action)
