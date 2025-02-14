@@ -15,7 +15,7 @@ function findContentByParentMessageId(messages, msgId) {
 			break;  // 원하는 메시지를 찾으면 루프를 종료
 		}
 	}
-	console.log("결과" + result);
+	//	console.log("결과" + result);
 	return result;
 }
 
@@ -44,37 +44,15 @@ export async function loadMessages(roomId, messageIndex, recentExitedmemberId) {
 			chatBox.innerHTML = "<div>Invalid message format.</div>";
 			return;
 		}
-
-		//		const filteredMessages = messages.filter((msg, index) => {
-		//			// 조건을 만족하지 않으면 메시지를 제외
-		//			if (recentExitedmemberId && Number(recentExitedmemberId) === Number(loggedId) && messageIndex > 0 && index < messageIndex) {
-		//				return false; // 해당 메시지는 제외
-		//			}
-		//			return true; // 조건에 맞는 메시지는 포함
-		//		});
+//		console.log(messages);
 
 		messages.forEach((msg, index) => {
-			//		filteredMessages.forEach((msg, index) => {
-			//			 if (msg.exitedSenderId !== null && String(msg.exitedSenderId) === String(loggedId)) {
-			//        return; // 현재 메시지는 출력하지 않고 다음 메시지로 이동
-			//    }
-			//			 if (
-			//                (msg.exitedSenderId && String(msg.exitedSenderId) === String(loggedId)) || 
-			//                (msg.receiverUserId && String(msg.receiverUserId) === String(loggedUserId))
-			//            ) {
-			//                return; // 해당 사용자의 메시지는 렌더링하지 않음
-			//            }
 
 			if (recentExitedmemberId && Number(recentExitedmemberId) === Number(loggedId) && (messageIndex > 0 &&
 				index < messageIndex)) {
 				return;
 			}
 
-
-			//			console.log('recentExitedmemberId:', recentExitedmemberId);
-			//console.log('loggedId:', loggedId);
-			//console.log('messageIndex:', messageIndex);
-			//console.log('index:', index);
 
 			let parentMessageObject = null;
 
@@ -83,22 +61,19 @@ export async function loadMessages(roomId, messageIndex, recentExitedmemberId) {
 
 			// 로그인한 사용자와 보낸 사용자가 동일하면 삭제 버튼 추가
 			// 메시지 내용과 좋아요 상태 처리
-			if (msg.messageContent === "⚠️삭제된 메시지입니다" && msg.deleted) {
+			if (msg.messageContent === "⚠️삭제된 메시지입니다" && msg.deleted) {			//삭제된 메시지 처리
 				messageElement.textContent = `${msg.senderUserId}: ${msg.messageContent} ${msg.sendTime}`;
-			} else {
+			} else {										//삭제된 메시지가 아닐 경우
 				parentMessageObject = findContentByParentMessageId(messages, msg.parentMessageId);
 
 				if (parentMessageObject) {
 					// 부모 메시지가 존재하면 senderUserId를 출력
-					console.log(parentMessageObject.senderUserId);
-//					messageElement.textContent = `     
-				messageElement.innerHTML = `     
-          <b>${parentMessageObject.senderUserId}</b>:   <b>${parentMessageObject.messageContent} </b>에 대한 댓글   
-            <hr>
-            ${msg.senderUserId}: ${msg.messageContent} ${msg.sendTime} ${msg.liked ? "❤️" : "🤍"}`;
+					messageElement.innerHTML = `     
+      			    <b>${parentMessageObject.senderUserId}</b>:   <b>${parentMessageObject.messageContent} </b>에 대한 댓글   
+         			   <hr>
+           				 ${msg.senderUserId}: ${msg.messageContent} ${msg.sendTime} ${msg.liked ? "❤️" : "🤍"}`;
 				} else {		//null 값 관련해서 메시지가 로드되지 않으므로 null에 관한 경우도 추가해주어야 한다.
 					// 부모 메시지가 없는 경우, 기본 메시지 표시
-//					console.log("부모 메시지가 존재하지 않음");
 					messageElement.textContent = `     
             		${msg.senderUserId}: ${msg.messageContent} ${msg.sendTime} ${msg.liked ? "❤️" : "🤍"}`;
 				}
@@ -131,20 +106,28 @@ export async function loadMessages(roomId, messageIndex, recentExitedmemberId) {
 						}
 					};
 				}
-
 				messageElement.appendChild(deleteMessageButton);
-			} else {
-				messageElement.textContent = `${msg.exited ? '나간 사용자' : msg.senderUserId}: ${msg.messageContent} ${msg.sendTime}  ${msg.read ? "<읽음>" : "<읽지않음>"}`;
+				
+				
+			} else {				//로그인한 유저와 메시지를 보내는 유저가 다를 경우 
+			
+			
+			
+				if (parentMessageObject) {
+					// 부모 메시지가 존재하면 senderUserId를 출력
+					messageElement.innerHTML = `     
+          <b>${parentMessageObject.senderUserId}</b>:   <b>${parentMessageObject.messageContent} </b>에 대한 댓글   
+            <hr>
+           ${msg.exited ? '나간 사용자' : msg.senderUserId}: ${msg.messageContent} ${msg.sendTime}  ${msg.read ? "<읽음>" : "<읽지않음>"}`;
+				} else {		//null 값 관련해서 메시지가 로드되지 않으므로 null에 관한 경우도 추가해주어야 한다.
+					// 부모 메시지가 없는 경우, 기본 메시지 표시
+					messageElement.textContent = `     
+            		${msg.exited ? '나간 사용자' : msg.senderUserId}: ${msg.messageContent} ${msg.sendTime}  ${msg.read ? "<읽음>" : "<읽지않음>"}`;
+				}
+			
+//				messageElement.textContent = `${msg.exited ? '나간 사용자' : msg.senderUserId}: ${msg.messageContent} ${msg.sendTime}  ${msg.read ? "<읽음>" : "<읽지않음>"}`;
 				messageElement.classList.add("message-left");
 				messageElement.dataset.messageId = msg.id;
-
-
-
-
-
-
-
-
 
 
 
@@ -218,7 +201,7 @@ export async function loadMessages(roomId, messageIndex, recentExitedmemberId) {
 							unreadMessages.forEach(msg => {
 								msg.classList.add("read"); // 읽음 표시 스타일 추가
 							});
-							console.log("📩 모든 메시지가 읽음 처리됨!");
+							//							console.log("📩 모든 메시지가 읽음 처리됨!");
 						} else {
 							console.error("❌ 읽음 처리 실패!");
 						}
@@ -230,29 +213,30 @@ export async function loadMessages(roomId, messageIndex, recentExitedmemberId) {
 
 
 
-				// 메시지 클릭 이벤트 추가  ${msg.id}
-				messageElement.addEventListener("click", function(e) {
-					const messageInput = document.getElementById(`message-input-${roomId}`);
-					const replyText = `${msg.senderUserId} : ${msg.messageContent}에 대한 답글 >`;
-					const parentMessageId = document.getElementById("parentMessageId");
-					const parentMessageButton = document.getElementById("parentMessageButton");
-					const clickedMsgId = msg.id; // 현재 클릭된 메시지 ID
-					const currentMsgId = parentMessageId.value; // 현재 저장된 parentMessageId
-
-					// 같은 메시지를 다시 클릭한 경우 (토글)
-					if (currentMsgId === String(clickedMsgId)) {
-						//        messageInput.value = messageInput.value.replace(replyText, "").trim();
-						parentMessageId.value = "";
-						parentMessageButton.value = "";
-						parentMessageButton.style.display = "none";
-					} else {
-						// 다른 메시지를 클릭한 경우, 기존 메시지 초기화 후 새 메시지 반영
-						//        messageInput.value = replyText;
-						parentMessageButton.value = replyText;
-						parentMessageButton.style.display = "block";
-						parentMessageId.value = clickedMsgId;
-					}
-				});
+				//				// 메시지 클릭 이벤트 추가  ${msg.id}
+				//				messageElement.addEventListener("click", function(e) {
+				//					    console.log("클릭된 메시지:", msg.messageContent, "보낸 사람:", msg.senderUserId, "로그인된 유저:", loggedUserId);
+				//					const messageInput = document.getElementById(`message-input-${roomId}`);
+				//					const replyText = `${msg.senderUserId} : ${msg.messageContent}에 대한 답글 >`;
+				//					const parentMessageId = document.getElementById("parentMessageId");
+				//					const parentMessageButton = document.getElementById("parentMessageButton");
+				//					const clickedMsgId = msg.id; // 현재 클릭된 메시지 ID
+				//					const currentMsgId = parentMessageId.value; // 현재 저장된 parentMessageId
+				//
+				//					// 같은 메시지를 다시 클릭한 경우 (토글)
+				//					if (currentMsgId === String(clickedMsgId)) {
+				//						//        messageInput.value = messageInput.value.replace(replyText, "").trim();
+				//						parentMessageId.value = "";
+				//						parentMessageButton.value = "";
+				//						parentMessageButton.style.display = "none";
+				//					} else {
+				//						// 다른 메시지를 클릭한 경우, 기존 메시지 초기화 후 새 메시지 반영
+				//						//        messageInput.value = replyText;
+				//						parentMessageButton.value = replyText;
+				//						parentMessageButton.style.display = "block";
+				//						parentMessageId.value = clickedMsgId;
+				//					}
+				//				});
 
 
 
@@ -263,6 +247,38 @@ export async function loadMessages(roomId, messageIndex, recentExitedmemberId) {
 
 				messageElement.appendChild(likeButton);
 			}
+
+
+
+
+
+			// 메시지 클릭 이벤트 추가  ${msg.id}
+			messageElement.addEventListener("click", function(e) {
+				console.log("클릭된 메시지:", msg.messageContent, "보낸 사람:", msg.senderUserId, "로그인된 유저:", loggedUserId);
+				const messageInput = document.getElementById(`message-input-${roomId}`);
+				const replyText = `${msg.senderUserId} : ${msg.messageContent}에 대한 답글 >`;
+				const parentMessageId = document.getElementById("parentMessageId");
+				const parentMessageButton = document.getElementById("parentMessageButton");
+				const clickedMsgId = msg.id; // 현재 클릭된 메시지 ID
+				const currentMsgId = parentMessageId.value; // 현재 저장된 parentMessageId
+
+				// 같은 메시지를 다시 클릭한 경우 (토글)
+				if (currentMsgId === String(clickedMsgId)) {
+					//        messageInput.value = messageInput.value.replace(replyText, "").trim();
+					parentMessageId.value = "";
+					parentMessageButton.value = "";
+					parentMessageButton.style.display = "none";
+				} else {
+					// 다른 메시지를 클릭한 경우, 기존 메시지 초기화 후 새 메시지 반영
+					//        messageInput.value = replyText;
+					parentMessageButton.value = replyText;
+					parentMessageButton.style.display = "block";
+					parentMessageId.value = clickedMsgId;
+				}
+			});
+
+
+
 
 			chatBox.appendChild(messageElement);
 		});
@@ -320,7 +336,7 @@ export async function sendMessage(roomId, userid, messageIndex, recentExitedmemb
 		parentMessageId.value = "";
 		//		loadMessages(roomId); // 전송 후 메시지 갱신
 		loadMessages(Number(roomId), messageIndex, recentExitedmemberId);
-
+		
 		//const intervalId = setInterval(() => loadMessages(Number(roomId), messageIndex, recentExitedmemberId), 2000);
 
 		// To stop the interval after some condition or action
@@ -503,13 +519,13 @@ export async function loadChatRooms(loggedId) {
 		} else {
 			const row = document.createElement("tr");
 			row.innerHTML = `<td>채팅방이 존재하지 않습니다 </td>`;
-				chattingRoomListBody.appendChild(row);
+			chattingRoomListBody.appendChild(row);
 			console.warn("No chatting rooms available.");
 		}
 	} catch (error) {
 		const row = document.createElement("tr");
-		row.innerHTML =	`<td>	채팅방 데이터 수집에 실패하였습니다 </td>`;
-			chattingRoomListBody.appendChild(row);
+		row.innerHTML = `<td>	채팅방 데이터 수집에 실패하였습니다 </td>`;
+		chattingRoomListBody.appendChild(row);
 		console.error("Failed to fetch chat rooms:", error);
 	}
 }

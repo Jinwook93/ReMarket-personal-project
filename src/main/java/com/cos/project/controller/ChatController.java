@@ -101,8 +101,9 @@ public class ChatController {
 			Long member2Id =	memberService.findByUserId( messageDTO.getReceiverUserId()).getId();	//상대방 ID
 			
 			boolean flag = chatService.addMessage(roomId,principalDetails ,messageDTO);		//roomId의 id를 조회
-			
-			alarmService.postAlarm(loggedId, loggedId, member2Id, "MESSAGE", "메시지", null, "송수신", null);
+			if(flag) {
+			alarmService.postAlarm(loggedId, loggedId, member2Id, "MESSAGE", "메시지", String.valueOf(roomId), "송수신", null);
+			}
 			//송수신 알람
 			return ResponseEntity.ok(flag);
 			

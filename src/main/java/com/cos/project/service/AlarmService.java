@@ -308,8 +308,8 @@ public class AlarmService {
 		
 		else if (type.equals("MESSAGE")) { // 메시지
 			if (childType.equals("채팅방") && action.equals("채팅방 만듬")) {
-				member1Content = member1.get().getUserid() +"와 " +member2.get().getUserid()+"님의 채팅방이 등록되었습니다";
-				member2Content = 	member1Content = member2.get().getUserid() +" 님과 " +member1.get().getUserid()+"님의 채팅방이 등록되었습니다";
+				member1Content = member1.get().getUserid() +"님과 " +member2.get().getUserid()+"님의 채팅방이 등록되었습니다";
+				member2Content =  member2.get().getUserid() +" 님과 " +member1.get().getUserid()+"님의 채팅방이 등록되었습니다";
 			} else if (childType.equals("채팅방") && action.equals("나가기")) {
 				member1Content =  member1.get().getUserid() +"님과 " +member2.get().getUserid()+"님의  채팅방을 나갔습니다";
 				member2Content =  member1.get().getUserid() +"님이 "+object+"번 채팅창을 나갔습니다";
@@ -324,6 +324,7 @@ public class AlarmService {
 				member2Content = "새로운 메시지 : "+member1.get().getUserid();
 				
 				if(chattingRoomEntity.getExitedmemberId() == member2Id) {
+					member1Content =  "⚠️"+member2.get().getUserid() +"님은 이미 나간 유저이므로 메시지를 보낼 수 없습니다";
 				member2Visible= false;
 				}
 			}
