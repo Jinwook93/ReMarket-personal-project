@@ -210,7 +210,7 @@ export async function loadMessages(roomId, messageIndex, recentExitedmemberId) {
 					}
 				});
 
-
+   
 
 
 				//				// 메시지 클릭 이벤트 추가  ${msg.id}
@@ -277,6 +277,13 @@ export async function loadMessages(roomId, messageIndex, recentExitedmemberId) {
 				}
 			});
 
+		document.getElementById("parentMessageButton").addEventListener('click', () => {
+    // 조건 비교 연산자 수정: = 대신 == 또는 === 사용
+    if (parentMessageButton.style.display === "block") {
+        parentMessageButton.style.display = "none";  // 숨기기
+        document.getElementById("parentMessageId").value = "";  // parentMessageId 값 초기화
+    }
+});
 
 
 

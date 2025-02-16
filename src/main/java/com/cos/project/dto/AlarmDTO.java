@@ -21,8 +21,8 @@ public class AlarmDTO {
 	    private String member2Content; // 상대방에게 보여줄 알람 내용
 	    private Long member1Id;
 	    private Long member2Id;
-	    private boolean member1Visible; // 로그인한 유저가 볼 수 있는 알람 여부
-	    private boolean member2Visible; // 상대방이 볼 수 있는 알람 여부
+	    private Boolean member1Visible; // 로그인한 유저가 볼 수 있는 알람 여부
+	    private Boolean member2Visible; // 상대방이 볼 수 있는 알람 여부
 	    private Timestamp createTime; // 알람 생성 시간
 	    private String type; // 알람 타입 (게시판, 댓글, 메시지 등)
 	    private String childType; // 세부 타입 (게시판의 댓글, 댓글의 게시판 등)
@@ -55,4 +55,6 @@ public class AlarmDTO {
 	                .member2(member2)
 	                .build();
 	    }
+	    
+	    
 }

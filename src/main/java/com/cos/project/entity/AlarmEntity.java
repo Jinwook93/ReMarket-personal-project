@@ -5,6 +5,8 @@ import java.sql.Timestamp;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.cos.project.dto.AlarmDTO;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -34,8 +36,8 @@ public class AlarmEntity {
     @Column(nullable = true, columnDefinition = "TEXT")
     String member2Content;
 
-    boolean member1Visible = true; // 삭제보다는 숨김 처리
-    boolean member2Visible = true; // 삭제보다는 숨김 처리
+    Boolean member1Visible = true; // 삭제보다는 숨김 처리
+    Boolean member2Visible = true; // 삭제보다는 숨김 처리
 
     @CreationTimestamp
     @Column(updatable = false)
@@ -75,4 +77,35 @@ public class AlarmEntity {
 //    String targetId; // 알람 대상 ID (로그인 유저, 관리자 등)
 
     // You can add additional fields for member1Id and member2Id if you need them to be separately stored
+
+
+
+
+    public AlarmDTO toDTO() {
+        return new AlarmDTO(
+                this.getId(),
+                this.getMember1Content(),
+                this.getMember2Content(),
+                this.getMember1() != null ? this.getMember1().getId() : null,
+                this.getMember2() != null ? this.getMember2().getId() : null,
+                this.getMember1Visible(),
+                this.getMember2Visible(),
+                this.getCreateTime(),
+                this.getType(),
+                this.getChildType(),
+                this.getObject(),
+                this.getAction(),
+                this.getPriority(),
+                this.getMember1Read(),
+                this.getMember2Read()
+//                ,this.getTargetId()
+        );
+    }
+
+
+
+
+
+
+
 }

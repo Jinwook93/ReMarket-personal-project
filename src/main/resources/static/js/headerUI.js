@@ -1,52 +1,52 @@
-    import { loadChatRooms, setUpEnterRoomButton, setUpExitRoomButton, toggleChattingRoomList } from './chatModule.js';
-	import { toggleAlarmList, checkUserAlarmCount, checkUserAlarmList} from './alarmModule.js';
-	import { formatDate } from "./formatDate.js";
+import { loadChatRooms, setUpEnterRoomButton, setUpExitRoomButton, toggleChattingRoomList } from './chatModule.js';
+import { toggleAlarmList, checkUserAlarmCount, checkUserAlarmList } from './alarmModule.js';
+import { formatDate } from "./formatDate.js";
+
+import { enrollTrade2 } from "./tradeModule.js";
 
 
+let alarmCountInterval = null;
 
+document.addEventListener("DOMContentLoaded", async () => {
+	const isLoggedIn = document.getElementById("isLoggedIn")?.value;
+	const loggedId = document.getElementById("loggedId")?.value;
+	const loggedUserId = document.getElementById("loggedUserId")?.value;
 
-    let alarmCountInterval = null;
+	if (isLoggedIn === "true" || isLoggedIn === true) {
+		await loadChatRooms(loggedId);
+		setUpEnterRoomButton(loggedUserId);
+		setUpExitRoomButton();
 
-    document.addEventListener("DOMContentLoaded", async () => {
-        const isLoggedIn = document.getElementById("isLoggedIn")?.value;
-        const loggedId = document.getElementById("loggedId")?.value;
-        const loggedUserId = document.getElementById("loggedUserId")?.value;
+		if (alarmCountInterval) {
+			clearInterval(alarmCountInterval);
+		}
 
-        if (isLoggedIn === "true" || isLoggedIn === true) {
-            await loadChatRooms(loggedId);
-            setUpEnterRoomButton(loggedUserId);
-            setUpExitRoomButton();
+		alarmCountInterval = setInterval(async () => {
+			await checkUserAlarmCount(loggedId);
+		}, 1000);
+	}
 
-            if (alarmCountInterval) {
-                clearInterval(alarmCountInterval);
-            }
+	toggleChattingRoomList();
+	toggleAlarmList();
+});
 
-            alarmCountInterval = setInterval(async () => {
-                await checkUserAlarmCount(loggedId);
-            }, 1000);
-        }
+document.getElementById("alarmButton").addEventListener("click", async () => {
+	const isLoggedIn = document.getElementById("isLoggedIn")?.value;
+	const loggedId = document.getElementById("loggedId")?.value;
 
-        toggleChattingRoomList();
-		toggleAlarmList();
-    });
+	if (isLoggedIn === "true" || isLoggedIn === true) {
+		const alarmList = await checkUserAlarmList(loggedId);
+		const alarmListBody = document.getElementById("alarmListBody");
 
-    document.getElementById("alarmButton").addEventListener("click", async () => {
-        const isLoggedIn = document.getElementById("isLoggedIn")?.value;
-        const loggedId = document.getElementById("loggedId")?.value;
-
-        if (isLoggedIn === "true" || isLoggedIn === true) {
-            const alarmList = await checkUserAlarmList(loggedId);
-            const alarmListBody = document.getElementById("alarmListBody");
-
-            if (alarmList && alarmList.length > 0) {
-                alarmListBody.innerHTML = '';
+		if (alarmList && alarmList.length > 0) {
+			alarmListBody.innerHTML = '';
 
 			alarmList.sort((a, b) => Number(b.id) - Number(a.id));
-				
-                alarmList.forEach(alarm => {
-					
-                    const row = document.createElement("tr");
-                    row.innerHTML = `
+
+			alarmList.forEach(alarm => {
+
+				const row = document.createElement("tr");
+				row.innerHTML = `
  							 ${alarm.member1Visible && Number(alarm.member1.id) === Number(loggedId) ? `
  							 <td>${alarm.id}</td>
  						<td>${alarm.priority}</td>
@@ -57,15 +57,26 @@
 							 			 ${alarm.member2Visible && Number(alarm.member2.id) === Number(loggedId) ? `
  							 <td>${alarm.id}</td>
  						<td>${alarm.priority}</td>
- 							 <td>${alarm.member2Content}</td>
+ 							 <td>${alarm.member2Content}
+									${alarm.action === "상대방 동의 확인" ? `
+      					  <button id = "agreeMember2-${alarm.id}" onclick="enrollTrade2(${alarm.id})">
+         				 	거래하기
+      	 				 </button>
+      	 				  <button id = "denyMember2-${alarm.id}" onclick="denyCreateTrade(${alarm.id})">
+         				 	거절하기
+      	 				 </button>
+      						` : ""}
+							
+
+										</td>
  							      <td>${formatDate(alarm.createTime)}</td>
 					  <td>${alarm.member2Read}</td>
 					  <td> <button onclick="markAsRead(${alarm.id})">읽음 처리</button> </td>` : ""}         
                     `;
-                    alarmListBody.appendChild(row);
-                });
-            } else {
-                alarmListBody.innerHTML = '<tr><td colspan="3">알림이 없습니다.</td></tr>';
-            }
-        }
-    });
+				alarmListBody.appendChild(row);
+			});
+		} else {
+			alarmListBody.innerHTML = '<tr><td colspan="3">알림이 없습니다.</td></tr>';
+		}
+	}
+});

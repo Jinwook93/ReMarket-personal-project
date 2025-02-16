@@ -342,8 +342,40 @@ public class AlarmService {
 //			}
 			
 
-
 		}
+			
+			
+				else if (type.equals("TRADE")) { // 거래
+					if (childType.equals("거래") && action.equals("상대방 동의 확인")) {
+						member1Content = member2.get().getUserid() +"님에게 거래신청을 보냈습니다";
+						member2Content =  member1.get().getUserid() +" 님이 거래를 희망합니다. 거래하시겠습니까?";
+					} else if (childType.equals("거래") && action.equals("거래수락")) {
+						member1Content =  member2.get().getUserid() +"님이 거래를 수락했습니다. 거래상태가 거래 중으로 전환됩니다";
+						member2Content =  member1.get().getUserid() +"님과의 거래를 수락했습니다. 거래상태가 거래 중으로 전환됩니다";
+					}	else if (childType.equals("거래") && action.equals("거래거절")) {
+							member1Content =  member2.get().getUserid() +"님과의 거래를 거절했습니다.";
+							member2Content =  member1.get().getUserid() +"님과의 거래를 거절했습니다.";
+					}else if (childType.equals("거래") && action.equals("예약")) {
+						member1Content = member2.get().getUserid() +"님에게 예약신청을 보냈습니다";
+						member2Content =  member1.get().getUserid() +" 님이 예약를 희망합니다. 수락하시겠습니까?";
+					}else if (childType.equals("거래") && action.equals("거래 완료 확인")) {
+						member1Content = member2.get().getUserid() +"님에게 거래완료 신청을 보냈습니다";
+						member2Content =  member1.get().getUserid() +" 님이 거래완료를 희망합니다. 거래를 마치시겠습니까?";
+					}
+					else if (childType.equals("거래") && action.equals("거래완료")) {
+						member1Content = member2.get().getUserid() +"과의 "+object+" 거래를 완료하였습니다";
+						member2Content =  member1.get().getUserid() +"과의 "+object+" 거래를 완료하였습니다";
+					}
+					
+			
+				}
+			
+			
+			
+			
+			
+
+
 		
 		
 		if(member1Id.equals(member2Id)) {	//메시지가 양쪽 다 뜨는 것을 방지
