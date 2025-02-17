@@ -1,5 +1,6 @@
 package com.cos.project.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -36,14 +37,20 @@ public class TradeEntity {
 	@JoinColumn(name = "board_id", nullable = true)
 	private BoardEntity boardEntity;
 	
-	private Boolean Accept1 = false;
-	private Boolean Accept2 = false;
+	@Column(nullable = true)
+	private Boolean Accept1;
+	@Column(nullable = true)
+	private Boolean Accept2;
 	
-	private Boolean completed1 = false;
-	private Boolean completed2 = false;		
+	@Column(nullable = true)
+	private Boolean completed1;
+	@Column(nullable = true)
+	private Boolean completed2;		
 	
-	private Boolean Booking1 = false;
-	private Boolean Booking2 = false;
+	@Column(nullable = true)
+	private Boolean Booking1;
+	@Column(nullable = true)
+	private Boolean Booking2;
 	
 	@Enumerated(EnumType.STRING)
 	private TradeStatus tradeStatus;			//거래 상태

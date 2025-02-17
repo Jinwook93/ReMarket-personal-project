@@ -66,6 +66,18 @@ document.getElementById("alarmButton").addEventListener("click", async () => {
          				 	거절하기
       	 				 </button>
       						` : ""}
+      						
+      						
+      							${alarm.action === "거래 완료 확인" ? `
+      					  <button id = "complete1-Sell-${alarm.object}" onclick="enrollTrade2(${alarm.id})">
+         				 	거래완료
+      	 				 </button>
+      	 				<!--  <button id = "complete1-Sell-${alarm.object}" onclick="denyCreateTrade(${alarm.id})">
+         				 	거절하기
+      	 				 </button> -->
+      						` : ""}
+      						
+      						
 							
 
 										</td>

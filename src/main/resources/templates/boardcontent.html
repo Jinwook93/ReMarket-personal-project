@@ -252,51 +252,63 @@ input[type="checkbox"] {
 
 
 		<!-- boardFiles 배열을 반복하여 이미지를 출력 -->
-			
-
-<!--  ※enum을 직접 호출하면 toString()을 자동으로 호출함 -->			
-<!-- ※ 하지만 enum의 경우 문자열을 비교하려면 .name을 써야함  -->			
-<!-- 				 삽니다 카테고리의 경우 구매 중/ 예약/ 구매완료 버튼  -->
 
 
+		<!--  ※enum을 직접 호출하면 toString()을 자동으로 호출함 -->
+		<!-- ※ 하지만 enum의 경우 문자열을 비교하려면 .name을 써야함  -->
+		<!-- 				 삽니다 카테고리의 경우 구매 중/ 예약/ 구매완료 버튼  -->
 
-<!-- '삽니다' 카테고리 -->																			
-<div th:if="${board.memberEntity.userid == principalDetails.name && board.buy_Sell.name == '삽니다' }">
-    <button type="button"
-            th:id="|buy-${board.id}|"
-            th:data-TradeBoardId="${board.id}"
-            >
-        구매 중
-    </button>
-</div>
 
-<div th:if="${board.memberEntity.userid != principalDetails.name && board.buy_Sell.name  == '삽니다'}">
-    <button type="button"
-            th:id="|enroll-Buy-${board.id}|"
-            th:data-TradeBuyBoardId="${board.id}"
-           >
-        판매 요청
-    </button>
-</div>
 
-<!-- '팝니다' 카테고리 -->
-<div th:if="${board.memberEntity.userid == principalDetails.name && board.buy_Sell.name  == '팝니다'}">
-    <button type="button"
-            th:id="|sell-${board.id}|"
-            th:data-TradeBoardId="${board.id}"
-           >
-        판매 중
-    </button>
-</div>
+		<!-- '삽니다' 카테고리 -->
+		<div
+			th:if="${board.memberEntity.userid == principalDetails.name && board.buy_Sell.name == '삽니다' }">
+			<button type="button" th:id="|buy-${board.id}|"
+				th:data-TradeBoardId="${board.id}">구매 중</button>
+		</div>
 
-<div th:if="${board.memberEntity.userid != principalDetails.name && board.buy_Sell.name  == '팝니다'}">
-    <button type="button"
-            th:id="|enroll-Sell-${board.id}|"
-            th:data-TradeSellBoardId="${board.id}"
-           >
-        구매 요청
-    </button>
-</div>
+		<div
+			th:if="${board.memberEntity.userid != principalDetails.name && board.buy_Sell.name  == '삽니다'}">
+			<button type="button" th:id="|enroll-Buy-${board.id}|"
+				th:data-TradeBuyBoardId="${board.id}">판매 요청</button>
+		</div>
+
+		<!-- '팝니다' 카테고리 -->
+		<div
+			th:if="${board.memberEntity.userid == principalDetails.name && board.buy_Sell.name  == '팝니다'}">
+			<button type="button" th:id="|sell-${board.id}|"
+				th:data-TradeBoardId="${board.id}">판매 중</button>
+		</div>
+
+		<div
+			th:if="${board.memberEntity.userid != principalDetails.name && board.buy_Sell.name  == '팝니다'}">
+			<button type="button" th:id="|enroll-Sell-${board.id}|"
+				th:data-TradeSellBoardId="${board.id}">구매 요청</button>
+		</div>
+
+
+		<div th:each="trade : ${board.trades}">
+			<div style="display: flex;">
+				<div
+					th:if="${board.id == trade.boardEntity.id && trade.accept1  && trade.accept2}">
+
+					<button type="button" th:id="|enroll-Sell-${board.id}|"
+						th:data-TradeSellBoardId="${board.id}">거래 진행
+						중</button>
+				</div>
+				<div
+					th:if="${board.id == trade.boardEntity.id && trade.accept1  && trade.accept2 && board.memberEntity.userid == principalDetails.name }">
+
+					<button type="button" th:id="|complete2-Sell-${trade.id}|"
+						th:data-Complete2TradeSellBoardId="${board.id}">
+						거래완료</button>
+				</div>
+			</div>
+			<div th:if= "${trade.tradeStatus.name == '완료'}">
+			<p> 거래가 완료된 게시글입니다 </p>
+			</div>
+		</div>
+
 
 
 
@@ -324,13 +336,13 @@ input[type="checkbox"] {
 			<label for="commentText">댓글</label>
 			<textarea id="commentText" name="commentText" placeholder="댓글을 작성하세요"
 				required></textarea>
-	<div style="display: flex; gap: 10px; align-items: center;">
-    <label style="display: flex; align-items: center; gap: 5px;">
-        <input type="checkbox" id="isPrivate">게시자만 보기
-    </label>
-    <button type="button" id="submitComment" style="margin-top: 8px;">작성</button>
-</div>
-<br>
+			<div style="display: flex; gap: 10px; align-items: center;">
+				<label style="display: flex; align-items: center; gap: 5px;">
+					<input type="checkbox" id="isPrivate">게시자만 보기
+				</label>
+				<button type="button" id="submitComment" style="margin-top: 8px;">작성</button>
+			</div>
+			<br>
 			<!--             </form> -->
 
 			<!-- 댓글 목록 -->
@@ -355,9 +367,9 @@ input[type="checkbox"] {
 	<script src="/js/addComment.js" type="module"></script>
 	<!-- 	<script type="module" src="/js/commentLike.js"></script> -->
 	<script src="/js/boardLike.js" type="module"></script>
-	<script src="/js/tradeModule.js" type = "module"></script>
-	
-	
-<!-- 	 <th:block th:replace="/footer :: footerFragment"></th:block> -->
+	<script src="/js/tradeModule.js" type="module"></script>
+
+
+	<!-- 	 <th:block th:replace="/footer :: footerFragment"></th:block> -->
 </body>
 </html>

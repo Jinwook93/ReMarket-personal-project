@@ -66,9 +66,9 @@ export function enrollTrade2(alarmId) {  // 로그인유저 : member1, 타겟 �
 }
 
 //타겟 유저가 해당 거래 신청을 거절 에 대한 판단
-export function denyCreateTrade(alarmId) {  // 로그인유저 : member1, 타겟 유저 : member2
+export function denyCreateTrade (alarmId) {  // 로그인유저 : member1, 타겟 유저 : member2
 
-	if (confirm("거래를 거절하시겠습니까")) {			//수락시
+	if (confirm("거래를 거절하겠습니까? ")) {			//수락시
 		fetch(`/trade/checkCreateTrade2/${alarmId}`, {  // 신청 알람을 만든다
 			method: "POST",
 			headers: { 'Content-Type': 'application/json;charset=utf-8' },
@@ -100,6 +100,114 @@ export function denyCreateTrade(alarmId) {  // 로그인유저 : member1, 타겟
 
 
 }
+
+
+// 거래 완료 여부 상태
+// ('보드 관리자 ('거래완료를 선수신 받을 쪽'') =  로그인 유저' 기준, member2를 기준으로 하므로 isCompleted2를 기준으로 하였다 )
+// ('상대편(거래완료를 후수신 받을 쪽) =  로그인 유저' 기준, member1를 기준으로 하므로 isCompleted1를 기준으로 하였다 )
+export function CompleteTrade (tradeId, isMember) {  // 로그인유저 : member1, 타겟 유저 : member2
+
+	if (confirm("거래를 완료하시겠습니까? ( ※ 상대방도 거래를 완료해야 거래가 완료됩니다)")) {			//수락시
+		fetch(`/trade/completeTrade/${tradeId}`, {  // 신청 알람을 만든다
+			method: "POST",
+			headers: { 'Content-Type': 'application/json;charset=utf-8' },
+			body: JSON.stringify({
+				//				id: alarmId,
+				//				member1Id: loggedId,
+				//				member2Id: member2Id,
+				//				boardEntityId: boardId,
+//				completed1 : isCompleted1,
+//				completed2: true,
+				 completed1: isMember=== "isMember1" ? true : undefined,
+//				 completed2: isMember === "isMember1"?  true : undefined,
+   				 completed2: isMember === "isMember1" ||isMember=== "isMember2"? true : undefined		
+			})
+		})
+			.then(response => {
+				if (!response.ok) {
+					// 응답이 실패했을 경우
+					throw new Error('응답 실패');
+				}
+				return response.json();  // JSON 응답으로 변환
+			})
+			.then(data => {
+				console.log(data);
+				if(data.isCompleted1 === true && data.isCompleted2 === true){
+					alert("거래상태가 최종완료되었습니다");
+				}else{
+				alert("거래가 완료되었습니다  ( ※ 상대방도 거래를 완료해야 거래가 완료됩니다)");  // 응답 데이터 처리
+				}
+			
+			})
+			.catch(error => {  // 오류 처리
+				alert("데이터 조회를 실패하였습니다");
+				console.log(error);
+			});
+	}
+
+
+}
+
+
+
+
+//// 거래 완료 여부 상태 ('상대 =  로그인 유저' 기준  )
+//export function CompleteTrade1 (tradeId) {  // 로그인유저 : member1, 타겟 유저 : member2
+//
+//	if (confirm("거래를 완료하시겠습니까? ( ※ 상대방도 거래를 완료해야 거래가 완료됩니다)")) {			//수락시
+//		fetch(`/trade/completeTrade/${tradeId}`, {  // 신청 알람을 만든다
+//			method: "POST",
+//			headers: { 'Content-Type': 'application/json;charset=utf-8' },
+//			body: JSON.stringify({
+//				//				id: alarmId,
+//				//				member1Id: loggedId,
+//				//				member2Id: member2Id,
+//				//				boardEntityId: boardId,
+//				completed1 : true
+////				completed2: isCompleted2				
+//			})
+//		})
+//			.then(response => {
+//				if (!response.ok) {
+//					// 응답이 실패했을 경우
+//					throw new Error('응답 실패');
+//				}
+//				return response.json();  // JSON 응답으로 변환
+//			})
+//			.then(data => {
+//				console.log(data);
+//				if(data.isCompleted1 === true && data.isCompleted2 === true){
+//					alert("거래상태가 최종완료되었습니다");
+//				}else{
+//				alert("거래가 완료되었습니다  ( ※ 상대방도 거래를 완료해야 거래가 완료됩니다)");  // 응답 데이터 처리
+//				}
+//			
+//			})
+//			.catch(error => {  // 오류 처리
+//				alert("데이터 조회를 실패하였습니다");
+//				console.log(error);
+//			});
+//	}
+//
+//
+//}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -151,6 +259,26 @@ document.addEventListener('click', function(event) {
         denyCreateTrade(Number(alarmId));
     }
 });
+
+document.addEventListener('click', function(event) {
+    if (event.target && event.target.id.startsWith("complete2-Sell-")) {
+        const tradeId = event.target.id.replace("complete2-Sell-", ""); 
+        console.log("거래완료 테스트2 ", tradeId);
+
+     CompleteTrade (tradeId,"isMember2")
+    }
+});
+
+document.addEventListener('click', function(event) {
+    if (event.target && event.target.id.startsWith("complete1-Sell-")) {
+        const tradeId = event.target.id.replace("complete1-Sell-", ""); 
+        console.log("거래완료 테스트1 ", tradeId);
+
+     CompleteTrade (tradeId,"isMember1")
+    }
+});
+
+
 
 
 

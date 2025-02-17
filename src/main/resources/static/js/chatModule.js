@@ -20,6 +20,20 @@ function findContentByParentMessageId(messages, msgId) {
 }
 
 
+function findTradeByBoardId(trades) {
+	let result = null;
+	for (let trade of trades) {
+		console.log(trade);
+//		if (trade.boardEntity?.id === boardId && trade.accept1 && trade.accept2) {
+	if (trade.accept1 && trade.accept2) {
+			result = trade;
+			break;  // 원하는 메시지를 찾으면 루프를 종료
+		}
+	}
+	//	console.log("결과" + result);
+	return result;
+}
+
 
 // 특정 채팅방(roomId) 메시지를 불러오는 함수
 export async function loadMessages(roomId, messageIndex, recentExitedmemberId) {
@@ -44,7 +58,7 @@ export async function loadMessages(roomId, messageIndex, recentExitedmemberId) {
 			chatBox.innerHTML = "<div>Invalid message format.</div>";
 			return;
 		}
-//		console.log(messages);
+		//		console.log(messages);
 
 		messages.forEach((msg, index) => {
 
@@ -107,12 +121,12 @@ export async function loadMessages(roomId, messageIndex, recentExitedmemberId) {
 					};
 				}
 				messageElement.appendChild(deleteMessageButton);
-				
-				
+
+
 			} else {				//로그인한 유저와 메시지를 보내는 유저가 다를 경우 
-			
-			
-			
+
+
+
 				if (parentMessageObject) {
 					// 부모 메시지가 존재하면 senderUserId를 출력
 					messageElement.innerHTML = `     
@@ -124,8 +138,8 @@ export async function loadMessages(roomId, messageIndex, recentExitedmemberId) {
 					messageElement.textContent = `     
             		${msg.exited ? '나간 사용자' : msg.senderUserId}: ${msg.messageContent} ${msg.sendTime}  ${msg.read ? "<읽음>" : "<읽지않음>"}`;
 				}
-			
-//				messageElement.textContent = `${msg.exited ? '나간 사용자' : msg.senderUserId}: ${msg.messageContent} ${msg.sendTime}  ${msg.read ? "<읽음>" : "<읽지않음>"}`;
+
+				//				messageElement.textContent = `${msg.exited ? '나간 사용자' : msg.senderUserId}: ${msg.messageContent} ${msg.sendTime}  ${msg.read ? "<읽음>" : "<읽지않음>"}`;
 				messageElement.classList.add("message-left");
 				messageElement.dataset.messageId = msg.id;
 
@@ -210,7 +224,7 @@ export async function loadMessages(roomId, messageIndex, recentExitedmemberId) {
 					}
 				});
 
-   
+
 
 
 				//				// 메시지 클릭 이벤트 추가  ${msg.id}
@@ -277,13 +291,13 @@ export async function loadMessages(roomId, messageIndex, recentExitedmemberId) {
 				}
 			});
 
-		document.getElementById("parentMessageButton").addEventListener('click', () => {
-    // 조건 비교 연산자 수정: = 대신 == 또는 === 사용
-    if (parentMessageButton.style.display === "block") {
-        parentMessageButton.style.display = "none";  // 숨기기
-        document.getElementById("parentMessageId").value = "";  // parentMessageId 값 초기화
-    }
-});
+			document.getElementById("parentMessageButton").addEventListener('click', () => {
+				// 조건 비교 연산자 수정: = 대신 == 또는 === 사용
+				if (parentMessageButton.style.display === "block") {
+					parentMessageButton.style.display = "none";  // 숨기기
+					document.getElementById("parentMessageId").value = "";  // parentMessageId 값 초기화
+				}
+			});
 
 
 
@@ -343,7 +357,7 @@ export async function sendMessage(roomId, userid, messageIndex, recentExitedmemb
 		parentMessageId.value = "";
 		//		loadMessages(roomId); // 전송 후 메시지 갱신
 		loadMessages(Number(roomId), messageIndex, recentExitedmemberId);
-		
+
 		//const intervalId = setInterval(() => loadMessages(Number(roomId), messageIndex, recentExitedmemberId), 2000);
 
 		// To stop the interval after some condition or action
@@ -366,6 +380,7 @@ export async function sendMessage(roomId, userid, messageIndex, recentExitedmemb
 // 특정 채팅방을 열고 메시지 기능을 연결하는 함수
 export async function openChatRoom(roomId, title, loggedUserId, userid, loggedFlag) {
 	let chatWindow = document.getElementById(`chat-room-${roomId}`);
+	
 
 	if (chatWindow) {
 		chatWindow.remove(); // 이미 열려있으면 닫기
@@ -377,7 +392,8 @@ export async function openChatRoom(roomId, title, loggedUserId, userid, loggedFl
 		// board 정보 비동기 요청
 		const boardresponse = await fetch(`/chat/findBoard/${roomId}`);
 		const board = await boardresponse.json();
-
+		const trade = findTradeByBoardId(board.trades);					//해당 보드가 속한 trades 탐색	
+		console.log("트레이드 상태 : "+trade.tradeStatus);
 		console.log(board);
 		console.log(roomId, title, loggedUserId, userid);
 		chatWindow.innerHTML = `
@@ -386,6 +402,8 @@ export async function openChatRoom(roomId, title, loggedUserId, userid, loggedFl
                     <h2>채팅</h2>
                     <button class="close-chat" data-room-id="${roomId}">닫기</button>
                 </div>
+                <!-- ※ Thymeleaf의 경우 enum 타입일 경우 .name을 써야함-->
+              ${trade.tradeStatus=== '완료'? '<h2>판매완료</h2>':""}
                 <h3>${board.buy_Sell}</h3>
                 <h3>카테고리 : ${board.category}</h3>
                 <h3>판매물 ${board.title}</h3>
