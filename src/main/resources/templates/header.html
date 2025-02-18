@@ -136,7 +136,7 @@ body {
 }
 
 .message-right {
-	text-align: right;
+/* 	text-align: right; */
 	background-color: #dcf8c6;
 	padding: 8px;
 	border-radius: 10px;
@@ -164,6 +164,7 @@ body {
 	margin-left: 5px;
 }
 </style>
+<link rel="stylesheet" href="/css/chatContainer.css" />
 </head>
 <body>
 	<header th:fragment="header">
@@ -221,14 +222,37 @@ body {
 			</div>
 
 			<!-- 공통 메뉴 -->
+			<div>
 			<a href="/board/allboard">게시판</a> <a href="/board/writeboard">글쓰기</a>
+			</div>
 		</div>
 	</header>
 
 	<script src = "/js/headerUI.js"  type="module">
+</script>
+<script>
+    // Make the chat container draggable
+//     const chatContainer = document.getElementById("chat-container");
 
+//     chatContainer.addEventListener('mousedown', (e) => {
+//         // Get the initial position of the mouse
+//         let offsetX = e.clientX - chatContainer.offsetLeft;
+//         let offsetY = e.clientY - chatContainer.offsetTop;
 
+//         // Function to move the chat container with the mouse
+//         const mouseMoveHandler = (e) => {
+//             chatContainer.style.left = `${e.clientX - offsetX}px`;
+//             chatContainer.style.top = `${e.clientY - offsetY}px`;
+//         };
 
+//         // Add the event listener for mousemove and mouseup
+//         document.addEventListener('mousemove', mouseMoveHandler);
+
+//         // Remove the event listeners once the mouse is released
+//         document.addEventListener('mouseup', () => {
+//             document.removeEventListener('mousemove', mouseMoveHandler);
+//         }, { once: true });
+//     });
 </script>
 
 </body>

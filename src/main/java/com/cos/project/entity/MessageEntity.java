@@ -61,7 +61,9 @@ public class MessageEntity {
     
 //    private boolean exitMemberRendering = true;		//채팅방 재접속시 렌더링 할지에 대한 유무			
     
-
+ 
+    
+    
     @CreationTimestamp
     private Timestamp sendTime;  // 메시지 전송 시간
 

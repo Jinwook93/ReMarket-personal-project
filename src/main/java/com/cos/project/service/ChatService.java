@@ -218,7 +218,8 @@ public class ChatService {
 				.map(message -> new MessageDTO(message.getId(), message.getChattingRoomEntity().getId(),
 						message.getSender().getUserid(), message.getReceiver().getUserid(), message.getMessageContent(),
 						message.isLiked(), message.isRead(), message.isExited(), message.getExitedSenderId(),
-						message.isDeleted(), message.getParentMessageId(), message.getSendTime()))
+						message.isDeleted(), message.getParentMessageId(), message.getSender().getProfileImage(), message.getReceiver().getProfileImage(),
+						message.getSendTime()))
 				.collect(Collectors.toList());
 	}
 

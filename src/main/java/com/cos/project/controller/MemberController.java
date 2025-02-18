@@ -132,12 +132,8 @@ public class MemberController {
 	    return ResponseEntity.ok(memberService.showAllMember());
 	}
     
-//    
-//	@GetMapping("/findall")
-//	public List<MemberEntity> findAllUser() {
-//		return memberService.showAllMember();
-//	}
-	
+
+
 	@PostMapping("/join")
 public ResponseEntity<?>  joinUser(@RequestBody MemberDTO entity) {
     	String result = memberService.joinMember(entity);
@@ -145,12 +141,6 @@ public ResponseEntity<?>  joinUser(@RequestBody MemberDTO entity) {
     return ResponseEntity.ok(result);
 }
 	
-//	@PostMapping("/join")
-//public String joinUser(@RequestBody MemberDTO entity) {
-//    	String result = memberService.joinMember(entity);
-//    
-//    return result;
-//}
 
 	
 	
@@ -228,11 +218,7 @@ public ResponseEntity<?>  joinUser(@RequestBody MemberDTO entity) {
 //    return ResponseEntity.ok(result);
 //}
 
-//@PutMapping("updateuser/{id}")
-//public String updateUser(@PathVariable(name = "id") Long id, @RequestBody MemberDTO memberDTO) {
-//    String result = memberService.updateMember(id, memberDTO);
-//    return result;
-//}
+
 
 @DeleteMapping("deleteuser/{id}")
 public ResponseEntity<?> deleteUser(@PathVariable(name = "id") long id) {
@@ -240,11 +226,6 @@ public ResponseEntity<?> deleteUser(@PathVariable(name = "id") long id) {
     return ResponseEntity.ok(result);
 }
 
-//@DeleteMapping("deleteuser/{id}")
-//public String deleteUser(@PathVariable(name = "id") Long id) {
-//    String result = memberService.deleteMember(id);
-//    return result;
-//}
 
 //아이디 , 비밀번호 찾기
 
@@ -268,6 +249,27 @@ public ResponseEntity<?> deleteUser(@PathVariable(name = "id") long id) {
 //    MemberEntity memberEntity = memberService.userInfoByPassword(password);
 //    return ResponseEntity.ok(memberEntity.getPassword());
 //}
+
+
+@PostMapping("/getProfileImage")
+public ResponseEntity<?> getProfileImage(@RequestBody String userid) throws JsonMappingException, JsonProcessingException {
+    // First, check if the user exists
+	
+	
+	ObjectMapper om = new ObjectMapper();
+	String userId = om.readValue(userid, MemberDTO.class).getUserid();
+    String profileImage = memberService.findByUserId(userId).getProfileImage();
+//    System.out.println(profileImage);
+
+
+    // If profile image is empty, return the default image
+    if (profileImage == null || profileImage.isEmpty()) {
+        return ResponseEntity.ok("/boardimage/nullimage.jpg");
+    }
+
+    // Otherwise, return the profile image
+    return ResponseEntity.ok(profileImage);
+}
 
 	
 }

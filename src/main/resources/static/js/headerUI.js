@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 		alarmCountInterval = setInterval(async () => {
 			await checkUserAlarmCount(loggedId);
-		}, 1000);
+		}, 3000);
 	}
 
 	toggleChattingRoomList();
@@ -49,14 +49,14 @@ document.getElementById("alarmButton").addEventListener("click", async () => {
 				row.innerHTML = `
  							 ${alarm.member1Visible && Number(alarm.member1.id) === Number(loggedId) ? `
  							 <td>${alarm.id}</td>
- 						<td>${alarm.priority}</td>
+ 					<!--	<td>${alarm.priority}</td> -->
  							 <td>${alarm.member1Content}</td>
  							      <td>${formatDate(alarm.createTime)}</td>
 					  <td>${alarm.member1Read}</td>
 					 <td> <button onclick="markAsRead(${alarm.id})">읽음 처리</button> </td>` : ""}
 							 			 ${alarm.member2Visible && Number(alarm.member2.id) === Number(loggedId) ? `
  							 <td>${alarm.id}</td>
- 						<td>${alarm.priority}</td>
+ 					<!--	<td>${alarm.priority}</td> -->
  							 <td>${alarm.member2Content}
 									${alarm.action === "상대방 동의 확인" ? `
       					  <button id = "agreeMember2-${alarm.id}" onclick="enrollTrade2(${alarm.id})">

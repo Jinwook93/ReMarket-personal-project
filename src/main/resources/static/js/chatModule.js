@@ -20,12 +20,65 @@ function findContentByParentMessageId(messages, msgId) {
 }
 
 
+//function findProfileImageAndUserId(userid) {
+//	return fetch('/getProfileImage', {
+//		method: 'POST',
+//		headers: { 'Content-Type': 'application/json;charset=utf-8' },
+//		body: JSON.stringify({ userid })
+//	})
+//		.then(response => {
+//			if (!response.ok) {
+//				throw new Error("응답 실패 : 데이터를 조회할 수 없습니다!");
+//			}
+//			return response.text();
+//		})
+//		.then(profileImagePath => {
+//			//        console.log("잘 도착 1:", profileImagePath);
+//			return profileImagePath;
+//		})
+//		.catch(error => {
+//			console.log("데이터 조회 실패:", error);
+//			return "/boardimage/nullimage.jpg";
+//		});
+//}
+
+//function loadProfileImage(userid,messageElement) {
+//    findProfileImageAndUserId(userid)
+//        .then(profileImageUrl => {
+//            console.log("잘 도착 2??:", profileImageUrl);
+//
+//            if (profileImageUrl) {
+//                const profileImage = document.createElement("img");
+//                profileImage.src = profileImageUrl;
+//                profileImage.alt = `${userid}'s profile picture`;
+//                profileImage.classList.add("profile-image");
+//                messageElement.appendChild(profileImage);
+//            }
+//        })
+//        .catch(error => {
+//            console.log("프로필 이미지 로딩 실패:", error);
+//        });
+//}
+
+
+function insertLineBreaks(text, maxLength) {
+	let result = '';
+	for (let i = 0; i < text.length; i += maxLength) {
+		result += text.slice(i, i + maxLength) + '<br>';
+	}
+	return result;
+}
+
+
+
+
+
 function findTradeByBoardId(trades) {
 	let result = null;
 	for (let trade of trades) {
 		console.log(trade);
-//		if (trade.boardEntity?.id === boardId && trade.accept1 && trade.accept2) {
-	if (trade.accept1 && trade.accept2) {
+		//		if (trade.boardEntity?.id === boardId && trade.accept1 && trade.accept2) {
+		if (trade.accept1 && trade.accept2) {
 			result = trade;
 			break;  // 원하는 메시지를 찾으면 루프를 종료
 		}
@@ -62,44 +115,96 @@ export async function loadMessages(roomId, messageIndex, recentExitedmemberId) {
 
 		messages.forEach((msg, index) => {
 
-			if (recentExitedmemberId && Number(recentExitedmemberId) === Number(loggedId) && (messageIndex > 0 &&
-				index < messageIndex)) {
+			if (recentExitedmemberId && Number(recentExitedmemberId) === Number(loggedId) && (messageIndex > 0 && index < messageIndex)) {
 				return;
 			}
-
-
-			let parentMessageObject = null;
 
 			const messageElement = document.createElement("div");
 			messageElement.classList.add("message-item");
 
-			// 로그인한 사용자와 보낸 사용자가 동일하면 삭제 버튼 추가
-			// 메시지 내용과 좋아요 상태 처리
-			if (msg.messageContent === "⚠️삭제된 메시지입니다" && msg.deleted) {			//삭제된 메시지 처리
-				messageElement.textContent = `${msg.senderUserId}: ${msg.messageContent} ${msg.sendTime}`;
-			} else {										//삭제된 메시지가 아닐 경우
-				parentMessageObject = findContentByParentMessageId(messages, msg.parentMessageId);
+			//비동기통신으로 데이터가 일치하지 않는 경우가 있어서 제외
+			// 프로필 이미지와 사용자 ID 추가
+			//    findProfileImageAndUserId(msg.senderUserId)
+			//        .then(profileImageUrl => {
+			//            if (profileImageUrl) {
+			//                const profileContainer = document.createElement("div");
+			//                profileContainer.classList.add("profile-container");
+			//
+			//                const profileImage = document.createElement("img");
+			//                profileImage.src = profileImageUrl;
+			//                profileImage.alt = `${msg.senderUserId}'s profile picture`;
+			//                profileImage.classList.add("profile-image", "message-Left");
+			//
+			//                const userid = document.createElement("p");
+			//                userid.textContent = msg.senderUserId;
+			//
+			//                profileContainer.appendChild(profileImage);
+			//                profileContainer.appendChild(userid);
+			//
+			//                chatBox.appendChild(profileContainer);
+			//            }
+			//        })
+			//        .catch(error => {
+			//            console.log("프로필 이미지 로딩 실패:", error);
+			//        });
 
+
+			const formattedMessage = insertLineBreaks(msg.messageContent, 20); // 20글자마다 줄바꿈
+
+
+			const profileContainer = document.createElement("div");
+			profileContainer.classList.add("profile-container");
+
+			const profileImage = document.createElement("img");
+			profileImage.src = msg.exited ? "/boardimage/nullimage.jpg" : msg.profileImageUrl1;
+			profileImage.alt = `${msg.senderUserId}'s profile picture`;
+			profileImage.classList.add("profile-image", "message-Left");
+			const userid = document.createElement("p");
+			userid.textContent = msg.exited ? '(나간 사용자)' : msg.senderUserId;
+
+			profileContainer.appendChild(profileImage);
+			profileContainer.appendChild(userid);
+
+			//                chatBox.appendChild(profileContainer);
+
+
+			// 메시지 내용 처리
+			if (msg.messageContent === "⚠️삭제된 메시지입니다" && msg.deleted) {
+				messageElement.innerHTML = ` <b>${msg.messageContent}</b>
+				                  <br>
+                       <br>
+    <span class="send-time">${msg.sendTime}</span>`;
+			} else {
+				const parentMessageObject = findContentByParentMessageId(messages, msg.parentMessageId);
 				if (parentMessageObject) {
-					// 부모 메시지가 존재하면 senderUserId를 출력
-					messageElement.innerHTML = `     
-      			    <b>${parentMessageObject.senderUserId}</b>:   <b>${parentMessageObject.messageContent} </b>에 대한 댓글   
-         			   <hr>
-           				 ${msg.senderUserId}: ${msg.messageContent} ${msg.sendTime} ${msg.liked ? "❤️" : "🤍"}`;
-				} else {		//null 값 관련해서 메시지가 로드되지 않으므로 null에 관한 경우도 추가해주어야 한다.
-					// 부모 메시지가 없는 경우, 기본 메시지 표시
-					messageElement.textContent = `     
-            		${msg.senderUserId}: ${msg.messageContent} ${msg.sendTime} ${msg.liked ? "❤️" : "🤍"}`;
+					messageElement.innerHTML = `
+                <b>${parentMessageObject.senderUserId}</b>: <b>${parentMessageObject.messageContent.length > 20 ? insertLineBreaks(parentMessageObject.messageContent, 20) : parentMessageObject.messageContent}</b>에 대한 답글
+                <hr>
+               ${msg.messageContent.length > 20 ? insertLineBreaks(msg.messageContent, 20) : msg.messageContent} 
+                   <br>
+                       <br>
+    <span class="send-time">${msg.sendTime}</span>
+							<span class="read-status">${msg.read ? "읽음" : "읽지않음"}</span>
+						
+`;
+				} else {
+					messageElement.innerHTML = `
+ ${msg.messageContent.length > 20 ? insertLineBreaks(msg.messageContent, 20) : msg.messageContent} 
+       <br><br>
+    <span class="send-time">${msg.sendTime}</span>
+							<span class="read-status">${msg.read ? "읽음" : "읽지않음"}</span>
+						
+`;
 				}
 			}
 
+			// 로그인한 사용자와 보낸 사용자가 동일한 경우
 			if (String(msg.senderUserId) === String(loggedUserId)) {
 				messageElement.classList.add("message-right");
 
-				// 삭제 버튼 생성
 				const deleteMessageButton = document.createElement("button");
 				if (msg.messageContent === "⚠️삭제된 메시지입니다" && msg.deleted) {
-					deleteMessageButton.style.display = "none"; // 버튼 숨기기
+					deleteMessageButton.style.display = "none";
 				} else {
 					deleteMessageButton.textContent = "삭제";
 					deleteMessageButton.classList.add("delete-button");
@@ -109,7 +214,6 @@ export async function loadMessages(roomId, messageIndex, recentExitedmemberId) {
 							try {
 								const response = await fetch(`/chat/deleteMessage/${msg.id}`, { method: "PUT" });
 								if (response.ok) {
-									// messageElement.remove(); // 삭제 성공 시 메시지 삭제 (수정으로 대체)
 									loadMessages(roomId, messageIndex, recentExitedmemberId);
 								} else {
 									alert("메시지 삭제에 실패했습니다.");
@@ -120,37 +224,24 @@ export async function loadMessages(roomId, messageIndex, recentExitedmemberId) {
 						}
 					};
 				}
-				messageElement.appendChild(deleteMessageButton);
+				const likeState = document.createElement("p");
+				likeState.textContent = msg.liked ? "❤️" : "🤍";
 
 
-			} else {				//로그인한 유저와 메시지를 보내는 유저가 다를 경우 
-
-
-
-				if (parentMessageObject) {
-					// 부모 메시지가 존재하면 senderUserId를 출력
-					messageElement.innerHTML = `     
-          <b>${parentMessageObject.senderUserId}</b>:   <b>${parentMessageObject.messageContent} </b>에 대한 댓글   
-            <hr>
-           ${msg.exited ? '나간 사용자' : msg.senderUserId}: ${msg.messageContent} ${msg.sendTime}  ${msg.read ? "<읽음>" : "<읽지않음>"}`;
-				} else {		//null 값 관련해서 메시지가 로드되지 않으므로 null에 관한 경우도 추가해주어야 한다.
-					// 부모 메시지가 없는 경우, 기본 메시지 표시
-					messageElement.textContent = `     
-            		${msg.exited ? '나간 사용자' : msg.senderUserId}: ${msg.messageContent} ${msg.sendTime}  ${msg.read ? "<읽음>" : "<읽지않음>"}`;
-				}
-
-				//				messageElement.textContent = `${msg.exited ? '나간 사용자' : msg.senderUserId}: ${msg.messageContent} ${msg.sendTime}  ${msg.read ? "<읽음>" : "<읽지않음>"}`;
+				const flexArray = document.createElement("div");
+				flexArray.style.display = 'flex';
+				flexArray.style.justifyContent = 'flex-end';  // 오른쪽 정렬
+				flexArray.style.alignItems = 'center';
+				flexArray.appendChild(likeState);
+				flexArray.appendChild(deleteMessageButton);
+				flexArray.appendChild(messageElement);
+				flexArray.appendChild(profileContainer);
+				chatBox.appendChild(flexArray);
+			} else {
 				messageElement.classList.add("message-left");
 				messageElement.dataset.messageId = msg.id;
 
-
-
-
-
-
 				// 좋아요 버튼 생성
-
-
 				const likeButton = document.createElement("button");
 				if (msg.messageContent === "⚠️삭제된 메시지입니다" && msg.deleted) {
 					likeButton.style.display = "none";
@@ -160,18 +251,15 @@ export async function loadMessages(roomId, messageIndex, recentExitedmemberId) {
 					if (msg.liked) likeButton.classList.add("liked");
 					likeButton.dataset.messageId = msg.id;
 
-					// 좋아요 버튼 이벤트 추가
 					likeButton.addEventListener("click", async function() {
 						const messageId = this.dataset.messageId;
-						const isLiked = this.classList.contains("liked"); // 현재 좋아요 상태 확인
+						const isLiked = this.classList.contains("liked");
 
 						try {
 							const response = await fetch(`/chat/${messageId}/like`, {
 								method: "POST",
-								headers: {
-									"Content-Type": "application/json",
-								},
-								body: JSON.stringify(!isLiked), // 반대 상태로 변경
+								headers: { "Content-Type": "application/json" },
+								body: JSON.stringify(!isLiked),
 							});
 
 							if (response.ok) {
@@ -188,83 +276,49 @@ export async function loadMessages(roomId, messageIndex, recentExitedmemberId) {
 							console.error("좋아요 요청 중 오류 발생:", error);
 						}
 					});
-
 				}
 
+				messageElement.style.border = '0.5px solid black'; // 원하는 테두리 두께와 색상 설정
+				messageElement.style.padding = '10px'; // 패딩 추가 (선택 사항)
+				const flexArray = document.createElement("div");
+				flexArray.style.display = 'flex';
+				flexArray.style.justifyContent = 'flex-start';  // 왼쪽 정렬
+				flexArray.style.alignItems = 'center';  // 세로 중앙 정렬 (필요에 따라 조정 가능)
+				flexArray.appendChild(profileContainer);
+				flexArray.appendChild(messageElement);
+				flexArray.appendChild(likeButton);
 
-
-
-				//채팅 컨테이너 클릭 시 읽음으로 간주
-				document.getElementById("chat-container").addEventListener("click", async function() {
-					const unreadMessages = document.querySelectorAll(".message-item:not(.read)"); // 아직 읽지 않은 메시지들 찾기
-
-					if (unreadMessages.length === 0) return; // 읽지 않은 메시지가 없으면 요청 안 함
-
-					try {
-						// 읽지 않은 메시지 ID 리스트 추출
-						const messageIds = [...unreadMessages].map(msg => msg.dataset.messageId);
-
-						// 서버로 읽음 처리 요청 (POST 요청)
-						const response = await fetch(`/chat/markAsRead`, {
-							method: "POST",
-							headers: { "Content-Type": "application/json" },
-							body: JSON.stringify({ messageIds }) // ID 배열을 서버로 전송
-						});
-
-						if (response.ok) {
-							unreadMessages.forEach(msg => {
-								msg.classList.add("read"); // 읽음 표시 스타일 추가
-							});
-							//							console.log("📩 모든 메시지가 읽음 처리됨!");
-						} else {
-							console.error("❌ 읽음 처리 실패!");
-						}
-					} catch (error) {
-						console.error("⚠️ 메시지 읽음 처리 중 오류 발생:", error);
-					}
-				});
-
-
-
-
-				//				// 메시지 클릭 이벤트 추가  ${msg.id}
-				//				messageElement.addEventListener("click", function(e) {
-				//					    console.log("클릭된 메시지:", msg.messageContent, "보낸 사람:", msg.senderUserId, "로그인된 유저:", loggedUserId);
-				//					const messageInput = document.getElementById(`message-input-${roomId}`);
-				//					const replyText = `${msg.senderUserId} : ${msg.messageContent}에 대한 답글 >`;
-				//					const parentMessageId = document.getElementById("parentMessageId");
-				//					const parentMessageButton = document.getElementById("parentMessageButton");
-				//					const clickedMsgId = msg.id; // 현재 클릭된 메시지 ID
-				//					const currentMsgId = parentMessageId.value; // 현재 저장된 parentMessageId
-				//
-				//					// 같은 메시지를 다시 클릭한 경우 (토글)
-				//					if (currentMsgId === String(clickedMsgId)) {
-				//						//        messageInput.value = messageInput.value.replace(replyText, "").trim();
-				//						parentMessageId.value = "";
-				//						parentMessageButton.value = "";
-				//						parentMessageButton.style.display = "none";
-				//					} else {
-				//						// 다른 메시지를 클릭한 경우, 기존 메시지 초기화 후 새 메시지 반영
-				//						//        messageInput.value = replyText;
-				//						parentMessageButton.value = replyText;
-				//						parentMessageButton.style.display = "block";
-				//						parentMessageId.value = clickedMsgId;
-				//					}
-				//				});
-
-
-
-
-
-
-
-
-				messageElement.appendChild(likeButton);
+				chatBox.appendChild(flexArray);
 			}
 
+			// 채팅 컨테이너 클릭 시 읽음 처리
+			document.getElementById(`chat-container-${roomId}`).addEventListener("click", async function() {
+				const unreadMessages = document.querySelectorAll(".message-item:not(.read)");
 
+				if (unreadMessages.length === 0) return;
 
+				try {
+					const messageIds = [...unreadMessages].map(msg => msg.dataset.messageId);
 
+					const response = await fetch(`/chat/markAsRead`, {
+						method: "POST",
+						headers: { "Content-Type": "application/json" },
+						body: JSON.stringify({ messageIds }),
+					});
+
+					if (response.ok) {
+						unreadMessages.forEach(msg => {
+							msg.classList.add("read");
+						});
+					} else {
+						console.error("❌ 읽음 처리 실패!");
+					}
+				} catch (error) {
+					console.error("⚠️ 메시지 읽음 처리 중 오류 발생:", error);
+				}
+			});
+			//   chatBox.appendChild(profileContainer);
+			//    chatBox.appendChild(messageElement);
 
 			// 메시지 클릭 이벤트 추가  ${msg.id}
 			messageElement.addEventListener("click", function(e) {
@@ -301,34 +355,26 @@ export async function loadMessages(roomId, messageIndex, recentExitedmemberId) {
 
 
 
-			chatBox.appendChild(messageElement);
+
 		});
+
 
 		//msg 끝
 
 
-
-
-
-
-
-
-
-
-
-
-
 		// 스크롤 최하단으로 이동
-		chatBox.scrollTop = chatBox.scrollHeight;
+		//		chatBox.scrollTop = chatBox.scrollHeight;
+
+
+
+
+
+
 	} catch (error) {
 		console.error("Error loading messages:", error);
 		chatBox.innerHTML = "<div>Error loading messages.</div>";
 	}
 }
-
-
-
-
 
 
 
@@ -380,7 +426,7 @@ export async function sendMessage(roomId, userid, messageIndex, recentExitedmemb
 // 특정 채팅방을 열고 메시지 기능을 연결하는 함수
 export async function openChatRoom(roomId, title, loggedUserId, userid, loggedFlag) {
 	let chatWindow = document.getElementById(`chat-room-${roomId}`);
-	
+
 
 	if (chatWindow) {
 		chatWindow.remove(); // 이미 열려있으면 닫기
@@ -388,27 +434,45 @@ export async function openChatRoom(roomId, title, loggedUserId, userid, loggedFl
 		chatWindow = document.createElement("div");
 		chatWindow.id = `chat-room-${roomId}`;
 		chatWindow.className = "chat-window";
-
+		//   <!--         ${trade.tradeStatus=== '완료'? '<h2>판매완료</h2>':""} -->
 		// board 정보 비동기 요청
 		const boardresponse = await fetch(`/chat/findBoard/${roomId}`);
 		const board = await boardresponse.json();
-		const trade = findTradeByBoardId(board.trades);					//해당 보드가 속한 trades 탐색	
-		console.log("트레이드 상태 : "+trade.tradeStatus);
+		//		const trade = findTradeByBoardId(board.trades);					//해당 보드가 속한 trades 탐색	
+		//		console.log("트레이드 상태 : "+trade.tradeStatus);
 		console.log(board);
 		console.log(roomId, title, loggedUserId, userid);
 		chatWindow.innerHTML = `
-            <div id="chat-container">
+            <div class="chat-container" id="chat-container-${roomId}">
                 <div style="display:flex;">
-                    <h2>채팅</h2>
+                    <h2>${userid} 님과의 채팅방</h2>
                     <button class="close-chat" data-room-id="${roomId}">닫기</button>
                 </div>
                 <!-- ※ Thymeleaf의 경우 enum 타입일 경우 .name을 써야함-->
-              ${trade.tradeStatus=== '완료'? '<h2>판매완료</h2>':""}
-                <h3>${board.buy_Sell}</h3>
-                <h3>카테고리 : ${board.category}</h3>
-                <h3>판매물 ${board.title}</h3>
-                <h3>가격 : ${board.price}</h3>
-                <span>${title} (대화 상대: ${userid})</span>
+<br>
+               <!-- 토글 가능한 항목들 -->
+        <button id = "BoardTitleButton-${board.id}">✍🏼 게시글 : ${title}</button>
+        <br>
+        <button id="toggleDetails-${roomId}">상세 정보 ▽</button>
+
+        <div id="details-${roomId}" style="display:none;">
+            <div>
+                <h3>판매 종류: ${board.buy_Sell}</h3>
+            </div>
+            
+            <div>
+                <h3>카테고리: ${board.category}</h3>
+            </div>
+
+            <div>
+                <h3>판매물: ${board.title}</h3>
+            </div>
+
+            <div>
+                <h3>가격: ${board.price}원</h3>
+            </div>
+        </div>
+
                 <div class="chat-header"></div>
                 <div id="chat-box-${roomId}" class="chat-box"></div>
                     <input type = "button" style="display:none;" id = "parentMessageButton"></input>
@@ -420,6 +484,47 @@ export async function openChatRoom(roomId, title, loggedUserId, userid, loggedFl
             </div>
         `;
 		document.body.appendChild(chatWindow);
+
+		// 채팅창이 생성된 후 드래그 이벤트 핸들러 추가
+		const chatContainer = document.getElementById(`chat-container-${roomId}`);
+
+
+		// 화면의 중앙에 위치하도록 설정
+		const centerChatContainer = () => {
+			const width = chatContainer.offsetWidth;
+			const height = chatContainer.offsetHeight;
+			const screenWidth = window.innerWidth;
+			const screenHeight = window.innerHeight;
+
+			chatContainer.style.left = `${(screenWidth - width) / 2}px`;
+			chatContainer.style.top = `${(screenHeight - height) / 2}px`;
+		};
+
+		// 채팅창이 생성된 후 중앙 위치 설정
+		centerChatContainer();
+
+		document.getElementById(`toggleDetails-${roomId}`).addEventListener('click', () => {
+			const details = document.getElementById(`details-${roomId}`);
+			details.style.display = (details.style.display === 'none' || details.style.display === '') ? 'block' : 'none';
+		});
+
+		chatContainer.addEventListener('mousedown', (e) => {
+			let offsetX = e.clientX - chatContainer.getBoundingClientRect().left;
+			let offsetY = e.clientY - chatContainer.getBoundingClientRect().top;
+
+			const mouseMoveHandler = (e) => {
+				chatContainer.style.left = `${e.clientX - offsetX}px`;
+				chatContainer.style.top = `${e.clientY - offsetY}px`;
+			};
+
+			document.addEventListener('mousemove', mouseMoveHandler);
+
+			document.addEventListener('mouseup', () => {
+				document.removeEventListener('mousemove', mouseMoveHandler);
+			}, { once: true });
+		});
+
+
 
 		const roomresponse = await fetch(`/chat/findRoom/${roomId}`);
 
@@ -467,6 +572,15 @@ export async function openChatRoom(roomId, title, loggedUserId, userid, loggedFl
 		chatWindow.querySelector(".close-chat").addEventListener("click", function() {
 			chatWindow.remove();
 		});
+
+
+		//해당 거래 게시판으로 이동하는 이벤트 추가		
+		document.getElementById(`BoardTitleButton-${board.id}`).addEventListener('click', function() {
+			const boardId = `${board.id}`; // board.id를 문자열로 받기
+			window.location.href = `/board/view/${boardId}`; // 해당 URL로 이동
+		});
+
+
 	}
 
 	//			setInterval(findMessageCount(roomId),1000);
@@ -703,3 +817,8 @@ export async function findMessageCount(roomId) {
 //  // 필요한 파라미터를 전달하여 채팅방을 확인
 //  openChatRoom(roomId, title, loggedUserId, userid, loggedFlag);
 //}, 1000); // 1초마다 메시지 갯수 확인
+
+
+
+
+
