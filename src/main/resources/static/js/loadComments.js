@@ -29,8 +29,8 @@ export function loadComments(boardId, boardUserId, principalDetails) {
 				return;
 			}
 
-		
-			loadChildComments(comments, boardId, boardUserId, principalDetails ,-20);
+
+			loadChildComments(comments, boardId, boardUserId, principalDetails, -20);
 
 
 		})
@@ -50,13 +50,13 @@ export function loadComments(boardId, boardUserId, principalDetails) {
 	function loadChildComments(childComments, boardId, boardUserId, principalDetails, marginLeft) {
 
 
-			childComments.sort((a, b) => b.id - a.id);
+		childComments.sort((a, b) => b.id - a.id);
 		childComments.forEach(child => {
-	
+
 			//자식 댓글
-//			const parentCommentResponse = await fetch(`/comments/parent/${child.id}`);
-//			const parentComment = await parentCommentResponse.json();
-//			console.log("부모 호출 확인" + parentComment);
+			//			const parentCommentResponse = await fetch(`/comments/parent/${child.id}`);
+			//			const parentComment = await parentCommentResponse.json();
+			//			console.log("부모 호출 확인" + parentComment);
 			const childCommentElement = document.createElement('div');
 			childCommentElement.classList.add('comment');
 			childCommentElement.id = `comment-${child.id}`;
@@ -65,31 +65,42 @@ export function loadComments(boardId, boardUserId, principalDetails) {
 			childCommentElement.style.marginLeft = `${childMarginLeft}px`;
 
 			childCommentElement.innerHTML = `
-            <div style="display: flex; align-items: center;">
-              ${marginLeft >= 0 ? `<img src="/icon/childComment.png" loading="lazy" alt="Profile Image Preview" style="width: 50px; height: 50px; margin-right: 10px;">` : ""}
-                ${child.memberEntity.profileImage != null
-					? `<img src="${child.memberEntity.profileImage}" loading="lazy" alt="Profile Image Preview" style="width: 50px; height: 50px; margin-right: 10px;">`
-					: `<img src="/boardimage/nullimage.jpg" loading="lazy" alt="Profile Image Preview" style="width: 50px; height: 50px; margin-right: 10px;">`
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <!-- 프로필 (왼쪽 정렬) -->
+    <div class="profile" style="display: flex; align-items: center;">
+        ${marginLeft >= 0 ? `<img src="/icon/childComment.png" loading="lazy" alt="Profile Image Preview" class="profile-img">` : ""}
+        ${child.memberEntity.profileImage != null
+					? `<img src="${child.memberEntity.profileImage}" loading="lazy" alt="Profile Image Preview" class="profile-img">`
+					: `<img src="/boardimage/nullimage.jpg" loading="lazy" alt="Profile Image Preview" class="profile-img">`
 				}
-                <span>${child.memberEntity.userid}</span>
-            </div>
-            ${child.memberEntity.userid !== principalDetails ?
-					`<div style="display: flex;">
-                    <button type="button" class="commentlike" id="commentlike-${child.id}" name="commentlike">❤️ ${child.totalLike}</button>
-                    <button type="button" class="commentdislike" id="commentdislike-${child.id}" name="commentdislike">🖤 ${child.totalDislike}</button>
-                </div>` : ""
-				}
+        <span>${child.memberEntity.userid}</span>
+    </div>
+
+    <!-- 댓글 버튼과 시간 (오른쪽 정렬) -->
+    <div class="comment-right">
+       ${child.memberEntity.userid !== principalDetails 
+    ? `<div class="comment-actions">
+        <button type="button" class="commentlike" id="commentlike-${child.id}" name="commentlike">❤️ ${child.totalLike}</button>
+        <button type="button" class="commentdislike" id="commentdislike-${child.id}" name="commentdislike">🖤 ${child.totalDislike}</button>
+    </div>` 
+    : `<div class="comment-actions"> ❤️ ${child.totalLike} / 🖤 ${child.totalDislike}</div>`
+}
+
+        <p class="comment-createTime">${formatDate(child.createTime)}</p>
+    </div>
+</div>
+
 <p class="comment-text">
     <!-- 비밀 댓글을 확인할 수 있는 조건 추가 -->
-    ${child.blind ? 
-        '⚠️블라인드 처리된 글입니다' : 
-        (child.private === true && 
-        (principalDetails != boardUserId && 
-         principalDetails != child.memberEntity.userid && 
-         principalDetails != child.parentComment?.memberEntity?.userid)) ?
-        '🔐비밀 공개된 글입니다' : 
-        child.content
-    }
+    ${child.blind ?
+					'<b>⚠️블라인드 처리된 글입니다</b>' :
+					(child.private === true &&
+						(principalDetails != boardUserId &&
+							principalDetails != child.memberEntity.userid &&
+							principalDetails != child.parentComment?.memberEntity?.userid)) ?
+						'<b>🔐비밀글입니다</b>' :
+						child.content
+				}
 </p>
 
 
@@ -101,87 +112,84 @@ export function loadComments(boardId, boardUserId, principalDetails) {
 
 
 
-	<p>부모정보 : ${child.parentComment?child.parentComment.memberEntity.userid:""}</p>
+		<!--<p>부모정보 : ${child.parentComment ? child.parentComment.memberEntity.userid : ""}</p>
 			
-			<p>비밀글 여부 : ${child.private}</p>
-			<p>블라인드 : ${child.blind}</p>
-            <p class="commen-createTime">${formatDate(child.createTime)}</p>
+			<p>비밀글 여부 :${child.private}</p>
+			<p>블라인드 : ${child.blind}</p>-->
+            
         `;
 
 
-	if(child.parentComment !== null){
-		console.log(child.parentComment);
-	}
-	
-			//수정 및 삭제버튼 추가
-			if (child.memberEntity.userid === principalDetails) {
-				const divLikeDisLike = document.createElement('div');
-				divLikeDisLike.style.display = "flex";
-				childCommentElement.appendChild(divLikeDisLike);
-
-				const likeText = document.createElement('p');
-				likeText.innerText = `❤️ ${child.totalLike}   /  `;
-				divLikeDisLike.appendChild(likeText);
-
-				const dislikeText = document.createElement('p');
-				dislikeText.innerText = `🖤 ${child.totalDislike}`;
-				divLikeDisLike.appendChild(dislikeText);
-
-
-//				if (boardUserId === principalDetails) {
-//					const blindButton = document.createElement('button');				//블라인드 적용
-//					blindButton.id = `blindButton-${child.id}`
-//					blindButton.textContent = child.blind === false ? '블라인드' : '블라인드 취소';
-//					blindButton.style.backgroundColor = child.blind === false ? 'green' : 'orange';
-//					blindButton.addEventListener('click', () => blindComment(child.id, child.blind));
-//
-//					childCommentElement.appendChild(blindButton);
-//
-//				}
-
-				const updateButton = document.createElement('button');
-				updateButton.textContent = '수정';
-				updateButton.addEventListener('click', () => updateComment(child.id, child.content, child.blind));
-
-				if (child.blind) {
-					updateButton.style.display = "none";
-				}
-
-				const deleteButton = document.createElement('button');
-				deleteButton.textContent = '삭제';
-				deleteButton.style.backgroundColor = 'red';
-				deleteButton.addEventListener('click', () => deleteComment(child.id));
-
-
-				childCommentElement.appendChild(updateButton);
-
-				childCommentElement.appendChild(deleteButton);
-			} else if (child.memberEntity.userid !== principalDetails && boardUserId === principalDetails) {			//게시글 게시자 = 로그인 유저  && 댓글 게시자 != 로그인 유저
-//			}else{
-			
-				if(child.memberEntity.userid !== boardUserId && boardUserId === principalDetails){
-				const blindButton = document.createElement('button');				//블라인드 적용
-				blindButton.id = `blindButton-${child.id}`
-				blindButton.textContent = child.blind === false ? '블라인드' : '블라인드 취소';
-				blindButton.style.backgroundColor = child.blind === false ? 'green' : 'orange';
-				blindButton.addEventListener('click', () => blindComment(child.id, child.blind));
-
-				childCommentElement.appendChild(blindButton);
-				}
-
-
-				const deleteButton = document.createElement('button');			//삭제 적용
-				deleteButton.textContent = '삭제';
-				deleteButton.style.backgroundColor = 'red';
-				deleteButton.addEventListener('click', () => deleteComment(child.id));
-				childCommentElement.appendChild(deleteButton);
+			if (child.parentComment !== null) {
+				console.log(child.parentComment);
 			}
+
+    const buttonContainer = document.createElement('div');
+    buttonContainer.classList.add('comment-buttons');
+
 
 			// 🟢 대댓글 버튼 추가
 			const replyButton = document.createElement('button');
 			replyButton.textContent = '댓글';
+			replyButton.classList.add('reply-button');
 			replyButton.addEventListener('click', () => toggleReplyInput(child.id));
-			childCommentElement.appendChild(replyButton);
+			 buttonContainer.appendChild(replyButton); 
+			 
+
+			//수정 및 삭제버튼 추가
+			if (child.memberEntity.userid === principalDetails) {
+//    const buttonContainer = document.createElement('div');
+//    buttonContainer.classList.add('comment-buttons');
+
+    const updateButton = document.createElement('button');
+    updateButton.textContent = '수정';
+    updateButton.classList.add('update-button');
+    updateButton.addEventListener('click', () => updateComment(child.id, child.content, child.blind));
+
+    if (child.blind) {
+        updateButton.style.display = "none";
+    }
+
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = '삭제';
+    deleteButton.classList.add('delete-button');
+    deleteButton.addEventListener('click', () => deleteComment(child.id));
+
+    buttonContainer.appendChild(updateButton);
+    buttonContainer.appendChild(deleteButton);
+    childCommentElement.appendChild(buttonContainer);
+} else if (child.memberEntity.userid !== principalDetails && boardUserId === principalDetails) {
+//    const buttonContainer = document.createElement('div');
+//    buttonContainer.classList.add('comment-buttons');
+
+    if (child.memberEntity.userid !== boardUserId && boardUserId === principalDetails) {
+        const blindButton = document.createElement('button');
+        blindButton.id = `blindButton-${child.id}`;
+        blindButton.textContent = child.blind === false ? '블라인드' : '블라인드 취소';
+          blindButton.style.backgroundColor = child.blind === false ? 'green' : 'orange';
+        blindButton.classList.add('blind-button');
+        blindButton.addEventListener('click', () => blindComment(child.id, child.blind));
+
+        buttonContainer.appendChild(blindButton);
+    }
+
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = '삭제';
+    deleteButton.classList.add('delete-button');
+    deleteButton.addEventListener('click', () => deleteComment(child.id));
+
+    buttonContainer.appendChild(deleteButton);
+    childCommentElement.appendChild(buttonContainer);
+}
+
+
+//			// 🟢 대댓글 버튼 추가
+//			const replyButton = document.createElement('button');
+//			replyButton.textContent = '댓글';
+//			replyButton.classList.add('reply-button');
+//			replyButton.addEventListener('click', () => toggleReplyInput(child.id));
+//			 buttonContainer.appendChild(replyButton); 
+//			childCommentElement.appendChild(replyButton);
 
 			// 🟢 대댓글 입력창 추가 (초기에는 숨김)
 			const replyContainer = document.createElement('div');
@@ -237,7 +245,7 @@ export function loadComments(boardId, boardUserId, principalDetails) {
 
 			// 자식 댓글이 있는 경우 재귀적으로 처리
 			if (child.childComments && child.childComments.length > 0) {
-				loadChildComments(child.childComments, boardId, boardUserId, principalDetails ,childMarginLeft);
+				loadChildComments(child.childComments, boardId, boardUserId, principalDetails, childMarginLeft);
 			}
 		});
 	}

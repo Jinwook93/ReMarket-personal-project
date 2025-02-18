@@ -1,0 +1,174 @@
+/* 댓글 컨테이너 스타일 */
+.child-comment {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    font-family: 'Arial', sans-serif;
+}
+
+/* 프로필 영역 */
+.profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* 프로필 이미지 스타일 */
+.profile img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid #ccc;
+    object-fit: cover;
+}
+
+/* 유저명 스타일 */
+.profile span {
+    font-weight: bold;
+    color: #333;
+}
+
+/* 댓글 생성 시간 */
+.comment-createTime {
+    font-size: 12px;
+    color: #888;
+    margin-left: 5px;
+}
+
+/* 댓글 본문 */
+.comment-text {
+    font-size: 14px;
+    line-height: 1.5;
+    padding: 8px;
+    background: white;
+    border-radius: 5px;
+}
+
+/* 블라인드 댓글 스타일 */
+.comment-text b {
+    color: #d9534f;
+}
+
+/* 버튼 컨테이너 */
+.comment-buttons {
+    display: flex;
+    gap: 5px;
+    margin-top: 5px;
+}
+
+/* 좋아요, 싫어요 버튼 */
+.commentlike, .commentdislike {
+    border: none;
+    padding: 5px 10px;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.2s ease-in-out;
+}
+
+/* 좋아요 버튼 */
+.commentlike {
+    background: blue;
+    color: white;
+}
+
+.commentlike:hover {
+    background: #e84118;
+}
+
+/* 싫어요 버튼 */
+.commentdislike {
+    background: #333;
+    color: white;
+}
+
+.commentdislike:hover {
+/*     background: #222; */
+   background: #e84118;
+}
+
+
+/*===============*/
+
+.profile {
+    display: flex;
+    align-items: center;
+}
+
+.profile-img {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+    border-radius: 50%;
+}
+
+.comment-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; /* 오른쪽 정렬 */
+}
+
+.comment-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.comment-createTime {
+    text-align: right;
+    font-size: 12px;
+    color: gray;
+}
+
+/* ================*/
+
+.comment-buttons {
+    display: flex;
+    justify-content: space-between; /* 좌우 정렬 *//* 요소들 사이의 여백을 균등하게 분배, 오른쪽 정렬 */
+    align-items: center;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.reply-button {
+    background-color: navy;
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 14px;
+    margin-right: auto; /* 왼쪽 정렬 */
+}
+
+.right-buttons {
+    display: flex;
+    gap: 8px; /* 버튼 간 간격 */
+}
+
+.comment-buttons button {
+    padding: 6px 12px;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.update-button {
+    background-color: blue;
+    color: white;
+}
+
+.delete-button {
+    background-color: red;
+    color: white;
+}
+
+.blind-button {
+    background-color: green;
+    color: white;
+}
