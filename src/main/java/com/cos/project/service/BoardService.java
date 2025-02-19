@@ -191,5 +191,9 @@ public class BoardService {
 	    return searchresult;
 	}
 
+	public BoardEntity findByBoardId(Long boardId) {
+			return boardRepository.findById(boardId).orElse(null);
+	}
+
 
 }

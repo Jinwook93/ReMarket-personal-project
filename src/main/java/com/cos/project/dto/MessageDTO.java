@@ -6,11 +6,12 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-@Getter
+@Data
 @AllArgsConstructor
 @Builder
 public class MessageDTO {
@@ -27,6 +28,8 @@ public class MessageDTO {
     private Long parentMessageId;
     private String profileImageUrl1;
     private String profileImageUrl2;
+    private Boolean alarmType;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private Timestamp sendTime;    // 메시지 전송 시간
+
 }

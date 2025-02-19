@@ -1,5 +1,7 @@
 // 상대방의 수락 확인
 
+import { loadChatRooms } from "./chatModule.js";
+
 export function enrollTrade1(boardId, loggedId, member2Id) {  // 로그인유저 : member1, 타겟 유저 : member2
 	fetch(`/trade/checkCreateTrade1/${boardId}`, {  // 신청 알람을 만든다
 		method: "POST",
@@ -225,7 +227,8 @@ document.addEventListener('DOMContentLoaded', function() {
 			const member2Id = Number(document.getElementById("memberid").value);  // 다른 멤버의 ID
 			console.log("거래 태스트 ", boardId, loggedId, member2Id);
 			// enrollTrade1 함수 호출
-			enrollTrade1(boardId, loggedId, member2Id);
+			enrollTrade1(boardId, loggedId, member2Id)
+			  loadChatRooms(loggedId);
 		});
 	});
 
@@ -249,6 +252,7 @@ document.addEventListener('click', function(event) {
         const alarmId = event.target.id.replace("agreeMember2-", ""); 
         console.log("거래승인 테스트 ", alarmId);
         enrollTrade2(Number(alarmId));
+        loadChatRooms(loggedId);
     }
 });
 
@@ -257,6 +261,7 @@ document.addEventListener('click', function(event) {
         const alarmId = event.target.id.replace("denyMember2-", ""); 
         console.log("거래거절 테스트 ", alarmId);
         denyCreateTrade(Number(alarmId));
+         loadChatRooms(loggedId);
     }
 });
 
@@ -265,7 +270,8 @@ document.addEventListener('click', function(event) {
         const tradeId = event.target.id.replace("complete2-Sell-", ""); 
         console.log("거래완료 테스트2 ", tradeId);
 
-     CompleteTrade (tradeId,"isMember2")
+     CompleteTrade (tradeId,"isMember2");
+      loadChatRooms(loggedId);
     }
 });
 
@@ -274,7 +280,8 @@ document.addEventListener('click', function(event) {
         const tradeId = event.target.id.replace("complete1-Sell-", ""); 
         console.log("거래완료 테스트1 ", tradeId);
 
-     CompleteTrade (tradeId,"isMember1")
+     CompleteTrade (tradeId,"isMember1");
+      loadChatRooms(loggedId);
     }
 });
 

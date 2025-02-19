@@ -123,7 +123,7 @@ input[type="checkbox"] {
 	accent-color: blue;
 }
 </style>
-    <link rel="stylesheet" type="text/css" href="/css/commentData.css">
+<link rel="stylesheet" type="text/css" href="/css/commentData.css">
 
 </head>
 <body>
@@ -295,20 +295,20 @@ input[type="checkbox"] {
 					th:if="${board.id == trade.boardEntity.id && trade.accept1  && trade.accept2}">
 
 					<button type="button" th:id="|enroll-Sell-${board.id}|"
-						th:data-TradeSellBoardId="${board.id}">거래 진행
-						중</button>
+						th:data-TradeSellBoardId="${board.id}">거래 진행 중</button>
 				</div>
 				<div
 					th:if="${board.id == trade.boardEntity.id && trade.accept1  && trade.accept2 && board.memberEntity.userid == principalDetails.name }">
 
 					<button type="button" th:id="|complete2-Sell-${trade.id}|"
-						th:data-Complete2TradeSellBoardId="${board.id}">
-						거래완료</button>
+						th:data-Complete2TradeSellBoardId="${board.id}">거래완료</button>
 				</div>
 			</div>
-			<div th:if= "${trade.tradeStatus.name == '완료'}">
-			<p> 거래가 완료된 게시글입니다 </p>
+			<div
+				th:if="${trade.tradeStatus != null and trade.tradeStatus.name == '완료'}">
+				<p>거래가 완료된 게시글입니다</p>
 			</div>
+
 		</div>
 
 
@@ -370,7 +370,7 @@ input[type="checkbox"] {
 	<!-- 	<script type="module" src="/js/commentLike.js"></script> -->
 	<script src="/js/boardLike.js" type="module"></script>
 	<script src="/js/tradeModule.js" type="module"></script>
-
+	<script src="/js/chatModule.js" type="module"></script>
 
 	<!-- 	 <th:block th:replace="/footer :: footerFragment"></th:block> -->
 </body>

@@ -219,7 +219,7 @@ public class ChatService {
 						message.getSender().getUserid(), message.getReceiver().getUserid(), message.getMessageContent(),
 						message.isLiked(), message.isRead(), message.isExited(), message.getExitedSenderId(),
 						message.isDeleted(), message.getParentMessageId(), message.getSender().getProfileImage(), message.getReceiver().getProfileImage(),
-						message.getSendTime()))
+						message.getAlarmType(), message.getSendTime()))
 				.collect(Collectors.toList());
 	}
 
@@ -256,6 +256,7 @@ public class ChatService {
 			MessageEntity messageEntity = MessageEntity.builder().chattingRoomEntity(chattingRoomEntity).sender(sender)
 					.receiver(receiver) // Directly use the managed receiver
 					.parentMessageId(messageDTO.getParentMessageId())
+					.alarmType(messageDTO.getAlarmType())
 					.messageContent(messageDTO.getMessageContent()).build();
 
 			messageRepository.save(messageEntity);
@@ -463,7 +464,46 @@ public class ChatService {
 	  
 
 	  
-	  
+	  @Transactional // 채팅방 번호 조회
+	  public Long findRoomId(MemberEntity member, Long boardId) {
+	      Long loggedId = member.getId(); // 로그인 유저의 Id
+	      BoardEntity boardEntity = boardRepository.findById(boardId).orElse(null);
+	      
+	      if (boardEntity == null) {
+	          throw new IllegalArgumentException("해당 게시글이 존재하지 않습니다: " + boardId);
+	      }
+
+	      Long targetId = boardEntity.getMemberEntity().getId(); // 상대방 Id
+	      Long roomId = null;
+
+	      // findEnableRoom()이 null을 반환할 경우 대비
+	      ChattingRoomEntity room = chattingRoomRepository.findEnableRoom(loggedId, targetId, boardId);
+	      if (room != null) {
+	          roomId = room.getId();
+	      }
+
+	      if (roomId == null) {
+	          room = chattingRoomRepository.findEnableRoom(targetId, loggedId, boardId);
+	          if (room != null) {
+	              roomId = room.getId();
+	          }
+	      }
+
+	      if (roomId == null) {
+	          ChattingRoomDTO chattingRoomDTO = this.findOrCreateRoom(
+	              boardEntity.getTitle(),
+	              member.getUserid(),
+	              boardEntity.getMemberEntity().getUserid(),
+	              boardId,
+	              boardEntity.getPrice()
+	          );
+	          roomId = chattingRoomDTO.getId();
+	      }
+
+	      System.out.println("roomId + "+roomId);
+	      return roomId;
+	  }
+
 	  
 	  
 	  

@@ -363,7 +363,7 @@ public class AlarmService {
 						member2Content =  member1.get().getUserid() +" 님이 거래완료를 희망합니다. 거래를 마치시겠습니까?";
 					}
 					else if (childType.equals("거래") && action.equals("거래완료")) {
-						member1Content = member2.get().getUserid() +"과의 "+object+" 번 게시판 거래를 완료하였습니다";
+						member1Content = member2.get().getUserid() +"님과 "+object+" 번 게시판 거래를 완료하였습니다";
 						member2Content = member1.get().getUserid()+"님이 거래완료를 수락하였습니다." +member1.get().getUserid() +"과의 "+object+" 번 게시판 거래를 완료하였습니다";
 					}
 					

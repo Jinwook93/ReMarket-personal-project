@@ -50,6 +50,7 @@ public class MessageEntity {
     private boolean exited = false;				//나갔다 들어온 상태 확인
     private Long exitedSenderId;	//대화방을 나간 유저의 Id(식별번호)
     
+    @Column(columnDefinition = "TEXT") // 긴 문자열 저장 가능
     private String messageContent;  // 메시지 내용
     
     
@@ -61,7 +62,7 @@ public class MessageEntity {
     
 //    private boolean exitMemberRendering = true;		//채팅방 재접속시 렌더링 할지에 대한 유무			
     
- 
+    private Boolean alarmType = false;
     
     
     @CreationTimestamp

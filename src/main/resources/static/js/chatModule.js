@@ -156,7 +156,7 @@ export async function loadMessages(roomId, messageIndex, recentExitedmemberId) {
 			profileContainer.classList.add("profile-container");
 
 			const profileImage = document.createElement("img");
-			profileImage.src = msg.exited ? "/boardimage/nullimage.jpg" : msg.profileImageUrl1;
+			profileImage.src = msg.exited ? "/boardimage/nullimage.jpg" : msg.profileImageUrl1 == null? "/boardimage/nullimage.jpg":msg.profileImageUrl1 ;
 			profileImage.alt = `${msg.senderUserId}'s profile picture`;
 			profileImage.classList.add("profile-image", "message-Left");
 			const userid = document.createElement("p");
@@ -180,7 +180,9 @@ export async function loadMessages(roomId, messageIndex, recentExitedmemberId) {
 					messageElement.innerHTML = `
                 <b>${parentMessageObject.senderUserId}</b>: <b>${parentMessageObject.messageContent.length > 20 ? insertLineBreaks(parentMessageObject.messageContent, 20) : parentMessageObject.messageContent}</b>에 대한 답글
                 <hr>
-               ${msg.messageContent.length > 20 ? insertLineBreaks(msg.messageContent, 20) : msg.messageContent} 
+               <!--${msg.messageContent.length > 20 ? insertLineBreaks(msg.messageContent, 20) : msg.messageContent} -->
+               	<!--	${msg.messageContent} -->
+               	 	${msg.alarmType == false || msg.alarmType == null? (msg.messageContent.length > 20 ? insertLineBreaks(msg.messageContent, 20) : msg.messageContent) : msg.messageContent}
                    <br>
                        <br>
     <span class="send-time">${msg.sendTime}</span>
@@ -189,7 +191,10 @@ export async function loadMessages(roomId, messageIndex, recentExitedmemberId) {
 `;
 				} else {
 					messageElement.innerHTML = `
- ${msg.messageContent.length > 20 ? insertLineBreaks(msg.messageContent, 20) : msg.messageContent} 
+      <!-- ${msg.messageContent.length > 20 ? insertLineBreaks(msg.messageContent, 20) : msg.messageContent} --> 
+             	<!--	${msg.messageContent} -->
+             	${msg.alarmType == false || msg.alarmType == null ? (msg.messageContent.length > 20 ? insertLineBreaks(msg.messageContent, 20) : msg.messageContent) : msg.messageContent}
+
        <br><br>
     <span class="send-time">${msg.sendTime}</span>
 							<span class="read-status">${msg.read ? "읽음" : "읽지않음"}</span>
@@ -330,6 +335,7 @@ export async function loadMessages(roomId, messageIndex, recentExitedmemberId) {
 				const clickedMsgId = msg.id; // 현재 클릭된 메시지 ID
 				const currentMsgId = parentMessageId.value; // 현재 저장된 parentMessageId
 
+				if(msg.alarmType === "false" || msg.alarmType === null){
 				// 같은 메시지를 다시 클릭한 경우 (토글)
 				if (currentMsgId === String(clickedMsgId)) {
 					//        messageInput.value = messageInput.value.replace(replyText, "").trim();
@@ -342,6 +348,7 @@ export async function loadMessages(roomId, messageIndex, recentExitedmemberId) {
 					parentMessageButton.value = replyText;
 					parentMessageButton.style.display = "block";
 					parentMessageId.value = clickedMsgId;
+					}
 				}
 			});
 
