@@ -95,9 +95,11 @@ public class AlarmEntity {
                 this.getChildType(),
                 this.getObject(),
                 this.getAction(),
-                this.getPriority(),
                 this.getMember1Read(),
-                this.getMember2Read()
+                this.getMember2Read(),
+                this.getPriority(),
+                null
+
 //                ,this.getTargetId()
         );
     }

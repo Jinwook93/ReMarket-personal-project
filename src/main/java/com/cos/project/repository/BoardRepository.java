@@ -3,6 +3,8 @@ package com.cos.project.repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -49,5 +51,11 @@ public interface BoardRepository extends JpaRepository<BoardEntity, Long>{
 
 	@Query("SELECT b FROM BoardEntity b WHERE b.memberEntity.id = :memberId ORDER BY b.createTime DESC")
 	Optional<BoardEntity> findLatestBoardByMember(@Param("memberId") Long memberId);
+	
+	
+	Page<BoardEntity> findAll(Pageable pageable); // 페이징된 데이터 조회
+	
+	
+	
 	
 }

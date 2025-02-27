@@ -1,9 +1,9 @@
 // 상대방의 수락 확인
 
-import { loadChatRooms } from "./chatModule.js";
+import { loadChatRooms,  setUpEnterRoomButton,setUpExitRoomButton } from "./chatModule.js";
 
-export function enrollTrade1(boardId, loggedId, member2Id) {  // 로그인유저 : member1, 타겟 유저 : member2
-	fetch(`/trade/checkCreateTrade1/${boardId}`, {  // 신청 알람을 만든다
+export function enrollTrade1(boardId, loggedId, member2Id, loggedUserId) {  
+	fetch(`/trade/checkCreateTrade1/${boardId}`, {  
 		method: "POST",
 		headers: { 'Content-Type': 'application/json;charset=utf-8' },
 		body: JSON.stringify({
@@ -13,25 +13,31 @@ export function enrollTrade1(boardId, loggedId, member2Id) {  // 로그인유저
 			accept1: true
 		})
 	})
-		.then(response => {
-			if (!response.ok) {
-				// 응답이 실패했을 경우
-				throw new Error('응답 실패');
-			}
-			return response.json();  // JSON 응답으로 변환
-		})
-		.then(data => {
-			console.log(data);
-			alert(data.member1Content);  // 응답 데이터 처리
-		})
-		.catch(error => {  // 오류 처리
-			alert("거래 신청을 실패하였습니다");
-			console.log(error);
-		});
+	.then(response => {
+		if (!response.ok) {
+			throw new Error('응답 실패');
+		}
+		return response.json();
+	})
+	.then(data => {
+		alert(data.member1Content);  
+
+		// ✅ loadChatRooms가 끝난 후 버튼 설정 실행
+		return loadChatRooms(loggedId);
+	})
+	.then(() => {
+		setUpEnterRoomButton(loggedUserId);
+		setUpExitRoomButton();
+	})
+	.catch(error => {
+		alert("거래 신청을 실패하였습니다");
+		console.error(error);
+	});
 }
 
+
 //타겟 유저가 해당 거래 신청을 받을지 안 받을지 에 대한 판단
-export function enrollTrade2(alarmId) {  // 로그인유저 : member1, 타겟 유저 : member2
+export function enrollTrade2(alarmId,loggedUserId) {  // 로그인유저 : member1, 타겟 유저 : member2
 
 	if (confirm("거래를 수락하시겠습니까")) {			//수락시
 		fetch(`/trade/checkCreateTrade2/${alarmId}`, {  // 신청 알람을 만든다
@@ -57,7 +63,12 @@ export function enrollTrade2(alarmId) {  // 로그인유저 : member1, 타겟 �
 				console.log(data);
 //				alert("거래가 성사되었습니다");
 				alert(data.member2Content);  // 응답 데이터 처리
-			})
+				return loadChatRooms(loggedId);
+	})
+	.then(() => {
+		setUpEnterRoomButton(loggedUserId);
+		setUpExitRoomButton();
+	})
 			.catch(error => {  // 오류 처리
 				alert("거래 신청을 실패하였습니다");
 				console.log(error);
@@ -68,7 +79,7 @@ export function enrollTrade2(alarmId) {  // 로그인유저 : member1, 타겟 �
 }
 
 //타겟 유저가 해당 거래 신청을 거절 에 대한 판단
-export function denyCreateTrade (alarmId) {  // 로그인유저 : member1, 타겟 유저 : member2
+export function denyCreateTrade (alarmId,loggedUserId) {  // 로그인유저 : member1, 타겟 유저 : member2
 
 	if (confirm("거래를 거절하겠습니까? ")) {			//수락시
 		fetch(`/trade/checkCreateTrade2/${alarmId}`, {  // 신청 알람을 만든다
@@ -93,7 +104,12 @@ export function denyCreateTrade (alarmId) {  // 로그인유저 : member1, 타�
 			.then(data => {
 				console.log(data);
 				alert(data.member2Content);  // 응답 데이터 처리
-			})
+			return loadChatRooms(loggedId);
+	})
+	.then(() => {
+		setUpEnterRoomButton(loggedUserId);
+		setUpExitRoomButton();
+	})
 			.catch(error => {  // 오류 처리
 				alert("거래 신청을 실패하였습니다");
 				console.log(error);
@@ -217,18 +233,18 @@ export function CompleteTrade (tradeId, isMember) {  // 로그인유저 : member
 document.addEventListener('DOMContentLoaded', function() {
 	// boardId를 동적으로 참조하기 위해 각 버튼에 이벤트 추가
 	const buttons = document.querySelectorAll('[id^="enroll-Buy-"]'); // 'enroll-Buy-'로 시작하는 id를 가진 모든 버튼 선택
-
+		const loggedUserId = document.getElementById("loggedUserId")?.value;
 	buttons.forEach(button => {
 		button.addEventListener('click', () => {
 			// 'id' 속성에서 boardId를 추출
-
+			
 			const boardId = Number(button.getAttribute('data-TradeBuyBoardId'));  // data-updateBoardId 속성에서 boardId 추출
 			const loggedId = Number(document.getElementById("loggedId").value);  // 로그된 사용자의 ID
 			const member2Id = Number(document.getElementById("memberid").value);  // 다른 멤버의 ID
 			console.log("거래 태스트 ", boardId, loggedId, member2Id);
 			// enrollTrade1 함수 호출
-			enrollTrade1(boardId, loggedId, member2Id)
-			  loadChatRooms(loggedId);
+			enrollTrade1(boardId, loggedId, member2Id,loggedUserId)
+//			  loadChatRooms(loggedId);
 		});
 	});
 
@@ -251,8 +267,8 @@ document.addEventListener('click', function(event) {
     if (event.target && event.target.id.startsWith("agreeMember2-")) {
         const alarmId = event.target.id.replace("agreeMember2-", ""); 
         console.log("거래승인 테스트 ", alarmId);
-        enrollTrade2(Number(alarmId));
-        loadChatRooms(loggedId);
+        enrollTrade2(Number(alarmId),loggedUserId);
+//        loadChatRooms(loggedId);
     }
 });
 
@@ -260,8 +276,8 @@ document.addEventListener('click', function(event) {
     if (event.target && event.target.id.startsWith("denyMember2-")) {
         const alarmId = event.target.id.replace("denyMember2-", ""); 
         console.log("거래거절 테스트 ", alarmId);
-        denyCreateTrade(Number(alarmId));
-         loadChatRooms(loggedId);
+        denyCreateTrade(Number(alarmId),loggedUserId);
+//         loadChatRooms(loggedId);
     }
 });
 
@@ -271,7 +287,7 @@ document.addEventListener('click', function(event) {
         console.log("거래완료 테스트2 ", tradeId);
 
      CompleteTrade (tradeId,"isMember2");
-      loadChatRooms(loggedId);
+//      loadChatRooms(loggedId);
     }
 });
 
@@ -281,7 +297,7 @@ document.addEventListener('click', function(event) {
         console.log("거래완료 테스트1 ", tradeId);
 
      CompleteTrade (tradeId,"isMember1");
-      loadChatRooms(loggedId);
+//      loadChatRooms(loggedId);
     }
 });
 

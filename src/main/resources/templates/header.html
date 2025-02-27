@@ -72,7 +72,6 @@ body {
 	border-radius: 4px;
 	cursor: pointer;
 	text-decoration: none;
-
 }
 
 #myChattingRoomList:hover {
@@ -87,9 +86,9 @@ body {
 	border-radius: 5px;
 	cursor: pointer;
 	text-decoration: none;
-		  width: auto; /* 크기 자동 조절 */
-    height: auto;
-    line-height: normal;
+	width: auto; /* 크기 자동 조절 */
+	height: auto;
+	line-height: normal;
 }
 
 #alarmButton:hover {
@@ -136,7 +135,7 @@ body {
 }
 
 .message-right {
-/* 	text-align: right; */
+	/* 	text-align: right; */
 	background-color: #dcf8c6;
 	padding: 8px;
 	border-radius: 10px;
@@ -163,6 +162,12 @@ body {
 	color: gray;
 	margin-left: 5px;
 }
+
+#chattingRoomScroll {
+	max-height: 250px; /* 5개 이상이면 스크롤 */
+	overflow-y: auto;
+	display: block;
+}
 </style>
 <link rel="stylesheet" href="/css/chatContainer.css" />
 </head>
@@ -184,7 +189,8 @@ body {
 
 				<!-- 나의 채팅방 버튼 -->
 				<a href="#" id="myChattingRoomList"> <img
-					src="/icon/comment.png" alt="나의 채팅방" width="20" height="20"  style="margin-Top:1px;" />
+					src="/icon/comment.png" alt="나의 채팅방" width="20" height="20"
+					style="margin-Top: 1px;" />
 
 				</a>
 				<button type="button" id="alarmButton">
@@ -193,14 +199,16 @@ body {
 
 				<div style="display: flex;">
 					<!-- 채팅방 리스트 -->
-					<div class="chattingRoomList">
-						<table>
-							<tbody id="chattingRoomListBody">
-								<!-- 채팅방 목록이 여기에 동적으로 추가됩니다 -->
-							</tbody>
-						</table>
+					
+						<div class="chattingRoomList">
+						<div id="chattingRoomScroll">
+							<table>
+								<tbody id="chattingRoomListBody">
+									<!-- 채팅방 목록이 여기에 동적으로 추가됩니다 -->
+								</tbody>
+							</table>
+						</div>
 					</div>
-
 					<!-- 알림 리스트 -->
 					<div class="alarmList">
 						<table>
@@ -208,7 +216,12 @@ body {
 								<!-- 알림 목록이 여기에 동적으로 추가됩니다 -->
 							</tbody>
 						</table>
+
+
 					</div>
+
+
+
 				</div>
 			</div>
 			<!-- 기본 제목 표시 -->
@@ -223,37 +236,37 @@ body {
 
 			<!-- 공통 메뉴 -->
 			<div>
-			<a href="/board/allboard">게시판</a> <a href="/board/writeboard">글쓰기</a>
+				<a href="/board/list">게시판</a> <a href="/board/writeboard">글쓰기</a>
 			</div>
 		</div>
 	</header>
 
-	<script src = "/js/headerUI.js"  type="module">
+	<script src="/js/headerUI.js" type="module">
 </script>
-<script>
-    // Make the chat container draggable
-//     const chatContainer = document.getElementById("chat-container");
+	<script>
+		// Make the chat container draggable
+		//     const chatContainer = document.getElementById("chat-container");
 
-//     chatContainer.addEventListener('mousedown', (e) => {
-//         // Get the initial position of the mouse
-//         let offsetX = e.clientX - chatContainer.offsetLeft;
-//         let offsetY = e.clientY - chatContainer.offsetTop;
+		//     chatContainer.addEventListener('mousedown', (e) => {
+		//         // Get the initial position of the mouse
+		//         let offsetX = e.clientX - chatContainer.offsetLeft;
+		//         let offsetY = e.clientY - chatContainer.offsetTop;
 
-//         // Function to move the chat container with the mouse
-//         const mouseMoveHandler = (e) => {
-//             chatContainer.style.left = `${e.clientX - offsetX}px`;
-//             chatContainer.style.top = `${e.clientY - offsetY}px`;
-//         };
+		//         // Function to move the chat container with the mouse
+		//         const mouseMoveHandler = (e) => {
+		//             chatContainer.style.left = `${e.clientX - offsetX}px`;
+		//             chatContainer.style.top = `${e.clientY - offsetY}px`;
+		//         };
 
-//         // Add the event listener for mousemove and mouseup
-//         document.addEventListener('mousemove', mouseMoveHandler);
+		//         // Add the event listener for mousemove and mouseup
+		//         document.addEventListener('mousemove', mouseMoveHandler);
 
-//         // Remove the event listeners once the mouse is released
-//         document.addEventListener('mouseup', () => {
-//             document.removeEventListener('mousemove', mouseMoveHandler);
-//         }, { once: true });
-//     });
-</script>
+		//         // Remove the event listeners once the mouse is released
+		//         document.addEventListener('mouseup', () => {
+		//             document.removeEventListener('mousemove', mouseMoveHandler);
+		//         }, { once: true });
+		//     });
+	</script>
 
 </body>
 </html>

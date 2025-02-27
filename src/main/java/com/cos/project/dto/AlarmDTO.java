@@ -28,7 +28,8 @@ public class AlarmDTO {
 	    private String childType; // 세부 타입 (게시판의 댓글, 댓글의 게시판 등)
 	    private String object; // 대상의 목적어 (좋아요, 싫어요 등)
 	    private String action; // 실제 행동 (좋아요, 댓글 등)
-	    private String status; // 알람 상태 (READ, UNREAD 등)
+	    private String member1Read; // 알람 상태 (READ, UNREAD 등)
+	    private String member2Read; // 알람 상태 (READ, UNREAD 등)
 	    private String priority; // 우선순위 (LOW, MEDIUM, HIGH)
 	    private String targetId; // 알람 대상 ID (로그인 유저, 관리자 등)
 

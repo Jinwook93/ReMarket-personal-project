@@ -20,15 +20,27 @@ export async function checkUserAlarmCount(loggedId) {
 	}
 }
 
-export async function checkUserAlarmList(loggedId) {
-	try {
-		const alarmListResponse = await fetch(`/alarm/list/${loggedId}`);
-		const alarmList = await alarmListResponse.json();
-		return alarmList;
-	} catch (error) {
-		console.error("알람 목록을 불러오는 중 오류 발생:", error);
-	}
+//export async function checkUserAlarmList(loggedId) {
+//	try {
+//		const alarmListResponse = await fetch(`/alarm/list/${loggedId}`);
+//		const alarmList = await alarmListResponse.json();
+//		return alarmList;
+//	} catch (error) {
+//		console.error("알람 목록을 불러오는 중 오류 발생:", error);
+//	}
+//}
+
+export async function checkUserAlarmList(loggedId, page = 0, size = 5) {
+    try {
+        const response = await fetch(`/alarm/list/${loggedId}?page=${page}&size=${size}`);
+        const data = await response.json();
+        console.log(data);
+        return data; // { content, totalPages, totalElements, number, size }
+    } catch (error) {
+        console.error("알람 목록을 불러오는 중 오류 발생:", error);
+    }
 }
+
 
 export function markAsRead(alarmId) {
 	console.log(`알람 ${alarmId} 읽음 처리`);

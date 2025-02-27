@@ -22,22 +22,22 @@ body {
 	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-h1 {
+.container h1 {
 	text-align: center;
 	color: #333;
 }
 
-form {
+.container form {
 	display: flex;
 	flex-direction: column;
 }
 
-label {
+.container label {
 	margin-top: 10px;
 	font-weight: bold;
 }
 
-input, textarea, select {
+.container  input, .container textarea,.container  select {
 	margin-top: 5px;
 	padding: 10px;
 	font-size: 16px;
@@ -47,12 +47,12 @@ input, textarea, select {
 	box-sizing: border-box;
 }
 
-textarea {
+.container textarea {
 	height: 150px;
 	resize: none;
 }
 
-button {
+.container button {
 	margin-top: 20px;
 	padding: 10px;
 	font-size: 16px;
@@ -63,28 +63,28 @@ button {
 	cursor: pointer;
 }
 
-button:hover {
+.container button:hover {
 	background-color: #0056b3;
 }
 
-.comment-section {
+.container .comment-section {
 	margin-top: 40px;
 	border-top: 2px solid #ddd;
 	padding-top: 20px;
 }
 
-.comment {
+.container .comment {
 	margin-bottom: 15px;
 	padding: 10px;
 	background-color: #f1f1f1;
 	border-radius: 4px;
 }
 
-.comment-author {
+.container .comment-author {
 	font-weight: bold;
 }
 
-.comment-text {
+.container .comment-text {
 	margin-top: 5px;
 }
 
@@ -263,30 +263,30 @@ input[type="checkbox"] {
 
 
 		<!-- '삽니다' 카테고리 -->
-		<div
-			th:if="${board.memberEntity.userid == principalDetails.name && board.buy_Sell.name == '삽니다' }">
-			<button type="button" th:id="|buy-${board.id}|"
-				th:data-TradeBoardId="${board.id}">구매 중</button>
-		</div>
+<!-- 		<div -->
+<!-- 			th:if="${board.memberEntity.userid == principalDetails.name && board.buy_Sell.name == '삽니다' }"> -->
+<!-- 			<button type="button" th:id="|buy-${board.id}|" -->
+<!-- 				th:data-TradeBoardId="${board.id}">거래 중</button> -->
+<!-- 		</div> -->
 
 		<div
-			th:if="${board.memberEntity.userid != principalDetails.name && board.buy_Sell.name  == '삽니다'}">
+			th:if="${board.memberEntity.userid != principalDetails.name && board.buy_Sell.name  == '삽니다' || board.buy_Sell.name  == '팝니다' }">
 			<button type="button" th:id="|enroll-Buy-${board.id}|"
-				th:data-TradeBuyBoardId="${board.id}">판매 요청</button>
+				th:data-TradeBuyBoardId="${board.id}">거래 요청</button>
 		</div>
 
 		<!-- '팝니다' 카테고리 -->
-		<div
-			th:if="${board.memberEntity.userid == principalDetails.name && board.buy_Sell.name  == '팝니다'}">
-			<button type="button" th:id="|sell-${board.id}|"
-				th:data-TradeBoardId="${board.id}">판매 중</button>
-		</div>
+<!-- 		<div -->
+<!-- 			th:if="${board.memberEntity.userid == principalDetails.name && board.buy_Sell.name  == '팝니다'}"> -->
+<!-- 			<button type="button" th:id="|sell-${board.id}|" -->
+<!-- 				th:data-TradeBoardId="${board.id}">판매 중</button> -->
+<!-- 		</div> -->
 
-		<div
-			th:if="${board.memberEntity.userid != principalDetails.name && board.buy_Sell.name  == '팝니다'}">
-			<button type="button" th:id="|enroll-Sell-${board.id}|"
-				th:data-TradeSellBoardId="${board.id}">구매 요청</button>
-		</div>
+<!-- 		<div -->
+<!-- 			th:if="${board.memberEntity.userid != principalDetails.name && board.buy_Sell.name  == '팝니다'}"> -->
+<!-- 			<button type="button" th:id="|enroll-Sell-${board.id}|" -->
+<!-- 				th:data-TradeSellBoardId="${board.id}">구매 요청</button> -->
+<!-- 		</div> -->
 
 
 		<div th:each="trade : ${board.trades}">

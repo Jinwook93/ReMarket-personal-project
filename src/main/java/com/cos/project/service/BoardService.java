@@ -8,6 +8,9 @@ import java.util.ListIterator;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
@@ -194,6 +197,11 @@ public class BoardService {
 	public BoardEntity findByBoardId(Long boardId) {
 			return boardRepository.findById(boardId).orElse(null);
 	}
+
+	public Page<BoardEntity> getBoardList(int page, int pageSize) {
+        PageRequest pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "id"));
+        return boardRepository.findAll(pageable); // 자동으로 페이징 처리됨
+    }
 
 
 }

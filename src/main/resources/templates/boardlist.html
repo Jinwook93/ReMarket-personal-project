@@ -227,11 +227,32 @@
       </form>
     </div>
     <!-- 페이지네이션 -->
-    <div class="pagination">
-      <a th:href="@{/board/list(page=1)}" th:text="'1'" class="active"></a>
-      <a th:href="@{/board/list(page=2)}" th:text="'2'"></a>
-      <a th:href="@{/board/list(page=3)}" th:text="'3'"></a>
-    </div>
+<!--     <div class="pagination"> -->
+<!--       <a th:href="@{/board/list(page=1)}" th:text="'1'" class="active"></a> -->
+<!--       <a th:href="@{/board/list(page=2)}" th:text="'2'"></a> -->
+<!--       <a th:href="@{/board/list(page=3)}" th:text="'3'"></a> -->
+<!--     </div> -->
+
+
+
+
+<!-- th:each="i : ${#numbers.sequence(1, totalPages)}": #numbers.sequence(1, totalPages)를 사용하여 1부터 totalPages까지 숫자를 생성하고, 이를 하나씩 순차적으로 i에 할당하여 반복합니다. -->
+<!-- th:href="@{/board/list(page=${i})}": 페이지 번호를 링크로 생성하여 클릭 시 해당 페이지로 이동할 수 있도록 합니다. ${i}는 현재 순차적으로 반복되는 페이지 번호입니다. -->
+<!-- th:text="${i}": 페이지 번호를 링크 텍스트로 표시합니다. -->
+<!-- th:classappend="${i == currentPage} ? 'active' : ''": 현재 페이지와 i가 같으면 active 클래스를 추가하여 CSS로 강조 표시합니다. -->
+
+
+
+
+<div class="pagination">
+    <a th:each="i : ${#numbers.sequence(1, totalPages)}"
+       th:href="@{/board/list(page=${i})}"
+       th:text="${i}"
+       th:classappend="${i == currentPage} ? 'active' : ''">
+    </a>
+</div>
+
+
   </div>
 <!--   	 <th:block th:replace="/footer :: footerFragment"></th:block> -->
   	 

@@ -7,6 +7,8 @@ import java.util.Set;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cos.project.details.PrincipalDetails;
 import com.cos.project.dto.ChattingRoomDTO;
 import com.cos.project.dto.MessageDTO;
+import com.cos.project.dto.PagedResponse;
 import com.cos.project.entity.BoardEntity;
 import com.cos.project.entity.ChattingRoomEntity;
 import com.cos.project.entity.MemberEntity;
@@ -270,23 +273,26 @@ public class ChatService {
 //		return messageResult;
 
 	@Transactional
-	public List<ChattingRoomDTO> myChattingRoomList(Long id) {
-		List<ChattingRoomEntity> chattingRoomEntities = chattingRoomRepository.findAllByLoggedMember2(id);
-
-		if (chattingRoomEntities.isEmpty()) {
-			chattingRoomEntities = chattingRoomRepository.findAllByLoggedMember(id);
-		} else {
+	public List<ChattingRoomDTO> myChattingRoomList(Long id,Long loggedId) {
+//		List<ChattingRoomEntity> chattingRoomEntities = chattingRoomRepository.findAllByLoggedMember2(id);
+		List<ChattingRoomEntity> chattingRoomEntities = chattingRoomRepository.findAllByLoggedMember(id);
+//		if (chattingRoomEntities.isEmpty()) {
+//			chattingRoomEntities = chattingRoomRepository.findAllByLoggedMember(id);
+//		} else {
+		
+	if(!chattingRoomEntities.isEmpty())	{
 			for (ChattingRoomEntity room : chattingRoomEntities) {
 
 				MemberEntity memberTmp = null;
 				memberTmp = room.getMember1();
-
+				if(loggedId.equals(room.getMember2().getId())) {
 				room.setMember1(room.getMember2());
 
 				room.setMember2(memberTmp);
+				}
 			}
 		}
-		if (chattingRoomEntities.isEmpty()) {
+	else if (chattingRoomEntities.isEmpty()) {
 			return Collections.EMPTY_LIST;
 		}
 
@@ -399,10 +405,8 @@ public class ChatService {
     	    entityManager.clear();  // 영속성 컨텍스트 초기화
         	alarmService.postAlarm(senderId, senderId, receiverId, "MESSAGE", "채팅방", String.valueOf(roomId), "나가기", null);
 	    } else {
-	    	System.out.println("else 삭제 되는건가요?????????");
 	    	  forceDeleteRoom(roomId);
 	    	  
-	    		System.out.println("결국 else 삭제 되는건가요?????????");
 	    		alarmService.postAlarm(senderId, senderId, receiverId, "MESSAGE", "채팅방", String.valueOf(roomId), "완전삭제", null);
 //	        // 🟢 메시지 삭제
 //	        messageRepository.deleteByRoomId(roomId);
@@ -503,6 +507,56 @@ public class ChatService {
 	      System.out.println("roomId + "+roomId);
 	      return roomId;
 	  }
+
+//	  public PagedResponse<ChattingRoomDTO> myChattingRoomList(Long loggedId, Pageable pageable) {
+//		    Page<ChattingRoomEntity> roomEntities = chattingRoomRepository.findAllByLoggedMember1(loggedId, pageable);
+//
+//		    List<ChattingRoomDTO> rooms = roomEntities.stream().map(room ->   
+//		        new ChattingRoomDTO(
+//		            room.getId(),
+//		            room.getTitle(),
+//		            room.getPrice(), 
+//		            room.getCreateTime(),
+//		            room.isLiked(),
+//		            room.getMember1().getUserid(), 
+//		            room.getMember2().getUserid(),
+//		            room.getBoardEntity().getId(), 
+//		            room.getExitedmemberId(),
+//		            room.getMessageIndex1(),
+//		            room.getMessageIndex2(), 
+//		            room.getRecentExitedmemberId(), 
+//		            room.getMessages().stream()
+//		            .map(msg -> new MessageDTO(
+//		                msg.getId(),
+//		                msg.getChattingRoomEntity() != null ? msg.getChattingRoomEntity().getId() : null,
+//		                msg.getSender() != null ? msg.getSender().getUserid() : null,
+//		                msg.getReceiver() != null ? msg.getReceiver().getUserid() : null,
+//		                msg.getMessageContent(),
+//		                msg.isLiked(),
+//		                msg.isRead(),
+//		                msg.isExited(),
+//		                msg.getExitedSenderId(),
+//		                msg.isDeleted(),
+//		                msg.getParentMessageId(),
+//		                msg.getSender() != null ? msg.getSender().getProfileImage() : null,
+//		                msg.getReceiver() != null ? msg.getReceiver().getProfileImage() : null,
+//		                msg.getAlarmType(),
+//		                msg.getSendTime()
+//		            )).collect(Collectors.toSet()) // Set<MessageDTO> 변환
+//
+//		        )
+//		    ).collect(Collectors.toList());
+//
+//		    return new PagedResponse<>(
+//		        rooms,
+//		        roomEntities.getNumber(),
+//		        roomEntities.getSize(),
+//		        roomEntities.getTotalPages(),
+//		        roomEntities.getTotalElements(),
+//		        roomEntities.isLast()
+//		    );
+//		}
+
 
 	  
 	  

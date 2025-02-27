@@ -2,6 +2,8 @@ package com.cos.project.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,5 +23,9 @@ public interface AlarmRepository extends JpaRepository<AlarmEntity, Long> {
 	    // 특정 사용자가 관련된 모든 알람 조회
 	    @Query("SELECT a FROM AlarmEntity a WHERE a.member1.id = :loggedId OR a.member2.id = :loggedId")
 	    List<AlarmEntity> findByLoggedId(@Param("loggedId") Long loggedId);
+
+	    @Query("SELECT a FROM AlarmEntity a WHERE a.member1.id = :loggedId OR a.member2.id = :loggedId")
+	    Page<AlarmEntity> findByLoggedId(@Param("loggedId") Long loggedId, Pageable pageable);
+
 
 }

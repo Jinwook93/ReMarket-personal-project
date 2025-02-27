@@ -3,13 +3,21 @@ package com.cos.project.controller;
 import com.cos.project.details.PrincipalDetails;
 import com.cos.project.dto.AlarmDTO;
 import com.cos.project.dto.LoginRequest;
+import com.cos.project.dto.PagedResponse;
 import com.cos.project.entity.AlarmEntity;
 import com.cos.project.repository.MemberRepository;
 import com.cos.project.service.AlarmService;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
@@ -28,15 +36,44 @@ public class AlarmController {
 
 	private final MemberRepository memberRepository;
    
-    
+//    private final BoardService boardService;
     
     // 특정 유저의 알림 목록 조회
-    @GetMapping("/list/{loggedId}")
-    public ResponseEntity<List<AlarmEntity>> getUserAlarms(@PathVariable(name = "loggedId") Long loggedId,@AuthenticationPrincipal PrincipalDetails principalDetail) {
-        List<AlarmEntity> alarms = alarmService.findAllAboutLoggedId(principalDetail.getMemberEntity().getId());
-        return ResponseEntity.ok(alarms);
-    }
+//    @GetMapping("/list/{loggedId}")
+//    public ResponseEntity<List<AlarmEntity>> getUserAlarms(@PathVariable(name = "loggedId") Long loggedId,@AuthenticationPrincipal PrincipalDetails principalDetail) {
+//        List<AlarmEntity> alarms = alarmService.findAllAboutLoggedId(principalDetail.getMemberEntity().getId());
+//        return ResponseEntity.ok(alarms);
+//    }
 
+    
+
+	@GetMapping("/list/{loggedId}")
+	public ResponseEntity<PagedResponse<AlarmDTO>> getUserAlarms(
+	        @PathVariable(name = "loggedId") Long loggedId,
+	        @RequestParam(name = "page", defaultValue = "0") int page,
+	        @RequestParam(name = "size", defaultValue = "10") int size,
+	        @RequestParam(name = "sort", defaultValue = "createTime,desc") String sort,
+	        @AuthenticationPrincipal PrincipalDetails principalDetail) {
+
+	    // sort 파라미터를 ','로 분리하여 처리
+	    String[] sortParams = sort.split(",");
+	 // 'sortParams[1]'은 정렬 방향(예: "asc", "desc")이고, 'sortParams[0]'은 정렬할 필드(예: "createTime")입니다.
+	 // 'Sort.Order'를 사용하여 정렬 기준을 설정합니다.
+	 // 'Sort.Direction.fromString'을 사용하여 정렬 방향을 'asc' 또는 'desc' 문자열로부터 'Sort.Direction' 객체로 변환합니다.
+	 Sort.Order order = new Sort.Order(Sort.Direction.fromString(sortParams[1]), sortParams[0]);
+	    Pageable pageable = PageRequest.of(page, size, Sort.by(order));
+
+	    PagedResponse<AlarmDTO> alarms = alarmService.getUserAlarms(loggedId, pageable);
+	    return ResponseEntity.ok(alarms);
+	}
+
+
+    
+    
+    
+    
+    
+    
     //새로운 알림, 읽지 않은 메시지 알림
     @GetMapping("/list/unReadAndNew/{loggedId}")
     public ResponseEntity<?> unReadAlarmsAndNewAlarms(@PathVariable(name = "loggedId") Long loggedId,@AuthenticationPrincipal PrincipalDetails principalDetail, @RequestBody AlarmDTO alarmDTO) {

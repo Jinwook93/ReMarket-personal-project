@@ -35,6 +35,9 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -91,13 +94,38 @@ public class BoardController {
 	private AlarmService alarmService;
 
 
-	@GetMapping("/allboard")
-	public String allBoard(Model model) {
-		List<BoardEntity> searchresult = boardService.allContents();
-		model.addAttribute("allBoards", searchresult);
-		return "boardlist";
-	}
+//	@GetMapping("/allboard")
+//	public String allBoard(Model model) {
+//		List<BoardEntity> searchresult = boardService.allContents();
+//		
+//		 searchresult.sort((b1, b2) -> Long.compare(b2.getId(), b1.getId()));		//id 역순으로 재정렬
+//		
+//		model.addAttribute("allBoards", searchresult);
+//		return "boardlist";
+//	}
 
+	
+	  @GetMapping("/list")
+	    public String boardList(@RequestParam(name = "page", defaultValue = "1") Integer page, Model model) {
+	        int pageSize = 10; // 페이지당 10개씩 출력
+	        
+        int pageNumber = page - 1; // 1-based page를 0-based page로 변환
+	        
+	        Page<BoardEntity> searchresult = boardService.getBoardList(pageNumber, pageSize);
+
+	       
+	        
+	     //   totalPages는 Page 객체에서 직접 가져올 수 있습니다. Page<BoardEntity> 객체에는 총 페이지 수와 같은 정보가 포함되어 있기 때문입니다.
+	        int totalPages = searchresult.getTotalPages();
+	        model.addAttribute("allBoards", searchresult);
+	        model.addAttribute("totalPages", totalPages);		//전체 페이지
+	        model.addAttribute("currentPage", page); // 현재 페이지 번호
+
+	        return "boardlist";
+	    }
+
+	
+	
 //@GetMapping("/searchboard")
 //public List<BoardEntity> searchBoard(@RequestParam String searchindex) {
 //	List<BoardEntity> searchresult = boardService.searchContents(searchindex);
@@ -159,7 +187,7 @@ public class BoardController {
 		boardService.writeContents(boardEntity);
 		Long loggedId = principalDetails.getMemberEntity().getId();
 		alarmService.postAlarm(loggedId,null, null, "BOARD", "게시판", null, "등록", null);	
-		return "redirect:allboard";
+		return "redirect:/board/list";
 	}
 
 

@@ -8,6 +8,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -73,11 +76,24 @@ public class ChatController {
 	    @GetMapping("/myChatRoom/{loggedId}")
 	    @ResponseBody
 	    public ResponseEntity<?> myChatRoom(@PathVariable(name = "loggedId")Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
-	    	List<ChattingRoomDTO> chattingRoomList = new ArrayList<>(chatService.myChattingRoomList(id));
+	    	List<ChattingRoomDTO> chattingRoomList = new ArrayList<>(chatService.myChattingRoomList(id,principalDetails.getMemberEntity().getId()));
 	    	return ResponseEntity.ok(chattingRoomList);
 	    }
 
 
+//    @GetMapping("/myChatRoom/{loggedId}")
+//    @ResponseBody
+//    public ResponseEntity<?> myChatRoom(@PathVariable(name = "loggedId") Long id,
+//                                        @AuthenticationPrincipal PrincipalDetails principalDetails,
+//                                        @RequestParam(defaultValue = "0") int page,
+//                                        @RequestParam(defaultValue = "5") int size) {
+//        Pageable pageable = PageRequest.of(page, size);
+//        Page<ChattingRoomDTO> chattingRoomPage = chatService.myChattingRoomList(id, pageable);
+//        return ResponseEntity.ok(chattingRoomPage);
+//    }
+
+    
+    
 	
 	
 		@GetMapping("/loadmessages/{roomId}")		// 선택한 채팅창의 메시지 목록을 출력

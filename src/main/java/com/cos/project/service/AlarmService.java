@@ -8,9 +8,14 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.aspectj.weaver.ast.Instanceof;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.cos.project.dto.AlarmDTO;
+import com.cos.project.dto.PagedResponse;
 import com.cos.project.entity.AlarmEntity;
 import com.cos.project.entity.BoardEntity;
 import com.cos.project.entity.ChattingRoomEntity;
@@ -400,6 +405,42 @@ public class AlarmService {
 		
 		return alarmDTO;
 	}
+
+	public PagedResponse<AlarmDTO> getUserAlarms(Long loggedId, Pageable pageable) {
+	    Page<AlarmEntity> alarmEntities = alarmRepository.findByLoggedId(loggedId, pageable);
+
+	    List<AlarmDTO> alarms = alarmEntities.getContent().stream()
+	    	    .map(alarm -> new AlarmDTO(
+	    	            alarm.getId(),
+	    	            alarm.getMember1Content(),
+	    	            alarm.getMember2Content(),
+	    	            alarm.getMember1() != null ? alarm.getMember1().getId() : null, // member1Id
+	    	            alarm.getMember2() != null ? alarm.getMember2().getId() : null, // member2Id
+	    	            alarm.getMember1Visible(),
+	    	            alarm.getMember2Visible(),
+	    	            alarm.getCreateTime(),
+	    	            alarm.getType(),
+	    	            alarm.getChildType(),
+	    	            alarm.getObject(),
+	    	            alarm.getAction(),
+	    	            alarm.getMember1Read(),			
+	    	            alarm.getMember2Read(),
+	    	            alarm.getPriority(),
+	    	            null // targetId가 null일 수 있다면 null 처리
+	    	    ))
+	    	    .collect(Collectors.toList());
+
+
+	    return new PagedResponse<>(
+	        alarms,
+	        alarmEntities.getNumber(),
+	        alarmEntities.getSize(),
+	        alarmEntities.getTotalPages(),
+	        alarmEntities.getTotalElements(),
+	        alarmEntities.isLast()
+	    );
+	}
+
 	
 	
 	
