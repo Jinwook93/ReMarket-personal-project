@@ -167,16 +167,17 @@ document.addEventListener("click", async function(event) {
 				const isLoggedIn = document.getElementById("isLoggedIn")?.value;
 				const loggedId = document.getElementById("loggedId")?.value;
 				if (isLoggedIn === "true" || isLoggedIn === true) {
-					const alarmResult = await checkUserAlarmList(loggedId);
-					const alarmList = alarmResult.content;
-					const alarmListBody = document.getElementById("alarmListBody");
+						const alarmListBody = document.getElementById("alarmListBody");
+					const alarmResult = await checkUserAlarmList(loggedId,alarmListBody.getAttribute("data-current-page"));
+//					const alarmList = alarmResult.content;
+				
 					
 //					  alarmListBody.setAttribute("data-current-page", alarmResult.page); // 현재 페이지 저장
- 						console.log(alarmResult);
-					  console.log("페이지 확인1 =>" +Number(alarmResult.page));
-					  console.log("페이지 확인2 =>" +alarmListBody.getAttribute("data-current-page"));
+// 						console.log(alarmResult);
+//					  console.log("페이지 확인1 =>" +Number(alarmResult.page));
+//					  console.log("페이지 확인2 =>" +alarmListBody.getAttribute("data-current-page"));
 					  
-//  						findAlarm(loggedId, alarmResult, alarmList, alarmListBody, alarmListBody.getAttribute("data-current-page"));
+// 						findAlarm(loggedId, alarmResult, alarmList, alarmListBody, alarmListBody.getAttribute("data-current-page"));
 							loadPage(alarmListBody.getAttribute("data-current-page"), loggedId);
 				}
 			} else {

@@ -109,6 +109,15 @@ public class ChatService {
 					.member2(member2).boardEntity(boardEntity).messageIndex1(0L).messageIndex2(0L).price(price)
 					.member1Visible(true).member2Visible(false).build();
 			chattingRoomRepository.save(chattingRoomEntity);
+		}else {
+			List<MessageEntity> messages = messageRepository.findByChattingRoomEntity(chattingRoomEntity.getId());
+			if(messages.isEmpty()) {
+				chattingRoomEntity.setMember1Visible(true);
+				chattingRoomEntity.setMember2Visible(false);
+			}else {
+				chattingRoomEntity.setMember1Visible(true);
+				chattingRoomEntity.setMember2Visible(true);
+			}
 		}
 				System.out.println("member1Visible:"+chattingRoomEntity.getMember1Visible());
 				System.out.println("member2Visible:"+chattingRoomEntity.getMember2Visible());
@@ -252,8 +261,9 @@ public class ChatService {
 //				chattingRoomEntity.setMember2Visible(true);
 //			}
 			
-			if(chattingRoomEntity.getMember1Visible().equals(false)) {		//room의 메시지가 최초로 등록될 시 member2에게도 보이게 함 
+			if(chattingRoomEntity.getMember1Visible().equals(false) || chattingRoomEntity.getMember2Visible().equals(false)) {		//room의 메시지가 최초로 등록될 시 member2에게도 보이게 함 
 				chattingRoomEntity.setMember1Visible(true);
+				chattingRoomEntity.setMember2Visible(true);
 			}
 			
 			return true;
@@ -381,8 +391,20 @@ public class ChatService {
 
 		List<MessageEntity> messages = messageRepository.findByChattingRoomEntity(roomId);
 
+		
+		
+		
+		
+		
+		
 		// 채팅방을 나가면서 메시지 상태 업데이트
 		if (chattingRoomEntity.getExitedmemberId() == null) {
+			
+			if(chattingRoomEntity.getMember1Visible().equals(false)||chattingRoomEntity.getMember2Visible().equals(false)) {
+				forceDeleteRoom(roomId);
+				alarmService.postAlarm(senderId, senderId, receiverId, "MESSAGE", "채팅방", String.valueOf(roomId), "완전삭제",
+						null);
+			}else {
 			chattingRoomEntity.setExitedmemberId(senderId);
 			chattingRoomEntity.setRecentExitedmemberId(senderId);
 			// 🟢 채팅방을 먼저 저장하여 영속 상태로 만듦
@@ -401,8 +423,10 @@ public class ChatService {
 			messageRepository.saveAll(filteredMessages);
 			entityManager.flush(); // 메시지 삭제 즉시 반영
 			entityManager.clear(); // 영속성 컨텍스트 초기화
+			
 			alarmService.postAlarm(senderId, senderId, receiverId, "MESSAGE", "채팅방", String.valueOf(roomId), "나가기",
 					null);
+			}
 		} else {
 			forceDeleteRoom(roomId);
 
