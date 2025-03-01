@@ -57,9 +57,16 @@ public class ChatService {
 		BoardEntity boardEntity = boardRepository.findById(boardId)
 				.orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
 
+		
+		
+		MemberEntity boardMember = boardEntity.getMemberEntity();
+		
+		
 		MemberEntity member1 = memberRepository.findByUserid(loggedId)
 				.orElseThrow(() -> new IllegalArgumentException("송신자를 찾을 수 없습니다."));
 
+		
+		
 		MemberEntity member2 = memberRepository.findByUserid(userId)
 				.orElseThrow(() -> new IllegalArgumentException("수신자를 찾을 수 없습니다."));
 
@@ -73,33 +80,59 @@ public class ChatService {
 
 		// ⚠️ chattingRoomEntity가 null인지 먼저 체크 후 getExitedmemberId() 호출해야 함
 		if (chattingRoomEntity != null) {
-			if (chattingRoomEntity.getExitedmemberId() != null
-					&& chattingRoomEntity.getExitedmemberId().equals(member2.getId())) {
+//			if (chattingRoomEntity.getExitedmemberId() != null
+//					&& chattingRoomEntity.getExitedmemberId().equals(member2.getId())) {
+//				chattingRoomEntity.setExitedmemberId(null);
+//				resetExitedMessages(chattingRoomEntity);
+//				Long messagesCount = (long) messageRepository.findByChattingRoomEntity(chattingRoomEntity.getId())
+//						.size();
+//				System.out.println("멤버2 문자 일치 확인 1: " + member2.getId());
+//				System.out.println("멤버2 문자 일치 확인 2: " + chattingRoomEntity.getExitedmemberId());
+//				System.out.println("메시지테스트 갯수2 : " + messagesCount);
+//				
+////				MemberEntity memberTmp = null;
+//				
+////				chattingRoomEntity.setMember2(member2);
+////				chattingRoomEntity.setMember1(member1);
+//				
+//				System.out.println("멤버 1은?" +member1.getId());
+//				System.out.println("멤버 2은?" +member2.getId());
+//				chattingRoomEntity.setMessageIndex2(messagesCount); // 메시지 수에 맞게 messageIndex 업데이트
+//				chattingRoomRepository.save(chattingRoomEntity);
+//				chattingRoomRepository.flush();  
+//	} else 
+
+			 if (chattingRoomEntity.getExitedmemberId() != null
+					&& chattingRoomEntity.getExitedmemberId().equals(member1.getId())) {			//나간 유저가 로그인 한 유저와 같을 떄
+
 				chattingRoomEntity.setExitedmemberId(null);
-				resetExitedMessages(chattingRoomEntity);
-				Long messagesCount = (long) messageRepository.findByChattingRoomEntity(chattingRoomEntity.getId())
-						.size();
-				System.out.println("멤버2 문자 일치 확인 1: " + member2.getId());
-				System.out.println("멤버2 문자 일치 확인 2: " + chattingRoomEntity.getExitedmemberId());
-				System.out.println("메시지테스트 갯수2 : " + messagesCount);
-				chattingRoomEntity.setMessageIndex2(messagesCount); // 메시지 수에 맞게 messageIndex 업데이트
-				chattingRoomRepository.save(chattingRoomEntity);
-
-			} else if (chattingRoomEntity.getExitedmemberId() != null
-					&& chattingRoomEntity.getExitedmemberId().equals(member1.getId())) {
-
-				chattingRoomEntity.setExitedmemberId(null);
 
 				resetExitedMessages(chattingRoomEntity);
 
-				Long messagesCount = (long) messageRepository.findByChattingRoomEntity(chattingRoomEntity.getId())
-						.size();
+				Long messagesCount = (long) messageRepository.findByChattingRoomEntity(chattingRoomEntity.getId()).size();
+					
 
+				
+				if(!member1.getId().equals(boardMember.getId())){
+					
+					
+					if(chattingRoomEntity.getMember1().getId().equals(boardMember.getId())) {			//member1, member2가 메시지 송신 시 바뀌기 떄문에 
+						chattingRoomEntity.setMember1(chattingRoomEntity.getMember2());
+						chattingRoomEntity.setMember2(boardMember);
+					};
 				System.out.println("멤버1 문자 일치 확인 1: " + member2.getId());
 				System.out.println("멤버1  문자 일치 확인 2: " + chattingRoomEntity.getExitedmemberId());
 				System.out.println("메시지테스트 갯수1 : " + messagesCount);
 				chattingRoomEntity.setMessageIndex1(messagesCount); // 메시지 수에 맞게 messageIndex 업데이트
+				}	else if(member1.getId().equals(boardMember.getId())){
+					System.out.println("멤버2문자 일치 확인 1: " + member2.getId());
+					System.out.println("멤버2 문자 일치 확인 2: " + chattingRoomEntity.getExitedmemberId());
+					System.out.println("메시지테스트 갯수2 : " + messagesCount);
+					chattingRoomEntity.setMessageIndex2(messagesCount); // 메시지 수에 맞게 messageIndex 업데이트
+					}
+				
 				chattingRoomRepository.save(chattingRoomEntity);
+				chattingRoomRepository.flush();
 			}
 		}
 
@@ -109,6 +142,7 @@ public class ChatService {
 					.member2(member2).boardEntity(boardEntity).messageIndex1(0L).messageIndex2(0L).price(price)
 					.member1Visible(true).member2Visible(false).build();
 			chattingRoomRepository.save(chattingRoomEntity);
+			chattingRoomRepository.flush();
 		}else {
 			List<MessageEntity> messages = messageRepository.findByChattingRoomEntity(chattingRoomEntity.getId());
 			if(messages.isEmpty()) {
@@ -118,7 +152,9 @@ public class ChatService {
 				chattingRoomEntity.setMember1Visible(true);
 				chattingRoomEntity.setMember2Visible(true);
 			}
+			chattingRoomRepository.flush();
 		}
+
 				System.out.println("member1Visible:"+chattingRoomEntity.getMember1Visible());
 				System.out.println("member2Visible:"+chattingRoomEntity.getMember2Visible());
 		ChattingRoomDTO responseDTO = ChattingRoomDTO.builder().id(chattingRoomEntity.getId())
@@ -291,12 +327,17 @@ public class ChatService {
 				Boolean visibleTmp = null;
 				visibleTmp = room.getMember1Visible();
 				
+				Long messageIndexTmp = null;
+				messageIndexTmp = room.getMessageIndex1();
+				
 				if (loggedId.equals(room.getMember2().getId())) {
 					room.setMember1(room.getMember2());
 					room.setMember1Visible(room.getMember2Visible());
+//					room.setMessageIndex1(room.getMessageIndex2());
 					
 					room.setMember2(memberTmp);
 					room.setMember2Visible(visibleTmp);
+//					room.setMessageIndex2(messageIndexTmp);
 				}
 			}
 		} else if (chattingRoomEntities.isEmpty()) {
