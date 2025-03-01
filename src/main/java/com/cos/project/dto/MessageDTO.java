@@ -31,5 +31,25 @@ public class MessageDTO {
     private Boolean alarmType;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private Timestamp sendTime;    // 메시지 전송 시간
+	
+    
+    
+    public MessageDTO(Long id, String senderUserId, String messageContent, Timestamp sendTime) {
+		super();
+		this.id = id;
+		this.senderUserId = senderUserId;
+		this.messageContent = messageContent;
+		this.sendTime = sendTime;
+	}
 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 }

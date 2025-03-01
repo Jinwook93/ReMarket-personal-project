@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.cos.project.dto.MessageDTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 
@@ -71,7 +72,33 @@ public class MessageEntity {
 
 
 
+    public MessageDTO convertToDTO(MessageEntity message) {
+        return new MessageDTO(
+            message.getId(),
+            message.getSender().getUserid(),
+            message.getMessageContent(),
+            message.getSendTime()
+        );
+    }
     
+ // Assuming MessageDTO is a class you have created to represent a message in a simpler form
+//    public MessageDTO convertToDTO(MessageEntity message) {
+//        if (message == null) {
+//            return null;
+//        }
+//
+//        // Assuming MessageDTO has a constructor that takes the necessary fields of MessageEntity
+//        MessageDTO messageDTO = new MessageDTO();
+//        messageDTO.setId(message.getId());
+//        messageDTO.setContent(message.getContent());
+//        messageDTO.setSendTime(message.getSendTime());
+//        messageDTO.setSender(message.getSender()); // Assuming sender is a property of MessageEntity
+//
+//        // Add any additional fields from MessageEntity to MessageDTO if needed
+//
+//        return messageDTO;
+//    }
+
     
     
 

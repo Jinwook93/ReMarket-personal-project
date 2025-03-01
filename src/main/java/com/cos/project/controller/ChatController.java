@@ -61,7 +61,7 @@ public class ChatController {
     @ResponseBody
     public ResponseEntity<?> createChatRoom(@PathVariable(name = "boardId") Long boardId, @RequestBody ChattingRoomDTO chattingRoomDTO , @AuthenticationPrincipal PrincipalDetails principalDetails) {
     	MemberEntity loggedUserId = principalDetails.getMemberEntity();
-    	System.out.println("아이디확인"+chattingRoomDTO.getMember2UserId());
+//    	System.out.println("아이디확인"+chattingRoomDTO.getMember2UserId());
     	Long member2Id = memberService.findByUserId(chattingRoomDTO.getMember2UserId()).getId();		//상대방의 Id
     	ChattingRoomDTO responseDTO =chatService.findOrCreateRoom("대화방", loggedUserId.getUserid(), chattingRoomDTO.getMember2UserId() ,boardId, 0);
      //   model.addAttribute("boardId", boardId);
@@ -300,7 +300,38 @@ public class ChatController {
     
     
     
+//    @GetMapping("/findRecentRoomMessage/{roomId}")			//해당 방의 최근 메시지 조회
+//    @ResponseBody
+//    public ResponseEntity<?> findRecentRoomMessage(@PathVariable(name = "roomId") Long roomId, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+//       MessageDTO result = chatService.recentRoomMessage(roomId);
+//       
+//       System.out.println("최근 메시지 id"+result.getId());
+//       System.out.println("최근 메시지 보낸사람"+result.getSenderUserId());
+//       System.out.println("최근 메시지 보낸 날짜"+result.getSendTime());
+//       System.out.println("최근 메시지 내용"+result.getMessageContent());
+//       
+//        return ResponseEntity.ok(result);
+//    }
     
-    
-	
+    @GetMapping("/findRecentRoomMessage/{roomId}") // 해당 방의 최근 메시지 조회
+    @ResponseBody
+    public ResponseEntity<?> findRecentRoomMessage(@PathVariable(name = "roomId") Long roomId, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+        MessageDTO result = chatService.recentRoomMessage(roomId);
+        
+        if(result.getId() != null) {
+        System.out.println("==============");
+        System.out.println("최근 메시지 id: " + result.getId());
+        System.out.println("최근 메시지 보낸사람: " + result.getSenderUserId());
+        System.out.println("최근 메시지 보낸 날짜: " + result.getSendTime());
+        System.out.println("최근 메시지 내용: " + result.getMessageContent());
+        System.out.println("==============");
+        }
+        else {
+            System.out.println("==============");
+            System.out.println("최근 메시지 내용: " + result.getMessageContent());
+            System.out.println("==============");
+        }
+        return ResponseEntity.ok(result); // 정상적으로 메시지를 반환
+    }
+
 }

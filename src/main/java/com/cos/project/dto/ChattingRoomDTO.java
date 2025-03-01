@@ -33,5 +33,8 @@ public class ChattingRoomDTO {
     private Long messageIndex2;		//채팅방 재접속시 렌더링 할지에 대한 유무		
     private Long recentExitedmemberId;			//최근 나간 유저ID 정보	(채팅방을 나갈 때에만 ID가 갱신됨
     
+    private Boolean member1Visible; //채팅방이 '최초' 만들어졌을 경우 볼 수 있는 권한
+    private Boolean member2Visible;		//채팅방이 '최초' 만들어졌을 경우 볼 수 있는 권한
+    
     private Set<MessageDTO> messages;
 }

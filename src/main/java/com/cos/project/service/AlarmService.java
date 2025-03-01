@@ -315,6 +315,7 @@ public class AlarmService {
 			if (childType.equals("채팅방") && action.equals("채팅방 만듬")) {
 				member1Content = member1.get().getUserid() +"님과 " +member2.get().getUserid()+"님의 채팅방이 등록되었습니다";
 				member2Content =  member2.get().getUserid() +" 님과 " +member1.get().getUserid()+"님의 채팅방이 등록되었습니다";
+				member2Visible = false;
 			} else if (childType.equals("채팅방") && action.equals("나가기")) {
 				member1Content =  member1.get().getUserid() +"님과 " +member2.get().getUserid()+"님의  채팅방을 나갔습니다";
 				member2Content =  member1.get().getUserid() +"님이 "+object+"번 채팅창을 나갔습니다";

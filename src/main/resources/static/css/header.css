@@ -1,0 +1,274 @@
+body {
+	font-family: Arial, sans-serif;
+	margin: 0;
+	padding: 0;
+	background-color: #f4f4f4;
+}
+
+#header-content {
+	background-color: #3a3a3a;
+	color: white;
+	padding: 10px 20px;
+}
+
+#header-content a {
+	color: white;
+	text-decoration: none;
+	margin-right: 15px;
+}
+
+#header-content a:hover {
+	text-decoration: underline;
+}
+
+.chattingRoomList, .alarmList {
+	display: none; /* 기본적으로 숨김 */
+	margin-top: 15px;
+	background-color: #fff;
+	border-radius: 5px;
+	border: 1px solid #ddd;
+	padding: 15px;
+	box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+	color: black;
+}
+
+.chattingRoomList table, .alarmList table {
+	width: 100%;
+	border-collapse: collapse;
+	color: black;
+}
+
+.chattingRoomList table th, .chattingRoomList table td, .alarmList table th,
+	.alarmList table td {
+	padding: 10px;
+	text-align: left;
+	border-bottom: 1px solid #f2f2f2;
+	color: black;
+}
+
+.chattingRoomList table th, .alarmList table th {
+	background-color: #f4f4f4;
+	color: black;
+}
+
+.chattingRoomList table tr:hover, .alarmList table tr:hover {
+	background-color: #f9f9f9;
+	color: black;
+}
+
+#myChattingRoomList {
+	display: inline-block;
+	background-color: #007bff;
+	color: black;
+	padding: 8px 15px;
+	border-radius: 4px;
+	cursor: pointer;
+	text-decoration: none;
+}
+
+#myChattingRoomList:hover {
+	background-color: #0056b3;
+}
+
+#alarmButton {
+	display: inline-block;
+	background-color: #ff9900;
+	color: white;
+	padding: 8px 15px;
+	border-radius: 5px;
+	cursor: pointer;
+	text-decoration: none;
+	width: auto; /* 크기 자동 조절 */
+	height: auto;
+	line-height: normal;
+}
+
+#alarmButton:hover {
+	background-color: #cc7a00;
+}
+
+.logged-in p {
+	font-size: 16px;
+	margin: 0;
+}
+
+.logged-in a {
+	color: white;
+	text-decoration: none;
+}
+
+.logged-in a:hover {
+	text-decoration: underline;
+}
+
+#chat-container {
+	width: 400px;
+	margin: 0 auto;
+	border: 1px solid #ccc;
+	padding: 10px;
+	border-radius: 10px;
+}
+
+#chat-box {
+	height: 300px;
+	overflow-y: auto;
+	border-bottom: 1px solid #ccc;
+	padding: 10px;
+}
+
+#message-input {
+	width: 80%;
+	padding: 5px;
+}
+
+#send-button {
+	width: 15%;
+	padding: 5px;
+}
+
+.message-right {
+	/* 	text-align: right; */
+	background-color: #dcf8c6;
+	padding: 8px;
+	border-radius: 10px;
+	margin: 5px;
+	max-width: 60%;
+}
+
+.message-left {
+	text-align: left;
+	background-color: #ffffff;
+	padding: 8px;
+	border-radius: 10px;
+	margin: 5px;
+	max-width: 60%;
+}
+
+.message-item.read {
+	background-color: #f0f0f0;
+	color: #666;
+}
+
+.read-status {
+	font-size: 12px;
+	color: gray;
+	margin-left: 5px;
+}
+
+#chattingRoomScroll {
+	max-height: 250px; /* 5개 이상이면 스크롤 */
+	overflow-y: auto;
+	display: block;
+}
+
+/* 알림 리스트 */
+
+/* 알림 리스트 스타일 */
+#alarmListBody {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#alarmListBody tr {
+    border-bottom: 1px solid #ddd;
+}
+
+#alarmListBody td {
+    padding: 10px;
+    text-align: center;
+}
+
+/* 버튼 스타일 */
+#alarmListBody button {
+    padding: 8px 12px;
+    margin: 4px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+/* 기본 버튼 스타일 */
+button:hover {
+    opacity: 0.8;
+}
+
+/* 읽음 처리 버튼 */
+button[onclick^="markAsRead"] {
+    background-color: #4CAF50;
+    color: white;
+}
+
+/* 거래 버튼 */
+button[id^="agreeMember2-"],
+button[id^="complete1-Sell-"] {
+    background-color: #007BFF;
+    color: white;
+}
+
+/* 거절 버튼 */
+button[id^="denyMember2-"] {
+    background-color: #DC3545;
+    color: white;
+}
+
+/* 페이지네이션 스타일 */
+#paginationContainer {
+    display: flex;
+    justify-content: center;  /* 가로 정렬 */
+    align-items: center;  /* 세로 정렬 */
+    width: 100%;
+    margin-top: 10px;
+}
+
+#pagination {
+    display: flex;
+    justify-content: center;
+    gap: 5px; /* 버튼 간격 */
+}
+
+#pagination button {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    background-color: white;
+    cursor: pointer;
+    transition: 0.3s;
+    border-radius: 5px; /* 버튼 모서리 둥글게 */
+}
+
+#pagination button:hover {
+    background-color: #f0f0f0;
+}
+
+#pagination button:disabled {
+    background-color: #ddd;
+    cursor: not-allowed;
+}
+
+
+
+.date-text {
+    font-family: "Arial", sans-serif;
+    font-size: 10px;
+    color: gray;
+/*     font-weight: bold; */
+    text-align: right; /* 오른쪽 정렬 */
+}
+
+.read-status {
+    font-family: "Courier New", monospace;
+    font-size: 8px;
+    color: #888;
+    font-weight: bold; 
+/*     font-style: italic; */
+    text-align: right; /* 오른쪽 정렬 */
+}
+
+/* 컨테이너도 오른쪽 정렬 적용 */
+.date-container {
+    display: flex;
+    justify-content: flex-end; /* 내부 요소들을 오른쪽 정렬 */
+    gap: 10px; /* 요소 간 간격 */
+    margin-top:10px;
+}
+

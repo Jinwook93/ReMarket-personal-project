@@ -1,6 +1,7 @@
 package com.cos.project.service;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -28,17 +29,10 @@ import com.cos.project.repository.BoardRepository;
 import com.cos.project.repository.ChattingRoomRepository;
 import com.cos.project.repository.MemberRepository;
 import com.cos.project.repository.MessageRepository;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-
-
-
-
-
-
 
 @Service
 @RequiredArgsConstructor
@@ -53,106 +47,100 @@ public class ChatService {
 
 	private final MessageRepository messageRepository;
 
-	
-	 @PersistenceContext
-	    private EntityManager entityManager;
-	
-	private final AlarmService alarmService; 
-	
+	@PersistenceContext
+	private EntityManager entityManager;
+
+	private final AlarmService alarmService;
+
 	@Transactional
 	public ChattingRoomDTO findOrCreateRoom(String title, String loggedId, String userId, Long boardId, int price) {
-	    BoardEntity boardEntity = boardRepository.findById(boardId)
-	        .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+		BoardEntity boardEntity = boardRepository.findById(boardId)
+				.orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
 
-	    MemberEntity member1 = memberRepository.findByUserid(loggedId)
-	        .orElseThrow(() -> new IllegalArgumentException("송신자를 찾을 수 없습니다."));
+		MemberEntity member1 = memberRepository.findByUserid(loggedId)
+				.orElseThrow(() -> new IllegalArgumentException("송신자를 찾을 수 없습니다."));
 
-	    MemberEntity member2 = memberRepository.findByUserid(userId)
-	        .orElseThrow(() -> new IllegalArgumentException("수신자를 찾을 수 없습니다."));
+		MemberEntity member2 = memberRepository.findByUserid(userId)
+				.orElseThrow(() -> new IllegalArgumentException("수신자를 찾을 수 없습니다."));
 
-	    // 기존 채팅방이 있는지 확인
-	    ChattingRoomEntity chattingRoomEntity = chattingRoomRepository.findEnableRoom(member1.getId(), member2.getId(), boardId);
-	    
-	    if (chattingRoomEntity == null) {
-	        chattingRoomEntity = chattingRoomRepository.findEnableRoom(member2.getId(), member1.getId(), boardId);
-	    }
+		// 기존 채팅방이 있는지 확인
+		ChattingRoomEntity chattingRoomEntity = chattingRoomRepository.findEnableRoom(member1.getId(), member2.getId(),
+				boardId);
 
-	    // ⚠️ chattingRoomEntity가 null인지 먼저 체크 후 getExitedmemberId() 호출해야 함
-	    if (chattingRoomEntity != null) {
-	        if (chattingRoomEntity.getExitedmemberId() != null && chattingRoomEntity.getExitedmemberId().equals(member2.getId())) {
-	            chattingRoomEntity.setExitedmemberId(null);
-	            resetExitedMessages(chattingRoomEntity);
-	            Long messagesCount = (long) messageRepository.findByChattingRoomEntity(chattingRoomEntity.getId()).size();
-	            System.out.println("멤버2 문자 일치 확인 1: "+member2.getId());
-	            System.out.println("멤버2 문자 일치 확인 2: "+chattingRoomEntity.getExitedmemberId());
-	            System.out.println("메시지테스트 갯수2 : "+ messagesCount);
-	            chattingRoomEntity.setMessageIndex2(messagesCount); // 메시지 수에 맞게 messageIndex 업데이트
-	            chattingRoomRepository.save(chattingRoomEntity);
-	          
-	        } else if (chattingRoomEntity.getExitedmemberId() != null && chattingRoomEntity.getExitedmemberId().equals(member1.getId())) {
-	           
-	        	chattingRoomEntity.setExitedmemberId(null);
-	          
-	        	resetExitedMessages(chattingRoomEntity);
-	            
-	        	Long messagesCount = (long) messageRepository.findByChattingRoomEntity(chattingRoomEntity.getId()).size();
+		if (chattingRoomEntity == null) {
+			chattingRoomEntity = chattingRoomRepository.findEnableRoom(member2.getId(), member1.getId(), boardId);
+		}
 
-	            System.out.println("멤버1 문자 일치 확인 1: "+member2.getId());
-	            System.out.println("멤버1  문자 일치 확인 2: "+chattingRoomEntity.getExitedmemberId());
-	            System.out.println("메시지테스트 갯수1 : "+ messagesCount);
-	            chattingRoomEntity.setMessageIndex1(messagesCount); // 메시지 수에 맞게 messageIndex 업데이트
-	            chattingRoomRepository.save(chattingRoomEntity);
-	        }
-	    }
+		// ⚠️ chattingRoomEntity가 null인지 먼저 체크 후 getExitedmemberId() 호출해야 함
+		if (chattingRoomEntity != null) {
+			if (chattingRoomEntity.getExitedmemberId() != null
+					&& chattingRoomEntity.getExitedmemberId().equals(member2.getId())) {
+				chattingRoomEntity.setExitedmemberId(null);
+				resetExitedMessages(chattingRoomEntity);
+				Long messagesCount = (long) messageRepository.findByChattingRoomEntity(chattingRoomEntity.getId())
+						.size();
+				System.out.println("멤버2 문자 일치 확인 1: " + member2.getId());
+				System.out.println("멤버2 문자 일치 확인 2: " + chattingRoomEntity.getExitedmemberId());
+				System.out.println("메시지테스트 갯수2 : " + messagesCount);
+				chattingRoomEntity.setMessageIndex2(messagesCount); // 메시지 수에 맞게 messageIndex 업데이트
+				chattingRoomRepository.save(chattingRoomEntity);
 
-	    // 채팅방이 없으면 새로 생성
-	    if (chattingRoomEntity == null) {
-	        chattingRoomEntity = ChattingRoomEntity.builder()
-	            .title(boardEntity.getTitle())
-	            .member1(member1)
-	            .member2(member2)
-	            .boardEntity(boardEntity)
-	            .messageIndex1(0L)
-	            .messageIndex2(0L)
-	            .price(price)
-	            .build();
-	        chattingRoomRepository.save(chattingRoomEntity);
-	    }
+			} else if (chattingRoomEntity.getExitedmemberId() != null
+					&& chattingRoomEntity.getExitedmemberId().equals(member1.getId())) {
 
-	   ChattingRoomDTO responseDTO = ChattingRoomDTO.builder()
-	            .id(chattingRoomEntity.getId())
-	            .title(chattingRoomEntity.getTitle())
-	            .price(chattingRoomEntity.getPrice())
-	            .member1UserId(chattingRoomEntity.getMember1().getUserid())
-	            .member2UserId(chattingRoomEntity.getMember2().getUserid())
-	            .boardId(String.valueOf(chattingRoomEntity.getBoardEntity().getId()))
-	            .recentExitedmemberId(chattingRoomEntity.getRecentExitedmemberId())
-	            .messageIndex1(chattingRoomEntity.getMessageIndex1())
-	            .messageIndex2(chattingRoomEntity.getMessageIndex2())
-	            .build();
-	   
-	   return responseDTO;
+				chattingRoomEntity.setExitedmemberId(null);
+
+				resetExitedMessages(chattingRoomEntity);
+
+				Long messagesCount = (long) messageRepository.findByChattingRoomEntity(chattingRoomEntity.getId())
+						.size();
+
+				System.out.println("멤버1 문자 일치 확인 1: " + member2.getId());
+				System.out.println("멤버1  문자 일치 확인 2: " + chattingRoomEntity.getExitedmemberId());
+				System.out.println("메시지테스트 갯수1 : " + messagesCount);
+				chattingRoomEntity.setMessageIndex1(messagesCount); // 메시지 수에 맞게 messageIndex 업데이트
+				chattingRoomRepository.save(chattingRoomEntity);
+			}
+		}
+
+		// 채팅방이 없으면 새로 생성
+		if (chattingRoomEntity == null) {
+			chattingRoomEntity = ChattingRoomEntity.builder().title(boardEntity.getTitle()).member1(member1)
+					.member2(member2).boardEntity(boardEntity).messageIndex1(0L).messageIndex2(0L).price(price)
+					.member1Visible(true).member2Visible(false).build();
+			chattingRoomRepository.save(chattingRoomEntity);
+		}
+				System.out.println("member1Visible:"+chattingRoomEntity.getMember1Visible());
+				System.out.println("member2Visible:"+chattingRoomEntity.getMember2Visible());
+		ChattingRoomDTO responseDTO = ChattingRoomDTO.builder().id(chattingRoomEntity.getId())
+				.title(chattingRoomEntity.getTitle()).price(chattingRoomEntity.getPrice())
+				.member1UserId(chattingRoomEntity.getMember1().getUserid())
+				.member2UserId(chattingRoomEntity.getMember2().getUserid())
+				.boardId(String.valueOf(chattingRoomEntity.getBoardEntity().getId()))
+				.recentExitedmemberId(chattingRoomEntity.getRecentExitedmemberId())
+				.messageIndex1(chattingRoomEntity.getMessageIndex1())
+				.messageIndex2(chattingRoomEntity.getMessageIndex2())
+				.member1Visible(chattingRoomEntity.getMember1Visible())
+				.member2Visible(chattingRoomEntity.getMember2Visible())
+				.build();
+
+		return responseDTO;
 	}
-	
+
 	@Transactional
 	private void resetExitedMessages(ChattingRoomEntity chattingRoomEntity) {
-	    List<MessageEntity> messages = messageRepository.findByChattingRoomEntity(chattingRoomEntity.getId());
-	    for (MessageEntity message : messages) {
-	        message.setExited(false);
-	    }
-	    messageRepository.saveAll(messages);
+		List<MessageEntity> messages = messageRepository.findByChattingRoomEntity(chattingRoomEntity.getId());
+		for (MessageEntity message : messages) {
+			message.setExited(false);
+		}
+		messageRepository.saveAll(messages);
 	}
 
-
-	
 	@Transactional
 	public Optional<ChattingRoomEntity> findChatRoom(Long roomid) {
 		return chattingRoomRepository.findById(roomid);
 	}
-	
-	
-	
-	
+
 //	@Transactional
 //	public boolean enterChatRoom(Long loggedId, Long userId, Long boardId) {
 //		boolean flag = false;
@@ -221,12 +209,11 @@ public class ChatService {
 				.map(message -> new MessageDTO(message.getId(), message.getChattingRoomEntity().getId(),
 						message.getSender().getUserid(), message.getReceiver().getUserid(), message.getMessageContent(),
 						message.isLiked(), message.isRead(), message.isExited(), message.getExitedSenderId(),
-						message.isDeleted(), message.getParentMessageId(), message.getSender().getProfileImage(), message.getReceiver().getProfileImage(),
-						message.getAlarmType(), message.getSendTime()))
+						message.isDeleted(), message.getParentMessageId(), message.getSender().getProfileImage(),
+						message.getReceiver().getProfileImage(), message.getAlarmType(), message.getSendTime()))
 				.collect(Collectors.toList());
 	}
 
-	
 	@Transactional
 	public Long findMember2Id(Long id, Long loggedId) {
 		Long member2Id = chattingRoomRepository.findMember2Id(id, loggedId);
@@ -238,15 +225,12 @@ public class ChatService {
 
 		String receiverUserId = messageDTO.getReceiverUserId();
 		System.out.println("리시버아이디 테스트" + receiverUserId);
-		System.out.println("부모 메시지 테스트" + messageDTO.getParentMessageId());	
+		System.out.println("부모 메시지 테스트" + messageDTO.getParentMessageId());
 		// Retrieve the chatting room and sender information
 		ChattingRoomEntity chattingRoomEntity = chattingRoomRepository.findById(roomId)
 				.orElseThrow(() -> new RuntimeException("Chat room not found"));
 		MemberEntity sender = principalDetails.getMemberEntity();
-		
-		
-		
-		
+
 		// Use the existing receiver from the chatting room
 		MemberEntity receiver = memberRepository.findByUserid(receiverUserId).get();
 		System.out.println("리시버 아이디 :" + receiver.getUserid());
@@ -258,12 +242,20 @@ public class ChatService {
 			// Create a new MessageEntity and save it to the database
 			MessageEntity messageEntity = MessageEntity.builder().chattingRoomEntity(chattingRoomEntity).sender(sender)
 					.receiver(receiver) // Directly use the managed receiver
-					.parentMessageId(messageDTO.getParentMessageId())
-					.alarmType(messageDTO.getAlarmType())
+					.parentMessageId(messageDTO.getParentMessageId()).alarmType(messageDTO.getAlarmType())
 					.messageContent(messageDTO.getMessageContent()).build();
 
 			messageRepository.save(messageEntity);
 			messageRepository.flush();
+			
+//			if(chattingRoomEntity.getMember2Visible().equals(false)) {		//room의 메시지가 최초로 등록될 시 member2에게도 보이게 함 
+//				chattingRoomEntity.setMember2Visible(true);
+//			}
+			
+			if(chattingRoomEntity.getMember1Visible().equals(false)) {		//room의 메시지가 최초로 등록될 시 member2에게도 보이게 함 
+				chattingRoomEntity.setMember1Visible(true);
+			}
+			
 			return true;
 		}
 	}
@@ -273,26 +265,31 @@ public class ChatService {
 //		return messageResult;
 
 	@Transactional
-	public List<ChattingRoomDTO> myChattingRoomList(Long id,Long loggedId) {
+	public List<ChattingRoomDTO> myChattingRoomList(Long id, Long loggedId) {
 //		List<ChattingRoomEntity> chattingRoomEntities = chattingRoomRepository.findAllByLoggedMember2(id);
 		List<ChattingRoomEntity> chattingRoomEntities = chattingRoomRepository.findAllByLoggedMember(id);
 //		if (chattingRoomEntities.isEmpty()) {
 //			chattingRoomEntities = chattingRoomRepository.findAllByLoggedMember(id);
 //		} else {
-		
-	if(!chattingRoomEntities.isEmpty())	{
+
+		if (!chattingRoomEntities.isEmpty()) {
 			for (ChattingRoomEntity room : chattingRoomEntities) {
 
 				MemberEntity memberTmp = null;
 				memberTmp = room.getMember1();
-				if(loggedId.equals(room.getMember2().getId())) {
-				room.setMember1(room.getMember2());
-
-				room.setMember2(memberTmp);
+				
+				Boolean visibleTmp = null;
+				visibleTmp = room.getMember1Visible();
+				
+				if (loggedId.equals(room.getMember2().getId())) {
+					room.setMember1(room.getMember2());
+					room.setMember1Visible(room.getMember2Visible());
+					
+					room.setMember2(memberTmp);
+					room.setMember2Visible(visibleTmp);
 				}
 			}
-		}
-	else if (chattingRoomEntities.isEmpty()) {
+		} else if (chattingRoomEntities.isEmpty()) {
 			return Collections.EMPTY_LIST;
 		}
 
@@ -324,7 +321,9 @@ public class ChatService {
 
 			return ChattingRoomDTO.builder().id(entity.getId()).title(entity.getTitle()).price(entity.getPrice())
 					.createTime(entity.getCreateTime()).liked(entity.isLiked()).member1UserId(member1UserId)
-					.member2UserId(member2UserId).boardId(boardId).messages(messageDTOs).build();
+					.member2UserId(member2UserId).boardId(boardId).messages(messageDTOs)
+					.member1Visible(entity.getMember1Visible()).member2Visible(entity.getMember2Visible())
+					.build();
 		}).collect(Collectors.toList());
 	}
 
@@ -337,22 +336,23 @@ public class ChatService {
 
 	@Transactional
 	public boolean deleteMessage(Long id) {
-	    try {
-	        System.out.println("삭제되는 ID: " + id);
-	        if (messageRepository.existsById(id)) {
-	        	MessageEntity message = messageRepository.findById(id).get();				//삭제 시 메시지 List index가 밀리므로, 삭제 대신 대체 내용으로 수정함
-	        	message.setMessageContent("⚠️삭제된 메시지입니다");
-	        	message.setDeleted(true);
-	        	//           messageRepository.deleteById(id);											//삭제 메시지
-	            return true;
-	        } else {
-	            System.out.println("삭제할 메시지가 없습니다.");
-	            return false;
-	        }
-	    } catch (Exception e) {
-	        System.out.println("메시지 삭제 실패: " + e.getMessage());
-	        return false;
-	    }
+		try {
+			System.out.println("삭제되는 ID: " + id);
+			if (messageRepository.existsById(id)) {
+				MessageEntity message = messageRepository.findById(id).get(); // 삭제 시 메시지 List index가 밀리므로, 삭제 대신 대체
+																				// 내용으로 수정함
+				message.setMessageContent("⚠️삭제된 메시지입니다");
+				message.setDeleted(true);
+				// messageRepository.deleteById(id); //삭제 메시지
+				return true;
+			} else {
+				System.out.println("삭제할 메시지가 없습니다.");
+				return false;
+			}
+		} catch (Exception e) {
+			System.out.println("메시지 삭제 실패: " + e.getMessage());
+			return false;
+		}
 	}
 
 //	@Transactional
@@ -370,44 +370,44 @@ public class ChatService {
 //
 //		return true;
 //	}
-	
-	
+
 	@Transactional
 	public boolean deleteRoom(Long roomId, Long senderId, String receiverUserId) {
-	    Long receiverId = memberRepository.findByUserid(receiverUserId).get().getId();
+		Long receiverId = memberRepository.findByUserid(receiverUserId).get().getId();
 
-	    // 채팅방 및 메시지 조회
-	    ChattingRoomEntity chattingRoomEntity = chattingRoomRepository.findById(roomId)
-	        .orElseThrow(() -> new IllegalArgumentException("해당 채팅방이 존재하지 않습니다: " + roomId));
+		// 채팅방 및 메시지 조회
+		ChattingRoomEntity chattingRoomEntity = chattingRoomRepository.findById(roomId)
+				.orElseThrow(() -> new IllegalArgumentException("해당 채팅방이 존재하지 않습니다: " + roomId));
 
-	    List<MessageEntity> messages = messageRepository.findByChattingRoomEntity(roomId);
-	    
-	    // 채팅방을 나가면서 메시지 상태 업데이트
-	    if (chattingRoomEntity.getExitedmemberId() == null) {
-	        chattingRoomEntity.setExitedmemberId(senderId);
-	        	chattingRoomEntity.setRecentExitedmemberId(senderId);
-	        // 🟢 채팅방을 먼저 저장하여 영속 상태로 만듦
-	        chattingRoomRepository.saveAndFlush(chattingRoomEntity);  
+		List<MessageEntity> messages = messageRepository.findByChattingRoomEntity(roomId);
 
-	        // 메시지 필터링 및 상태 업데이트
-	        List<MessageEntity> filteredMessages = messages.stream()
-	            .filter(message -> message.getSender().getId().equals(senderId) &&
-	                               message.getReceiver().getId().equals(receiverId))
-	            .peek(message -> {
-	                message.setExited(true);
-	                message.setExitedSenderId(chattingRoomEntity.getExitedmemberId());
-	            })
-	            .collect(Collectors.toList());
+		// 채팅방을 나가면서 메시지 상태 업데이트
+		if (chattingRoomEntity.getExitedmemberId() == null) {
+			chattingRoomEntity.setExitedmemberId(senderId);
+			chattingRoomEntity.setRecentExitedmemberId(senderId);
+			// 🟢 채팅방을 먼저 저장하여 영속 상태로 만듦
+			chattingRoomRepository.saveAndFlush(chattingRoomEntity);
 
-	        // 🟢 변경된 메시지 저장
-	        messageRepository.saveAll(filteredMessages);
-	        entityManager.flush();  // 메시지 삭제 즉시 반영
-    	    entityManager.clear();  // 영속성 컨텍스트 초기화
-        	alarmService.postAlarm(senderId, senderId, receiverId, "MESSAGE", "채팅방", String.valueOf(roomId), "나가기", null);
-	    } else {
-	    	  forceDeleteRoom(roomId);
-	    	  
-	    		alarmService.postAlarm(senderId, senderId, receiverId, "MESSAGE", "채팅방", String.valueOf(roomId), "완전삭제", null);
+			// 메시지 필터링 및 상태 업데이트
+			List<MessageEntity> filteredMessages = messages.stream()
+					.filter(message -> message.getSender().getId().equals(senderId)
+							&& message.getReceiver().getId().equals(receiverId))
+					.peek(message -> {
+						message.setExited(true);
+						message.setExitedSenderId(chattingRoomEntity.getExitedmemberId());
+					}).collect(Collectors.toList());
+
+			// 🟢 변경된 메시지 저장
+			messageRepository.saveAll(filteredMessages);
+			entityManager.flush(); // 메시지 삭제 즉시 반영
+			entityManager.clear(); // 영속성 컨텍스트 초기화
+			alarmService.postAlarm(senderId, senderId, receiverId, "MESSAGE", "채팅방", String.valueOf(roomId), "나가기",
+					null);
+		} else {
+			forceDeleteRoom(roomId);
+
+			alarmService.postAlarm(senderId, senderId, receiverId, "MESSAGE", "채팅방", String.valueOf(roomId), "완전삭제",
+					null);
 //	        // 🟢 메시지 삭제
 //	        messageRepository.deleteByRoomId(roomId);
 //	        messageRepository.flush();
@@ -415,98 +415,88 @@ public class ChatService {
 ////	        chattingRoomRepository.deleteById(roomId);
 ////	        chattingRoomRepository.flush();
 ////	  
-	    }
-	    
-	    return true;
+		}
+
+		return true;
 	}
 
-    @Transactional		//강제 삭제
-    public void forceDeleteRoom(Long roomId) {
-    	   messageRepository.deleteByRoomId(roomId);
-    	    entityManager.flush();  // 메시지 삭제 즉시 반영
-    	    entityManager.clear();  // 영속성 컨텍스트 초기화
+	@Transactional // 강제 삭제
+	public void forceDeleteRoom(Long roomId) {
+		messageRepository.deleteByRoomId(roomId);
+		entityManager.flush(); // 메시지 삭제 즉시 반영
+		entityManager.clear(); // 영속성 컨텍스트 초기화
 
-    	    chattingRoomRepository.deleteById(roomId);
-    	    entityManager.flush();  // 채팅방 삭제 즉시 반영
-    	    entityManager.clear();
-    }
+		chattingRoomRepository.deleteById(roomId);
+		entityManager.flush(); // 채팅방 삭제 즉시 반영
+		entityManager.clear();
+	}
 
+	@Transactional
+	public boolean markMessagesAsRead(List<Long> messageIds) {
+		List<MessageEntity> messages = messageRepository.findAllById(messageIds);
 
-	  @Transactional
-	    public boolean markMessagesAsRead(List<Long> messageIds) {
-	        List<MessageEntity> messages = messageRepository.findAllById(messageIds);
-	        
-	        if (messages.isEmpty()) return false; // 메시지가 없으면 false 반환
-	        
-	        messages.forEach(msg -> msg.setRead(true)); // 읽음 처리
-	        return true; // 성공
-	    }
+		if (messages.isEmpty())
+			return false; // 메시지가 없으면 false 반환
 
-	
-	  @Transactional
+		messages.forEach(msg -> msg.setRead(true)); // 읽음 처리
+		return true; // 성공
+	}
+
+	@Transactional
 	public Long findMessagesByRoomId(Long roomId, MemberEntity memberEntity) {
-		  Optional<ChattingRoomEntity> room =chattingRoomRepository.findById(roomId);
-		  List<MessageEntity> messages = (List<MessageEntity>) room.get().getMessages() ;
-	//	  memberEntity.getId()
-		  System.out.println("메시지 갯수" +messages.size());
-	       return (long) (messages.isEmpty()?0 : messages.size());
+		Optional<ChattingRoomEntity> room = chattingRoomRepository.findById(roomId);
+		List<MessageEntity> messages = (List<MessageEntity>) room.get().getMessages();
+		// memberEntity.getId()
+		System.out.println("메시지 갯수" + messages.size());
+		return (long) (messages.isEmpty() ? 0 : messages.size());
 	}
 
-	  
-	  @Transactional
+	@Transactional
 	public String findMemberPosition(Long roomId, MemberEntity memberEntity) {
-		  Optional<ChattingRoomEntity> room =chattingRoomRepository.findById(roomId);
-		 if(memberEntity.getId().equals(room.get().getMember1())) {	
-			 return "logged1";
-		 }else  if(memberEntity.getId().equals(room.get().getMember2())) {
-			 return "logged2";
-		 }
-		 
-		  return null;
+		Optional<ChattingRoomEntity> room = chattingRoomRepository.findById(roomId);
+		if (memberEntity.getId().equals(room.get().getMember1())) {
+			return "logged1";
+		} else if (memberEntity.getId().equals(room.get().getMember2())) {
+			return "logged2";
+		}
+
+		return null;
 	}
-	  
-	  
 
-	  
-	  @Transactional // 채팅방 번호 조회
-	  public Long findRoomId(MemberEntity member, Long boardId) {
-	      Long loggedId = member.getId(); // 로그인 유저의 Id
-	      BoardEntity boardEntity = boardRepository.findById(boardId).orElse(null);
-	      
-	      if (boardEntity == null) {
-	          throw new IllegalArgumentException("해당 게시글이 존재하지 않습니다: " + boardId);
-	      }
+	@Transactional // 채팅방 번호 조회
+	public Long findRoomId(MemberEntity member, Long boardId) {
+		Long loggedId = member.getId(); // 로그인 유저의 Id
+		BoardEntity boardEntity = boardRepository.findById(boardId).orElse(null);
 
-	      Long targetId = boardEntity.getMemberEntity().getId(); // 상대방 Id
-	      Long roomId = null;
+		if (boardEntity == null) {
+			throw new IllegalArgumentException("해당 게시글이 존재하지 않습니다: " + boardId);
+		}
 
-	      // findEnableRoom()이 null을 반환할 경우 대비
-	      ChattingRoomEntity room = chattingRoomRepository.findEnableRoom(loggedId, targetId, boardId);
-	      if (room != null) {
-	          roomId = room.getId();
-	      }
+		Long targetId = boardEntity.getMemberEntity().getId(); // 상대방 Id
+		Long roomId = null;
 
-	      if (roomId == null) {
-	          room = chattingRoomRepository.findEnableRoom(targetId, loggedId, boardId);
-	          if (room != null) {
-	              roomId = room.getId();
-	          }
-	      }
+		// findEnableRoom()이 null을 반환할 경우 대비
+		ChattingRoomEntity room = chattingRoomRepository.findEnableRoom(loggedId, targetId, boardId);
+		if (room != null) {
+			roomId = room.getId();
+		}
 
-	      if (roomId == null) {
-	          ChattingRoomDTO chattingRoomDTO = this.findOrCreateRoom(
-	              boardEntity.getTitle(),
-	              member.getUserid(),
-	              boardEntity.getMemberEntity().getUserid(),
-	              boardId,
-	              boardEntity.getPrice()
-	          );
-	          roomId = chattingRoomDTO.getId();
-	      }
+		if (roomId == null) {
+			room = chattingRoomRepository.findEnableRoom(targetId, loggedId, boardId);
+			if (room != null) {
+				roomId = room.getId();
+			}
+		}
 
-	      System.out.println("roomId + "+roomId);
-	      return roomId;
-	  }
+		if (roomId == null) {
+			ChattingRoomDTO chattingRoomDTO = this.findOrCreateRoom(boardEntity.getTitle(), member.getUserid(),
+					boardEntity.getMemberEntity().getUserid(), boardId, boardEntity.getPrice());
+			roomId = chattingRoomDTO.getId();
+		}
+
+		System.out.println("roomId + " + roomId);
+		return roomId;
+	}
 
 //	  public PagedResponse<ChattingRoomDTO> myChattingRoomList(Long loggedId, Pageable pageable) {
 //		    Page<ChattingRoomEntity> roomEntities = chattingRoomRepository.findAllByLoggedMember1(loggedId, pageable);
@@ -557,12 +547,6 @@ public class ChatService {
 //		    );
 //		}
 
-
-	  
-	  
-	  
-	  
-	  
 //	  @Transactional			//채팅창 재방문시
 //	    public boolean ReEnterChatRoom(List<Long> messageIds) {
 //	        List<MessageEntity> messages = messageRepository.findAllById(messageIds);
@@ -572,5 +556,32 @@ public class ChatService {
 //	        messages.forEach(msg -> msg.setRead(true)); // 읽음 처리
 //	        return true; // 성공
 //	    }
+
+	@Transactional
+	public MessageDTO recentRoomMessage(Long roomId) {
+	    // 방을 조회하고, 없다면 null 반환
+//	    ChattingRoomEntity room = chattingRoomRepository.findById(roomId).get();
+		
+//	    System.out.println("방 정보 조회 완료: " + room);
+
+
+//	        Set<MessageEntity> messages = room.getMessages();			<-- 왜 안되는지 원인을 못찾음 (null로 인식함)
+	   List<MessageEntity>messages = messageRepository.findByChattingRoomEntity(roomId);
+	    
+
+	        // 메시지 중 최신 메시지 추출
+	        return messages.stream()
+	                .filter(message -> message.getSendTime() != null) // sendTime이 null이 아닌 메시지만 필터링
+	                .max(Comparator.comparing(MessageEntity::getSendTime)) // 최신 메시지 찾기
+	                .map(message -> {
+//	                    System.out.println("최근 메시지: " + message.getMessageContent());  // 로그 추가
+	                    return message.convertToDTO(message); // message 객체에서 convertToDTO 호출
+	                })
+	                .orElse(new MessageDTO(null,null,"최근 메시지가 없습니다",null)); // 최신 메시지가 없으면 null 반환
+	    }
+
+
+
+
 
 }
