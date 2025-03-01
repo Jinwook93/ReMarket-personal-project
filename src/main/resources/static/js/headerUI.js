@@ -32,11 +32,39 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
 
-function findAlarm(loggedId, alarmResult, alarmList, alarmListBody) {
+function findAlarm(loggedId, alarmResult, alarmList, alarmListBody , page = 0) {
 
 	if (alarmList && alarmList.length > 0) {
 		alarmListBody.innerHTML = '';
 
+		const container = document.getElementById('notification-container'); // 체크박스를 추가할 위치
+		
+		// 체크박스가 이미 추가되었는지 확인
+		if (!document.getElementById('markAllAsReadCheckbox')) {
+			// 체크박스를 감싸는 <label> 요소 생성
+			const label = document.createElement('label');
+
+			// 체크박스 <input> 요소 생성
+			const checkbox = document.createElement('input');
+			checkbox.type = 'checkbox';
+			checkbox.id = 'markAllAsReadCheckbox';
+			checkbox.onclick = toggleMarkAllAsRead; // 체크박스 클릭 시 실행될 함수
+ 		     // 체크박스 해제
+ 		     if(checkbox.checked){
+   		 checkbox.checked = false;
+   		   }
+			// 텍스트 노드 생성
+			const text = document.createTextNode(' 모든 알림 읽음 처리');
+
+			// <label> 요소에 체크박스와 텍스트 추가
+			label.appendChild(checkbox);
+			label.appendChild(text);
+
+			// <label>을 container에 추가
+			container.appendChild(label);
+		}
+
+  
 		alarmList.sort((a, b) => Number(b.id) - Number(a.id));
 
 		alarmList.forEach(alarm => {
@@ -75,7 +103,10 @@ function findAlarm(loggedId, alarmResult, alarmList, alarmListBody) {
                 `;
 			alarmListBody.appendChild(row);
 		});
-
+ 		// 📌 현재 페이지 번호 저장
+  		alarmListBody.setAttribute("data-current-page", page);
+  		
+  		
 		// Create pagination container
 		const pageList = document.createElement("div");
 		pageList.id = "pagination";
@@ -109,8 +140,7 @@ document.getElementById("alarmButton").addEventListener("click", async () => {
 });
 
 // 문서 전체 클릭 이벤트는 한 번만 등록
-// 문서 전체 클릭 이벤트는 한 번만 등록
-document.addEventListener("click", async function (event) {
+document.addEventListener("click", async function(event) {
 	const target = event.target;
 
 	if (target.tagName === "TD" && target.id.startsWith("alarm-")) {
@@ -126,22 +156,29 @@ document.addEventListener("click", async function (event) {
 
 			if (response.ok) {
 				console.log(`알림 ${alarmId} 읽음 처리 완료`);
-
+				
 				// ✅ 클릭한 알림을 바로 삭제 (부모 <tr> 요소 제거)
-//				const row = target.closest("tr"); // 가장 가까운 <tr> 찾기
-//				if (row) {
-//					row.remove();
-//				}
+				//				const row = target.closest("tr"); // 가장 가까운 <tr> 찾기
+				//				if (row) {
+				//					row.remove();
+				//				}
 
 				// ✅ 만약 전체 목록을 다시 불러와야 한다면 아래 코드 사용
-				 const isLoggedIn = document.getElementById("isLoggedIn")?.value;
-				 const loggedId = document.getElementById("loggedId")?.value;
-				 if (isLoggedIn === "true" || isLoggedIn === true) {
-				 	const alarmResult = await checkUserAlarmList(loggedId);
-				 	const alarmList = alarmResult.content;
-				 	const alarmListBody = document.getElementById("alarmListBody");
-				 	findAlarm(loggedId, alarmResult, alarmList, alarmListBody);
-				 }
+				const isLoggedIn = document.getElementById("isLoggedIn")?.value;
+				const loggedId = document.getElementById("loggedId")?.value;
+				if (isLoggedIn === "true" || isLoggedIn === true) {
+					const alarmResult = await checkUserAlarmList(loggedId);
+					const alarmList = alarmResult.content;
+					const alarmListBody = document.getElementById("alarmListBody");
+					
+//					  alarmListBody.setAttribute("data-current-page", alarmResult.page); // 현재 페이지 저장
+ 						console.log(alarmResult);
+					  console.log("페이지 확인1 =>" +Number(alarmResult.page));
+					  console.log("페이지 확인2 =>" +alarmListBody.getAttribute("data-current-page"));
+					  
+//  						findAlarm(loggedId, alarmResult, alarmList, alarmListBody, alarmListBody.getAttribute("data-current-page"));
+							loadPage(alarmListBody.getAttribute("data-current-page"), loggedId);
+				}
 			} else {
 				console.error(`알림 ${alarmId} 읽음 처리 실패`);
 			}
@@ -236,10 +273,48 @@ function addPageButton(page, currentPage, loggedId, container) {
 
 // 페이지를 로드하는 함수 (실제 데이터 로드를 구현할 곳)
 async function loadPage(page, loggedId) {
-	console.log(`Loading page ${page + 1}`);
-	const alarmResult = await checkUserAlarmList(loggedId, page); // Assuming checkUserAlarmList supports pagination with page number
-	const alarmList = alarmResult.content;
-	const alarmListBody = document.getElementById("alarmListBody");
+  console.log(`Loading page ${page + 1}`);
+  
+  const alarmResult = await checkUserAlarmList(loggedId, page); // 페이지네이션 지원
+  const alarmList = alarmResult.content;
+  const alarmListBody = document.getElementById("alarmListBody");
 
-	findAlarm(loggedId, alarmResult, alarmList, alarmListBody);
+  // 📌 페이지 정보 업데이트 후 데이터 로드
+  alarmListBody.setAttribute("data-current-page", page); // 현재 페이지 저장
+  findAlarm(loggedId, alarmResult, alarmList, alarmListBody, page);
+}
+
+
+
+
+
+
+async function toggleMarkAllAsRead() {
+  const isChecked = document.getElementById("markAllAsReadCheckbox").checked;
+  const loggedId = document.getElementById("loggedId").value;
+  const alarmListBody = document.getElementById("alarmListBody");
+
+  // 📌 현재 페이지 번호 유지
+  let currentPage = alarmListBody.getAttribute("data-current-page") || 0;
+  
+  if (isChecked) {
+    try {
+      // 모든 알림 읽음 처리 API 호출
+      await fetch(`/alarm/read-all`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json;charset=utf-8",
+        },
+      });
+
+      // 📌 현재 페이지 유지하면서 알림 목록 다시 가져오기
+      const alarmResult = await checkUserAlarmList(loggedId, currentPage);
+      const alarmList = alarmResult.content;
+
+      findAlarm(loggedId, alarmResult, alarmList, alarmListBody, currentPage); // ✅ 현재 페이지를 유지하면서 호출
+
+    } catch (error) {
+      console.error("알림 읽음 처리 중 오류 발생:", error);
+    }
+  }
 }

@@ -723,12 +723,12 @@ for (const data of datas) {
         </td>
     `;
 
-    console.log("멤버1테스트1", data.member1UserId);
-    console.log("멤버1테스트2", loggedUserId);
-    console.log("멤버1테스트3", data.member1Visible);
-    console.log("멤버2테스트1", data.member2UserId);
-    console.log("멤버2테스트2", loggedUserId);
-    console.log("멤버2테스트3", data.member2Visible);
+//    console.log("멤버1테스트1", data.member1UserId);
+//    console.log("멤버1테스트2", loggedUserId);
+//    console.log("멤버1테스트3", data.member1Visible);
+//    console.log("멤버2테스트1", data.member2UserId);
+//    console.log("멤버2테스트2", loggedUserId);
+//    console.log("멤버2테스트3", data.member2Visible);
 
     chattingRoomListBody.appendChild(row);
 }

@@ -106,11 +106,18 @@ public class AlarmController {
 //    }
 
 //    // 모든 알림 읽음 처리
-//    @PostMapping("/read-all")
-//    public ResponseEntity<Void> markAllAsRead(@AuthenticationPrincipal PrincipalDetails principalDetail) {
-//        alarmService.markAllAsRead(principalDetail.getUser().getId());
-//        return ResponseEntity.ok().build();
-//    }
+    @GetMapping("/read-all")
+    public ResponseEntity<AlarmDTO> markAllAsRead(@AuthenticationPrincipal PrincipalDetails principalDetail) {
+        alarmService.markAllAsRead(principalDetail.getMemberEntity().getId());
+        return ResponseEntity.ok().build();
+    }
+    
+    
+    
+    
+    
+    
+    
 
     // 특정 알림 삭제
     @PostMapping("/delete/{alarmId}")

@@ -202,6 +202,26 @@ public class AlarmService {
 	
 	
 	
+	@Transactional			//모든 알림 읽음 설정
+	public void markAllAsRead(Long loggedId) {
+	    List<AlarmEntity> alarms = alarmRepository.findByLoggedId(loggedId);
+
+	    for (AlarmEntity alarmEntity : alarms) {
+	        if (loggedId.equals(alarmEntity.getMember1().getId())) {
+	            alarmEntity.setMember1Read("READ");
+	        } else if (loggedId.equals(alarmEntity.getMember2().getId()) && alarmEntity.getMember2().getId() != null) {
+	            alarmEntity.setMember2Read("READ");
+	        }
+	    }
+
+	    // 한 번에 저장
+	    alarmRepository.saveAll(alarms);
+	    alarmRepository.flush();  // 강제 플러시
+
+	}
+
+	
+	
 	
 	
 	
