@@ -841,6 +841,8 @@ export function toggleChattingRoomList() {
 
 
 
+
+
 export function showChattingRoomList() {
 	const chattingRoomList = document.querySelector(".chattingRoomList");
 	if (chattingRoomList) {

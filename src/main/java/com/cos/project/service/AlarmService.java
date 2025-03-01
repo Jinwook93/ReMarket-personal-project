@@ -111,6 +111,7 @@ public class AlarmService {
 	        MemberEntity member1 = memberRepository.findById(member1Id).orElseThrow(() -> new IllegalAccessError("사용자를 조회할 수 없습니다"));
 	        MemberEntity member2 = null;  // No member2 in this case (login alarm)
 	        alarmEntity = alarmDTO.toEntity(member1, member2);
+	  
 	    } else {
 	        // Case 2: Both member1Id and member2Id are provided
 	        MemberEntity member1 = memberRepository.findById(member1Id)
@@ -132,7 +133,8 @@ public class AlarmService {
 	            throw new IllegalArgumentException("Logged user doesn't match any member IDs.");
 	        }
 	    }
-	    
+	    	alarmEntity.setMember1Read("UNREAD");
+	        alarmEntity.setMember2Read("UNREAD");
 	    // Save the alarm entity to the database
 	    alarmRepository.saveAndFlush(alarmEntity);
 	    return alarmEntity;
@@ -170,19 +172,36 @@ public class AlarmService {
 //	}
 
 
+//	@Transactional // 알림 읽음
+//	public void readAlarm(Long alarmId, Long loggedId, Long member1Id, Long member2Id) {
+//		MemberEntity member1 = memberRepository.findById(member1Id).get();
+//		MemberEntity member2 = memberRepository.findById(member2Id).get();
+//		AlarmEntity alarmEntity = alarmRepository.findById(alarmId).get(); // 알람조회
+//		if (loggedId.equals(member1Id)) {
+//			alarmEntity.setMember1Read("READ");
+//		} else if (loggedId.equals(member2Id)) {
+//			alarmEntity.setMember2Read("READ");
+//		}
+//		alarmRepository.saveAndFlush(alarmEntity);
+//
+//	}
+	
 	@Transactional // 알림 읽음
-	public void readAlarm(Long alarmId, Long loggedId, Long member1Id, Long member2Id) {
-		MemberEntity member1 = memberRepository.findById(member1Id).get();
-		MemberEntity member2 = memberRepository.findById(member2Id).get();
+	public void readAlarm(Long alarmId, Long loggedId) {
+		MemberEntity member = memberRepository.findById(loggedId).get();
 		AlarmEntity alarmEntity = alarmRepository.findById(alarmId).get(); // 알람조회
-		if (loggedId.equals(member1Id)) {
+		
+		if (loggedId.equals(alarmEntity.getMember1().getId())) {
 			alarmEntity.setMember1Read("READ");
-		} else if (loggedId.equals(member2Id)) {
+		} else if (loggedId.equals(alarmEntity.getMember2().getId())  && alarmEntity.getMember2().getId() != null) {
 			alarmEntity.setMember2Read("READ");
 		}
 		alarmRepository.saveAndFlush(alarmEntity);
 
 	}
+	
+	
+	
 	
 	
 	

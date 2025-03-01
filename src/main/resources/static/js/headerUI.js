@@ -44,10 +44,10 @@ function findAlarm(loggedId, alarmResult, alarmList, alarmListBody) {
 			row.innerHTML = `
                     ${alarm.member1Visible && Number(alarm.member1Id) === Number(loggedId) ? `
                    <!--     <td>${alarm.id}</td> -->
-                        <td>${alarm.member1Content} 
+                        <td id = alarm-${alarm.id}>${alarm.member1Content} 
     <div class="date-container" style="display: flex; gap: 10px;"> 
         <p class="date-text">${formatDate(alarm.createTime)}</p>
-        <p class="read-status">${alarm.member1Read==="READ"?"읽음":""}</p>
+        <p class="read-status">${alarm.member1Read === "READ" ? "읽음" : "읽지 않음"}</p>
     </div>
 </td>
 
@@ -66,7 +66,7 @@ function findAlarm(loggedId, alarmResult, alarmList, alarmListBody) {
              							 ` : ""}
                                     <div class="date-container" style="display: flex; gap: 10px;"> 
                               <p class="date-text">${formatDate(alarm.createTime)}</p>
-                                       <p class="read-status">${alarm.member2Read==="READ"?"읽음":""}</p></div>
+                                       <p class="read-status">${alarm.member2Read === "READ" ? "읽음" : "읽지 않음"}</p></div>
                         </td>
                        <!--  <td>${formatDate(alarm.createTime)}</td> -->
                              <!--    <td>${alarm.member2Read}</td>     -->
@@ -108,6 +108,53 @@ document.getElementById("alarmButton").addEventListener("click", async () => {
 	}
 });
 
+// 문서 전체 클릭 이벤트는 한 번만 등록
+// 문서 전체 클릭 이벤트는 한 번만 등록
+document.addEventListener("click", async function (event) {
+	const target = event.target;
+
+	if (target.tagName === "TD" && target.id.startsWith("alarm-")) {
+		const alarmId = target.id.split("-")[1];
+
+		try {
+			const response = await fetch(`/alarm/read/${alarmId}`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+			});
+
+			if (response.ok) {
+				console.log(`알림 ${alarmId} 읽음 처리 완료`);
+
+				// ✅ 클릭한 알림을 바로 삭제 (부모 <tr> 요소 제거)
+//				const row = target.closest("tr"); // 가장 가까운 <tr> 찾기
+//				if (row) {
+//					row.remove();
+//				}
+
+				// ✅ 만약 전체 목록을 다시 불러와야 한다면 아래 코드 사용
+				 const isLoggedIn = document.getElementById("isLoggedIn")?.value;
+				 const loggedId = document.getElementById("loggedId")?.value;
+				 if (isLoggedIn === "true" || isLoggedIn === true) {
+				 	const alarmResult = await checkUserAlarmList(loggedId);
+				 	const alarmList = alarmResult.content;
+				 	const alarmListBody = document.getElementById("alarmListBody");
+				 	findAlarm(loggedId, alarmResult, alarmList, alarmListBody);
+				 }
+			} else {
+				console.error(`알림 ${alarmId} 읽음 처리 실패`);
+			}
+		} catch (error) {
+			console.error("API 요청 중 오류 발생:", error);
+		}
+	}
+});
+
+
+
+
+
 // 페이지네이션 버튼을 생성하는 함수
 function createPagination(data, loggedId) {
 	const paginationContainer = document.getElementById('pagination');
@@ -118,7 +165,7 @@ function createPagination(data, loggedId) {
 
 	// 이전 버튼
 	const prevButton = document.createElement('button');
-	prevButton.textContent = 'Previous';
+	prevButton.textContent = '<';
 	prevButton.disabled = currentPage === 0;
 	prevButton.addEventListener('click', () => {
 		if (currentPage > 0) {
@@ -165,7 +212,7 @@ function createPagination(data, loggedId) {
 
 	// 다음 버튼
 	const nextButton = document.createElement('button');
-	nextButton.textContent = 'Next';
+	nextButton.textContent = '>';
 	nextButton.disabled = currentPage === totalPages - 1;
 	nextButton.addEventListener('click', () => {
 		if (currentPage < totalPages - 1) {

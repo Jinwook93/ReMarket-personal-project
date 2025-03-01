@@ -89,16 +89,21 @@ public class AlarmController {
     }
     
     
-    
-    
-    
-    
     // 특정 알림 읽음 처리
     @PostMapping("/read/{alarmId}")
-    public ResponseEntity<?> markAsRead(@PathVariable(name = "alarmId") Long alarmId, @AuthenticationPrincipal PrincipalDetails principalDetail, @RequestBody AlarmDTO alarmDTO) {
-    	alarmService.readAlarm(alarmId, principalDetail.getMemberEntity().getId(), alarmDTO.getMember1Id(), alarmDTO.getMember2Id());
+    public ResponseEntity<?> markAsRead(@PathVariable(name = "alarmId") Long alarmId, @AuthenticationPrincipal PrincipalDetails principalDetail) {
+    	alarmService.readAlarm(alarmId, principalDetail.getMemberEntity().getId());
         return ResponseEntity.ok(alarmId);
     }
+    
+    
+    
+//    // 특정 알림 읽음 처리
+//    @PostMapping("/read/{alarmId}")
+//    public ResponseEntity<?> markAsRead(@PathVariable(name = "alarmId") Long alarmId, @AuthenticationPrincipal PrincipalDetails principalDetail, @RequestBody AlarmDTO alarmDTO) {
+//    	alarmService.readAlarm(alarmId, principalDetail.getMemberEntity().getId(), alarmDTO.getMember1Id(), alarmDTO.getMember2Id());
+//        return ResponseEntity.ok(alarmId);
+//    }
 
 //    // 모든 알림 읽음 처리
 //    @PostMapping("/read-all")
