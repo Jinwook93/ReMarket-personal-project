@@ -460,7 +460,8 @@ export async function openChatRoom(roomId, title, loggedUserId, userid, loggedFl
 		chatWindow.innerHTML = `
             <div class="chat-container" id="chat-container-${roomId}">
                 <div style="display:flex;">
-                    <h2>${userid} 님과의 채팅방</h2>
+                <!--    <h2>${userid} 님과의 채팅방</h2> -->
+                <h2>${userid} 님과의 채팅방</h2>
                     <button class="close-chat" data-room-id="${roomId}">닫기</button>
                 </div>
                 <!-- ※ Thymeleaf의 경우 enum 타입일 경우 .name을 써야함-->
@@ -693,7 +694,7 @@ for (const data of datas) {
     row.innerHTML = `
         <td style="width:500px;">${data.title}
             <div class="date-text" style="margin-top:10px;font-size:15px;">
-                대화 중인 유저: ${data.member2UserId}
+                대화 중인 유저: ${loggedUserId===data.member2UserId?data.member1UserId:data.member2UserId}
             </div>
             <div>
                 ${recentRoomMessage 
@@ -756,20 +757,21 @@ for (const data of datas) {
 export function setUpEnterRoomButton(loggedUserId) {
 	document.querySelectorAll(".enterChat").forEach(button => {
 		button.addEventListener("click", async function() {
-			const roomId = this.getAttribute("data-room-id");
+			const roomId = Number(this.getAttribute("data-room-id"));
 			const title = this.getAttribute("data-title");
 			const userid = this.getAttribute("data-userid");
 			//			openChatRoom(roomId, title, loggedUserId, userid);
 
 			// 채팅방 열기 및 메시지 로드
 			if (loggedUserId !== userid) {
+				console.log("case1 테스트");
 				openChatRoom(roomId, title, loggedUserId, userid, "logged1");
 
 			} else {
-				const roomResponse = await fetch('/chat/findRoom/${roomId}');
-				const room = roomResponse.json();
+				const roomResponse = await fetch(`/chat/findRoom/${roomId}`);
+				const room = await roomResponse.json();
 				console.log(room);
-
+				console.log("case2 테스트"+room);
 				openChatRoom(roomId, title, loggedUserId, room.member1UserId, "logged2");
 			}
 		});

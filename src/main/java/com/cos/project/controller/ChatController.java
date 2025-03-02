@@ -186,8 +186,13 @@ public class ChatController {
 	@ResponseBody
 	public ResponseEntity<?> findChatRoom(@PathVariable(name = "roomId") Long roomId, @AuthenticationPrincipal PrincipalDetails principalDetails
 			){
-		Long member1Id = principalDetails.getMemberEntity().getId();
+		Long loggedId = principalDetails.getMemberEntity().getId();
+		
 		Optional<ChattingRoomEntity> room = chatService.findChatRoom(roomId);
+		
+//		System.out.println("방  유저 1 아이디"+room.get().getMember1().getUserid());
+//		System.out.println("방  유저 2 아이디"+room.get().getMember2().getUserid());
+//		System.out.println("로그인 아이디"+loggedId);
 		
 		ChattingRoomDTO responseDTO = null;
 		responseDTO =responseDTO.builder()
@@ -198,7 +203,7 @@ public class ChatController {
 				.messageIndex2(room.get().getMessageIndex2())
 				.recentExitedmemberId(room.get().getRecentExitedmemberId())
 				.build();
-		
+//		System.out.println(responseDTO.toString());
 		return ResponseEntity.ok(responseDTO);
 		
 	}
@@ -251,7 +256,7 @@ public class ChatController {
     public ResponseEntity<?> deleteRoom(@PathVariable(name = "deleteRoomId")Long id, @AuthenticationPrincipal PrincipalDetails principalDetails
     		, @RequestBody Map<String, String> data) {
     	String receiverUserId = data.get("receiver");
-    	System.out.println("리시버 : " + receiverUserId);
+//    	System.out.println("리시버 : " + receiverUserId);
     	boolean flag = chatService.deleteRoom(id, principalDetails.getMemberEntity().getId(), receiverUserId);
 //    	alarmService.postAlarm(loggedUserId.getId(), loggedUserId.getId(), member2Id, "MESSAGE", "채팅방", null, "삭제", null);
     	return ResponseEntity.ok(flag);
@@ -283,7 +288,6 @@ public class ChatController {
     @ResponseBody
     public ResponseEntity<?> findMessageCount(@PathVariable(name = "roomId") Long roomId, @AuthenticationPrincipal PrincipalDetails principalDetails) {
        Long messageCount = chatService.findMessagesByRoomId(roomId, principalDetails.getMemberEntity());
-       	System.out.println("갔나여");
         return ResponseEntity.ok(messageCount);
     }
     
@@ -318,19 +322,19 @@ public class ChatController {
     public ResponseEntity<?> findRecentRoomMessage(@PathVariable(name = "roomId") Long roomId, @AuthenticationPrincipal PrincipalDetails principalDetails) {
         MessageDTO result = chatService.recentRoomMessage(roomId);
         
-        if(result.getId() != null) {
-        System.out.println("==============");
-        System.out.println("최근 메시지 id: " + result.getId());
-        System.out.println("최근 메시지 보낸사람: " + result.getSenderUserId());
-        System.out.println("최근 메시지 보낸 날짜: " + result.getSendTime());
-        System.out.println("최근 메시지 내용: " + result.getMessageContent());
-        System.out.println("==============");
-        }
-        else {
-            System.out.println("==============");
-            System.out.println("최근 메시지 내용: " + result.getMessageContent());
-            System.out.println("==============");
-        }
+//        if(result.getId() != null) {
+//        System.out.println("==============");
+//        System.out.println("최근 메시지 id: " + result.getId());
+//        System.out.println("최근 메시지 보낸사람: " + result.getSenderUserId());
+//        System.out.println("최근 메시지 보낸 날짜: " + result.getSendTime());
+//        System.out.println("최근 메시지 내용: " + result.getMessageContent());
+//        System.out.println("==============");
+//        }
+//        else {
+//            System.out.println("==============");
+//            System.out.println("최근 메시지 내용: " + result.getMessageContent());
+//            System.out.println("==============");
+//        }
         return ResponseEntity.ok(result); // 정상적으로 메시지를 반환
     }
 
