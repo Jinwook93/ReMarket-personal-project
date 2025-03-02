@@ -180,22 +180,7 @@ public class ChatService {
 		return chattingRoomRepository.findById(roomid);
 	}
 
-//	@Transactional
-//	public boolean enterChatRoom(Long loggedId, Long userId, Long boardId) {
-//		boolean flag = false;
-//
-//		ChattingRoomEntity chattingRoomEntity = chattingRoomRepository.findEnableRoom(userId, loggedId, boardId);
-//
-//		if (chattingRoomEntity == null) {
-//			chattingRoomEntity = chattingRoomRepository.findEnableRoom(loggedId, userId, boardId);
-//
-//		}
-//
-//		if (chattingRoomEntity != null) {
-//			flag = true;
-//		}
-//		return flag;
-//	}
+
 
 	@Transactional
 	public boolean updateChatRoom(Long chattingRoomid, Long loggedId, Long boardId, String title, int price) {

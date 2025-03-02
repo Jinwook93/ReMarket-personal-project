@@ -19,6 +19,9 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cos.project.details.PrincipalDetails;
 import com.cos.project.dto.BoardDTO;
@@ -28,6 +31,9 @@ import com.cos.project.entity.Category;
 import com.cos.project.entity.MemberEntity;
 import com.cos.project.repository.BoardLikeRepository;
 import com.cos.project.repository.BoardRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
@@ -204,4 +210,33 @@ public class BoardService {
     }
 
 
+	
+	
+	
+	public String getBoardMainFile(Long boardId)
+	        throws JsonMappingException, JsonProcessingException {
+	    BoardEntity boardEntity = boardRepository.findById(boardId).orElse(null);
+	    if (boardEntity == null) {
+	        // Handle case when boardEntity is not found, if needed
+	        return "/boardimage/nullimage.jpg";
+	    }
+	    
+	    ObjectMapper om = new ObjectMapper();
+	    String[] boardFiles = om.readValue(boardEntity.getBoardFiles(), String[].class);
+	    
+	    if (boardFiles != null && boardFiles.length > 0) {
+	        String mainFile = boardFiles[0];
+	        System.out.println("mainFile명 : " + mainFile);
+	        return mainFile;
+	    } else {
+	        return "/boardimage/nullimage.jpg";
+	    }
+	}
+
+	
+	
+	
+	
+	
+	
 }

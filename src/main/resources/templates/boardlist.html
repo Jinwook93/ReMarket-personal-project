@@ -139,7 +139,7 @@
     <!-- 글쓰기 버튼 -->
     <div class="button-container" style="display: flex;">
       <a href="/board/writeboard" class="write-btn">글쓰기</a>
-      <button type="button" onclick="window.location.href='/board/allboard'" class="reset-btn" style="color: white; background-color: green; margin-left: 30px;">초기화</button>
+      <button type="button" onclick="window.location.href='/board/list'" class="reset-btn" style="color: white; background-color: green; margin-left: 30px;">초기화</button>
     </div>
     <table style="margin-bottom: 20px;">
       <thead>
@@ -161,7 +161,11 @@
           <td th:text="${board.id}"></td>
           <td th:text="${board.buy_Sell}"></td>
           <td th:text="${board.category}"></td>
-          <td>
+          <td th:data-board-id="${board.id}">
+    <img th:id=|mainImage-${board.id}|
+         src="/boardimage/nullimage.jpg" 
+         alt="no profile image" 
+         style="display: block; width: 50px; height: 50px; margin-right: 10px;">
             <a th:href="@{/board/view/{id}(id=${board.id})}" th:text="${board.title}"></a>
           </td>
           <td>
@@ -336,6 +340,25 @@
     });
   });
 </script>
+<script type="module">
+ import { getBoardMainFile } from '/js/boardModule.js';
+
+ document.addEventListener("DOMContentLoaded", function () {
+    const boardIds = document.querySelectorAll("[data-board-id]");
+    
+    boardIds.forEach(async (board) => {
+        const boardId = board.getAttribute("data-board-id");
+        const imageUrl = await getBoardMainFile(boardId); // Await the result
+
+        const imageElement = document.getElementById(`mainImage-${boardId}`);
+        if (imageElement) {
+            imageElement.src = imageUrl || '/boardimage/nullimage.jpg'; // Fallback if no image URL
+        }
+    });
+ });
+</script>
+
+
 <script src="/js/deleteBoard.js" type="module"></script>
 
   

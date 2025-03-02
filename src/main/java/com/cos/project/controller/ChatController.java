@@ -37,6 +37,9 @@ import com.cos.project.service.BoardService;
 import com.cos.project.service.ChatService;
 import com.cos.project.service.MemberService;
 import com.cos.project.service.MessageService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -338,4 +341,15 @@ public class ChatController {
         return ResponseEntity.ok(result); // 정상적으로 메시지를 반환
     }
 
+    
+    @GetMapping("/getBoardMainFileByRoomId/{roomId}")
+	@ResponseBody
+	public String getBoardMainFile(@PathVariable(name = "roomId") Long roomId, @AuthenticationPrincipal PrincipalDetails principalDetails)
+			throws JsonMappingException, JsonProcessingException {
+    		BoardEntity boardEntity = chatService.findBoard(roomId);
+    	
+			return boardService.getBoardMainFile(boardEntity.getId());
+			
+	}
+    
 }

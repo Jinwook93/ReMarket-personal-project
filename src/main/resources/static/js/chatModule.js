@@ -1,5 +1,6 @@
 // chatting 기능 관련 함수들을 모듈로 내보냅니다.
 
+import { getBoardMainFile } from "./boardModule.js";
 import { formatDate } from "./formatDate.js";
 
 
@@ -455,15 +456,25 @@ export async function openChatRoom(roomId, title, loggedUserId, userid, loggedFl
 		const board = await boardresponse.json();
 		//		const trade = findTradeByBoardId(board.trades);					//해당 보드가 속한 trades 탐색	
 		//		console.log("트레이드 상태 : "+trade.tradeStatus);
-		console.log(board);
-		console.log(roomId, title, loggedUserId, userid);
+		//		console.log(board);
+		//		console.log(roomId, title, loggedUserId, userid);
+		const boardMainFile = await getBoardMainFile(board.id);
 		chatWindow.innerHTML = `
             <div class="chat-container" id="chat-container-${roomId}">
-                <div style="display:flex;">
-                <!--    <h2>${userid} 님과의 채팅방</h2> -->
-                <h2>${userid} 님과의 채팅방</h2>
-                    <button class="close-chat" data-room-id="${roomId}">닫기</button>
-                </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; 
+            background-color: lightgray; padding: 10px; border-radius: 5px; 
+            margin-top: 10px; margin-bottom: 10px;">
+    <div>
+        <h2 style="margin: 0;">${userid} 님과의 채팅방</h2>
+    </div>
+    <div>
+        <button class="close-chat" data-room-id="${roomId}" 
+                style="background-color: red; color: white; border: none; 
+                       padding: 5px 10px; cursor: pointer; border-radius: 3px;">
+            X
+        </button>
+    </div>
+</div>
                 <!-- ※ Thymeleaf의 경우 enum 타입일 경우 .name을 써야함-->
 <br>
                <!-- 토글 가능한 항목들 -->
@@ -471,7 +482,16 @@ export async function openChatRoom(roomId, title, loggedUserId, userid, loggedFl
         <br>
         <button id="toggleDetails-${roomId}">상세 정보 ▽</button>
 
+
         <div id="details-${roomId}" style="display:none;">
+        	<div style = "display:flex;">
+        
+        	<div>
+  			  <img src=${boardMainFile} width="200" height="200">
+			</div>
+
+        
+        <div>
             <div>
                 <h3>판매 종류: ${board.buy_Sell}</h3>
             </div>
@@ -486,6 +506,8 @@ export async function openChatRoom(roomId, title, loggedUserId, userid, loggedFl
 
             <div>
                 <h3>가격: ${board.price}원</h3>
+            </div>
+            	</div>
             </div>
         </div>
 
@@ -653,86 +675,150 @@ export async function loadChatRooms(loggedId) {
 
 		const datas = await response.json();
 
-	// member1Visible 또는 member2Visible이 true인 데이터만 필터링
-const visibleDatas = datas.filter(data => 
-    (data.member1UserId === loggedUserId && data.member1Visible)
- ||    (data.member2UserId === loggedUserId && data.member2Visible)
-);
+		// member1Visible 또는 member2Visible이 true인 데이터만 필터링
+		//const visibleDatas = datas.filter(data => 
+		//    (data.member1UserId === loggedUserId && data.member1Visible)
+		// ||    (data.member2UserId === loggedUserId && data.member2Visible)
+		//);
 
-if (Array.isArray(visibleDatas) && visibleDatas.length > 0) {
-    // 5개 이상이면 스크롤 추가
-    if (visibleDatas.length > 5) {
-        chattingRoomScroll.style.maxHeight = "300px"; // 5개 초과 시 스크롤
-        chattingRoomScroll.style.overflowY = "auto";
-    } else {
-        chattingRoomScroll.style.maxHeight = ""; // 초기화
-        chattingRoomScroll.style.overflowY = "";
-    }
+
+		// 🔹 현재 사용자가 참여하고 있고, 해당 채팅방이 보이는 상태인 데이터만 필터링
+		const visibleDatas = await Promise.all(
+			datas
+				.filter(data =>
+					(data.member1UserId === loggedUserId && data.member1Visible) ||  // member1이 현재 사용자이고, member1Visible이 true인 경우
+					(data.member2UserId === loggedUserId && data.member2Visible)    // member2가 현재 사용자이고, member2Visible이 true인 경우
+				)
+				.map(async (data) => {
+					// 🔹 비동기 함수 호출: 각 채팅방의 최근 메시지 정보를 가져옴
+					const recentRoomMessage = await findRecentRoomMessage(Number(data.id));
+					return {
+						...data,  // 기존 데이터 유지
+						recentRoomMessageDate: recentRoomMessage?.sendTime || null  // 최근 메시지 시간이 있으면 사용, 없으면 null
+					};
+				})
+		);
+
+
+
+
+		// 🔹 정렬 로직: recentRoomMessageDate가 존재하면 이를 기준으로 정렬, 없으면 createTime 기준으로 정렬
+		visibleDatas.sort((a, b) => {
+			const dateA = new Date(a.recentRoomMessageDate || a.createTime);  // recentRoomMessageDate가 없으면 createTime 사용
+			const dateB = new Date(b.recentRoomMessageDate || b.createTime);
+			return dateB - dateA;  // 최신순 정렬 (내림차순)
+		});
+
+		//		console.log(visibleDatas); // 정렬된 결과 출력
+
+
+
+
+
+		// ${recentRoomMessage?.id ? formatDate(recentRoomMessage.sendTime) : formatDate(data.createTime)}
+
+		if (Array.isArray(visibleDatas) && visibleDatas.length > 0) {
+			// 5개 이상이면 스크롤 추가
+			if (visibleDatas.length > 5) {
+				chattingRoomScroll.style.maxHeight = "300px"; // 5개 초과 시 스크롤
+				chattingRoomScroll.style.overflowY = "auto";
+			} else {
+				chattingRoomScroll.style.maxHeight = ""; // 초기화
+				chattingRoomScroll.style.overflowY = "";
+			}
 
 
 			//${(data.member1UserId === loggedUserId&& data.member1Visible ===true) ||(data.member2Visible ===true && data.member2UserId ===loggedUserId)?}
 
 			// Iterate over each room and fetch the recent message for each room
-for (const data of datas) {
-    // 최근 메시지 가져오기
-    const recentRoomMessage = await findRecentRoomMessage(Number(data.id));
-    console.log(data);
+			for (const data of visibleDatas) {
+				// 최근 메시지 가져오기
+				const recentRoomMessage = await findRecentRoomMessage(Number(data.id));
+				console.log(data);
 
-    // 로그인한 사용자가 member1이고 member1Visible이 true이거나
-    // 로그인한 사용자가 member2이고 member2Visible이 true인 경우만 표시
-    const isRoomVisible = 
-        (data.member1UserId === loggedUserId && data.member1Visible) || 
-        (data.member2UserId === loggedUserId && data.member2Visible);
+				// 로그인한 사용자가 member1이고 member1Visible이 true이거나
+				// 로그인한 사용자가 member2이고 member2Visible이 true인 경우만 표시
+				const isRoomVisible =
+					(data.member1UserId === loggedUserId && data.member1Visible) ||
+					(data.member2UserId === loggedUserId && data.member2Visible);
 
 
 
-//	console.log("isRoomVisible?"+isRoomVisible);
-    if (!isRoomVisible) continue; // 채팅방을 표시하지 않음
-		console.log("isRoomVisible?"+isRoomVisible);
+				if (!isRoomVisible) continue; // 채팅방을 표시하지 않음
+				//				console.log("isRoomVisible?" + isRoomVisible);
 
-    const row = document.createElement("tr");
-    row.innerHTML = `
-        <td style="width:500px;">${data.title}
-            <div class="date-text" style="margin-top:10px;font-size:15px;">
-                대화 중인 유저: ${loggedUserId===data.member2UserId?data.member1UserId:data.member2UserId}
-            </div>
-            <div>
-                ${recentRoomMessage 
-                    ? `${recentRoomMessage.senderUserId ? `최근 메시지: ${recentRoomMessage.senderUserId} : ` : ""} 
-                       ${recentRoomMessage.messageContent || ""}` 
-                    : `최근 메시지 없음`
-                } 
-                &nbsp;&nbsp;&nbsp;
-                ${recentRoomMessage?.id ? formatDate(recentRoomMessage.sendTime) : formatDate(data.createTime)}
-            </div>
-        </td>
-        <td>
-            <div style="display:flex;">
-                <button class="enterChat" 
-                    data-room-id="${data.id}" 
-                    data-title="${data.title}" 
-                    data-userid="${data.member2UserId}">
-                    입장
-                </button>
-                <button class="deleteRoom" 
+				const mainFile = await getBoardMainFileByRoomId(data.id);
+				console.log("mainFile : " + mainFile);
+
+				const row = document.createElement("tr");
+				row.innerHTML = `
+        <td style="width:500px;">
+<div style="display: flex; justify-content: space-between; align-items: center; 
+            background-color: lightgray; padding: 10px; border-radius: 0px; 
+            margin-top: 10px; margin-bottom: 10px;">
+    <span><b>${data.title}</b></span>
+    <button style="background-color: red; color: white; border: none; 
+                   padding: 5px 10px; cursor: pointer; border-radius: 3px;"
+class="deleteRoom" 
                     data-deleteRoomId="${data.id}" 
                     data-deleteTitle="${data.title}" 
                     data-deleteUserid="${data.member2UserId}">
-                    나가기
-                </button>
-            </div>
+        X
+    </button>
+</div>
+       <div style = "display:flex;">
+				<div style="display: flex; justify-content: center; align-items: center; margin: 10px 0;">
+    				<img src="${mainFile}" width="100" height="100" alt="대표 이미지" 
+        				 style="margin-left: 10px; margin-right: 10px; border-radius: 5px; border: 0.5px solid black;">
+				</div>
+
+		
+<div style="width: 100%; max-width: 1200px; margin: 0 auto; padding: 10px; background-color: #f5f5f5; border-radius: 10px;">
+    <div style="margin-top: 15px;">
+        ${recentRoomMessage
+            ? `${recentRoomMessage.senderUserId ? `   <b> ${recentRoomMessage.senderUserId} : </b> ` : ""} 
+               ${recentRoomMessage.messageContent || ""}`
+            : `최근 메시지 없음`}
+    </div>
+    <div style="margin-top: 5px; color:gray;font-weight: 300;">
+        ${recentRoomMessage?.id ? formatDate(recentRoomMessage.sendTime) : formatDate(data.createTime)}
+    </div>
+ <div style="margin-top: 10px;">
+<button class="enterChat" 
+        data-room-id="${data.id}" 
+        data-title="${data.title}" 
+        data-userid="${data.member2UserId}"
+        style="background-color: #800080; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; 
+               transition: background-color 0.3s ease, transform 0.2s ease;">
+  <div style="display: flex; align-items: center;">
+    <img src="/icon/messageIcon.png" width="15" height="15" style="margin-right: 5px;">
+    채팅하기
+</div>
+</button>
+
+</div>
+
+    <div class="date-text" style="font-size:15px;">
+        <img src="/icon/userIcon.png" width="20" height="20" alt="상대방"> 
+        ${loggedUserId === data.member2UserId ? data.member1UserId : data.member2UserId}
+    </div>
+</div>
+
+			
+			</div>
         </td>
+
     `;
 
-//    console.log("멤버1테스트1", data.member1UserId);
-//    console.log("멤버1테스트2", loggedUserId);
-//    console.log("멤버1테스트3", data.member1Visible);
-//    console.log("멤버2테스트1", data.member2UserId);
-//    console.log("멤버2테스트2", loggedUserId);
-//    console.log("멤버2테스트3", data.member2Visible);
+				//    console.log("멤버1테스트1", data.member1UserId);
+				//    console.log("멤버1테스트2", loggedUserId);
+				//    console.log("멤버1테스트3", data.member1Visible);
+				//    console.log("멤버2테스트1", data.member2UserId);
+				//    console.log("멤버2테스트2", loggedUserId);
+				//    console.log("멤버2테스트3", data.member2Visible);
 
-    chattingRoomListBody.appendChild(row);
-}
+				chattingRoomListBody.appendChild(row);
+			}
 
 		} else {
 			const row = document.createElement("tr");
@@ -771,7 +857,7 @@ export function setUpEnterRoomButton(loggedUserId) {
 				const roomResponse = await fetch(`/chat/findRoom/${roomId}`);
 				const room = await roomResponse.json();
 				console.log(room);
-				console.log("case2 테스트"+room);
+				console.log("case2 테스트" + room);
 				openChatRoom(roomId, title, loggedUserId, room.member1UserId, "logged2");
 			}
 		});
@@ -931,3 +1017,28 @@ export async function findRecentRoomMessage(roomId) {
 }
 
 
+
+// 게시글의 대표 사진을 받아오는 함수
+export async function getBoardMainFileByRoomId(roomId) {
+	// DB에서 roomId 내의 loggedUserId, userid 간의 메일 크기를 실시간으로 조회
+	return fetch(`/chat/getBoardMainFileByRoomId/${roomId}`, {
+		method: "GET",
+		headers: { 'Content-Type': "application/json;charset=utf-8;" }
+	})
+		.then(response => {
+			// If the response is not OK (status is not in the range 200-299)
+			//        if (!response.ok) {
+			//            return response.text();  // If not OK, return the error message as text
+			//        } else {
+			//            return response.json();  // Otherwise, return the response as JSON
+			//        }
+			return response.text();
+		})
+		.then(data => {
+			//        console.log(data);  // Print the received data
+			return data;  // Return the data
+		})
+		.catch(error => {
+			console.error("Error fetching message count:", error);  // Print any error that occurs
+		});
+}

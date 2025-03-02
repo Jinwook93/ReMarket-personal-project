@@ -297,4 +297,19 @@ public class BoardController {
 
 
 
+	
+	@GetMapping("/getBoardMainFile/{boardId}")
+	@ResponseBody
+	public String getBoardMainFile(@PathVariable(name = "boardId") Long boardId, @AuthenticationPrincipal PrincipalDetails principalDetails)
+			throws JsonMappingException, JsonProcessingException {
+			return boardService.getBoardMainFile(boardId);
+			
+	}
+	
+	
+	
+	
+	
+	
+	
 }
