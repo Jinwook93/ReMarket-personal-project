@@ -352,4 +352,25 @@ public class ChatController {
 			
 	}
     
+    
+    
+//    @GetMapping("/unReadMessageCount")
+//	@ResponseBody
+//	public  ResponseEntity<?>  unReadMessageCount(@PathVariable(name = "roomId") Long roomId, @AuthenticationPrincipal PrincipalDetails principalDetails)
+//			throws JsonMappingException, JsonProcessingException {
+//    		List<MessageDTO> messages = 
+//    	
+//			return ResponseEntity.ok(message);
+//			
+//	}
+//    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 }

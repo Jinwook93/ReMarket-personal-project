@@ -8,9 +8,12 @@ import com.cos.project.entity.AlarmEntity;
 import com.cos.project.repository.MemberRepository;
 import com.cos.project.service.AlarmService;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -92,7 +95,8 @@ public class AlarmController {
     // 특정 알림 읽음 처리
     @PostMapping("/read/{alarmId}")
     public ResponseEntity<?> markAsRead(@PathVariable(name = "alarmId") Long alarmId, @AuthenticationPrincipal PrincipalDetails principalDetail) {
-    	alarmService.readAlarm(alarmId, principalDetail.getMemberEntity().getId());
+    	
+    	 alarmService.readAlarm(alarmId, principalDetail.getMemberEntity().getId());
         return ResponseEntity.ok(alarmId);
     }
     
@@ -149,10 +153,55 @@ public class AlarmController {
     
     
     
+ // 읽지 않은 알람 개수 파악
+    @GetMapping("/unReadAlarmCount/{loggedId}")
+    public ResponseEntity<?> unReadAlarmCount(
+            @PathVariable(name = "loggedId") Long loggedId,
+            @AuthenticationPrincipal PrincipalDetails principalDetail) {
+
+    	
+    	List<AlarmEntity> filteredAlarms = alarmService.unReadAlarmList(loggedId);
+    	
+        return ResponseEntity.ok(filteredAlarms.size());
+    }
+
     
+    //읽지 않은 알람 데이터 파악 
     
-    
-    
+    @GetMapping("/unReadAlarmData/{loggedId}")
+    public ResponseEntity<?> unReadAlarmData(
+            @PathVariable(name = "loggedId") Long loggedId,
+            @AuthenticationPrincipal PrincipalDetails principalDetail
+          ) {
+
+        // 읽지 않은 알람 목록 가져오기
+        List<AlarmEntity> filteredAlarms = alarmService.unReadAlarmList(loggedId);
+
+        // MESSAGE 타입 중 '채팅방 만듬' 액션 필터링
+        List<AlarmDTO> filteredAlarms1 = filteredAlarms.stream()
+                .filter(alarm -> alarm.getMember1().getId().equals(loggedId) 
+                        && alarm.getType().equals("MESSAGE") 
+                        && alarm.getAction().equals("채팅방 만듬"))
+                .map(AlarmEntity::toDTO)
+                .collect(Collectors.toList());
+
+        // MESSAGE 타입 중 '송수신' 또는 '나가기' 액션 필터링
+        List<AlarmDTO> filteredAlarms2 = filteredAlarms.stream()
+                .filter(alarm -> alarm.getMember1().getId().equals(loggedId) 
+                        && alarm.getType().equals("MESSAGE") 
+                        && (alarm.getAction().equals("송수신") || alarm.getAction().equals("나가기")))
+                .map(AlarmEntity::toDTO)
+                .collect(Collectors.toList());
+
+        // 두 리스트를 합치기
+        List<AlarmDTO> filteredAlarms3 = new ArrayList<>();
+        filteredAlarms3.addAll(filteredAlarms1);
+        filteredAlarms3.addAll(filteredAlarms2);
+
+        return ResponseEntity.ok(filteredAlarms3);
+    }
+
+
     
     
 }

@@ -141,69 +141,68 @@
       <a href="/board/writeboard" class="write-btn">글쓰기</a>
       <button type="button" onclick="window.location.href='/board/list'" class="reset-btn" style="color: white; background-color: green; margin-left: 30px;">초기화</button>
     </div>
-    <table style="margin-bottom: 20px;">
-      <thead>
-        <tr>
-          <th>번호</th>
-          <th>판매/구매</th>
-          <th>종류</th>
-          <th>제목</th>
-          <th>작성자</th>
-          <th>가격</th>
-          <th>작성일</th>
-          <th>조회수</th>
-          <th if="${principalDetails !=null}">수정/삭제/대화</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- 게시글 데이터 반복 -->
-        <tr th:each="board : ${allBoards}">
-          <td th:text="${board.id}"></td>
-          <td th:text="${board.buy_Sell}"></td>
-          <td th:text="${board.category}"></td>
-          <td th:data-board-id="${board.id}">
-    <img th:id=|mainImage-${board.id}|
-         src="/boardimage/nullimage.jpg" 
-         alt="no profile image" 
-         style="display: block; width: 50px; height: 50px; margin-right: 10px;">
-            <a th:href="@{/board/view/{id}(id=${board.id})}" th:text="${board.title}"></a>
-          </td>
-          <td>
-            <div class="enterChatRoom" style="cursor: pointer;" th:onClick="@{/chat/Chatroom/{id}(id=${board.id})}">
-              <div style="display: flex; align-items: center;">
-                <div th:if="${board.memberEntity.profileImage != null}">
-                  <div id="imagePreview" style="margin-top: 10px;">
-                    <img id="previewImage" th:src="@{{imagePath}(imagePath=${board.memberEntity.profileImage})}" alt="Profile Image Preview" style="display: block; width: 50px; height: 50px; margin-right: 10px;">
-                  </div>
-                </div>
-                <div th:if="${board.memberEntity.profileImage == null}">
-                  <div id="imagePreview" style="margin-top: 10px;">
-                    <img id="previewImage" src="/boardimage/nullimage.jpg" alt="no profile image" style="display: block; width: 50px; height: 50px; margin-right: 10px;">
-                  </div>
-                </div>
-                <span th:text="${board.memberEntity.name}"></span>
-              </div>
+  <table style="width: 100%; margin-bottom: 20px; border-collapse: collapse;">
+  <thead>
+    <tr style="background-color: #f8f8f8; text-align: center;">
+      <th style="padding: 10px;">번호</th>
+      <th style="padding: 10px;">판매/구매</th>
+      <th style="padding: 10px;">종류</th>
+      <th style="padding: 10px;">제목</th>
+      <th style="padding: 10px;">작성자</th>
+      <th style="padding: 10px;">가격</th>
+      <th style="padding: 10px;">작성일</th>
+      <th style="padding: 10px;">조회수</th>
+      <th style="padding: 10px;">수정/삭제/대화</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- 게시글 데이터 반복 -->
+    <tr th:each="board : ${allBoards}" style="border-bottom: 1px solid #ddd;">
+      <td th:text="${board.id}" style="text-align: center; padding: 10px;"></td>
+      <td th:text="${board.buy_Sell}" style="text-align: center; padding: 10px; color: #ff5722; font-weight: bold;"></td>
+      <td th:text="${board.category}" style="text-align: center; padding: 10px;"></td>
+      <td th:data-board-id="${board.id}" style="padding: 10px;">
+        <div style="display: flex; align-items: center;">
+          <img th:id="|mainImage-${board.id}|"
+               src="/boardimage/nullimage.jpg" 
+               alt="no profile image" 
+               style="display: block; width: 80px; height: 80px; object-fit: cover; margin-right: 10px;">
+          <a th:href="@{/board/view/{id}(id=${board.id})}" th:text="${board.title}" style="font-size: 16px; color: #000; font-weight: bold;"></a>
+        </div>
+      </td>
+      <td>
+        <div class="enterChatRoom" style="cursor: pointer;" th:onClick="@{/chat/Chatroom/{id}(id=${board.id})}">
+          <div style="display: flex; align-items: center;">
+            <div th:if="${board.memberEntity.profileImage != null}">
+              <img th:src="@{{imagePath}(imagePath=${board.memberEntity.profileImage})}" alt="Profile Image" style="display: block; width: 50px; height: 50px; object-fit: cover; margin-right: 10px;">
             </div>
-          </td>
-          <td th:text="${board.price}"></td>
-          <td th:text="${#dates.format(board.createTime, 'yyyy-MM-dd HH:mm')}"></td>
-          <td th:text="${board.view}"></td>
-          <!-- 수정/삭제 버튼 (작성자와 로그인 사용자가 동일할 경우) -->
-          <td th:if="${board.memberEntity.userid == principalDetails.name}">
-            <div style="display: flex;">
-              <button type="button" th:id="|updateBoard-${board.id}|" th:onclick="'window.location.href=\'/board/updateboard/' + ${board.id} + '\';'">수정</button>
-              <button type="button" th:id="|deleteBoard-${board.id}|" th:data-deleteBoardId="${board.id}">삭제</button>
+            <div th:if="${board.memberEntity.profileImage == null}">
+              <img src="/boardimage/nullimage.jpg" alt="no profile image" style="display: block; width: 50px; height: 50px; object-fit: cover; margin-right: 10px;">
             </div>
-          </td>
-          <!-- 작성자와 로그인 사용자가 다를 경우 대화하기 버튼 표시 -->
-          <td th:unless="${board.memberEntity.userid == principalDetails.name}">
-            <div class="enterChatRoom" style="cursor: pointer;">
-              <button type="button" class="createRoom" th:data-id="${board.id}" th:data-member2="${board.memberEntity.userid}">대화하기</button>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+            <span th:text="${board.memberEntity.name}" style="font-size: 14px; color: #333;"></span>
+          </div>
+        </div>
+      </td>
+      <td th:text=|${board.price}원| style="text-align: center; padding: 10px; color: #00bfae; font-weight: bold;" th:id =|price-${board.id}|></td>
+      <td th:text="${#dates.format(board.createTime, 'yyyy-MM-dd HH:mm')}" style="text-align: center; padding: 10px;"></td>
+      <td th:text="${board.view}" style="text-align: center; padding: 10px;"></td>
+      <!-- 수정/삭제 버튼 (작성자와 로그인 사용자가 동일할 경우) -->
+      <td th:if="${board.memberEntity.userid == principalDetails.name}" style="text-align: center;">
+        <div style="display: flex; justify-content: center; gap: 10px;">
+          <button type="button" th:id="|updateBoard-${board.id}|" th:onclick="'window.location.href=\'/board/updateboard/' + ${board.id} + '\';'" style="background-color: #4caf50; color: white; padding: 5px 10px; border: none; border-radius: 5px;">수정</button>
+          <button type="button" th:id="|deleteBoard-${board.id}|" th:data-deleteBoardId="${board.id}" style="background-color: #f44336; color: white; padding: 5px 10px; border: none; border-radius: 5px;">삭제</button>
+        </div>
+      </td>
+      <!-- 작성자와 로그인 사용자가 다를 경우 대화하기 버튼 표시 -->
+      <td th:unless="${board.memberEntity.userid == principalDetails.name}" style="text-align: center;">
+        <div class="enterChatRoom" style="cursor: pointer;">
+          <button type="button" class="createRoom" th:data-id="${board.id}" th:data-member2="${board.memberEntity.userid}" style="background-color: #2196f3; color: white; padding: 5px 10px; border: none; border-radius: 5px;">대화하기</button>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
     <!-- 검색창 -->
     <div class="search-container" align="center">
       <form action="/search/board/result" method="get">
@@ -357,8 +356,7 @@
     });
  });
 </script>
-
-
+<script src="/js/formatCurrency.js" type = "module"></script>
 <script src="/js/deleteBoard.js" type="module"></script>
 
   

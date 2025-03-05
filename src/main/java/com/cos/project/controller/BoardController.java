@@ -107,7 +107,7 @@ public class BoardController {
 	
 	  @GetMapping("/list")
 	    public String boardList(@RequestParam(name = "page", defaultValue = "1") Integer page, Model model) {
-	        int pageSize = 10; // 페이지당 10개씩 출력
+	        int pageSize = 9; // 페이지당 9개씩 출력
 	        
         int pageNumber = page - 1; // 1-based page를 0-based page로 변환
 	        
@@ -264,9 +264,9 @@ public class BoardController {
 	@DeleteMapping("/deleteboard/{id}")
 	public ResponseEntity<?> deleteBoard(@PathVariable(name = "id") Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		commentService.deleteAllCommentAboutBoard(id);
-		System.out.println("삭제되는중?" + id);
+//		System.out.println("삭제되는중?" + id);
 		String result = boardService.deleteContents(id);
-		System.out.println("삭제되는중2?" + id);
+//		System.out.println("삭제되는중2?" + id);
 		
 		String id_String = String.valueOf(id);
 		Long loggedId = principalDetails.getMemberEntity().getId();

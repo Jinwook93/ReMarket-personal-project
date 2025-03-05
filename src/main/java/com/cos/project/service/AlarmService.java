@@ -197,7 +197,7 @@ public class AlarmService {
 			alarmEntity.setMember2Read("READ");
 		}
 		alarmRepository.saveAndFlush(alarmEntity);
-
+		alarmRepository.flush();
 	}
 	
 	
@@ -480,6 +480,29 @@ public class AlarmService {
 	        alarmEntities.isLast()
 	    );
 	}
+
+	@Transactional
+	public List<AlarmEntity> unReadAlarmList(Long loggedId) {
+	    // loggedId가 member1 또는 member2인 알람들을 조회
+	    List<AlarmEntity> alarms = this.findAllAboutLoggedId(loggedId);
+
+	    // 필터링: 읽지 않은 알람 && 해당 사용자가 볼 수 있는 알람만
+	    List<AlarmEntity> filteredAlarms = alarms.stream()
+	            .filter(alarm -> (alarm.getMember1() != null &&
+	                              alarm.getMember1().getId().equals(loggedId) &&
+	                              "UNREAD".equals(alarm.getMember1Read()) &&
+	                              Boolean.TRUE.equals(alarm.getMember1Visible()))
+	                          ||
+	                          (alarm.getMember2() != null &&
+	                              alarm.getMember2().getId().equals(loggedId) &&
+	                              "UNREAD".equals(alarm.getMember2Read()) &&
+	                              Boolean.TRUE.equals(alarm.getMember2Visible())))
+	            .collect(Collectors.toList());
+	    alarmRepository.flush(); // DB에 즉시 반영
+
+	    return filteredAlarms;
+	}
+
 
 	
 	

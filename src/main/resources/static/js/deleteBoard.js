@@ -49,12 +49,12 @@ deleteButtons.forEach(button => {
 			// 게시글 삭제 후, 페이지 새로고침
 
 
-			if (window.location.href === "/board/allboard") {
+			if (window.location.href === "/board/list") {
 				// 정확히 "/board/allboard" 경로에서만 실행
 				window.location.reload();
 			} else if (window.location.href.includes("/board/")) {
 				// "/board/"를 포함하는 경로에서는 게시판 목록으로 리디렉션
-				window.location.href = "/board/allboard";
+				window.location.href = "/board/list";
 			}
 
 		} catch (error) {

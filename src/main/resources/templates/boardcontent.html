@@ -269,12 +269,6 @@ input[type="checkbox"] {
 <!-- 				th:data-TradeBoardId="${board.id}">거래 중</button> -->
 <!-- 		</div> -->
 
-		<div
-			th:if="${board.memberEntity.userid != principalDetails.name && board.buy_Sell.name  == '삽니다' || board.buy_Sell.name  == '팝니다' }">
-			<button type="button" th:id="|enroll-Buy-${board.id}|"
-				th:data-TradeBuyBoardId="${board.id}">거래 요청</button>
-		</div>
-
 		<!-- '팝니다' 카테고리 -->
 <!-- 		<div -->
 <!-- 			th:if="${board.memberEntity.userid == principalDetails.name && board.buy_Sell.name  == '팝니다'}"> -->
@@ -287,8 +281,21 @@ input[type="checkbox"] {
 <!-- 			<button type="button" th:id="|enroll-Sell-${board.id}|" -->
 <!-- 				th:data-TradeSellBoardId="${board.id}">구매 요청</button> -->
 <!-- 		</div> -->
+		
+<!-- <div th:each="trade : ${board.trades}"> -->
+<!--     <div th:if="${board.memberEntity.userid != principalDetails.name}"> -->
+<!--         <div th:if="${(trade.accept1 == false || trade.accept2 == false || trade.accept1 == null || trade.accept2 == null)}"> -->
+<!--             <button type="button" th:id="|enroll-Buy-${board.id}|" -->
+<!--                     th:data-TradeBuyBoardId="${board.id}">거래 요청</button> -->
+<!--         </div> -->
+<!--     </div> -->
+<!-- </div> -->
 
-
+    <div th:if="${board.memberEntity.userid != principalDetails.name && #lists.isEmpty(board.trades)}">
+            <button type="button" th:id="|enroll-Buy-${board.id}|"
+                    th:data-TradeBuyBoardId="${board.id}">거래 요청</button>
+</div>
+	
 		<div th:each="trade : ${board.trades}">
 			<div style="display: flex;">
 				<div

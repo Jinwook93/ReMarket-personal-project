@@ -226,7 +226,6 @@ public class BoardService {
 	    
 	    if (boardFiles != null && boardFiles.length > 0) {
 	        String mainFile = boardFiles[0];
-	        System.out.println("mainFile명 : " + mainFile);
 	        return mainFile;
 	    } else {
 	        return "/boardimage/nullimage.jpg";

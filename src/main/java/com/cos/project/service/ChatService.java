@@ -476,17 +476,36 @@ public class ChatService {
 		entityManager.clear();
 	}
 
+//	@Transactional
+//	public boolean markMessagesAsRead(List<Long> messageIds) {
+//		List<MessageEntity> messages = messageRepository.findAllById(messageIds);
+//
+//		if (messages.isEmpty())
+//			return false; // 메시지가 없으면 false 반환
+//
+//		messages.forEach(msg -> msg.setRead(true)); // 읽음 처리
+//		return true; // 성공
+//	}
+
+	
 	@Transactional
 	public boolean markMessagesAsRead(List<Long> messageIds) {
-		List<MessageEntity> messages = messageRepository.findAllById(messageIds);
+	    List<MessageEntity> messages = messageRepository.findAllById(messageIds)
+	        .stream()
+	        .filter(msg -> !msg.isRead()) // ✅ 이미 읽은 메시지는 제외
+	        .collect(Collectors.toList());
 
-		if (messages.isEmpty())
-			return false; // 메시지가 없으면 false 반환
+	    if (messages.isEmpty()) return false; // 변경할 메시지가 없으면 false
 
-		messages.forEach(msg -> msg.setRead(true)); // 읽음 처리
-		return true; // 성공
+	    messages.forEach(msg -> msg.setRead(true)); // 읽음 처리
+	    return true; // 성공
 	}
 
+	
+	
+	
+	
+	
 	@Transactional
 	public Long findMessagesByRoomId(Long roomId, MemberEntity memberEntity) {
 		Optional<ChattingRoomEntity> room = chattingRoomRepository.findById(roomId);

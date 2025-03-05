@@ -33,10 +33,21 @@
 					style="margin-Top: 1px;" />
 
 				</a>
-				<button type="button" id="alarmButton">
-					<img src="/icon/bell.png" alt="알림" width="20" height="20" />
-				</button>
+			
+		<div class="alarm-container">
+  <button type="button" id="alarmButton" style="position: relative;">
+	<div style="display:flex">
+    <img src="/icon/bell.png" alt="알림" width="20" height="20" />
+   
+    </div>
+  </button>
+     <p id="unReadAlarmCountButton" style="display:none;">
+      3
+    </p>
+</div>
 
+			
+				
 				<div style="display: flex;">
 					<!-- 채팅방 리스트 -->
 					
@@ -81,33 +92,9 @@
 			</div>
 		</div>
 	</header>
+	<script src="/js/state.js" type="module"></script>
+	<script src="/js/headerUI.js" type="module"></script>
 
-	<script src="/js/headerUI.js" type="module">
-</script>
-	<script>
-		// Make the chat container draggable
-		//     const chatContainer = document.getElementById("chat-container");
-
-		//     chatContainer.addEventListener('mousedown', (e) => {
-		//         // Get the initial position of the mouse
-		//         let offsetX = e.clientX - chatContainer.offsetLeft;
-		//         let offsetY = e.clientY - chatContainer.offsetTop;
-
-		//         // Function to move the chat container with the mouse
-		//         const mouseMoveHandler = (e) => {
-		//             chatContainer.style.left = `${e.clientX - offsetX}px`;
-		//             chatContainer.style.top = `${e.clientY - offsetY}px`;
-		//         };
-
-		//         // Add the event listener for mousemove and mouseup
-		//         document.addEventListener('mousemove', mouseMoveHandler);
-
-		//         // Remove the event listeners once the mouse is released
-		//         document.addEventListener('mouseup', () => {
-		//             document.removeEventListener('mousemove', mouseMoveHandler);
-		//         }, { once: true });
-		//     });
-	</script>
 
 </body>
 </html>

@@ -133,7 +133,7 @@
     margin-top: 10px;
 }
 
-.reply-button {
+.comment-buttons .reply-button {
     background-color: navy;
     color: white;
     padding: 6px 12px;
@@ -158,17 +158,17 @@
     transition: background-color 0.2s ease-in-out;
 }
 
-.update-button {
+.comment-buttons .update-button {
     background-color: blue;
     color: white;
 }
 
-.delete-button {
+.comment-buttons .delete-button {
     background-color: red;
     color: white;
 }
 
-.blind-button {
+.comment-buttons .blind-button {
     background-color: green;
     color: white;
 }

@@ -128,11 +128,12 @@ body {
 
 .message-right {
 	/* 	text-align: right; */
-	background-color: #dcf8c6;
+  background-color: #FFFACD;
 	padding: 8px;
 	border-radius: 10px;
 	margin: 5px;
 	max-width: 60%;
+	border: 0.5px solid black;
 }
 
 .message-left {
@@ -187,6 +188,42 @@ body {
     cursor: pointer;
     transition: background 0.3s ease;
 }
+
+
+#alarmButton {
+  position: relative; /* unReadAlarmCountButton을 기준으로 위치 설정 */
+  display: inline-block;
+}
+
+#unReadAlarmCountButton {
+/*   position: absolute; */
+  top: 0; /* 알림 버튼의 상단에 맞춤 */
+  left: 100%; /* 알림 버튼의 오른쪽에 배치 */
+  margin-left: 5px; /* 간격 조정 */
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 12px;
+  display: none; /* 기본적으로 숨김 */
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  padding: 0;
+  line-height: 20px;
+  text-align: center;
+}
+
+
+
+
+
+
+
+
+
 
 /* 기본 버튼 스타일 */
 button:hover {
