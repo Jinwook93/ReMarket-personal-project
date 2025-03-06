@@ -1,5 +1,6 @@
 package com.cos.project.service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -180,8 +181,6 @@ public class ChatService {
 		return chattingRoomRepository.findById(roomid);
 	}
 
-
-
 	@Transactional
 	public boolean updateChatRoom(Long chattingRoomid, Long loggedId, Long boardId, String title, int price) {
 		BoardEntity boardEntity = boardRepository.findById(boardId).get();
@@ -298,11 +297,6 @@ public class ChatService {
 //			chattingRoomEntities = chattingRoomRepository.findAllByLoggedMember(id);
 //		} else {
 
-		
-		
-		
-		
-		
 //		if (!chattingRoomEntities.isEmpty()) {
 //			for (ChattingRoomEntity room : chattingRoomEntities) {
 //
@@ -487,25 +481,22 @@ public class ChatService {
 //		return true; // 성공
 //	}
 
-	
 	@Transactional
 	public boolean markMessagesAsRead(List<Long> messageIds) {
-	    List<MessageEntity> messages = messageRepository.findAllById(messageIds)
-	        .stream()
-	        .filter(msg -> !msg.isRead()) // ✅ 이미 읽은 메시지는 제외
-	        .collect(Collectors.toList());
+		List<MessageEntity> messages = messageRepository.findAllById(messageIds).stream().filter(msg -> !msg.isRead()) // ✅
+																														// 이미
+																														// 읽은
+																														// 메시지는
+																														// 제외
+				.collect(Collectors.toList());
 
-	    if (messages.isEmpty()) return false; // 변경할 메시지가 없으면 false
+		if (messages.isEmpty())
+			return false; // 변경할 메시지가 없으면 false
 
-	    messages.forEach(msg -> msg.setRead(true)); // 읽음 처리
-	    return true; // 성공
+		messages.forEach(msg -> msg.setRead(true)); // 읽음 처리
+		return true; // 성공
 	}
 
-	
-	
-	
-	
-	
 	@Transactional
 	public Long findMessagesByRoomId(Long roomId, MemberEntity memberEntity) {
 		Optional<ChattingRoomEntity> room = chattingRoomRepository.findById(roomId);
@@ -638,6 +629,70 @@ public class ChatService {
 //	                    System.out.println("최근 메시지: " + message.getMessageContent());  // 로그 추가
 					return message.convertToDTO(message); // message 객체에서 convertToDTO 호출
 				}).orElse(new MessageDTO(null, null, "최근 메시지가 없습니다", null)); // 최신 메시지가 없으면 null 반환
+	}
+
+	@Transactional
+	public List<MessageDTO> findUnReadMessages(Long loggedId) {
+
+		String loggedUserId = memberRepository.findById(loggedId)
+				.orElseThrow(() -> new IllegalArgumentException("유효하지 않은 사용자 ID입니다.")).getUserid();
+
+		List<ChattingRoomEntity> rooms = chattingRoomRepository.findAllByLoggedMember(loggedId);
+		List<MessageEntity> filteredMessages = new ArrayList<>();
+
+		for (ChattingRoomEntity room : rooms) {
+			List<MessageEntity> messages = messageRepository.findByChattingRoomEntity(room.getId());
+
+			Long messageIndex = (room.getMember1().equals(loggedId)) ? room.getMessageIndex1()
+					: room.getMessageIndex2();
+
+			if (messageIndex == null) {
+				continue; // messageIndex가 없으면 건너뜀
+			}
+
+			int index = Math.toIntExact(messageIndex);
+			for (; index < messages.size(); index++) {
+				MessageEntity message = messages.get(index);
+				if (message.isRead() || message.getSender().getId().equals(loggedId)) { // 읽지않음 상태이거나 (로그인유저가 송신자일 경우에
+																						// 대한 메시지는 제외)
+					continue;
+				}
+				filteredMessages.add(message);
+			}
+		}
+
+		return filteredMessages.stream().map(message -> message.convertToDTO(message)).collect(Collectors.toList());
+	}
+
+	@Transactional // 한 채팅방 당 읽지않음 메시지 수
+	public List<MessageDTO> findUnReadMessage(Long roomId, Long loggedId) {
+
+		Optional<ChattingRoomEntity> room = chattingRoomRepository.findById(roomId);
+		List<MessageEntity> messages = messageRepository.findByChattingRoomEntity(roomId);
+
+		Long messageIndex = (room.get().getMember1().getId().equals(loggedId)) ? room.get().getMessageIndex1()
+				: room.get().getMessageIndex2();
+
+		List<MessageEntity> filteredMessages = new ArrayList<>();
+
+		if (messageIndex == null) {
+			messageIndex = 0L;
+//	            continue; // messageIndex가 없으면 건너뜀
+		}
+
+		int index = Math.toIntExact(messageIndex);
+		for (; index < messages.size(); index++) {
+			MessageEntity message = messages.get(index);
+			if (message.isRead() || message.getSender().getId().equals(loggedId)) { // 읽지않음 상태이거나 (로그인유저가 송신자일 경우에 대한
+																					// 메시지는 제외)
+				continue;
+			}
+
+			filteredMessages.add(message);
+		}
+
+		return filteredMessages.stream().map(message -> message.convertToDTO(message)).collect(Collectors.toList());
+
 	}
 
 }

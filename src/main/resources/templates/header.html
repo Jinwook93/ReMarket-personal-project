@@ -13,68 +13,124 @@
 </head>
 <body>
 	<header th:fragment="header">
-		<div id="header-content" style="display: flex;">
+		<div id="header-content" style="display: flex; position: relative;">
 			<!-- 로그인 상태인 경우 -->
 			<div th:if="${isLoggedIn}" class="logged-in">
 				<input type="hidden" th:value="${isLoggedIn}" id="isLoggedIn">
 				<input type="hidden" th:value="${id}" id="loggedId"> <input
 					type="hidden" th:value="${loggedUserId}" id="loggedUserId">
-				<p>
-					환영합니다, <span th:text="${name}"></span>님
-				</p>
-				<a th:href="@{/logout}">로그아웃</a> <a
-					th:href="@{/mypage/{id}(id=${id})}">마이페이지</a> <a
-					th:href="@{/boardlist/{id}(id=${id})}">내가 쓴 게시글</a> <a
-					th:href="@{/commentlist/{id}(id=${id})}">내가 쓴 댓글</a>
+				<!-- 		<div style="display: flex; justify-content: flex-end; align-items: center; width: 100%;"> -->
+				<!--     <p style="margin-right: 20px;"> -->
+				<!--         환영합니다, <span th:text="${name}"></span>님 -->
+				<!--     </p> -->
+				<!--     <a th:href="@{/logout}" style="margin-left: 10px;">로그아웃</a> -->
+				<!-- </div> -->
+
+				<!-- 					<a -->
+				<!-- 					th:href="@{/boardlist/{id}(id=${id})}">내가 쓴 게시글</a> <a -->
+				<!-- 					th:href="@{/commentlist/{id}(id=${id})}">내가 쓴 댓글</a> -->
 
 				<!-- 나의 채팅방 버튼 -->
-				<a href="#" id="myChattingRoomList"> <img
-					src="/icon/comment.png" alt="나의 채팅방" width="20" height="20"
-					style="margin-Top: 1px;" />
+				<!-- 				<a href="#" id="myChattingRoomList"> <img -->
+				<!-- 					src="/icon/comment.png" alt="나의 채팅방" width="20" height="20" -->
+				<!-- 					style="margin-Top: 1px;" /> -->
 
-				</a>
-			
-		<div class="alarm-container">
-  <button type="button" id="alarmButton" style="position: relative;">
-	<div style="display:flex">
-    <img src="/icon/bell.png" alt="알림" width="20" height="20" />
-   
-    </div>
-  </button>
-     <p id="unReadAlarmCountButton" style="display:none;">
-      3
-    </p>
-</div>
+				<!-- 				</a> -->
+				<!-- 				<p id="unReadMessageCountButton" style="display:none;"> -->
+				<!--       			테스트 -->
+				<!--     		</p> -->
 
-			
-				
-				<div style="display: flex;">
-					<!-- 채팅방 리스트 -->
-					
-						<div class="chattingRoomList">
-						<div id="chattingRoomScroll">
-							<table>
-								<tbody id="chattingRoomListBody">
-									<!-- 채팅방 목록이 여기에 동적으로 추가됩니다 -->
-								</tbody>
-							</table>
+				<div
+					style="display: flex; justify-content: space-between; width: 100%;">
+					<!-- 게시판 링크 (왼쪽 정렬) -->
+					<a href="/board/list" style="flex-grow: 0;">게시판</a>
+
+					<!-- 나머지 링크들 (오른쪽 정렬) -->
+					<div style="display: flex; justify-content: flex-end; gap: 10px;">
+
+						<p style="margin-right: 20px;">
+							환영합니다, <span th:text="${name}"></span>님
+						</p>
+						<a th:href="@{/logout}" style="margin-left: 10px;">로그아웃</a> <a
+							th:href="@{/mypage/{id}(id=${id})}">마이페이지</a> <a
+							href="/board/writeboard">글쓰기</a>
+
+
+						<!-- 나의 채팅방 버튼 -->
+						<a href="#" id="myChattingRoomList"
+							style="position: relative; display: inline-block;"> <img
+							src="/icon/comment.png" alt="나의 채팅방" width="20" height="20"
+							style="margin-top: 1px;"> <span
+							id="unReadMessageCountButton">0</span>
+						</a>
+
+						<!-- 알림 버튼 -->
+						<div class="alarm-container">
+							<button type="button" id="alarmButton"
+								style="position: relative;">
+								<div style="display: flex;">
+									<img src="/icon/bell.png" alt="알림" width="20" height="20" /> <span
+										id="unReadAlarmCountButton">3</span>
+								</div>
+							</button>
 						</div>
 					</div>
-					<!-- 알림 리스트 -->
-					<div class="alarmList">
-						<table>
-							<tbody id="alarmListBody">
-									<div id = "notification-container"></div>
-								<!-- 알림 목록이 여기에 동적으로 추가됩니다 -->
-							</tbody>
-						</table>
-
-
-					</div>
-
-
-
 				</div>
+
+
+
+<div style="display: flex; position: relative;">
+    <!-- 채팅방 리스트 (오른쪽 정렬, 하나만 활성화시 기본 위치) -->
+    <div class="chattingRoomList"
+        style="position: absolute; top: -5px; left: 0px; width: 600px; height: 600px; display: none; z-index: 1;" 
+        onclick="bringToFront(this)">
+        <div id="chattingRoomScroll">
+            <table>
+                <tbody id="chattingRoomListBody">
+                    <!-- 채팅방 목록이 여기에 동적으로 추가됩니다 -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 알림 리스트 (오른쪽 정렬, 하나만 활성화시 기본 위치) -->
+    <div class="alarmList"
+        style="position: absolute; top: -5px; right: 0; width: 600px; height: 450px; display: none; z-index: 1;" 
+        onclick="bringToFront(this)">
+        <table>
+            <tbody id="alarmListBody">
+                <div id="notification-container"></div>
+                <!-- 알림 목록이 여기에 동적으로 추가됩니다 -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function bringToFront(element) {
+        // 모든 요소의 z-index를 1로 리셋
+        const allElements = document.querySelectorAll('.chattingRoomList, .alarmList');
+        allElements.forEach(el => {
+            if (el.style.display !== "none") {  // display가 "none"이 아닐 때만 z-index 변경
+                el.style.zIndex = '1';
+            }
+        });
+
+        // 클릭한 요소가 보이면 z-index를 10으로 설정하여 앞에 보이게 함
+        if (element.style.display !== "none") {
+            element.style.zIndex = '10';
+        }
+    }
+</script>
+
+
+
+
+
+
+
+
+
 			</div>
 			<!-- 기본 제목 표시 -->
 			<h1 th:text="${title}">기본 제목</h1>
@@ -83,18 +139,34 @@
 			<div th:if="${!isLoggedIn}">
 				<a th:href="@{/formlogin}">로그인</a> <a th:href="@{/join}">회원가입</a> <a
 					th:href="@{/findid}">아이디 찾기</a> <a th:href="@{/findpassword}">비밀번호
-					찾기</a>
+					찾기</a> <a href="/board/list">게시판</a> <a href="/board/writeboard">글쓰기</a>
+
 			</div>
 
 			<!-- 공통 메뉴 -->
-			<div>
-				<a href="/board/list">게시판</a> <a href="/board/writeboard">글쓰기</a>
-			</div>
+			<!-- 			<div> -->
+			<!-- 				<a href="/board/list">게시판</a> <a href="/board/writeboard">글쓰기</a> -->
+			<!-- 			</div> -->
 		</div>
 	</header>
 	<script src="/js/state.js" type="module"></script>
 	<script src="/js/headerUI.js" type="module"></script>
 
+<script>
+    function bringToFront(element) {
+        // 모든 요소의 z-index를 1로 리셋
+        const allElements = document.querySelectorAll('.chattingRoomList, .alarmList');
+        allElements.forEach(el => {
+            if (el.style.display !== "none") {  // display가 "none"이 아닐 때만 z-index 변경
+                el.style.zIndex = '1';
+            }
+        });
 
+        // 클릭한 요소가 보이면 z-index를 10으로 설정하여 앞에 보이게 함
+        if (element.style.display !== "none") {
+            element.style.zIndex = '10';
+        }
+    }
+</script>
 </body>
 </html>

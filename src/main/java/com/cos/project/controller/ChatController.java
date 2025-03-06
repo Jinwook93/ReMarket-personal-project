@@ -354,18 +354,26 @@ public class ChatController {
     
     
     
-//    @GetMapping("/unReadMessageCount")
-//	@ResponseBody
-//	public  ResponseEntity<?>  unReadMessageCount(@PathVariable(name = "roomId") Long roomId, @AuthenticationPrincipal PrincipalDetails principalDetails)
-//			throws JsonMappingException, JsonProcessingException {
-//    		List<MessageDTO> messages = 
-//    	
-//			return ResponseEntity.ok(message);
-//			
-//	}
-//    
+    @GetMapping("/unReadMessagesCount/{loggedId}")
+	@ResponseBody
+	public  ResponseEntity<?>  unReadMessagesCount(@PathVariable(name = "loggedId") Long loggedId, @AuthenticationPrincipal PrincipalDetails principalDetails)
+			throws JsonMappingException, JsonProcessingException {
+//    	 chatService.myChattingRoomList(loggedId, principalDetails.getMemberEntity().getId());
+    	List<MessageDTO> messages = chatService.findUnReadMessages(loggedId);
+			return ResponseEntity.ok(messages.size());
+			
+	}
     
     
+    @GetMapping("/unReadMessageCount2/{roomId}")			//채팅방 방안의 읽지 않음 메시지 갯수
+	@ResponseBody
+	public  ResponseEntity<?>  unReadMessageCount(@PathVariable(name = "roomId") Long roomId, @AuthenticationPrincipal PrincipalDetails principalDetails)
+			throws JsonMappingException, JsonProcessingException {
+    		Long loggedId = principalDetails.getMemberEntity().getId();
+    	List<MessageDTO> messages = chatService.findUnReadMessage(roomId, loggedId);
+			return ResponseEntity.ok(messages.size());
+			
+	}
     
     
     

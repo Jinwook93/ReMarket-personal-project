@@ -1,4 +1,3 @@
-// chatting 기능 관련 함수들을 모듈로 내보냅니다.
 
 import { checkUserAlarmCount } from "./alarmModule.js";
 import { getBoardMainFile } from "./boardModule.js";
@@ -910,16 +909,34 @@ export async function loadChatRooms(loggedId) {
             return dateB - dateA;
         });
 
+
+
+
+
+
+
+
         // 기존 목록과 비교 후 변경된 부분만 업데이트
         const existingRows = [...chattingRoomListBody.children];
         const fragment = document.createDocumentFragment();
         let hasChanged = false;
-
+if (visibleDatas.length === 0) {
+			// 기존 목록을 초기화
+	chattingRoomListBody.innerHTML = "";
+    chattingRoomListBody.innerHTML = `
+        <tr>
+            <td colspan="2" style="text-align: center; padding: 20px; font-size: 18px; color: gray;">
+                입장할 수 있는 채팅방이 없습니다.
+            </td>
+        </tr>
+    `;
+} else {
         for (const data of visibleDatas) {
             const recentRoomMessage = await findRecentRoomMessage(Number(data.id));
             const mainFile = await getBoardMainFileByRoomId(data.id);
             const roomId = data.id.toString();
-
+			const unReadMessageCount = await checkUnReadMessageCount2(data.id);
+			
             // 기존 DOM에서 같은 roomId가 있는지 확인
             const existingRow = existingRows.find(row => row.dataset.roomId === roomId);
             const newContent = `
@@ -943,9 +960,14 @@ export async function loadChatRooms(loggedId) {
                                 style="margin-left: 10px; margin-right: 10px; border-radius: 5px; border: 0.5px solid black;">
                         </div>
                         <div style="width: 100%; max-width: 1200px; margin: 0 auto; padding: 10px; background-color: #f5f5f5; border-radius: 10px;">
-                            <div style="margin-top: 15px;">
+                         	
+                            <div style="margin-top: 15px;display: flex;">
                                 ${recentRoomMessage
-                                    ? `${recentRoomMessage.senderUserId ? `<b><img src="/icon/userIcon.png" width="20" height="20" alt="상대방"> ${recentRoomMessage.senderUserId} : </b>` : ""}
+                                    ? `${recentRoomMessage.senderUserId ? `
+       
+  ${unReadMessageCount>0?  `<div id="unReadMessageCountButton2">  <b>${unReadMessageCount}</b></div>`:""}
+	 <!--<div id="unReadMessageCountButton2">  <b>${unReadMessageCount}</b></div> -->
+<img src="/icon/userIcon.png" width="20" height="20" alt="상대방"> ${recentRoomMessage.senderUserId} : </b>` : ""}
                                        ${recentRoomMessage.messageContent || ""}`
                                     : `최근 메시지 없음`}
                             </div>
@@ -987,7 +1009,7 @@ export async function loadChatRooms(loggedId) {
                 hasChanged = true;
             }
         }
-
+}
         // 필요 없는 행 삭제
         existingRows.forEach(row => {
             if (!visibleDatas.some(data => data.id.toString() === row.dataset.roomId)) {
@@ -1215,3 +1237,28 @@ export async function getBoardMainFileByRoomId(roomId) {
 			console.error("Error fetching message count:", error);  // Print any error that occurs
 		});
 }
+
+//로그인 id 당 읽지않음 메시지 총 갯수
+export async function checkUnReadMessageCount(loggedId) {
+	try {
+		const response = await fetch(`/chat/unReadMessagesCount/${loggedId}`);
+		const data = await response.text();
+		//		console.og(data);
+		return Number(data); // { content, totalPages, totalElements, number, size }
+	} catch (error) {
+		console.error("목록을 불러오는 중 오류 발생:", error);
+	}
+}
+
+//채팅방 하나당 읽지않음 메시지 갯수
+export async function checkUnReadMessageCount2(roomId) {
+	try {
+		const response = await fetch(`/chat/unReadMessageCount2/${roomId}`);
+		const data = await response.text();
+		//		console.log(data);
+		return Number(data); // { content, totalPages, totalElements, number, size }
+	} catch (error) {
+		console.error("목록을 불러오는 중 오류 발생:", error);
+	}
+}
+

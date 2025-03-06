@@ -1,36 +1,37 @@
-import { loadChatRooms, loadMessages, setUpEnterRoomButton, setUpExitRoomButton, toggleChattingRoomList } from './chatModule.js';
+import { checkUnReadMessageCount, checkUnReadMessageCount2, loadChatRooms, loadMessages, setUpEnterRoomButton, setUpExitRoomButton, toggleChattingRoomList } from './chatModule.js';
 import { toggleAlarmList, checkUserAlarmCount, checkUserAlarmList } from './alarmModule.js';
 import { formatDate } from "./formatDate.js";
 import { enrollTrade2 } from "./tradeModule.js";
 
- let prevState = null;
-let alarmCountInterval= null;
+let prevState = null;
+let alarmCountInterval = null;
 document.addEventListener("DOMContentLoaded", async () => {
-  const isLoggedIn = document.getElementById("isLoggedIn")?.value;
-  const loggedId = document.getElementById("loggedId")?.value;
-  const loggedUserId = document.getElementById("loggedUserId")?.value;
+	const isLoggedIn = document.getElementById("isLoggedIn")?.value;
+	const loggedId = document.getElementById("loggedId")?.value;
+	const loggedUserId = document.getElementById("loggedUserId")?.value;
 
-  if (isLoggedIn === "true") {
-    await checkUserAlarmCount(loggedId);
-//    await loadChatRooms(loggedId);
-//    setUpEnterRoomButton(loggedUserId);
-//    setUpExitRoomButton();
+	if (isLoggedIn === "true") {
+		await checkUserAlarmCount(loggedId);
+				await unReadMessageCount(loggedId);
+		//    await loadChatRooms(loggedId);
+		//    setUpEnterRoomButton(loggedUserId);
+		//    setUpExitRoomButton();
 
-    if (alarmCountInterval !== null) {
-      clearInterval(alarmCountInterval);
-    }
+		if (alarmCountInterval !== null) {
+			clearInterval(alarmCountInterval);
+		}
 
-    // ✅ 5초마다 알람 데이터 확인 (중복 실행 방지)
-  alarmCountInterval = setInterval(async () => {
-       await checkUserAlarmData(loggedId);
-    }, 5000);
-  }
-  else{
-	prevState = null;
-  }
+		// ✅ 5초마다 알람 데이터 확인 (중복 실행 방지)
+		alarmCountInterval = setInterval(async () => {
+			await checkUserAlarmData(loggedId);
+		}, 5000);
+	}
+	else {
+		prevState = null;
+	}
 
-  toggleChattingRoomList();
-  toggleAlarmList();
+	toggleChattingRoomList();
+	toggleAlarmList();
 });
 
 // 알람 데이터를 가져오는 함수
@@ -98,97 +99,108 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
 async function checkUserAlarmData(loggedId) {
-  try {
-    const loggedUserId = document.getElementById("loggedUserId").value;
-    const alarmResponse = await fetch(`/alarm/unReadAlarmData/${loggedId}`);
-    const datas = await alarmResponse.json(); // 📌 읽지 않은 알람 목록
+	try {
+		const loggedUserId = document.getElementById("loggedUserId").value;
+		const alarmResponse = await fetch(`/alarm/unReadAlarmData/${loggedId}`);
+		const datas = await alarmResponse.json(); // 📌 읽지 않은 알람 목록
 
-    let currentPage = alarmListBody.getAttribute("data-current-page") || 0;
+		let currentPage = alarmListBody.getAttribute("data-current-page") || 0;
 
-    // ✅ 같은 데이터라면 중복 호출 방지 (이전 상태 비교)
-//    if (prevState && JSON.stringify(prevState) === JSON.stringify(datas)) {
-//      console.log("동일한 알람 데이터이므로 렌더링을 건너뜁니다.");
-//      return;
-//    }
+		// ✅ 같은 데이터라면 중복 호출 방지 (이전 상태 비교)
+		//    if (prevState && JSON.stringify(prevState) === JSON.stringify(datas)) {
+		//      console.log("동일한 알람 데이터이므로 렌더링을 건너뜁니다.");
+		//      return;
+		//    }
+		
+		
+		//채팅방 첫 입력을 안할시 상대편에서 인식못하는 버그 있음 (송신자가 혼자 말할 시 수신측에서 인식을 못함)
+		if (!datas || !Array.isArray(datas) || datas.length === 0) {
+			return;
+		}
 
-  
 
-    // 📌 알람 카운트 업데이트
-    await checkUserAlarmCount(loggedId);
+		// 📌 알람 카운트 업데이트
+		await checkUserAlarmCount(loggedId);
 
-    // 📌 페이지 새로 로딩
-    await loadPage(currentPage, loggedId);
-    
+		await unReadMessageCount(loggedId);
+		// 📌 페이지 새로 로딩
+		await loadPage(currentPage, loggedId);
 
-    
- if (prevState === null) {
-      prevState = datas;
-    }
-//        console.log(JSON.stringify(prevState));
-//    console.log(JSON.stringify(datas));
-    
-//    if (prevState && JSON.stringify(prevState) !== JSON.stringify(datas)) {
-            await loadChatRooms(loggedId);
-        setUpEnterRoomButton(loggedUserId);
-        setUpExitRoomButton();
-//        }
 
-    // 📌 로드한 방 ID를 저장하는 지역 변수 (초기화)
-    const loadedRooms = new Set();
-	
-//	let loadChatRoomsCount = 1;
 
-    // 📌 채팅 관련 알람 처리
-    for (const data of datas) {
-      if (data.type === "MESSAGE") {
-//        await loadChatRooms(loggedId);
-//        setUpEnterRoomButton(loggedUserId);
-//        setUpExitRoomButton();
-	console.log(data);
-        if (data.action === "송수신" || data.action === "나가기") {
-          const room = await fetch(`/chat/findRoom/${Number(data.object)}`).then(res => res.json());
-          const roomId = Number(room.id);
+		if (prevState === null) {
+			prevState = datas;
+		}
+		//        console.log(JSON.stringify(prevState));
+		//    console.log(JSON.stringify(datas));
 
-          // ✅ 이미 로드된 방이면 건너뛰기
-//          if (loadedRooms.has(roomId)) {
-//            console.log(`Room ID ${roomId}는 이미 메시지를 로드했으므로 건너뜁니다.`);
-//            continue;
-//          }
+		//    if (prevState && JSON.stringify(prevState) !== JSON.stringify(datas)) {
+		await loadChatRooms(loggedId);
+		setUpEnterRoomButton(loggedUserId);
+		setUpExitRoomButton();
+		//        }
 
-          // ✅ 송신자 또는 수신자의 메시지 로딩
-          if (Number(data.member1Id) === Number(loggedId)) {
-            loadMessages(roomId, room.messageIndex1, room.recentExitedmemberId);
-              await loadChatRooms(loggedId);
-        setUpEnterRoomButton(loggedUserId);
-        setUpExitRoomButton();
-          } else if (Number(data.member2Id) === Number(loggedId)) {
-            loadMessages(roomId, room.messageIndex2, room.recentExitedmemberId);
-              await loadChatRooms(loggedId);
-        setUpEnterRoomButton(loggedUserId);
-        setUpExitRoomButton();
-          }
 
-          // ✅ 메시지를 로드한 방 ID를 저장하여 중복 호출 방지
-          loadedRooms.add(roomId);
-        }
-      }
-    }
-    return datas;
-  } catch (error) {
-    console.error("알람 데이터를 불러오는 중 오류 발생:", error);
-  }
+
+
+		// 📌 로드한 방 ID를 저장하는 지역 변수 (초기화)
+		const loadedRooms = new Set();
+
+		//	let loadChatRoomsCount = 1;
+
+		// 📌 채팅 관련 알람 처리
+		for (const data of datas) {
+			if (data.type === "MESSAGE") {
+				//        await loadChatRooms(loggedId);
+				//        setUpEnterRoomButton(loggedUserId);
+				//        setUpExitRoomButton();
+				console.log(data);
+				if (data.action === "송수신" || data.action === "나가기") {
+					const room = await fetch(`/chat/findRoom/${Number(data.object)}`).then(res => res.json());
+					const roomId = Number(room.id);
+
+					// ✅ 이미 로드된 방이면 건너뛰기		(수신이 안됨)
+					          if (loadedRooms.has(roomId)) {
+					            console.log(`Room ID ${roomId}는 이미 메시지를 로드했으므로 건너뜁니다.`);
+					            continue;
+					          }
+
+					// ✅ 송신자 또는 수신자의 메시지 로딩
+					if (Number(data.member1Id) === Number(loggedId)) {
+						loadMessages(roomId, room.messageIndex1, room.recentExitedmemberId);
+						await loadChatRooms(loggedId);
+						setUpEnterRoomButton(loggedUserId);
+						setUpExitRoomButton();
+						await unReadMessageCount(loggedId);
+					} else if (Number(data.member2Id) === Number(loggedId)) {
+						loadMessages(roomId, room.messageIndex2, room.recentExitedmemberId);
+						await loadChatRooms(loggedId);
+						setUpEnterRoomButton(loggedUserId);
+						setUpExitRoomButton();
+						await unReadMessageCount(loggedId);
+					}
+
+					// ✅ 메시지를 로드한 방 ID를 저장하여 중복 호출 방지
+					loadedRooms.add(roomId);
+				}
+			}
+		}
+		return datas;
+	} catch (error) {
+		console.error("알람 데이터를 불러오는 중 오류 발생:", error);
+	}
 }
 
 
 
 
-export async function findAlarm(loggedId, alarmResult, alarmList, alarmListBody , page = 0) {
+export async function findAlarm(loggedId, alarmResult, alarmList, alarmListBody, page = 0) {
 
 	if (alarmList && alarmList.length > 0) {
 		alarmListBody.innerHTML = '';
 
 		const container = document.getElementById('notification-container'); // 체크박스를 추가할 위치
-		
+
 		// 체크박스가 이미 추가되었는지 확인
 		if (!document.getElementById('markAllAsReadCheckbox')) {
 			// 체크박스를 감싸는 <label> 요소 생성
@@ -199,10 +211,10 @@ export async function findAlarm(loggedId, alarmResult, alarmList, alarmListBody 
 			checkbox.type = 'checkbox';
 			checkbox.id = 'markAllAsReadCheckbox';
 			checkbox.onclick = toggleMarkAllAsRead; // 체크박스 클릭 시 실행될 함수
- 		     // 체크박스 해제
- 		     if(checkbox.checked){
-   		 checkbox.checked = false;
-   		   }
+			// 체크박스 해제
+			if (checkbox.checked) {
+				checkbox.checked = false;
+			}
 			// 텍스트 노드 생성
 			const text = document.createTextNode(' 모든 알림 읽음 처리');
 
@@ -214,7 +226,7 @@ export async function findAlarm(loggedId, alarmResult, alarmList, alarmListBody 
 			container.appendChild(label);
 		}
 
-  
+
 		alarmList.sort((a, b) => Number(b.id) - Number(a.id));
 
 		alarmList.forEach(alarm => {
@@ -247,12 +259,12 @@ export async function findAlarm(loggedId, alarmResult, alarmList, alarmListBody 
                        ` : ""}
                 `;
 			alarmListBody.appendChild(row);
-			
+
 		});
- 		// 📌 현재 페이지 번호 저장
-  		alarmListBody.setAttribute("data-current-page", page);
-  		
-  		
+		// 📌 현재 페이지 번호 저장
+		alarmListBody.setAttribute("data-current-page", page);
+
+
 		// Create pagination container
 		const pageList = document.createElement("div");
 		pageList.id = "pagination";
@@ -273,10 +285,10 @@ document.getElementById("myChattingRoomList").addEventListener("click", async ()
 	const loggedId = document.getElementById("loggedId")?.value;
 	const loggedUserId = document.getElementById("loggedUserId")?.value;
 	if (isLoggedIn === "true" || isLoggedIn === true) {
-    await loadChatRooms(loggedId);
-        await checkUserAlarmCount(loggedId);
-    setUpEnterRoomButton(loggedUserId);
-    setUpExitRoomButton();
+		await loadChatRooms(loggedId);
+		await checkUserAlarmCount(loggedId);
+		setUpEnterRoomButton(loggedUserId);
+		setUpExitRoomButton();
 	}
 });
 
@@ -288,6 +300,7 @@ document.getElementById("alarmButton").addEventListener("click", async () => {
 
 	if (isLoggedIn === "true" || isLoggedIn === true) {
 		const alarmResult = await checkUserAlarmList(loggedId);
+		await checkUserAlarmCount(loggedId);
 		const alarmList = alarmResult.content;
 		const alarmListBody = document.getElementById("alarmListBody");
 
@@ -313,7 +326,7 @@ document.addEventListener("click", async function(event) {
 
 			if (response.ok) {
 				console.log(`알림 ${alarmId} 읽음 처리 완료`);
-				
+
 				// ✅ 클릭한 알림을 바로 삭제 (부모 <tr> 요소 제거)
 				//				const row = target.closest("tr"); // 가장 가까운 <tr> 찾기
 				//				if (row) {
@@ -324,18 +337,18 @@ document.addEventListener("click", async function(event) {
 				const isLoggedIn = document.getElementById("isLoggedIn")?.value;
 				const loggedId = document.getElementById("loggedId")?.value;
 				if (isLoggedIn === "true" || isLoggedIn === true) {
-						const alarmListBody = document.getElementById("alarmListBody");
-					const alarmResult = await checkUserAlarmList(loggedId,alarmListBody.getAttribute("data-current-page"));
-//					const alarmList = alarmResult.content;
-				
-					
-//					  alarmListBody.setAttribute("data-current-page", alarmResult.page); // 현재 페이지 저장
-// 						console.log(alarmResult);
-//					  console.log("페이지 확인1 =>" +Number(alarmResult.page));
-//					  console.log("페이지 확인2 =>" +alarmListBody.getAttribute("data-current-page"));
-					  
-// 						findAlarm(loggedId, alarmResult, alarmList, alarmListBody, alarmListBody.getAttribute("data-current-page"));
-							loadPage(alarmListBody.getAttribute("data-current-page"), loggedId);
+					const alarmListBody = document.getElementById("alarmListBody");
+					const alarmResult = await checkUserAlarmList(loggedId, alarmListBody.getAttribute("data-current-page"));
+					//					const alarmList = alarmResult.content;
+
+
+					//					  alarmListBody.setAttribute("data-current-page", alarmResult.page); // 현재 페이지 저장
+					// 						console.log(alarmResult);
+					//					  console.log("페이지 확인1 =>" +Number(alarmResult.page));
+					//					  console.log("페이지 확인2 =>" +alarmListBody.getAttribute("data-current-page"));
+
+					// 						findAlarm(loggedId, alarmResult, alarmList, alarmListBody, alarmListBody.getAttribute("data-current-page"));
+					loadPage(alarmListBody.getAttribute("data-current-page"), loggedId);
 				}
 			} else {
 				console.error(`알림 ${alarmId} 읽음 처리 실패`);
@@ -431,19 +444,19 @@ function addPageButton(page, currentPage, loggedId, container) {
 
 // 페이지를 로드하는 함수 (실제 데이터 로드를 구현할 곳)
 export async function loadPage(page, loggedId) {
-  console.log(`Loading page ${page + 1}`);
-  
-   const unReadAlarmCount = await checkUserAlarmCount(loggedId); 
-  const unReadAlarmCountButton = document.getElementById("unReadAlarmCountButton");
-  unReadAlarmCountButton.innerText = unReadAlarmCount;
-  
-  const alarmResult = await checkUserAlarmList(loggedId, page); // 페이지네이션 지원
-  const alarmList = alarmResult.content;
-  const alarmListBody = document.getElementById("alarmListBody");
+	console.log(`Loading page ${page + 1}`);
 
-  // 📌 페이지 정보 업데이트 후 데이터 로드
-  alarmListBody.setAttribute("data-current-page", page); // 현재 페이지 저장
-  findAlarm(loggedId, alarmResult, alarmList, alarmListBody, page);
+	const unReadAlarmCount = await checkUserAlarmCount(loggedId);
+	const unReadAlarmCountButton = document.getElementById("unReadAlarmCountButton");
+	unReadAlarmCountButton.innerText = unReadAlarmCount;
+
+	const alarmResult = await checkUserAlarmList(loggedId, page); // 페이지네이션 지원
+	const alarmList = alarmResult.content;
+	const alarmListBody = document.getElementById("alarmListBody");
+
+	// 📌 페이지 정보 업데이트 후 데이터 로드
+	alarmListBody.setAttribute("data-current-page", page); // 현재 페이지 저장
+	findAlarm(loggedId, alarmResult, alarmList, alarmListBody, page);
 }
 
 
@@ -452,42 +465,86 @@ export async function loadPage(page, loggedId) {
 
 
 async function toggleMarkAllAsRead() {
-  const isChecked = document.getElementById("markAllAsReadCheckbox").checked;
-  const loggedId = document.getElementById("loggedId").value;
-  const alarmListBody = document.getElementById("alarmListBody");
+	const isChecked = document.getElementById("markAllAsReadCheckbox").checked;
+	const loggedId = document.getElementById("loggedId").value;
+	const alarmListBody = document.getElementById("alarmListBody");
 
-  // 📌 현재 페이지 번호 유지
-  let currentPage = alarmListBody.getAttribute("data-current-page") || 0;
-  
-  if (isChecked) {
-    try {
-      // 모든 알림 읽음 처리 API 호출
-      await fetch(`/alarm/read-all`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json;charset=utf-8",
-        },
-      });
+	// 📌 현재 페이지 번호 유지
+	let currentPage = alarmListBody.getAttribute("data-current-page") || 0;
 
-      // 📌 현재 페이지 유지하면서 알림 목록 다시 가져오기
-      const alarmResult = await checkUserAlarmList(loggedId, currentPage);
-      const alarmList = alarmResult.content;
-      
+	if (isChecked) {
+		try {
+			// 모든 알림 읽음 처리 API 호출
+			await fetch(`/alarm/read-all`, {
+				method: "GET",
+				headers: {
+					"Content-Type": "application/json;charset=utf-8",
+				}
+			});
+
+			// 📌 현재 페이지 유지하면서 알림 목록 다시 가져오기
+			const alarmResult = await checkUserAlarmList(loggedId, currentPage);
+			const alarmList = alarmResult.content;
 
 
-      findAlarm(loggedId, alarmResult, alarmList, alarmListBody, currentPage); // ✅ 현재 페이지를 유지하면서 호출
-	const unReadAlarmCount = await checkUserAlarmCount(loggedId);
-//    const unReadAlarmCountButton = document.getElementById("unReadAlarmCountButton");
-//    
-//    if (unReadAlarmCount > 0 && unReadAlarmCountButton) {
-//		unReadAlarmCountButton.style.display ="block";
-//      unReadAlarmCountButton.innerText = unReadAlarmCount;
-//    }else{
-//			unReadAlarmCountButton.style.display ="none";
-//      unReadAlarmCountButton.innerText = unReadAlarmCount;
-//	}
-    } catch (error) {
-      console.error("알림 읽음 처리 중 오류 발생:", error);
-    }
-  }
+
+			findAlarm(loggedId, alarmResult, alarmList, alarmListBody, currentPage); // ✅ 현재 페이지를 유지하면서 호출
+			const unReadAlarmCount = await checkUserAlarmCount(loggedId);
+			//    const unReadAlarmCountButton = document.getElementById("unReadAlarmCountButton");
+			//    
+			//    if (unReadAlarmCount > 0 && unReadAlarmCountButton) {
+			//		unReadAlarmCountButton.style.display ="block";
+			//      unReadAlarmCountButton.innerText = unReadAlarmCount;
+			//    }else{
+			//			unReadAlarmCountButton.style.display ="none";
+			//      unReadAlarmCountButton.innerText = unReadAlarmCount;
+			//	}
+		} catch (error) {
+			console.error("알림 읽음 처리 중 오류 발생:", error);
+		}
+	}
 }
+
+export async function unReadMessageCount(loggedId) {
+	try {
+			    const unReadMessageCountButton = document.getElementById("unReadMessageCountButton");
+			    const unReadMessageCount = await checkUnReadMessageCount(loggedId);
+			    if (unReadMessageCount > 0 && unReadMessageCountButton) {
+					unReadMessageCountButton.style.display ="block";
+			      unReadMessageCountButton.innerText = unReadMessageCount;
+		    }else{
+						unReadMessageCountButton.style.display ="none";
+			     unReadMessageCountButton.innerText = unReadMessageCount;
+				}
+	} catch (error) {
+		console.error("읽지 않은 메시지를 불러올 수 없습니다:", error);
+	}
+
+
+}
+
+
+
+
+export async function unReadMessageCount2(roomId) {
+	try {
+			    const unReadMessageCountButton2 = document.getElementById("unReadMessageCountButton2");
+				
+			
+			    const unReadMessageCount2 = await checkUnReadMessageCount2(roomId);
+			    if (unReadMessageCount > 0 && unReadMessageCountButton2) {
+					unReadMessageCountButton2.style.display ="block";
+			      unReadMessageCountButton2.innerText = unReadMessageCount2;
+		    }else{
+						unReadMessageCountButton2.style.display ="none";
+			     unReadMessageCountButton2.innerText = unReadMessageCount2;
+				}
+	} catch (error) {
+		console.error("읽지 않은 메시지를 불러올 수 없습니다:", error);
+	}
+
+
+}
+
+
+

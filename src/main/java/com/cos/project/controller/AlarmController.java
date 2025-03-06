@@ -179,7 +179,7 @@ public class AlarmController {
 
         // MESSAGE 타입 중 '채팅방 만듬' 액션 필터링
         List<AlarmDTO> filteredAlarms1 = filteredAlarms.stream()
-                .filter(alarm -> alarm.getMember1().getId().equals(loggedId) 
+                .filter(alarm -> alarm.getMember1().getId().equals(loggedId) || alarm.getMember2().getId().equals(loggedId)
                         && alarm.getType().equals("MESSAGE") 
                         && alarm.getAction().equals("채팅방 만듬"))
                 .map(AlarmEntity::toDTO)
@@ -187,7 +187,7 @@ public class AlarmController {
 
         // MESSAGE 타입 중 '송수신' 또는 '나가기' 액션 필터링
         List<AlarmDTO> filteredAlarms2 = filteredAlarms.stream()
-                .filter(alarm -> alarm.getMember1().getId().equals(loggedId) 
+                .filter(alarm -> alarm.getMember1().getId().equals(loggedId)  || alarm.getMember2().getId().equals(loggedId)
                         && alarm.getType().equals("MESSAGE") 
                         && (alarm.getAction().equals("송수신") || alarm.getAction().equals("나가기")))
                 .map(AlarmEntity::toDTO)

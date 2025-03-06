@@ -9,6 +9,8 @@ body {
 	background-color: #3a3a3a;
 	color: white;
 	padding: 10px 20px;
+	min-height: 30px;
+	 align-items: center;  /* 세로 가운데 정렬 */
 }
 
 #header-content a {
@@ -87,6 +89,11 @@ body {
 	background-color: #cc7a00;
 }
 
+.logged-in {
+	width: 100%
+	
+}
+
 .logged-in p {
 	font-size: 16px;
 	margin: 0;
@@ -162,6 +169,45 @@ body {
 	display: block;
 }
 
+#unReadMessageCountButton {
+    display: none; /* 기본적으로 숨김 */
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: red;
+    color: white;
+    width: 18px;
+    height: 18px;
+    font-size: 12px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    text-align: center;
+    line-height: 18px; /* 높이와 동일하게 설정 */
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+}
+
+#unReadMessageCountButton2 {
+	
+	background-color: red; 
+             color: white; 
+             padding: 5px; 
+             border-radius: 50%; 
+             font-size: 12px; 
+             width: 20px; 
+             height: 20px; 
+             display: flex; 
+             align-items: center; 
+             justify-content: center; 
+             text-align: center; 
+             margin-right: 10px; 
+             flex-shrink: 0;
+	
+}
+
+
 /* 알림 리스트 */
 
 /* 알림 리스트 스타일 */
@@ -196,25 +242,25 @@ body {
 }
 
 #unReadAlarmCountButton {
-/*   position: absolute; */
-  top: 0; /* 알림 버튼의 상단에 맞춤 */
-  left: 100%; /* 알림 버튼의 오른쪽에 배치 */
-  margin-left: 5px; /* 간격 조정 */
-  background-color: red;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  font-size: 12px;
-  display: none; /* 기본적으로 숨김 */
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  padding: 0;
-  line-height: 20px;
-  text-align: center;
+    display: none; /* 기본적으로 숨김 */
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: red;
+    color: white;
+    width: 18px;
+    height: 18px;
+    font-size: 12px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    text-align: center;
+    line-height: 18px; /* 높이와 동일하게 설정 */
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
 }
+
 
 
 
