@@ -353,7 +353,11 @@ public class ChatService {
 			return ChattingRoomDTO.builder().id(entity.getId()).title(entity.getTitle()).price(entity.getPrice())
 					.createTime(entity.getCreateTime()).liked(entity.isLiked()).member1UserId(member1UserId)
 					.member2UserId(member2UserId).boardId(boardId).messages(messageDTOs)
-					.member1Visible(entity.getMember1Visible()).member2Visible(entity.getMember2Visible()).build();
+					.member1Visible(entity.getMember1Visible()).member2Visible(entity.getMember2Visible())
+					.messageIndex1(entity.getMessageIndex1()).messageIndex2(entity.getMessageIndex2())
+					.exitedmemberId(entity.getExitedmemberId())
+					.recentExitedmemberId(entity.getRecentExitedmemberId())
+					.build();
 		}).collect(Collectors.toList());
 	}
 

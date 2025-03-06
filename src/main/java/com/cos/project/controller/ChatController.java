@@ -256,11 +256,11 @@ public class ChatController {
     
     @PostMapping("/exitRoom/{deleteRoomId}")		// 채팅방 나가기
     @ResponseBody
-    public ResponseEntity<?> deleteRoom(@PathVariable(name = "deleteRoomId")Long id, @AuthenticationPrincipal PrincipalDetails principalDetails
+    public ResponseEntity<?> deleteRoom(@PathVariable(name = "deleteRoomId")Long roomId, @AuthenticationPrincipal PrincipalDetails principalDetails
     		, @RequestBody Map<String, String> data) {
     	String receiverUserId = data.get("receiver");
 //    	System.out.println("리시버 : " + receiverUserId);
-    	boolean flag = chatService.deleteRoom(id, principalDetails.getMemberEntity().getId(), receiverUserId);
+    	boolean flag = chatService.deleteRoom(roomId, principalDetails.getMemberEntity().getId(), receiverUserId);
 //    	alarmService.postAlarm(loggedUserId.getId(), loggedUserId.getId(), member2Id, "MESSAGE", "채팅방", null, "삭제", null);
     	return ResponseEntity.ok(flag);
     }

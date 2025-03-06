@@ -96,7 +96,8 @@ export async function loadMessages(roomId, messageIndex, recentExitedmemberId) {
 	const loggedUserId = document.getElementById("loggedUserId").value;
 	const loggedId = document.getElementById("loggedId").value;
 	const chatBox = document.getElementById(`chat-box-${roomId}`);
-	if (!chatBox) return;
+		let filteredMessages = [];
+	if (!chatBox) return [];
 
 	try {
 		const response = await fetch(`/chat/loadmessages/${roomId}`);
@@ -116,11 +117,15 @@ export async function loadMessages(roomId, messageIndex, recentExitedmemberId) {
 		}
 		//		console.log(messages);
 
+	
+
 		messages.forEach((msg, index) => {
 
 			if (recentExitedmemberId && Number(recentExitedmemberId) === Number(loggedId) && (messageIndex > 0 && index < messageIndex)) {
 				return;
 			}
+
+			filteredMessages.push(msg);			//필터링된 메시지에 msg 저장
 
 			const messageElement = document.createElement("div");
 			messageElement.classList.add("message-item");
@@ -159,11 +164,11 @@ export async function loadMessages(roomId, messageIndex, recentExitedmemberId) {
 			profileContainer.classList.add("profile-container");
 
 			const profileImage = document.createElement("img");
-			profileImage.src = msg.exited ? "/boardimage/nullimage.jpg" : msg.profileImageUrl1 == null ? "/boardimage/nullimage.jpg" : msg.profileImageUrl1;
+			profileImage.src = msg.exited  ? "/boardimage/nullimage.jpg" : msg.profileImageUrl1 == null ? "/boardimage/nullimage.jpg" : msg.profileImageUrl1;
 			profileImage.alt = `${msg.senderUserId}'s profile picture`;
 			profileImage.classList.add("profile-image", "message-Left");
 			const userid = document.createElement("p");
-			userid.textContent = msg.exited ? '(나간 사용자)' : msg.senderUserId;
+			userid.textContent =  msg.exited ? '(나간 사용자)' : msg.senderUserId;
 
 			profileContainer.appendChild(profileImage);
 			profileContainer.appendChild(userid);
@@ -189,8 +194,9 @@ export async function loadMessages(roomId, messageIndex, recentExitedmemberId) {
                    <br>
                        <br>
     <span class="send-time">${msg.sendTime}</span>
-							<span class="read-status">${msg.read ? "읽음" : "읽지않음"}</span>
-						
+						<!--	<span class="read-status">${msg.read ? "읽음" : "읽지않음"}</span> -->
+												${String(msg.senderUserId) === String(loggedUserId) ? `
+							<span class="read-status">${msg.read ? "읽음" : "읽지않음"}</span> ` : ""}
 `;
 				} else {
 					messageElement.innerHTML = `
@@ -200,8 +206,9 @@ export async function loadMessages(roomId, messageIndex, recentExitedmemberId) {
 
        <br><br>
     <span class="send-time">${msg.sendTime}</span>
-							<span class="read-status">${msg.read ? "읽음" : "읽지않음"}</span>
-						
+						<!--	<span class="read-status">${msg.read ? "읽음" : "읽지않음"}</span> -->
+						${String(msg.senderUserId) === String(loggedUserId) ? `
+							<span class="read-status">${msg.read ? "읽음" : "읽지않음"}</span> ` : ""}
 `;
 				}
 			}
@@ -300,67 +307,67 @@ export async function loadMessages(roomId, messageIndex, recentExitedmemberId) {
 			}
 
 			// 채팅 컨테이너 클릭 시 읽음 처리
-//			document.getElementById(`chat-container-${roomId}`).addEventListener("click", async function() {
-//				const unreadMessages = document.querySelectorAll(".message-item:not(.read)");
-//
-//				if (unreadMessages.length === 0) return;
-//
-//				try {
-//					const messageIds = [...unreadMessages].map(msg => msg.dataset.messageId);
-//
-//					const response = await fetch(`/chat/markAsRead`, {
-//						method: "POST",
-//						headers: { "Content-Type": "application/json" },
-//						body: JSON.stringify({ messageIds }),
-//					});
-//
-//					if (response.ok) {
-//						unreadMessages.forEach(msg => {
-//							msg.classList.add("read");
-//						});
-//					} else {
-//						console.error("❌ 읽음 처리 실패!");
-//					}
-//				} catch (error) {
-//					console.error("⚠️ 메시지 읽음 처리 중 오류 발생:", error);
-//				}
-//			});
+			//			document.getElementById(`chat-container-${roomId}`).addEventListener("click", async function() {
+			//				const unreadMessages = document.querySelectorAll(".message-item:not(.read)");
+			//
+			//				if (unreadMessages.length === 0) return;
+			//
+			//				try {
+			//					const messageIds = [...unreadMessages].map(msg => msg.dataset.messageId);
+			//
+			//					const response = await fetch(`/chat/markAsRead`, {
+			//						method: "POST",
+			//						headers: { "Content-Type": "application/json" },
+			//						body: JSON.stringify({ messageIds }),
+			//					});
+			//
+			//					if (response.ok) {
+			//						unreadMessages.forEach(msg => {
+			//							msg.classList.add("read");
+			//						});
+			//					} else {
+			//						console.error("❌ 읽음 처리 실패!");
+			//					}
+			//				} catch (error) {
+			//					console.error("⚠️ 메시지 읽음 처리 중 오류 발생:", error);
+			//				}
+			//			});
 
 
-let markAsReadTimeout = null; // 디바운스 타이머
+			let markAsReadTimeout = null; // 디바운스 타이머
 
-document.getElementById(`chat-container-${roomId}`).addEventListener("click", () => {
-  clearTimeout(markAsReadTimeout); // 기존 타이머 제거
-  markAsReadTimeout = setTimeout(async () => {
-    const chatContainer = document.getElementById(`chat-container-${roomId}`);
-    if (!chatContainer) return;
+			document.getElementById(`chat-container-${roomId}`).addEventListener("click", () => {
+				clearTimeout(markAsReadTimeout); // 기존 타이머 제거
+				markAsReadTimeout = setTimeout(async () => {
+					const chatContainer = document.getElementById(`chat-container-${roomId}`);
+					if (!chatContainer) return;
 
-    const unreadMessages = chatContainer.querySelectorAll(".message-item:not(.read)");
-    if (unreadMessages.length === 0) return; // 읽을 메시지가 없으면 요청 X
+					const unreadMessages = chatContainer.querySelectorAll(".message-item:not(.read)");
+					if (unreadMessages.length === 0) return; // 읽을 메시지가 없으면 요청 X
 
-    // ✅ 읽음 표시를 먼저 UI에서 적용
-    unreadMessages.forEach(msg => msg.classList.add("read"));
+					// ✅ 읽음 표시를 먼저 UI에서 적용
+					unreadMessages.forEach(msg => msg.classList.add("read"));
 
-    try {
-      const messageIds = [...unreadMessages].map(msg => msg.dataset.messageId);
-      const response = await fetch(`/chat/markAsRead`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messageIds }),
-      });
+					try {
+						const messageIds = [...unreadMessages].map(msg => msg.dataset.messageId);
+						const response = await fetch(`/chat/markAsRead`, {
+							method: "POST",
+							headers: { "Content-Type": "application/json" },
+							body: JSON.stringify({ messageIds }),
+						});
 
-      if (!response.ok) {
-        console.error("❌ 읽음 처리 실패!");
-        // ❌ 실패 시 다시 읽음 해제 (UI 복구)
-        unreadMessages.forEach(msg => msg.classList.remove("read"));
-      }
-    } catch (error) {
-      console.error("⚠️ 메시지 읽음 처리 중 오류 발생:", error);
-      // ❌ 실패 시 다시 읽음 해제 (UI 복구)
-      unreadMessages.forEach(msg => msg.classList.remove("read"));
-    }
-  }, 300); // ✅ 300ms 디바운스 적용
-});
+						if (!response.ok) {
+							console.error("❌ 읽음 처리 실패!");
+							// ❌ 실패 시 다시 읽음 해제 (UI 복구)
+							unreadMessages.forEach(msg => msg.classList.remove("read"));
+						}
+					} catch (error) {
+						console.error("⚠️ 메시지 읽음 처리 중 오류 발생:", error);
+						// ❌ 실패 시 다시 읽음 해제 (UI 복구)
+						unreadMessages.forEach(msg => msg.classList.remove("read"));
+					}
+				}, 300); // ✅ 300ms 디바운스 적용
+			});
 
 
 
@@ -415,19 +422,22 @@ document.getElementById(`chat-container-${roomId}`).addEventListener("click", ()
 
 
 		// 스크롤 최하단으로 이동
-				chatBox.scrollTop = chatBox.scrollHeight;
+		chatBox.scrollTop = chatBox.scrollHeight;
 
 
+		console.log(filteredMessages);
 
-
+		return filteredMessages;			//다시 나갔다 들어온 사용자의 메시지 로드에 쓰일 용도
 
 
 	} catch (error) {
 		console.error("Error loading messages:", error);
 		chatBox.innerHTML = "<div>Error loading messages.</div>";
+		return [];
 	}
+//	console.log(filteredMessages);
+//	return filteredMessages;			//다시 나갔다 들어온 사용자의 메시지 로드에 쓰일 용도
 }
-
 
 
 
@@ -457,13 +467,13 @@ export async function sendMessage(roomId, userid, messageIndex, recentExitedmemb
 		parentMessageId.value = "";
 		//		loadMessages(roomId); // 전송 후 메시지 갱신
 		//=====
-//		await loadChatRooms(loggedId);
-//		setUpEnterRoomButton(loggedUserId);
-//		setUpExitRoomButton();
-//		loadMessages(Number(roomId), messageIndex, recentExitedmemberId);
-//==========
+		//		await loadChatRooms(loggedId);
+		//		setUpEnterRoomButton(loggedUserId);
+		//		setUpExitRoomButton();
+		//		loadMessages(Number(roomId), messageIndex, recentExitedmemberId);
+		//==========
 
-//		await checkUserAlarmCount(loggedId);
+		//		await checkUserAlarmCount(loggedId);
 
 		//const intervalId = setInterval(() => loadMessages(Number(roomId), messageIndex, recentExitedmemberId), 2000);
 
@@ -532,7 +542,7 @@ export async function openChatRoom(roomId, title, loggedUserId, userid, loggedFl
         	<div style = "display:flex;">
         
         	<div>
-  			  <img src=${boardMainFile} width="200" height="200">
+  			  <img src=${boardMainFile} width="200" height="200" style="margin-right:5px;">
 			</div>
 
         
@@ -570,7 +580,7 @@ export async function openChatRoom(roomId, title, loggedUserId, userid, loggedFl
 
 		// 채팅창이 생성된 후 드래그 이벤트 핸들러 추가
 		const chatContainer = document.getElementById(`chat-container-${roomId}`);
-			chatContainer.style.zIndex=11;
+		chatContainer.style.zIndex = 11;
 
 		// 화면의 중앙에 위치하도록 설정
 		const centerChatContainer = () => {
@@ -616,16 +626,16 @@ export async function openChatRoom(roomId, title, loggedUserId, userid, loggedFl
 
 
 		// ✅ 기존 setInterval이 존재하면 삭제 후 새롭게 설정
-//		if (intervalId) {
-//			clearInterval(intervalId);
-//			console.log("기존 interval 제거 완료");
-//		}
+		//		if (intervalId) {
+		//			clearInterval(intervalId);
+		//			console.log("기존 interval 제거 완료");
+		//		}
 
 		//		console.log(room);
 		if (loggedFlag === "logged1") {
 			//			let messageIndex = Number(room.messageIndex1);
-						loadMessages(Number(roomId), Number(room.messageIndex1), Number(room.recentExitedmemberId));
-	//-		intervalId = setInterval(() => loadMessages(Number(roomId), Number(room.messageIndex1), Number(room.recentExitedmemberId)), 2000);
+			loadMessages(Number(roomId), Number(room.messageIndex1), Number(room.recentExitedmemberId));
+			//-		intervalId = setInterval(() => loadMessages(Number(roomId), Number(room.messageIndex1), Number(room.recentExitedmemberId)), 2000);
 			// 메시지 전송 이벤트 추가
 			//		intervalId = setInterval(() => loadMessages(Number(roomId), messageIndex, recentExitedmemberId), 2000);
 
@@ -638,7 +648,7 @@ export async function openChatRoom(roomId, title, loggedUserId, userid, loggedFl
 		} else if (loggedFlag === "logged2") {
 			//			let messageIndex = Number(room.messageIndex2);
 			loadMessages(Number(roomId), Number(room.messageIndex2), Number(room.recentExitedmemberId));
-//-			intervalId = setInterval(() => loadMessages(Number(roomId), Number(room.messageIndex2), Number(room.recentExitedmemberId)), 2000);
+			//-			intervalId = setInterval(() => loadMessages(Number(roomId), Number(room.messageIndex2), Number(room.recentExitedmemberId)), 2000);
 			// 메시지 전송 이벤트 추가
 			document.getElementById(`send-button-${roomId}`).addEventListener("click", () => sendMessage(roomId, userid, Number(room.messageIndex2), Number(room.recentExitedmemberId)));
 			document.getElementById(`message-input-${roomId}`).addEventListener("keypress", (event) => {
@@ -872,74 +882,113 @@ export async function openChatRoom(roomId, title, loggedUserId, userid, loggedFl
 
 
 export async function loadChatRooms(loggedId) {
-    const numericLoggedId = Number(String(loggedId).trim());
-    if (Number.isNaN(numericLoggedId)) {
-        console.error("Error: loggedId가 올바르지 않습니다.", loggedId);
-        return;
-    }
+	const numericLoggedId = Number(String(loggedId).trim());
+	if (Number.isNaN(numericLoggedId)) {
+		console.error("Error: loggedId가 올바르지 않습니다.", loggedId);
+		return;
+	}
 
-    const loggedUserId = document.getElementById("loggedUserId").value;
-    const chattingRoomListBody = document.getElementById("chattingRoomListBody");
-    const chattingRoomScroll = document.getElementById("chattingRoomScroll");
+	const loggedUserId = document.getElementById("loggedUserId").value;
+	const chattingRoomListBody = document.getElementById("chattingRoomListBody");
+	const chattingRoomScroll = document.getElementById("chattingRoomScroll");
 
-    try {
-        const response = await fetch(`/chat/myChatRoom/${numericLoggedId}`);
-        if (!response.ok) throw new Error("Failed to fetch chat rooms");
+	try {
+		const response = await fetch(`/chat/myChatRoom/${numericLoggedId}`);
+		if (!response.ok) throw new Error("Failed to fetch chat rooms");
 
-        const datas = await response.json();
+		const datas = await response.json();
 
-        // 채팅방 필터링
-        const visibleDatas = await Promise.all(
-            datas.filter(data =>
-                (data.member1UserId === loggedUserId && data.member1Visible) ||
-                (data.member2UserId === loggedUserId && data.member2Visible)
-            ).map(async (data) => {
-                const recentRoomMessage = await findRecentRoomMessage(Number(data.id));
-                return {
-                    ...data,
-                    recentRoomMessageDate: recentRoomMessage?.sendTime || null
-                };
-            })
-        );
+		// 채팅방 필터링
+		const visibleDatas = await Promise.all(
+			datas.filter(data =>
+				(data.member1UserId === loggedUserId && data.member1Visible) ||
+				(data.member2UserId === loggedUserId && data.member2Visible)
+			).map(async (data) => {
+				const recentRoomMessage = await findRecentRoomMessage(Number(data.id));
+				return {
+					...data,
+					recentRoomMessageDate: recentRoomMessage?.sendTime || null
+				};
+			})
+		);
 
-        // 최근 메시지가 있는 경우 해당 시간 기준 정렬
-        visibleDatas.sort((a, b) => {
-            const dateA = new Date(a.recentRoomMessageDate || a.createTime);
-            const dateB = new Date(b.recentRoomMessageDate || b.createTime);
-            return dateB - dateA;
-        });
-
-
+		// 최근 메시지가 있는 경우 해당 시간 기준 정렬
+		visibleDatas.sort((a, b) => {
+			const dateA = new Date(a.recentRoomMessageDate || a.createTime);
+			const dateB = new Date(b.recentRoomMessageDate || b.createTime);
+			return dateB - dateA;
+		});
 
 
 
 
 
 
-        // 기존 목록과 비교 후 변경된 부분만 업데이트
-        const existingRows = [...chattingRoomListBody.children];
-        const fragment = document.createDocumentFragment();
-        let hasChanged = false;
-if (visibleDatas.length === 0) {
+
+
+		// 기존 목록과 비교 후 변경된 부분만 업데이트
+		const existingRows = [...chattingRoomListBody.children];
+		const fragment = document.createDocumentFragment();
+		let hasChanged = false;
+		if (visibleDatas.length === 0) {
 			// 기존 목록을 초기화
-	chattingRoomListBody.innerHTML = "";
-    chattingRoomListBody.innerHTML = `
+			chattingRoomListBody.innerHTML = "";
+			chattingRoomListBody.innerHTML = `
         <tr>
             <td colspan="2" style="text-align: center; padding: 20px; font-size: 18px; color: gray;">
                 입장할 수 있는 채팅방이 없습니다.
             </td>
         </tr>
     `;
+		} else {
+			for (const data of visibleDatas) {
+				const recentRoomMessage = await findRecentRoomMessage(Number(data.id));		// 메시지  객체 데이터임
+
+				const mainFile = await getBoardMainFileByRoomId(data.id);
+				const roomId = data.id.toString();
+				const unReadMessageCount = await checkUnReadMessageCount2(data.id);
+				console.log(data);
+				console.log(recentRoomMessage);
+				let messageIndex = null;
+				if (loggedUserId && loggedUserId === data.member1UserId) {
+					messageIndex = data.messageIndex1;
+					console.log("messageIndex1 :" + messageIndex);
+				} else if (loggedUserId && loggedUserId === data.member2UserId) {
+					messageIndex = data.messageIndex2;
+					console.log("messageIndex2 :" + messageIndex);
+				}
+
+				if (messageIndex !== null && messageIndex>0) {
+					let filteredMessages = await loadMessages(data.roomId, messageIndex, data.recentExitedmemberId);
+				let originalMessages = await fetch(`/chat/loadmessages/${data.id}`);
+				let original_response = await originalMessages.json();
+//				console.log(original_response);
+//				console.log("로그인 유저 입장 필터 배열 크기 "+filteredMessages);
+console.log(typeof filteredMessages); // 배열인지 확인
+if (Array.isArray(filteredMessages)) {
+    console.log(filteredMessages.length);
 } else {
-        for (const data of visibleDatas) {
-            const recentRoomMessage = await findRecentRoomMessage(Number(data.id));
-            const mainFile = await getBoardMainFileByRoomId(data.id);
-            const roomId = data.id.toString();
-			const unReadMessageCount = await checkUnReadMessageCount2(data.id);
-			
-            // 기존 DOM에서 같은 roomId가 있는지 확인
-            const existingRow = existingRows.find(row => row.dataset.roomId === roomId);
-            const newContent = `
+    console.log("filteredMessages는 배열이 아닙니다.", filteredMessages);
+}
+				console.log("오리지널 배열 크기 "+original_response.length);
+//					console.log(filteredMessages);
+				console.log(recentRoomMessage.senderUserId !== loggedUserId);
+
+					if ((filteredMessages.length === 0 )&& messageIndex === original_response.length) {		//필터링된 메시지가 없을 경우
+						recentRoomMessage.messageContent = "최근 메시지가 없습니다@@";
+						recentRoomMessage.sendTime = data.createTime;
+					}
+
+				}
+
+				if ((Number(loggedId) !== Number(data.exitedmemberId)) && data.exitedmemberId !== null && recentRoomMessage.senderUserId !== loggedUserId) {
+					recentRoomMessage.senderUserId = "(나간 사용자)@@";
+				}
+
+
+				// 기존 DOM에서 같은 roomId가 있는지 확인
+				const existingRow = existingRows.find(row => row.dataset.roomId === roomId);
+				const newContent = `
                 <td style="width:500px;">
                     <div style="display: flex; justify-content: space-between; align-items: center;
                                 background-color: lightgray; padding: 10px; border-radius: 0px;
@@ -950,7 +999,7 @@ if (visibleDatas.length === 0) {
                                 class="deleteRoom"
                                 data-deleteRoomId="${data.id}"
                                 data-deleteTitle="${data.title}"
-                                data-deleteUserid="${data.member2UserId}">
+                                data-deleteUserid="${loggedUserId === data.member1UserId? data.member2UserId : data.member1UserId}">
                             X
                         </button>
                     </div>
@@ -963,13 +1012,13 @@ if (visibleDatas.length === 0) {
                          	
                             <div style="margin-top: 15px;display: flex;">
                                 ${recentRoomMessage
-                                    ? `${recentRoomMessage.senderUserId ? `
+						? `${recentRoomMessage.senderUserId ? `
        
-  ${unReadMessageCount>0?  `<div id="unReadMessageCountButton2">  <b>${unReadMessageCount}</b></div>`:""}
+  ${unReadMessageCount > 0 ? `<div id="unReadMessageCountButton2">  <b>${unReadMessageCount}</b></div>` : ""}
 	 <!--<div id="unReadMessageCountButton2">  <b>${unReadMessageCount}</b></div> -->
 <img src="/icon/userIcon.png" width="20" height="20" alt="상대방"> ${recentRoomMessage.senderUserId} : </b>` : ""}
                                        ${recentRoomMessage.messageContent || ""}`
-                                    : `최근 메시지 없음`}
+						: `최근 메시지 없음`}
                             </div>
                             <div style="margin-top: 5px; color:gray; font-weight: 300;">
                                 ${recentRoomMessage?.id ? formatDate(recentRoomMessage.sendTime) : formatDate(data.createTime)}
@@ -996,44 +1045,44 @@ if (visibleDatas.length === 0) {
                 </td>
             `;
 
-            if (!existingRow) {
-                // 새로운 채팅방이면 추가
-                const row = document.createElement("tr");
-                row.dataset.roomId = roomId;
-                row.innerHTML = newContent;
-                fragment.appendChild(row);
-                hasChanged = true;
-            } else if (existingRow.innerHTML !== newContent) {
-                // 기존 채팅방 내용이 변경되었으면 업데이트
-                existingRow.innerHTML = newContent;
-                hasChanged = true;
-            }
-        }
-}
-        // 필요 없는 행 삭제
-        existingRows.forEach(row => {
-            if (!visibleDatas.some(data => data.id.toString() === row.dataset.roomId)) {
-                row.remove();
-                hasChanged = true;
-            }
-        });
+				if (!existingRow) {
+					// 새로운 채팅방이면 추가
+					const row = document.createElement("tr");
+					row.dataset.roomId = roomId;
+					row.innerHTML = newContent;
+					fragment.appendChild(row);
+					hasChanged = true;
+				} else if (existingRow.innerHTML !== newContent) {
+					// 기존 채팅방 내용이 변경되었으면 업데이트
+					existingRow.innerHTML = newContent;
+					hasChanged = true;
+				}
+			}
+		}
+		// 필요 없는 행 삭제
+		existingRows.forEach(row => {
+			if (!visibleDatas.some(data => data.id.toString() === row.dataset.roomId)) {
+				row.remove();
+				hasChanged = true;
+			}
+		});
 
-        // 변경 사항이 있을 때만 DOM 업데이트
-        if (hasChanged) {
-            chattingRoomListBody.appendChild(fragment);
-        }
+		// 변경 사항이 있을 때만 DOM 업데이트
+		if (hasChanged) {
+			chattingRoomListBody.appendChild(fragment);
+		}
 
-        // 스크롤 처리
-        if (visibleDatas.length > 5) {
-            chattingRoomScroll.style.maxHeight = "300px";
-            chattingRoomScroll.style.overflowY = "auto";
-        } else {
-            chattingRoomScroll.style.maxHeight = "";
-            chattingRoomScroll.style.overflowY = "";
-        }
-    } catch (error) {
-        console.error("Failed to fetch chat rooms:", error);
-    }
+		// 스크롤 처리
+		if (visibleDatas.length > 5) {
+			chattingRoomScroll.style.maxHeight = "300px";
+			chattingRoomScroll.style.overflowY = "auto";
+		} else {
+			chattingRoomScroll.style.maxHeight = "";
+			chattingRoomScroll.style.overflowY = "";
+		}
+	} catch (error) {
+		console.error("Failed to fetch chat rooms:", error);
+	}
 }
 
 
