@@ -67,9 +67,9 @@ public class CommentController {
     }
 
     // 댓글 추가
-    @PostMapping("/board/{id}")									//게시글을 쓴 아이디를 반환
+    @PostMapping("/board/{boardId}")									//게시글을 쓴 아이디를 반환
     public ResponseEntity<?> addComment(
-        @PathVariable("id") Long boardId,
+        @PathVariable("boardId") Long boardId,
         @RequestBody CommentDTO commentDTO,
         @AuthenticationPrincipal PrincipalDetails principalDetails
     ) throws JsonProcessingException {

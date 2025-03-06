@@ -570,7 +570,7 @@ export async function openChatRoom(roomId, title, loggedUserId, userid, loggedFl
 
 		// 채팅창이 생성된 후 드래그 이벤트 핸들러 추가
 		const chatContainer = document.getElementById(`chat-container-${roomId}`);
-
+			chatContainer.style.zIndex=11;
 
 		// 화면의 중앙에 위치하도록 설정
 		const centerChatContainer = () => {

@@ -106,17 +106,22 @@ async function checkUserAlarmData(loggedId) {
 
 		let currentPage = alarmListBody.getAttribute("data-current-page") || 0;
 
-		// ✅ 같은 데이터라면 중복 호출 방지 (이전 상태 비교)
-		//    if (prevState && JSON.stringify(prevState) === JSON.stringify(datas)) {
-		//      console.log("동일한 알람 데이터이므로 렌더링을 건너뜁니다.");
-		//      return;
-		//    }
+
 		
-		
-		//채팅방 첫 입력을 안할시 상대편에서 인식못하는 버그 있음 (송신자가 혼자 말할 시 수신측에서 인식을 못함)
+		//데이터가 아무것도 없을 경우
 		if (!datas || !Array.isArray(datas) || datas.length === 0) {
 			return;
 		}
+
+
+				// ✅ 같은 데이터라면 중복 호출 방지 (이전 상태 비교)
+		    if (prevState && JSON.stringify(prevState) === JSON.stringify(datas)) {
+//		      console.log("동일한 알람 데이터이므로 렌더링을 건너뜁니다.");
+		      return;
+		    }
+
+
+
 
 
 		// 📌 알람 카운트 업데이트
@@ -134,11 +139,12 @@ async function checkUserAlarmData(loggedId) {
 		//        console.log(JSON.stringify(prevState));
 		//    console.log(JSON.stringify(datas));
 
-		//    if (prevState && JSON.stringify(prevState) !== JSON.stringify(datas)) {
+		    if (prevState && JSON.stringify(prevState) !== JSON.stringify(datas)) {
 		await loadChatRooms(loggedId);
 		setUpEnterRoomButton(loggedUserId);
 		setUpExitRoomButton();
-		//        }
+		prevState = datas;
+		       }
 
 
 
@@ -154,14 +160,14 @@ async function checkUserAlarmData(loggedId) {
 				//        await loadChatRooms(loggedId);
 				//        setUpEnterRoomButton(loggedUserId);
 				//        setUpExitRoomButton();
-				console.log(data);
+//				console.log(data);
 				if (data.action === "송수신" || data.action === "나가기") {
 					const room = await fetch(`/chat/findRoom/${Number(data.object)}`).then(res => res.json());
 					const roomId = Number(room.id);
 
 					// ✅ 이미 로드된 방이면 건너뛰기		(수신이 안됨)
 					          if (loadedRooms.has(roomId)) {
-					            console.log(`Room ID ${roomId}는 이미 메시지를 로드했으므로 건너뜁니다.`);
+//					            console.log(`Room ID ${roomId}는 이미 메시지를 로드했으므로 건너뜁니다.`);
 					            continue;
 					          }
 
@@ -444,7 +450,7 @@ function addPageButton(page, currentPage, loggedId, container) {
 
 // 페이지를 로드하는 함수 (실제 데이터 로드를 구현할 곳)
 export async function loadPage(page, loggedId) {
-	console.log(`Loading page ${page + 1}`);
+//	console.log(`Loading page ${page + 1}`);
 
 	const unReadAlarmCount = await checkUserAlarmCount(loggedId);
 	const unReadAlarmCountButton = document.getElementById("unReadAlarmCountButton");

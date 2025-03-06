@@ -62,10 +62,11 @@ body {
 	display: inline-block;
 	background-color: #007bff;
 	color: black;
-	padding: 8px 15px;
+	padding: 5px 8px;
 	border-radius: 4px;
 	cursor: pointer;
 	text-decoration: none;
+	margin-top:-5px;
 }
 
 #myChattingRoomList:hover {
@@ -76,13 +77,14 @@ body {
 	display: inline-block;
 	background-color: #ff9900;
 	color: white;
-	padding: 8px 15px;
+	padding: 6px 6px;
 	border-radius: 5px;
 	cursor: pointer;
 	text-decoration: none;
 	width: auto; /* 크기 자동 조절 */
 	height: auto;
 	line-height: normal;
+		margin-top:-5px;
 }
 
 #alarmButton:hover {

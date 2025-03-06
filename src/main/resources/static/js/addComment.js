@@ -49,7 +49,9 @@ export function addComment(boardId, parentCommentId, principalDetails) {
 	})
 		.then(response => {
 			if (!response.ok) throw new Error("답글 저장 실패");
-			return response.json();
+//			return response.json();
+			return response.text();
+
 		})
 		.then(data => {			//게시글 작성 UserID
 			console.log(data);			
