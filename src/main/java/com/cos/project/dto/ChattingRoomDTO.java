@@ -3,6 +3,8 @@ package com.cos.project.dto;
 import java.sql.Timestamp;
 import java.util.Set;
 
+import org.hibernate.annotations.UpdateTimestamp;
+
 import com.cos.project.entity.MessageEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,6 +37,8 @@ public class ChattingRoomDTO {
     
     private Boolean member1Visible; //채팅방이 '최초' 만들어졌을 경우 볼 수 있는 권한
     private Boolean member2Visible;		//채팅방이 '최초' 만들어졌을 경우 볼 수 있는 권한
+    
+    private Timestamp reCreateTime; // 채팅방 나가기, 재입장 시에 대한 수정 시간
     
     private Set<MessageDTO> messages;
 }

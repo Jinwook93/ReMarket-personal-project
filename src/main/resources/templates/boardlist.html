@@ -1,270 +1,312 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>게시판</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      line-height: 1.6;
-      margin: 0;
-      padding: 20px;
-      background-color: #f9f9f9;
-    }
-    .container {
-      max-width: 100%;
-      margin: 0 auto;
-      background: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-    h1 {
-      text-align: center;
-      color: #333;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-    th, td {
-      border: 1px solid #ddd;
-      text-align: center;
-      padding: 10px;
-    }
-    th {
-      background-color: #f4f4f4;
-    }
-    tr:hover {
-      background-color: #f1f1f1;
-    }
-    .write-btn, .reset-btn {
-      display: block;
-      width: 100px;
-      margin: 20px 0;
-      padding: 10px 20px;
-      text-align: center;
-      color: #fff;
-      background-color: #007bff;
-      border: none;
-      border-radius: 4px;
-      text-decoration: none;
-      font-size: 16px;
-    }
-    .write-btn:hover {
-      background-color: #0056b3;
-    }
-    .pagination {
-      text-align: center;
-      margin-top: 20px;
-    }
-    .pagination a {
-      margin: 0 5px;
-      text-decoration: none;
-      color: #007bff;
-    }
-    .pagination a.active {
-      font-weight: bold;
-      color: #0056b3;
-    }
-    .search-container {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 20px;
-    }
-    .search-container select, .search-container input {
-      padding: 10px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-    .search-container button {
-      padding: 10px 20px;
-      background-color: #007bff;
-      color: white;
-      border-radius: 5px;
-      border: none;
-      cursor: pointer;
-    }
-    .search-container button:hover {
-      background-color: #0056b3;
-    }
-    /* 채팅창 스타일 (필요 시 사용) */
-    #chatBox {
-      display: none;
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 300px;
-      height: 400px;
-      background: #fff;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-      z-index: 1000;
-    }
-    #chatBox .header {
-      background: #007bff;
-      color: #fff;
-      padding: 10px;
-      text-align: center;
-      border-radius: 8px 8px 0 0;
-    }
-    #chatBox .content {
-      height: calc(100% - 60px);
-      overflow-y: auto;
-      padding: 10px;
-    }
-    #chatBox .footer {
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-      padding: 10px;
-      background: #f4f4f4;
-      border-radius: 0 0 8px 8px;
-    }
-    #chatBox .footer input {
-      width: calc(100% - 20px);
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>게시판</title>
+<style>
+body {
+	font-family: Arial, sans-serif;
+	line-height: 1.6;
+	margin: 0;
+	padding: 20px;
+	background-color: #f9f9f9;
+}
+
+.container {
+	max-width: 100%;
+	margin: 0 auto;
+	background: #fff;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+	text-align: center;
+	color: #333;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-top: 20px;
+}
+
+th, td {
+	border: 1px solid #ddd;
+	text-align: center;
+	padding: 10px;
+}
+
+th {
+	background-color: #f4f4f4;
+}
+
+tr:hover {
+	background-color: #f1f1f1;
+}
+
+.write-btn, .reset-btn {
+	display: block;
+	width: 100px;
+	margin: 20px 0;
+	padding: 10px 20px;
+	text-align: center;
+	color: #fff;
+	background-color: #007bff;
+	border: none;
+	border-radius: 4px;
+	text-decoration: none;
+	font-size: 16px;
+}
+
+.write-btn:hover {
+	background-color: #0056b3;
+}
+
+.pagination {
+	text-align: center;
+	margin-top: 20px;
+}
+
+.pagination a {
+	margin: 0 5px;
+	text-decoration: none;
+	color: #007bff;
+}
+
+.pagination a.active {
+	font-weight: bold;
+	color: #0056b3;
+}
+
+.search-container {
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 20px;
+}
+
+.search-container select, .search-container input {
+	padding: 10px;
+	border-radius: 5px;
+	border: 1px solid #ccc;
+}
+
+.search-container button {
+	padding: 10px 20px;
+	background-color: #007bff;
+	color: white;
+	border-radius: 5px;
+	border: none;
+	cursor: pointer;
+}
+
+.search-container button:hover {
+	background-color: #0056b3;
+}
+/* 채팅창 스타일 (필요 시 사용) */
+#chatBox {
+	display: none;
+	position: fixed;
+	bottom: 20px;
+	right: 20px;
+	width: 300px;
+	height: 400px;
+	background: #fff;
+	border: 1px solid #ddd;
+	border-radius: 8px;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+	z-index: 1000;
+}
+
+#chatBox .header {
+	background: #007bff;
+	color: #fff;
+	padding: 10px;
+	text-align: center;
+	border-radius: 8px 8px 0 0;
+}
+
+#chatBox .content {
+	height: calc(100% - 60px);
+	overflow-y: auto;
+	padding: 10px;
+}
+
+#chatBox .footer {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	padding: 10px;
+	background: #f4f4f4;
+	border-radius: 0 0 8px 8px;
+}
+
+#chatBox .footer input {
+	width: calc(100% - 20px);
+	padding: 10px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+}
+</style>
 </head>
 <body>
-  <div th:replace="~{header.html}"></div>
-  <div class="container">
-    <h1>게시판</h1>
-    <!-- 글쓰기 버튼 -->
-    <div class="button-container" style="display: flex;">
-      <a href="/board/writeboard" class="write-btn">글쓰기</a>
-      <button type="button" onclick="window.location.href='/board/list'" class="reset-btn" style="color: white; background-color: green; margin-left: 30px;">초기화</button>
-    </div>
-  <table style="width: 100%; margin-bottom: 20px; border-collapse: collapse;">
-  <thead>
-    <tr style="background-color: #f8f8f8; text-align: center;">
-      <th style="padding: 10px;">번호</th>
-      <th style="padding: 10px;">판매/구매</th>
-      <th style="padding: 10px;">종류</th>
-      <th style="padding: 10px;">제목</th>
-      <th style="padding: 10px;">작성자</th>
-      <th style="padding: 10px;">가격</th>
-      <th style="padding: 10px;">작성일</th>
-      <th style="padding: 10px;">조회수</th>
-      <th style="padding: 10px;">수정/삭제/대화</th>
-    </tr>
-  </thead>
-  <tbody>
-    <!-- 게시글 데이터 반복 -->
-    <tr th:each="board : ${allBoards}" style="border-bottom: 1px solid #ddd;">
-      <td th:text="${board.id}" style="text-align: center; padding: 10px;"></td>
-      <td th:text="${board.buy_Sell}" style="text-align: center; padding: 10px; color: #ff5722; font-weight: bold;"></td>
-      <td th:text="${board.category}" style="text-align: center; padding: 10px;"></td>
-      <td th:data-board-id="${board.id}" style="padding: 10px;">
-        <div style="display: flex; align-items: center;">
-          <img th:id="|mainImage-${board.id}|"
-               src="/boardimage/nullimage.jpg" 
-               alt="no profile image" 
-               style="display: block; width: 80px; height: 80px; object-fit: cover; margin-right: 10px;">
-          <a th:href="@{/board/view/{id}(id=${board.id})}" th:text="${board.title}" style="font-size: 16px; color: #000; font-weight: bold;"></a>
-        </div>
-      </td>
-      <td>
-        <div class="enterChatRoom" style="cursor: pointer;" th:onClick="@{/chat/Chatroom/{id}(id=${board.id})}">
-          <div style="display: flex; align-items: center;">
-            <div th:if="${board.memberEntity.profileImage != null}">
-              <img th:src="@{{imagePath}(imagePath=${board.memberEntity.profileImage})}" alt="Profile Image" style="display: block; width: 50px; height: 50px; object-fit: cover; margin-right: 10px;">
-            </div>
-            <div th:if="${board.memberEntity.profileImage == null}">
-              <img src="/boardimage/nullimage.jpg" alt="no profile image" style="display: block; width: 50px; height: 50px; object-fit: cover; margin-right: 10px;">
-            </div>
-            <span th:text="${board.memberEntity.name}" style="font-size: 14px; color: #333;"></span>
-          </div>
-        </div>
-      </td>
-      <td th:text=|${board.price}원| style="text-align: center; padding: 10px; color: #00bfae; font-weight: bold;" th:id =|price-${board.id}|></td>
-      <td th:text="${#dates.format(board.createTime, 'yyyy-MM-dd HH:mm')}" style="text-align: center; padding: 10px;"></td>
-      <td th:text="${board.view}" style="text-align: center; padding: 10px;"></td>
-      <!-- 수정/삭제 버튼 (작성자와 로그인 사용자가 동일할 경우) -->
-      <td th:if="${board.memberEntity.userid == principalDetails.name}" style="text-align: center;">
-        <div style="display: flex; justify-content: center; gap: 10px;">
-          <button type="button" th:id="|updateBoard-${board.id}|" th:onclick="'window.location.href=\'/board/updateboard/' + ${board.id} + '\';'" style="background-color: #4caf50; color: white; padding: 5px 10px; border: none; border-radius: 5px;">수정</button>
-          <button type="button" th:id="|deleteBoard-${board.id}|" th:data-deleteBoardId="${board.id}" style="background-color: #f44336; color: white; padding: 5px 10px; border: none; border-radius: 5px;">삭제</button>
-        </div>
-      </td>
-      <!-- 작성자와 로그인 사용자가 다를 경우 대화하기 버튼 표시 -->
-      <td th:unless="${board.memberEntity.userid == principalDetails.name}" style="text-align: center;">
-        <div class="enterChatRoom" style="cursor: pointer;">
-          <button type="button" class="createRoom" th:data-id="${board.id}" th:data-member2="${board.memberEntity.userid}" style="background-color: #2196f3; color: white; padding: 5px 10px; border: none; border-radius: 5px;">대화하기</button>
-        </div>
-      </td>
-    </tr>
-  </tbody>
-</table>
+	<div th:replace="~{header.html}"></div>
+	<div class="container">
+		<h1>게시판</h1>
+		<!-- 글쓰기 버튼 -->
+		<div class="button-container" style="display: flex;">
+			<a href="/board/writeboard" class="write-btn">글쓰기</a>
+			<button type="button" onclick="window.location.href='/board/list'"
+				class="reset-btn"
+				style="color: white; background-color: green; margin-left: 30px;">초기화</button>
+		</div>
+		<table
+			style="width: 100%; margin-bottom: 20px; border-collapse: collapse;">
+			<thead>
+				<tr style="background-color: #f8f8f8; text-align: center;">
+					<th style="padding: 10px;">번호</th>
+					<th style="padding: 10px;">판매/구매</th>
+					<th style="padding: 10px;">종류</th>
+					<th style="padding: 10px;">제목</th>
+					<th style="padding: 10px;">작성자</th>
+					<th style="padding: 10px;">가격</th>
+					<th style="padding: 10px;">작성일</th>
+					<th style="padding: 10px;">조회수</th>
+					<th style="padding: 10px;">수정/삭제/대화</th>
+				</tr>
+			</thead>
+			<tbody>
+				<!-- 게시글 데이터 반복 -->
+				<tr th:each="board : ${allBoards}"
+					style="border-bottom: 1px solid #ddd;">
+					<td th:text="${board.id}"
+						style="text-align: center; padding: 10px;"></td>
+					<td th:text="${board.buy_Sell}"
+						style="text-align: center; padding: 10px; color: #ff5722; font-weight: bold;"></td>
+					<td th:text="${board.category}"
+						style="text-align: center; padding: 10px;"></td>
+					<td th:data-board-id="${board.id}" style="padding: 10px;">
+						<div style="display: flex; align-items: center;">
+							<img th:id="|mainImage-${board.id}|"
+								src="/boardimage/nullimage.jpg" alt="no profile image"
+								style="display: block; width: 80px; height: 80px; object-fit: cover; margin-right: 10px;">
+							<a th:href="@{/board/view/{id}(id=${board.id})}"
+								th:text="${board.title}"
+								style="font-size: 16px; color: #000; font-weight: bold;"></a>
+						</div>
+					</td>
+					<td>
+						<div class="enterChatRoom" style="cursor: pointer;"
+							th:onClick="@{/chat/Chatroom/{id}(id=${board.id})}">
+							<div style="display: flex; align-items: center;">
+								<div th:if="${board.memberEntity.profileImage != null}">
+									<img
+										th:src="@{{imagePath}(imagePath=${board.memberEntity.profileImage})}"
+										alt="Profile Image"
+										style="display: block; width: 50px; height: 50px; object-fit: cover; margin-right: 10px;">
+								</div>
+								<div th:if="${board.memberEntity.profileImage == null}">
+									<img src="/boardimage/nullimage.jpg" alt="no profile image"
+										style="display: block; width: 50px; height: 50px; object-fit: cover; margin-right: 10px;">
+								</div>
+								<span th:text="${board.memberEntity.name}"
+									style="font-size: 14px; color: #333;"></span>
+							</div>
+						</div>
+					</td>
+					<td th:text=|${board.price}원|
+						style="text-align: center; padding: 10px; color: #00bfae; font-weight: bold;"
+						th:id=|price-${board.id}|></td>
+					<td
+						th:text="${#dates.format(board.createTime, 'yyyy-MM-dd HH:mm')}"
+						style="text-align: center; padding: 10px;"></td>
+					<td th:text="${board.view}"
+						style="text-align: center; padding: 10px;"></td>
+					<!-- 수정/삭제 버튼 (작성자와 로그인 사용자가 동일할 경우) -->
+					<td th:if="${board.memberEntity.userid == principalDetails.name}"
+						style="text-align: center;">
+						<div style="display: flex; justify-content: center; gap: 10px;">
+							<button type="button" th:id="|updateBoard-${board.id}|"
+								th:onclick="'window.location.href=\'/board/updateboard/' + ${board.id} + '\';'"
+								style="background-color: #4caf50; color: white; padding: 5px 10px; border: none; border-radius: 5px;">수정</button>
+							<button type="button" th:id="|deleteBoard-${board.id}|"
+								th:data-deleteBoardId="${board.id}"
+								style="background-color: #f44336; color: white; padding: 5px 10px; border: none; border-radius: 5px;">삭제</button>
+						</div>
+					</td>
+					<!-- 작성자와 로그인 사용자가 다를 경우 대화하기 버튼 표시 -->
+					<td
+						th:unless="${board.memberEntity.userid == principalDetails.name}"
+						style="text-align: center;">
+						<div class="enterChatRoom" style="cursor: pointer;">
+							<button type="button" class="createRoom" th:data-id="${board.id}"
+								th:data-member2="${board.memberEntity.userid}"
+								style="background-color: #2196f3; color: white; padding: 5px 10px; border: none; border-radius: 5px;">대화하기</button>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
 
-    <!-- 검색창 -->
-    <div class="search-container" align="center">
-      <form action="/search/board/result" method="get">
-        <select name="buy_Sell">
-          <option value="">판매/구매</option>
-          <option value="팝니다">팝니다</option>
-          <option value="삽니다">삽니다</option>
-          <option value="거래완료">거래완료</option>
-        </select>
-        <select name="category1">
-          <option value="">모든 카테고리</option>
-          <option value="예제A">예제A</option>
-          <option value="예제B">예제B</option>
-          <option value="예제C">예제C</option>
-        </select>
-        <select name="category2" required>
-          <option value="">항목을 선택하세요</option>
-          <option value="title">제목</option>
-          <option value="userid">작성자 아이디</option>
-          <option value="name">작성자 이름</option>
-          <option value="contents">내용</option>
-        </select>
-        <input type="text" name="search" placeholder="검색어 입력" />
-        <button type="submit">검색</button>
-      </form>
-    </div>
-    <!-- 페이지네이션 -->
-<!--     <div class="pagination"> -->
-<!--       <a th:href="@{/board/list(page=1)}" th:text="'1'" class="active"></a> -->
-<!--       <a th:href="@{/board/list(page=2)}" th:text="'2'"></a> -->
-<!--       <a th:href="@{/board/list(page=3)}" th:text="'3'"></a> -->
-<!--     </div> -->
+		<!-- 검색창 -->
+		<div class="search-container" align="center">
+			<form action="/search/board/result" method="get">
+				<select name="buy_Sell">
+					<option value="">판매/구매</option>
+					<option value="팝니다">팝니다</option>
+					<option value="삽니다">삽니다</option>
+					<option value="거래완료">거래완료</option>
+				</select> <select name="category1">
+					<option value="">모든 카테고리</option>
+					<option value="예제A">예제A</option>
+					<option value="예제B">예제B</option>
+					<option value="예제C">예제C</option>
+				</select> <select name="category2" required>
+					<option value="">항목을 선택하세요</option>
+					<option value="title">제목</option>
+					<option value="userid">작성자 아이디</option>
+					<option value="name">작성자 이름</option>
+					<option value="contents">내용</option>
+				</select> <input type="text" name="search" placeholder="검색어 입력" />
+				<button type="submit">검색</button>
+			</form>
+		</div>
+		<!-- 페이지네이션 -->
+		<!--     <div class="pagination"> -->
+		<!--       <a th:href="@{/board/list(page=1)}" th:text="'1'" class="active"></a> -->
+		<!--       <a th:href="@{/board/list(page=2)}" th:text="'2'"></a> -->
+		<!--       <a th:href="@{/board/list(page=3)}" th:text="'3'"></a> -->
+		<!--     </div> -->
 
 
 
 
-<!-- th:each="i : ${#numbers.sequence(1, totalPages)}": #numbers.sequence(1, totalPages)를 사용하여 1부터 totalPages까지 숫자를 생성하고, 이를 하나씩 순차적으로 i에 할당하여 반복합니다. -->
-<!-- th:href="@{/board/list(page=${i})}": 페이지 번호를 링크로 생성하여 클릭 시 해당 페이지로 이동할 수 있도록 합니다. ${i}는 현재 순차적으로 반복되는 페이지 번호입니다. -->
-<!-- th:text="${i}": 페이지 번호를 링크 텍스트로 표시합니다. -->
-<!-- th:classappend="${i == currentPage} ? 'active' : ''": 현재 페이지와 i가 같으면 active 클래스를 추가하여 CSS로 강조 표시합니다. -->
+		<!-- th:each="i : ${#numbers.sequence(1, totalPages)}": #numbers.sequence(1, totalPages)를 사용하여 1부터 totalPages까지 숫자를 생성하고, 이를 하나씩 순차적으로 i에 할당하여 반복합니다. -->
+		<!-- th:href="@{/board/list(page=${i})}": 페이지 번호를 링크로 생성하여 클릭 시 해당 페이지로 이동할 수 있도록 합니다. ${i}는 현재 순차적으로 반복되는 페이지 번호입니다. -->
+		<!-- th:text="${i}": 페이지 번호를 링크 텍스트로 표시합니다. -->
+		<!-- th:classappend="${i == currentPage} ? 'active' : ''": 현재 페이지와 i가 같으면 active 클래스를 추가하여 CSS로 강조 표시합니다. -->
 
 
 
 
-<div class="pagination">
-    <a th:each="i : ${#numbers.sequence(1, totalPages)}"
-       th:href="@{/board/list(page=${i})}"
-       th:text="${i}"
-       th:classappend="${i == currentPage} ? 'active' : ''">
-    </a>
-</div>
+		<div class="pagination">
+			<a th:each="i : ${#numbers.sequence(1, totalPages)}"
+				th:href="@{/board/list(page=${i})}" th:text="${i}"
+				th:classappend="${i == currentPage} ? 'active' : ''"> </a>
+		</div>
 
 
-  </div>
-    <div th:replace="~{footer.html}"></div>
-  	 
-  <!-- jQuery (AJAX 요청 등 사용 시) -->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  
-  <!-- 대화하기 버튼 클릭 시 채팅방 생성 요청 스크립트 -->
-  <script type="module">
-  import { loadMessages, openChatRoom, loadChatRooms, setUpEnterRoomButton, setUpExitRoomButton, toggleChattingRoomList, showChattingRoomList} from '/js/chatModule.js';
+	</div>
+	<div th:replace="~{footer.html}"></div>
+
+	<!-- jQuery (AJAX 요청 등 사용 시) -->
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+	<!-- 대화하기 버튼 클릭 시 채팅방 생성 요청 스크립트 -->
+	<script type="module">
+  import { loadMessages, openChatRoom, loadChatRooms, setUpEnterRoomButton, setUpExitRoomButton, toggleChattingRoomList, showChattingRoomList, updateChatRoomOrder} from '/js/chatModule.js';
   
   document.addEventListener('DOMContentLoaded', async function() {
     const loggedId = document.getElementById("loggedId")?.value;  // 로그인된 사용자 ID 가져오기
@@ -313,9 +355,12 @@
 
           // 채팅방 목록 갱신 및 토글 (대화 목록을 보이도록)
           if (isLoggedIn === "true" || isLoggedIn === true) {
+
+		// 채팅방 알람을 이용해서 로드할 것임
             await loadChatRooms(loggedId);
             setUpEnterRoomButton(loggedUserId);
             setUpExitRoomButton();
+ 			updateChatRoomOrder(data.id);
          showChattingRoomList(); // 또는 showChattingRoomList(); 를 호출하여 강제로 보이게 함.
           }
 
@@ -329,7 +374,6 @@
           openChatRoom(data.id, data.title, loggedUserId, data.member1UserId,"logged2");
 		}
 		
-  	//	loadMessages(data.id);
 
         } catch (error) {
           console.error('채팅방 생성 중 오류 발생:', error);
@@ -339,7 +383,7 @@
     });
   });
 </script>
-<script type="module">
+	<script type="module">
  import { getBoardMainFile } from '/js/boardModule.js';
 
  document.addEventListener("DOMContentLoaded", function () {
@@ -356,9 +400,9 @@
     });
  });
 </script>
-<script src="/js/formatCurrency.js" type = "module"></script>
-<script src="/js/deleteBoard.js" type="module"></script>
+	<script src="/js/formatCurrency.js" type="module"></script>
+	<script src="/js/deleteBoard.js" type="module"></script>
 
-  
+
 </body>
 </html>

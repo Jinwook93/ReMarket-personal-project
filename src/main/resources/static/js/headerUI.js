@@ -1,4 +1,4 @@
-import { checkUnReadMessageCount, checkUnReadMessageCount2, loadChatRooms, loadMessages, setUpEnterRoomButton, setUpExitRoomButton, toggleChattingRoomList } from './chatModule.js';
+import { checkUnReadMessageCount, checkUnReadMessageCount2, loadChatRooms, loadMessages, setUpEnterRoomButton, setUpExitRoomButton, toggleChattingRoomList, updateChatRoomOrder } from './chatModule.js';
 import { toggleAlarmList, checkUserAlarmCount, checkUserAlarmList } from './alarmModule.js';
 import { formatDate } from "./formatDate.js";
 import { enrollTrade2 } from "./tradeModule.js";
@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 	if (isLoggedIn === "true") {
 		await checkUserAlarmCount(loggedId);
-				await unReadMessageCount(loggedId);
+		await unReadMessageCount(loggedId);
 		//    await loadChatRooms(loggedId);
 		//    setUpEnterRoomButton(loggedUserId);
 		//    setUpExitRoomButton();
@@ -34,68 +34,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 	toggleAlarmList();
 });
 
-// 알람 데이터를 가져오는 함수
-//async function checkUserAlarmData(loggedId) {
-//  try {
-//    const loggedUserId = document.getElementById("loggedUserId").value;
-//    const alarmResponse = await fetch(`/alarm/unReadAlarmData/${loggedId}`);
-//    const datas = await alarmResponse.json(); // 📌 읽지 않은 알람 목록
-//
-//    let currentPage = alarmListBody.getAttribute("data-current-page") || 0;
-//
-//    // ✅ 같은 데이터라면 중복 호출 방지 (이전 상태 비교)
-//    if (prevState && JSON.stringify(prevState) === JSON.stringify(datas)) {
-//      console.log("동일한 알람 데이터이므로 렌더링을 건너뜁니다.");
-//      return;
-//    }
-//
-//    prevState = datas; // 🔹 상태 업데이트
-//
-//    // 📌 알람 카운트 업데이트
-//    await checkUserAlarmCount(loggedId);
-//
-//    // 📌 페이지 새로 로딩
-//    await loadPage(currentPage, loggedId);
-//
-//    // 📌 로드한 방 ID를 저장하는 지역 변수 (초기화)
-//    const loadedRooms = new Set();
-//
-//    // 📌 채팅 관련 알람 처리
-//    for (const data of datas) {
-//      if (data.type === "MESSAGE") {
-//        await loadChatRooms(loggedId);
-//        setUpEnterRoomButton(loggedUserId);
-//        setUpExitRoomButton();
-//
-//        if (data.action === "송수신" || data.action === "나가기") {
-//          const room = await fetch(`/chat/findRoom/${Number(data.object)}`).then(res => res.json());
-//          const roomId = Number(room.id);
-//
-//          // ✅ 이미 로드된 방이면 건너뛰기
-//          if (loadedRooms.has(roomId)) {
-//            console.log(`Room ID ${roomId}는 이미 메시지를 로드했으므로 건너뜁니다.`);
-//            continue;
-//          }
-//
-//          // ✅ 송신자 또는 수신자의 메시지 로딩
-//          if (Number(data.member1Id) === Number(loggedId)) {
-//            loadMessages(Number(data.object), room.messageIndex1, room.recentExitedmemberId);
-//          } else if (Number(data.member2Id) === Number(loggedId)) {
-//            loadMessages(roomId, room.messageIndex2, room.recentExitedmemberId);
-//          }
-//
-//          // ✅ 메시지를 로드한 방 ID를 저장하여 중복 호출 방지
-//          loadedRooms.add(roomId);
-//        }
-//      }
-//    }
-//  } catch (error) {
-//    console.error("알람 데이터를 불러오는 중 오류 발생:", error);
-//  }
-//}
-
-
-
 
 
 async function checkUserAlarmData(loggedId) {
@@ -107,18 +45,18 @@ async function checkUserAlarmData(loggedId) {
 		let currentPage = alarmListBody.getAttribute("data-current-page") || 0;
 
 
-		
+
 		//데이터가 아무것도 없을 경우
 		if (!datas || !Array.isArray(datas) || datas.length === 0) {
 			return;
 		}
 
 
-				// ✅ 같은 데이터라면 중복 호출 방지 (이전 상태 비교)
-		    if (prevState && JSON.stringify(prevState) === JSON.stringify(datas)) {
-//		      console.log("동일한 알람 데이터이므로 렌더링을 건너뜁니다.");
-		      return;
-		    }
+		// ✅ 같은 데이터라면 중복 호출 방지 (이전 상태 비교)
+		if (prevState && JSON.stringify(prevState) === JSON.stringify(datas)) {
+			//		      console.log("동일한 알람 데이터이므로 렌더링을 건너뜁니다.");
+			return;
+		}
 
 
 
@@ -136,15 +74,10 @@ async function checkUserAlarmData(loggedId) {
 		if (prevState === null) {
 			prevState = datas;
 		}
-		//        console.log(JSON.stringify(prevState));
-		//    console.log(JSON.stringify(datas));
 
-		    if (prevState && JSON.stringify(prevState) !== JSON.stringify(datas)) {
-		await loadChatRooms(loggedId);
-		setUpEnterRoomButton(loggedUserId);
-		setUpExitRoomButton();
-		prevState = datas;
-		       }
+		if (prevState && JSON.stringify(prevState) !== JSON.stringify(datas)) {
+			prevState = datas;
+		}
 
 
 
@@ -152,50 +85,85 @@ async function checkUserAlarmData(loggedId) {
 		// 📌 로드한 방 ID를 저장하는 지역 변수 (초기화)
 		const loadedRooms = new Set();
 
-		//	let loadChatRoomsCount = 1;
-
-		// 📌 채팅 관련 알람 처리
+		//		let loadChatRoomsCount = 1;
+		//		let previousChatRoomHTML = ""; // 🔹 이전 채팅방 목록 HTML 저장 변수
+		let chatRoomsUpdated1 = false;  // 🔹 중복 실행 방지 변수
+		let chatRoomsUpdated2 = false;  // 🔹 중복 실행 방지 변수
 		for (const data of datas) {
 			if (data.type === "MESSAGE") {
-				//        await loadChatRooms(loggedId);
-				//        setUpEnterRoomButton(loggedUserId);
-				//        setUpExitRoomButton();
-//				console.log(data);
-				if (data.action === "송수신" || data.action === "나가기") {
-					const room = await fetch(`/chat/findRoom/${Number(data.object)}`).then(res => res.json());
-					const roomId = Number(room.id);
+				const room = await fetch(`/chat/findRoom/${Number(data.object)}`).then(res => res.json());
+				const roomId = Number(room.id);
 
-					// ✅ 이미 로드된 방이면 건너뛰기		(수신이 안됨)
-					          if (loadedRooms.has(roomId)) {
-//					            console.log(`Room ID ${roomId}는 이미 메시지를 로드했으므로 건너뜁니다.`);
-					            continue;
-					          }
+				
+				//				updateChatRoomOrder(roomId);
+				
+				if (Number(data.member1Id) === Number(loggedId) &&!chatRoomsUpdated1) {
+					await loadChatRooms(loggedId);
+					setUpEnterRoomButton(loggedUserId);
+					setUpExitRoomButton();
+					chatRoomsUpdated1 = true;
+				}	
+				// 🔹 상대방이 메시지를 보낸 경우에만 loadChatRooms 실행 (단, 한 번만 실행)
+				else if (Number(data.member2Id) === Number(loggedId) &&!chatRoomsUpdated2) {
+					const chattingRoomListBody = document.getElementById("chattingRoomListBody");
+					//					const newChatRoomHTML = chattingRoomListBody.innerHTML; // 현재 HTML 저장
+				//
+				//					if (previousChatRoomHTML !== newChatRoomHTML) {
+				//						previousChatRoomHTML = newChatRoomHTML; // 🔹 변경된 경우만 업데이트
+				//					} else {
+				//						console.log("채팅방 목록이 동일하여 렌더링 생략");
+				//					}
+				//				}
+					
+				chattingRoomListBody.innerHTML = ``;
+					await loadChatRooms(loggedId);
+					setUpEnterRoomButton(loggedUserId);
+					setUpExitRoomButton();
 
-					// ✅ 송신자 또는 수신자의 메시지 로딩
+						chatRoomsUpdated2 = true; // ✅ 중복 실행 방지
+				// ✅ 새로운 메시지가 도착한 방을 최상단으로딩 이동		
+//					updateChatRoomOrder(data.id);				//채팅방 재입장 시 나가기 직전 메시지 시간까지 계산됨 (버그)
+				}
+
+
+				// ✅ 메시지를 로드한 방 ID를 저장하여 중복 호출 방지
+				if (!loadedRooms.has(roomId)) {
 					if (Number(data.member1Id) === Number(loggedId)) {
 						loadMessages(roomId, room.messageIndex1, room.recentExitedmemberId);
-						await loadChatRooms(loggedId);
-						setUpEnterRoomButton(loggedUserId);
-						setUpExitRoomButton();
-						await unReadMessageCount(loggedId);
 					} else if (Number(data.member2Id) === Number(loggedId)) {
 						loadMessages(roomId, room.messageIndex2, room.recentExitedmemberId);
-						await loadChatRooms(loggedId);
-						setUpEnterRoomButton(loggedUserId);
-						setUpExitRoomButton();
-						await unReadMessageCount(loggedId);
 					}
-
-					// ✅ 메시지를 로드한 방 ID를 저장하여 중복 호출 방지
 					loadedRooms.add(roomId);
 				}
+
+	
+				//					// 🔸 innerHTML 비교 → 같으면 렌더링 X
+				//					const chattingRoomListBody = document.getElementById("chattingRoomListBody");
+				//					const newChatRoomHTML = chattingRoomListBody.innerHTML; // 현재 HTML 저장
+				//
+				//					if (previousChatRoomHTML !== newChatRoomHTML) {
+				//						previousChatRoomHTML = newChatRoomHTML; // 🔹 변경된 경우만 업데이트
+				//					} else {
+				//						console.log("채팅방 목록이 동일하여 렌더링 생략");
+				//					}
+				//				}
 			}
 		}
+
+
 		return datas;
 	} catch (error) {
 		console.error("알람 데이터를 불러오는 중 오류 발생:", error);
 	}
 }
+
+
+
+
+
+
+
+
 
 
 
@@ -450,7 +418,7 @@ function addPageButton(page, currentPage, loggedId, container) {
 
 // 페이지를 로드하는 함수 (실제 데이터 로드를 구현할 곳)
 export async function loadPage(page, loggedId) {
-//	console.log(`Loading page ${page + 1}`);
+	//	console.log(`Loading page ${page + 1}`);
 
 	const unReadAlarmCount = await checkUserAlarmCount(loggedId);
 	const unReadAlarmCountButton = document.getElementById("unReadAlarmCountButton");
@@ -513,15 +481,15 @@ async function toggleMarkAllAsRead() {
 
 export async function unReadMessageCount(loggedId) {
 	try {
-			    const unReadMessageCountButton = document.getElementById("unReadMessageCountButton");
-			    const unReadMessageCount = await checkUnReadMessageCount(loggedId);
-			    if (unReadMessageCount > 0 && unReadMessageCountButton) {
-					unReadMessageCountButton.style.display ="block";
-			      unReadMessageCountButton.innerText = unReadMessageCount;
-		    }else{
-						unReadMessageCountButton.style.display ="none";
-			     unReadMessageCountButton.innerText = unReadMessageCount;
-				}
+		const unReadMessageCountButton = document.getElementById("unReadMessageCountButton");
+		const unReadMessageCount = await checkUnReadMessageCount(loggedId);
+		if (unReadMessageCount > 0 && unReadMessageCountButton) {
+			unReadMessageCountButton.style.display = "block";
+			unReadMessageCountButton.innerText = unReadMessageCount;
+		} else {
+			unReadMessageCountButton.style.display = "none";
+			unReadMessageCountButton.innerText = unReadMessageCount;
+		}
 	} catch (error) {
 		console.error("읽지 않은 메시지를 불러올 수 없습니다:", error);
 	}
@@ -534,17 +502,17 @@ export async function unReadMessageCount(loggedId) {
 
 export async function unReadMessageCount2(roomId) {
 	try {
-			    const unReadMessageCountButton2 = document.getElementById("unReadMessageCountButton2");
-				
-			
-			    const unReadMessageCount2 = await checkUnReadMessageCount2(roomId);
-			    if (unReadMessageCount > 0 && unReadMessageCountButton2) {
-					unReadMessageCountButton2.style.display ="block";
-			      unReadMessageCountButton2.innerText = unReadMessageCount2;
-		    }else{
-						unReadMessageCountButton2.style.display ="none";
-			     unReadMessageCountButton2.innerText = unReadMessageCount2;
-				}
+		const unReadMessageCountButton2 = document.getElementById("unReadMessageCountButton2");
+
+
+		const unReadMessageCount2 = await checkUnReadMessageCount2(roomId);
+		if (unReadMessageCount > 0 && unReadMessageCountButton2) {
+			unReadMessageCountButton2.style.display = "block";
+			unReadMessageCountButton2.innerText = unReadMessageCount2;
+		} else {
+			unReadMessageCountButton2.style.display = "none";
+			unReadMessageCountButton2.innerText = unReadMessageCount2;
+		}
 	} catch (error) {
 		console.error("읽지 않은 메시지를 불러올 수 없습니다:", error);
 	}

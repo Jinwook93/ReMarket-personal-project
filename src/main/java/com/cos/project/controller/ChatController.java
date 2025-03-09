@@ -2,6 +2,7 @@ package com.cos.project.controller;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -63,12 +64,15 @@ public class ChatController {
     @PostMapping("/Chatroom/{boardId}")		//채팅방 개설
     @ResponseBody
     public ResponseEntity<?> createChatRoom(@PathVariable(name = "boardId") Long boardId, @RequestBody ChattingRoomDTO chattingRoomDTO , @AuthenticationPrincipal PrincipalDetails principalDetails) {
-    	MemberEntity loggedUserId = principalDetails.getMemberEntity();
+    	MemberEntity loggedMember = principalDetails.getMemberEntity();
 //    	System.out.println("아이디확인"+chattingRoomDTO.getMember2UserId());
     	Long member2Id = memberService.findByUserId(chattingRoomDTO.getMember2UserId()).getId();		//상대방의 Id
-    	ChattingRoomDTO responseDTO =chatService.findOrCreateRoom("대화방", loggedUserId.getUserid(), chattingRoomDTO.getMember2UserId() ,boardId, 0);
+    	ChattingRoomDTO responseDTO =chatService.findOrCreateRoom("대화방", loggedMember.getUserid(), chattingRoomDTO.getMember2UserId() ,boardId, 0);
      //   model.addAttribute("boardId", boardId);
-    	alarmService.postAlarm(loggedUserId.getId(), loggedUserId.getId(), member2Id, "MESSAGE", "채팅방", null, "채팅방 만듬", null);
+    	if(responseDTO != null) {
+    		chatService.myChattingRoomList(loggedMember.getId());
+    	}
+    	alarmService.postAlarm( loggedMember.getId(),  loggedMember.getId(), member2Id, "MESSAGE", "채팅방", null, "채팅방 만듬", null);
     	return ResponseEntity.ok(responseDTO);
     }
     
@@ -76,13 +80,32 @@ public class ChatController {
 	    
 	    
 	    
-	    @GetMapping("/myChatRoom/{loggedId}")
-	    @ResponseBody
-	    public ResponseEntity<?> myChatRoom(@PathVariable(name = "loggedId")Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
-	    	List<ChattingRoomDTO> chattingRoomList = new ArrayList<>(chatService.myChattingRoomList(id,principalDetails.getMemberEntity().getId()));
-	    	return ResponseEntity.ok(chattingRoomList);
-	    }
+//	    @GetMapping("/myChatRoom/{loggedId}")
+//	    @ResponseBody
+//	    public ResponseEntity<?> myChatRoom(@PathVariable(name = "loggedId")Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+//	    	List<ChattingRoomDTO> chattingRoomList = new ArrayList<>(chatService.myChattingRoomList(id,principalDetails.getMemberEntity().getId()));
+//	    	return ResponseEntity.ok(chattingRoomList);
+//	    }
 
+    
+    
+    @GetMapping("/myChatRoom/{loggedId}")
+    @ResponseBody
+    public ResponseEntity<?> myChatRoom(@PathVariable(name = "loggedId") Long id, 
+                                        @AuthenticationPrincipal PrincipalDetails principalDetails) {
+        List<ChattingRoomDTO> chattingRoomList = new ArrayList<>(chatService.myChattingRoomList(principalDetails.getMemberEntity().getId()));
+
+        // sendTime 기준으로 내림차순 정렬 (최신 메시지가 먼저)
+//        chattingRoomList.sort(Comparator.comparing(ChattingRoomDTO::getCreateTime, Comparator.nullsLast(Comparator.reverseOrder())));
+
+        return ResponseEntity.ok(chattingRoomList);
+    }
+
+
+    
+    
+    
+    
 
 //    @GetMapping("/myChatRoom/{loggedId}")
 //    @ResponseBody
@@ -323,21 +346,8 @@ public class ChatController {
     @GetMapping("/findRecentRoomMessage/{roomId}") // 해당 방의 최근 메시지 조회
     @ResponseBody
     public ResponseEntity<?> findRecentRoomMessage(@PathVariable(name = "roomId") Long roomId, @AuthenticationPrincipal PrincipalDetails principalDetails) {
-        MessageDTO result = chatService.recentRoomMessage(roomId);
+        MessageDTO result = chatService.recentRoomMessage(roomId,principalDetails.getMemberEntity().getId());
         
-//        if(result.getId() != null) {
-//        System.out.println("==============");
-//        System.out.println("최근 메시지 id: " + result.getId());
-//        System.out.println("최근 메시지 보낸사람: " + result.getSenderUserId());
-//        System.out.println("최근 메시지 보낸 날짜: " + result.getSendTime());
-//        System.out.println("최근 메시지 내용: " + result.getMessageContent());
-//        System.out.println("==============");
-//        }
-//        else {
-//            System.out.println("==============");
-//            System.out.println("최근 메시지 내용: " + result.getMessageContent());
-//            System.out.println("==============");
-//        }
         return ResponseEntity.ok(result); // 정상적으로 메시지를 반환
     }
 

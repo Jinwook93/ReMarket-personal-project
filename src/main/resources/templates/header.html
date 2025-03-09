@@ -19,26 +19,7 @@
 				<input type="hidden" th:value="${isLoggedIn}" id="isLoggedIn">
 				<input type="hidden" th:value="${id}" id="loggedId"> <input
 					type="hidden" th:value="${loggedUserId}" id="loggedUserId">
-				<!-- 		<div style="display: flex; justify-content: flex-end; align-items: center; width: 100%;"> -->
-				<!--     <p style="margin-right: 20px;"> -->
-				<!--         환영합니다, <span th:text="${name}"></span>님 -->
-				<!--     </p> -->
-				<!--     <a th:href="@{/logout}" style="margin-left: 10px;">로그아웃</a> -->
-				<!-- </div> -->
-
-				<!-- 					<a -->
-				<!-- 					th:href="@{/boardlist/{id}(id=${id})}">내가 쓴 게시글</a> <a -->
-				<!-- 					th:href="@{/commentlist/{id}(id=${id})}">내가 쓴 댓글</a> -->
-
-				<!-- 나의 채팅방 버튼 -->
-				<!-- 				<a href="#" id="myChattingRoomList"> <img -->
-				<!-- 					src="/icon/comment.png" alt="나의 채팅방" width="20" height="20" -->
-				<!-- 					style="margin-Top: 1px;" /> -->
-
-				<!-- 				</a> -->
-				<!-- 				<p id="unReadMessageCountButton" style="display:none;"> -->
-				<!--       			테스트 -->
-				<!--     		</p> -->
+		
 
 				<div
 					style="display: flex; justify-content: space-between; width: 100%;">
@@ -92,7 +73,7 @@
     <div class="chattingRoomList"
         style="position: absolute; top: -5px; left: 0px; width: 600px; height: 600px; display: none; z-index: 1;" 
         onclick="bringToFront(this)">
-        <div id="chattingRoomScroll">
+        <div id="chattingRoomScroll" >
             <table>
                 <tbody id="chattingRoomListBody">
                     <!-- 채팅방 목록이 여기에 동적으로 추가됩니다 -->
@@ -152,10 +133,6 @@
 
 			</div>
 
-			<!-- 공통 메뉴 -->
-			<!-- 			<div> -->
-			<!-- 				<a href="/board/list">게시판</a> <a href="/board/writeboard">글쓰기</a> -->
-			<!-- 			</div> -->
 		</div>
 	</header>
 	<script src="/js/state.js" type="module"></script>

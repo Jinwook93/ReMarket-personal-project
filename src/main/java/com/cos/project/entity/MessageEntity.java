@@ -66,9 +66,13 @@ public class MessageEntity {
     private Boolean alarmType = false;
     
     
+    private Boolean statusBar = null;
+    
     @CreationTimestamp
     private Timestamp sendTime;  // 메시지 전송 시간
 
+
+    
 
 
 
@@ -77,6 +81,7 @@ public class MessageEntity {
             message.getId(),
             message.getSender().getUserid(),
             message.getMessageContent(),
+            message.getStatusBar(),
             message.getSendTime()
         );
     }

@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 
@@ -56,6 +57,14 @@ public class ChattingRoomEntity {
 
     @CreationTimestamp
     private Timestamp createTime;  // 채팅방 생성 시간
+    
+    @UpdateTimestamp
+    private Timestamp updateTime;  // 채팅방 수정 시간
+    
+    @Column(nullable = true)
+    private Timestamp reCreateTime1; // member1의 채팅방 재입장 시에 대한 수정 시간
+    @Column(nullable = true)
+    private Timestamp reCreateTime2; // member1의 채팅방 재입장 시에 대한 수정 시간
 
     private boolean liked;  // 좋아요 (개인적으로 메시지나 채팅방에 좋아요 기능 추가 가능)
     														//MySQL 예약어와 겹치므로 like로 생성 불가

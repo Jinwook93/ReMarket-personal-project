@@ -29,16 +29,19 @@ public class MessageDTO {
     private String profileImageUrl1;
     private String profileImageUrl2;
     private Boolean alarmType;
+    private Boolean statusBar;
+    
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private Timestamp sendTime;    // 메시지 전송 시간
 	
     
     
-    public MessageDTO(Long id, String senderUserId, String messageContent, Timestamp sendTime) {
+    public MessageDTO(Long id, String senderUserId, String messageContent, Boolean statusBar,Timestamp sendTime) {
 		super();
 		this.id = id;
 		this.senderUserId = senderUserId;
 		this.messageContent = messageContent;
+		this.statusBar = statusBar;
 		this.sendTime = sendTime;
 	}
 

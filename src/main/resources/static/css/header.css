@@ -166,7 +166,7 @@ body {
 }
 
 #chattingRoomScroll {
-	max-height: 250px; /* 5개 이상이면 스크롤 */
+	max-height: 100%; /* 5개 이상이면 스크롤 */
 	overflow-y: auto;
 	display: block;
 }
@@ -357,3 +357,18 @@ button[id^="denyMember2-"] {
     margin-top:10px;
 }
 
+/*적용이 되지 않음 -> 스크립트에서 작성함*/
+/* 상태 메시지 (입장/퇴장) 스타일 */
+.statusBar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 8px 0;
+    font-size: 14px;
+    font-weight: bold;
+    color: #555;
+    background-color: #f1f1f1;
+    border-radius: 8px;
+    margin: 10px 0;
+}
