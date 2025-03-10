@@ -41,7 +41,7 @@ public interface ChattingRoomRepository extends JpaRepository<ChattingRoomEntity
 	
 	
 	
-	
+
 	
 	
 	

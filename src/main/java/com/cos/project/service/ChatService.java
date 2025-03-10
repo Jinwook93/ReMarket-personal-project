@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import com.cos.project.details.PrincipalDetails;
 import com.cos.project.dto.ChattingRoomDTO;
@@ -605,22 +606,21 @@ public class ChatService {
         filteredMessages = getMessagesFromIndex(messages, messageIndex);
         
      // filteredMessages가 비었는지 확인
-        System.out.println("filteredMessages 크기: " + filteredMessages.size());
+//        System.out.println("filteredMessages 크기: " + filteredMessages.size());
 //        System.out.println("filteredMessages 내용: " + filteredMessages);
         
-        System.out.println("필터드메시지 작동"+messageIndex);
       //상태바 메시지 제외
       		filteredMessageDTO =  filteredMessages.stream().filter(message -> message.getStatusBar() == null || !message.getStatusBar()) 
       					// sendTime이 null이 아닌 메시지만 필터링
       				.max(Comparator.comparing(MessageEntity::getSendTime, Comparator.nullsLast(Comparator.naturalOrder())))// 최신 메시지 찾기		//null도 허용
       				.map(message -> {
       					if(loggedId.equals(chattingRoomEntity.getMember1().getId()) && chattingRoomEntity.getMessageIndex1() >0  &&(messages.size() - chattingRoomEntity.getMessageIndex1() == 0)) {									//재방문한 loggedId에 대한 조건
-      						return new MessageDTO(null, null, "최근 메시지가 없습니다1", null,chattingRoomEntity.getReCreateTime1() != null?chattingRoomEntity.getReCreateTime1():chattingRoomEntity.getCreateTime());
+      						return new MessageDTO(null, null, "최근 메시지가 없습니다1", chattingRoomEntity.getId() ,null,chattingRoomEntity.getReCreateTime1() != null?chattingRoomEntity.getReCreateTime1():chattingRoomEntity.getCreateTime());
       					}else if(loggedId.equals(chattingRoomEntity.getMember2().getId()) && chattingRoomEntity.getMessageIndex2() >0  &&(messages.size() - chattingRoomEntity.getMessageIndex2() == 0)) {									//재방문한 loggedId에 대한 조건
-      						return new MessageDTO(null, null, "최근 메시지가 없습니다2", null,chattingRoomEntity.getReCreateTime2() != null?chattingRoomEntity.getReCreateTime2():chattingRoomEntity.getCreateTime());
+      						return new MessageDTO(null, null, "최근 메시지가 없습니다2", chattingRoomEntity.getId(),null,chattingRoomEntity.getReCreateTime2() != null?chattingRoomEntity.getReCreateTime2():chattingRoomEntity.getCreateTime());
       					}
       					return message.convertToDTO(message); // message 객체에서 convertToDTO 호출
-      				}).orElse(new MessageDTO(null, null, "최근 메시지가 없습니다3", null,reCreateTime != null?reCreateTime:chattingRoomEntity.getCreateTime()));  // 최신 메시지가 없으면 null 반환
+      				}).orElse(new MessageDTO(null, null, "최근 메시지가 없습니다3",chattingRoomEntity.getId() ,null,reCreateTime != null?reCreateTime:chattingRoomEntity.getCreateTime()));  // 최신 메시지가 없으면 null 반환
         }else {
         	
        filteredMessageDTO =  messages.stream().filter(message -> message.getStatusBar() == null || !message.getStatusBar())
@@ -628,12 +628,12 @@ public class ChatService {
   				.max(Comparator.comparing(MessageEntity::getSendTime, Comparator.nullsLast(Comparator.naturalOrder())))// 최신 메시지 찾기		//null도 허용
   				.map(message -> {
   					if(loggedId.equals(chattingRoomEntity.getMember1().getId()) && chattingRoomEntity.getMessageIndex1() >0  &&(messages.size() - chattingRoomEntity.getMessageIndex1() == 0)) {									//재방문한 loggedId에 대한 조건
-  						return new MessageDTO(null, null, "최근 메시지가 없습니다4", null,chattingRoomEntity.getReCreateTime1() != null?chattingRoomEntity.getReCreateTime1():chattingRoomEntity.getCreateTime());
+  						return new MessageDTO(null, null, "최근 메시지가 없습니다4", chattingRoomEntity.getId(),null,chattingRoomEntity.getReCreateTime1() != null?chattingRoomEntity.getReCreateTime1():chattingRoomEntity.getCreateTime());
   					}else if(loggedId.equals(chattingRoomEntity.getMember2().getId()) && chattingRoomEntity.getMessageIndex2() >0  &&(messages.size() - chattingRoomEntity.getMessageIndex2() == 0)) {									//재방문한 loggedId에 대한 조건
-  						return new MessageDTO(null, null, "최근 메시지가 없습니다5", null,chattingRoomEntity.getReCreateTime2() != null?chattingRoomEntity.getReCreateTime2():chattingRoomEntity.getCreateTime());
+  						return new MessageDTO(null, null, "최근 메시지가 없습니다5",chattingRoomEntity.getId(), null,chattingRoomEntity.getReCreateTime2() != null?chattingRoomEntity.getReCreateTime2():chattingRoomEntity.getCreateTime());
   					}
   					return message.convertToDTO(message); // message 객체에서 convertToDTO 호출
-  				}).orElse(new MessageDTO(null, null, "최근 메시지가 없습니다6", null, reCreateTime != null?reCreateTime:chattingRoomEntity.getCreateTime())); // 최신 메시지가 없으면 null 반환
+  				}).orElse(new MessageDTO(null, null, "최근 메시지가 없습니다6", chattingRoomEntity.getId(),null, reCreateTime != null?reCreateTime:chattingRoomEntity.getCreateTime())); // 최신 메시지가 없으면 null 반환
         	
         }
 		
@@ -651,8 +651,8 @@ public class ChatService {
 //            filteredMessageDTO.setSendTime(messageTime);
 //        }
         
-        System.out.println(filteredMessageDTO.toString());
-        
+//        System.out.println(filteredMessageDTO.toString());
+//        
 			return filteredMessageDTO;
 	}
 
@@ -785,9 +785,111 @@ public class ChatService {
 	
 	
 	
-	
-	
-	
+		@Transactional
+		public List<ChattingRoomDTO> searchRooms(Long loggedId, String searchContent) {
+			List<ChattingRoomEntity> chattingRoomEntities = chattingRoomRepository.findAllByLoggedMember(loggedId);
+			
+			
+			
+			if (chattingRoomEntities.isEmpty()) {
+				return Collections.EMPTY_LIST;
+			}
+			MemberEntity loggedMember = memberRepository.findById(loggedId).get();
+			String loggedUserId = loggedMember.getUserid();
+		
+			List<ChattingRoomDTO> chattingRoomDTOs = chattingRoomEntities.stream()
+					 .filter(	entity ->  
+						(entity.getExitedmemberId() == null || !entity.getExitedmemberId().equals(loggedId))
+					 && searchContent.contains(entity.getBoardEntity().getTitle())  
+							 && (entity.getMember1().getId().equals(loggedId)  
+								|| entity.getMember2().getId().equals(loggedId)	 ))
+				    .map((ChattingRoomEntity entity) -> {
+				        // Log member1 and member2 user IDs
+				        String member1UserId = entity.getMember1() != null ? entity.getMember1().getUserid() : null;
+				        String member2UserId = entity.getMember2() != null ? entity.getMember2().getUserid() : null;
+
+				        // Log boardId
+				        String boardId = entity.getBoardEntity() != null ? String.valueOf(entity.getBoardEntity().getId()) : null;
+
+				        // Log messages inside the ChattingRoomDTO
+				        List<MessageEntity> messageEntities = messageRepository.findByChattingRoomEntity(entity.getId());
+				        MessageDTO recentMessage = this.recentRoomMessage(entity.getId(), loggedId);
+
+
+
+				        return ChattingRoomDTO.builder()
+				                .id(entity.getId())
+				                .title(entity.getTitle())
+				                .price(entity.getPrice())
+				                .createTime(recentMessage.getSendTime())  // Sorting 기준 필드
+				                .liked(entity.isLiked())
+				                .member1UserId(member1UserId)
+				                .member2UserId(member2UserId)
+				                .boardId(boardId)
+				                .member1Visible(entity.getMember1Visible())
+				                .member2Visible(entity.getMember2Visible())
+				                .messageIndex1(entity.getMessageIndex1())
+				                .messageIndex2(entity.getMessageIndex2())
+				                .exitedmemberId(entity.getExitedmemberId())
+				                .recentExitedmemberId(entity.getRecentExitedmemberId())
+				                .build();
+				    })
+				    .sorted(Comparator.comparing(ChattingRoomDTO::getCreateTime, Comparator.nullsLast(Comparator.reverseOrder()))) // 최근 순 정렬
+				    .collect(Collectors.toList());
+			return chattingRoomDTOs;
+		}
+	 
+	 
+	 
+	 
+		@Transactional
+		public List<MessageDTO> searchMessage(Long loggedId, String searchContent) {
+
+		    List<ChattingRoomEntity> chattingRoomEntities = chattingRoomRepository.findAllByLoggedMember(loggedId);
+
+		    // messageEntities를 빈 리스트로 초기화
+		    List<MessageEntity> messageEntities = new ArrayList<>();
+
+		    // 채팅방이 없으면 빈 리스트 반환
+		    if (chattingRoomEntities.isEmpty()) {
+		        return Collections.emptyList();
+		    }
+
+		    return chattingRoomEntities.stream()
+		        .flatMap(room -> {
+		            List<MessageEntity> messageEntitiesByRoom = messageRepository.findByChattingRoomEntity(room.getId());
+
+		            Long messageIndex = null;
+		            if (room.getMember1().getId().equals(loggedId)) {
+		                messageIndex = room.getMessageIndex1();
+		            } else if (room.getMember2().getId().equals(loggedId)) {
+		                messageIndex = room.getMessageIndex2();
+		            }
+
+		            // 유효한 메시지만 필터링
+		            return getMessagesFromIndex(messageEntitiesByRoom, messageIndex).stream()
+		                .filter(message -> 
+		                    message.getMessageContent().contains(searchContent) && !Boolean.TRUE.equals(message.getStatusBar())
+		                )
+		                .map(message -> new MessageDTO(
+		                    message.getId(),
+		                    message.getSender().getUserid(),
+		                    message.getMessageContent(),
+		                    room.getId(),  // room을 여기서 참조
+		                    message.getStatusBar(),
+		                    message.getSendTime()
+		                ));
+		        })
+		        .collect(Collectors.toList());
+		}
+
+			
+	 
+
+			
+			
+
+
 	
 	
 }

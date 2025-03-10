@@ -223,6 +223,7 @@ public class ChatController {
 		ChattingRoomDTO responseDTO = null;
 		responseDTO =responseDTO.builder()
 				.id(room.get().getId())
+				.title(room.get().getTitle())
 				.member1UserId(room.get().getMember1().getUserid())
 				.member2UserId(room.get().getMember2().getUserid())
 				.messageIndex1(room.get().getMessageIndex1())

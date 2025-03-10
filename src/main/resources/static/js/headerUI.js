@@ -1,7 +1,8 @@
-import { checkUnReadMessageCount, checkUnReadMessageCount2, loadChatRooms, loadMessages, setUpEnterRoomButton, setUpExitRoomButton, toggleChattingRoomList, updateChatRoomOrder } from './chatModule.js';
+import { checkUnReadMessageCount, checkUnReadMessageCount2, loadChatRooms, loadMessages, searchMessage, setUpEnterRoomButton, setUpExitRoomButton, toggleChattingRoomList } from './chatModule.js';
 import { toggleAlarmList, checkUserAlarmCount, checkUserAlarmList } from './alarmModule.js';
 import { formatDate } from "./formatDate.js";
 import { enrollTrade2 } from "./tradeModule.js";
+
 
 let prevState = null;
 let alarmCountInterval = null;
@@ -33,6 +34,81 @@ document.addEventListener("DOMContentLoaded", async () => {
 	toggleChattingRoomList();
 	toggleAlarmList();
 });
+
+document.getElementById("chatSearch").addEventListener("input", searchChat);
+
+async function searchChat() {
+    let input = document.getElementById("chatSearch").value.trim().toLowerCase();
+    let searchResultText = document.getElementById("searchResultText");
+    let messagedata = document.getElementById("messagedata");
+    let chatRooms = document.querySelectorAll("#chattingRoomListBody tr");
+		const loggedUserId = document.getElementById("loggedUserId")?.value;
+    // 채팅방 필터링
+    chatRooms.forEach(row => {
+        let roomName = row.textContent.toLowerCase();
+        row.style.display = roomName.includes(input) ? "" : "none";
+    });
+
+    // 검색 결과 텍스트 표시 여부
+    searchResultText.style.display = input ? "block" : "none";
+
+    // 메시지 검색 및 결과 표시
+    if (input) {
+        const data = await searchMessage(input);
+        if (data && data.length > 0) {
+            // 비동기적으로 방 정보를 가져오기
+            const roomPromises = data.map(async (msg) => {
+                const roomResponse = await fetch(`/chat/findRoom/${msg.roomId}`);
+                const room = await roomResponse.json();
+                return { msg, room }; // msg와 room 정보를 함께 반환
+            });
+
+            // 모든 방 정보를 가져오기 완료 후 처리
+            const roomsData = await Promise.all(roomPromises);
+
+            messagedata.innerHTML = `
+                <div>
+                    <h3>메시지 검색 결과</h3>
+                    <div>
+                        ${roomsData.map(({ msg, room }) => `
+                            <div class="message" id="msg-${msg.id}">
+                                <ul>
+                                    <li>내용 : ${msg.messageContent}</li>
+                                    <li>보낸 사람 : ${msg.senderUserId}</li>
+                                    <li>보낸 날짜 : ${msg.sendTime}</li>
+                                    <button class="enterChat"
+                                        data-search-room-id="${msg.roomId}"
+                                        data-search-title="${room.title}"
+                                        data-search-userid="${room.member2UserId}"
+                                        style="background-color: #800080; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; transition: background-color 0.3s ease, transform 0.2s ease;">
+                                            <div style="display: flex; align-items: center;">
+                                                <img src="/icon/messageIcon.png" width="15" height="15" style="margin-right: 5px;">
+                                                채팅하기
+                                            </div>
+                                    </button>
+                                </ul>
+                            </div>
+                        `).join("")}
+                    </div>
+                </div>
+            `;
+            messagedata.style.display = "block";
+            setUpEnterRoomButton(loggedUserId);
+           document.getElementById(`toggleDetails-${room.id}`).addEventListener('click', () => {
+			const details = document.getElementById(`details-${roomId}`);
+			details.style.display = (details.style.display === 'none' || details.style.display === '') ? 'block' : 'none';
+		});
+        } else {
+            messagedata.innerHTML = "<p>메시지 검색 결과가 없습니다</p>";
+            messagedata.style.display = "block";
+        }
+    } else {
+        messagedata.style.display = "none";
+    }
+}
+
+
+
 
 
 
@@ -94,35 +170,35 @@ async function checkUserAlarmData(loggedId) {
 				const room = await fetch(`/chat/findRoom/${Number(data.object)}`).then(res => res.json());
 				const roomId = Number(room.id);
 
-				
+
 				//				updateChatRoomOrder(roomId);
-				
-				if (Number(data.member1Id) === Number(loggedId) &&!chatRoomsUpdated1) {
+
+				if (Number(data.member1Id) === Number(loggedId) && !chatRoomsUpdated1) {
 					await loadChatRooms(loggedId);
 					setUpEnterRoomButton(loggedUserId);
 					setUpExitRoomButton();
 					chatRoomsUpdated1 = true;
-				}	
+				}
 				// 🔹 상대방이 메시지를 보낸 경우에만 loadChatRooms 실행 (단, 한 번만 실행)
-				else if (Number(data.member2Id) === Number(loggedId) &&!chatRoomsUpdated2) {
+				else if (Number(data.member2Id) === Number(loggedId) && !chatRoomsUpdated2) {
 					const chattingRoomListBody = document.getElementById("chattingRoomListBody");
 					//					const newChatRoomHTML = chattingRoomListBody.innerHTML; // 현재 HTML 저장
-				//
-				//					if (previousChatRoomHTML !== newChatRoomHTML) {
-				//						previousChatRoomHTML = newChatRoomHTML; // 🔹 변경된 경우만 업데이트
-				//					} else {
-				//						console.log("채팅방 목록이 동일하여 렌더링 생략");
-				//					}
-				//				}
-					
-				chattingRoomListBody.innerHTML = ``;
+					//
+					//					if (previousChatRoomHTML !== newChatRoomHTML) {
+					//						previousChatRoomHTML = newChatRoomHTML; // 🔹 변경된 경우만 업데이트
+					//					} else {
+					//						console.log("채팅방 목록이 동일하여 렌더링 생략");
+					//					}
+					//				}
+
+					chattingRoomListBody.innerHTML = ``;
 					await loadChatRooms(loggedId);
 					setUpEnterRoomButton(loggedUserId);
 					setUpExitRoomButton();
 
-						chatRoomsUpdated2 = true; // ✅ 중복 실행 방지
-				// ✅ 새로운 메시지가 도착한 방을 최상단으로딩 이동		
-//					updateChatRoomOrder(data.id);				//채팅방 재입장 시 나가기 직전 메시지 시간까지 계산됨 (버그)
+					chatRoomsUpdated2 = true; // ✅ 중복 실행 방지
+					// ✅ 새로운 메시지가 도착한 방을 최상단으로딩 이동		
+					//					updateChatRoomOrder(data.id);				//채팅방 재입장 시 나가기 직전 메시지 시간까지 계산됨 (버그)
 				}
 
 
@@ -136,7 +212,7 @@ async function checkUserAlarmData(loggedId) {
 					loadedRooms.add(roomId);
 				}
 
-	
+
 				//					// 🔸 innerHTML 비교 → 같으면 렌더링 X
 				//					const chattingRoomListBody = document.getElementById("chattingRoomListBody");
 				//					const newChatRoomHTML = chattingRoomListBody.innerHTML; // 현재 HTML 저장

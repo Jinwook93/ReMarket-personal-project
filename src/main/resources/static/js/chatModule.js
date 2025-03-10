@@ -552,7 +552,7 @@ export async function openChatRoom(roomId, title, loggedUserId, userid, loggedFl
 		chatWindow.className = "chat-window";
 		//   <!--         ${trade.tradeStatus=== '완료'? '<h2>판매완료</h2>':""} -->
 		// board 정보 비동기 요청
-		const boardresponse = await fetch(`/chat/findBoard/${roomId}`);
+		const boardresponse = await fetch(`/chat/findBoard/${Number(roomId)}`);
 		const board = await boardresponse.json();
 		//		const trade = findTradeByBoardId(board.trades);					//해당 보드가 속한 trades 탐색	
 		//		console.log("트레이드 상태 : "+trade.tradeStatus);
@@ -1086,14 +1086,82 @@ export async function updateChatRoomOrder(roomId) {
 
 
 
+//return에 반드시 await을 쓸 필요는 없다.
+// 다만, async 함수 내부에서 await을 사용하지 않으면, 반환값이 Promise 객체가 된다.
+//※수정해야 할 문제점
+//fetch가 비동기 작업인데도 await 없이 return data;를 사용하여, 반환값이 Promise<void>가 되어버립니다.
+//return data;는 then 내부에 있기 때문에 searchChatRoomsAndMessage가 데이터를 반환하지 않습니다.
+//호출하는 쪽에서 await으로 값을 받을 수 있도록 수정해야 합니다.
+
+//export async function searchChatRoomsAndMessage(searchcontent) {
+//
+//
+//try{
+//const response = await  fetch(`/search/room/result?search=${searchcontent}`);
+//const data = await response.json();
+//	if (!response.ok) {
+//            throw new Error(`데이터를 가져올 수 없습니다: ${response.status}`);
+//        }
+//	return data;
+//} catch (error) {
+//        console.error('Error:', error);
+//        return null; // 오류 발생 시 null 반환
+//    }
+//
+////    .then(response => response.json())
+////    .then(data => {
+////        console.log("Rooms:", data.rooms);
+////        console.log("Messages:", data.messages);
+////
+////        // 각 요소를 개별적으로 접근
+////        data.rooms.forEach(room => {
+////            console.log(`Room ID: ${room.id}, Name: ${room.roomName}`);
+////        });
+////
+////        data.messages.forEach(msg => {
+////            console.log(`Message ID: ${msg.id}, Content: ${msg.content}`);
+////        });
+////        
+////        return data;
+////    })
+////    .catch(error => console.error('Error:', error));	
+////
+////
+////}
+//
+//}
+
+
+
+export async function searchMessage(searchcontent) {
+    try {
+        const response = await fetch(`/search/message/result?search=${searchcontent}`);
+        if (!response.ok) {
+            throw new Error(`메시지를 가져올 수 없습니다: ${response.status}`);
+        }
+        const datas = await response.json();
+        console.log("📌 검색된 메시지 데이터:", datas); // ✅ 데이터 출력 확인
+        return datas;
+    } catch (error) {
+        console.error('Error:', error);
+        return null; // 오류 발생 시 null 반환
+    }
+}
+
+
+
+
 
 export function setUpEnterRoomButton(loggedUserId) {
 	document.querySelectorAll(".enterChat").forEach(button => {
 		button.addEventListener("click", async function() {
-			const roomId = Number(this.getAttribute("data-room-id"));
-			const title = this.getAttribute("data-title");
-			const userid = this.getAttribute("data-userid");
+
+			const roomId = Number(this.getAttribute("data-room-id"))?Number(this.getAttribute("data-room-id")):Number(this.getAttribute("data-search-room-id"));
+			const title = this.getAttribute("data-title")?this.getAttribute("data-title"):this.getAttribute("data-search-title");
+			const userid = this.getAttribute("data-userid")?this.getAttribute("data-userid"):this.getAttribute("data-search-userid");
 			//			openChatRoom(roomId, title, loggedUserId, userid);
+			
+
 
 			// 채팅방 열기 및 메시지 로드
 			if (loggedUserId !== userid) {
@@ -1277,3 +1345,122 @@ export async function checkUnReadMessageCount2(roomId) {
 	}
 }
 
+
+
+
+
+//export async function filterChatRooms() {
+//        let input = document.getElementById("chatSearch").value.toLowerCase();
+//        let rows = document.querySelectorAll("#chattingRoomListBody tr");
+//		let searchResultText  = document.getElementById("searchResultText");
+//        rows.forEach(row => {
+//            let roomName = row.textContent.toLowerCase();
+//            row.style.display = roomName.includes(input) ? "" : "none";
+//        });
+//        
+//        if(input !== ""){
+//        	searchResultText.style.display="block";
+//        }else{
+//        	searchResultText.style.display="none";
+//        }
+//        
+//        document.getElementById("searchResultText").addEventListener("input",
+//		filterChatRooms()
+//		);
+//        
+//       // let messagedata = document.getElementById("messagedata");
+//      //  const searchData =  await searchMessageResult(searchResultText);
+//
+//        // 검색 결과를 렌더링
+////      messagedata.innerHTML = `
+////          
+////            <h3>메시지 검색 결과</h3>
+////            <ul>
+////                ${searchData.messages.map(msg => `<li>메시지: ${msg.content}</li>`).join("")}
+////            </ul>
+////        `;
+////        if(input !== ""){
+////        	messagedata.style.display="block";
+////        }else{
+////        	messagedata.style.display="none";
+////        }
+//// searchChatRoomMessage(input);
+//    }
+
+
+
+
+
+
+
+
+
+
+//export async function searchChatRoomMessage(searchResultText) {
+//
+//
+//
+// const chatSearch = document.getElementById("chatSearch");
+//    const searchResultsContainer = document.getElementById("messagedata"); // 결과를 표시할 요소
+//
+//    chatSearch.addEventListener("input", async () => {
+//        const searchValue = chatSearch.value.trim();
+//
+//        if (searchValue === "") {
+//            await loadChatRooms(loggedId); // 기본 채팅방 로드
+//            searchResultsContainer.innerHTML = ""; // 검색 결과 초기화
+//        } else {
+//            try {
+//                const searchData = await searchMessage(searchResultText);
+//
+//                // 검색 결과를 렌더링
+//                searchResultsContainer.innerHTML = `
+//               
+//                    <h3>메시지 검색 결과</h3>
+//                    <ul>
+//                        ${searchData.messages.map(msg => `<li>메시지: ${msg.messageContent}</li>`).join("")}
+//                    </ul>
+//                `;
+//            } catch (error) {
+//                console.error("검색 중 오류 발생:", error);
+//                searchResultsContainer.innerHTML = `<p style="color:red;">검색 중 오류가 발생했습니다.</p>`;
+//            }
+//        }
+//    });
+//
+//
+//}
+
+
+//export async function searchMessageResult(searchResultText) {
+//
+//
+// const chatSearch = document.getElementById("chatSearch");
+//    const searchResultsContainer = document.getElementById("searchdatas"); // 결과를 표시할 요소
+//
+//    chatSearch.addEventListener("input", async () => {
+//        const searchValue = chatSearch.value.trim();
+//
+//        if (searchValue === "") {
+//            await loadChatRooms(loggedId); // 기본 채팅방 로드
+//            searchResultsContainer.innerHTML = ""; // 검색 결과 초기화
+//        } else {
+//            try {
+//                const searchData = await searchMessage(searchResultText);
+//
+//                // 검색 결과를 렌더링
+//                searchResultsContainer.innerHTML = `
+//                    <h3>메시지 검색 결과</h3>
+//                    <ul>
+//                        ${searchData.messages.map(msg => `<li>메시지: ${msg.messageContent}</li>`).join("")}
+//                    </ul>
+//                `;
+//            } catch (error) {
+//                console.error("검색 중 오류 발생:", error);
+//                searchResultsContainer.innerHTML = `<p style="color:red;">검색 중 오류가 발생했습니다.</p>`;
+//            }
+//        }
+//    });
+
+
+//}

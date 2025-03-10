@@ -73,12 +73,20 @@
     <div class="chattingRoomList"
         style="position: absolute; top: -5px; left: 0px; width: 600px; height: 600px; display: none; z-index: 1;" 
         onclick="bringToFront(this)">
+         <!-- 🔍 검색창 추가 -->
+        <input type="text" id="chatSearch" placeholder="채팅방 검색..." 
+            style="width: 100%; padding: 8px; box-sizing: border-box; margin-bottom: 5px;">
+            <h3 id = "searchResultText" style="display:none;"> 검색 결과 (채팅방)  </h3>
         <div id="chattingRoomScroll" >
+        
+       
             <table>
                 <tbody id="chattingRoomListBody">
                     <!-- 채팅방 목록이 여기에 동적으로 추가됩니다 -->
                 </tbody>
             </table>
+            
+              <div id="messagedata" style="display: none;"></div>
         </div>
     </div>
 
@@ -94,28 +102,6 @@
         </table>
     </div>
 </div>
-
-<script>
-    function bringToFront(element) {
-        // 모든 요소의 z-index를 1로 리셋
-        const allElements = document.querySelectorAll('.chattingRoomList, .alarmList');
-        allElements.forEach(el => {
-            if (el.style.display !== "none") {  // display가 "none"이 아닐 때만 z-index 변경
-                el.style.zIndex = '1';
-            }
-        });
-
-        // 클릭한 요소가 보이면 z-index를 10으로 설정하여 앞에 보이게 함
-        if (element.style.display !== "none") {
-            element.style.zIndex = '10';
-        }
-    }
-</script>
-
-
-
-
-
 
 
 
@@ -154,5 +140,9 @@
         }
     }
 </script>
+
+
+
+
 </body>
 </html>

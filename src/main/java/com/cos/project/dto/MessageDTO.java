@@ -36,11 +36,12 @@ public class MessageDTO {
 	
     
     
-    public MessageDTO(Long id, String senderUserId, String messageContent, Boolean statusBar,Timestamp sendTime) {
+    public MessageDTO(Long id, String senderUserId, String messageContent, Long roomId,Boolean statusBar,Timestamp sendTime) {
 		super();
 		this.id = id;
 		this.senderUserId = senderUserId;
 		this.messageContent = messageContent;
+		this.roomId = roomId;
 		this.statusBar = statusBar;
 		this.sendTime = sendTime;
 	}

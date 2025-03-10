@@ -81,6 +81,7 @@ public class MessageEntity {
             message.getId(),
             message.getSender().getUserid(),
             message.getMessageContent(),
+            message.getChattingRoomEntity().getId(),
             message.getStatusBar(),
             message.getSendTime()
         );
