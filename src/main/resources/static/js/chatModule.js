@@ -1061,7 +1061,7 @@ export async function loadChatRooms(loggedId) {
 
         // 스크롤 처리
         if (visibleDatas.length > 5) {
-            chattingRoomScroll.style.maxHeight = "500px";
+            chattingRoomScroll.style.maxHeight = "80%";
             chattingRoomScroll.style.overflowY = "auto";
         } else {
             chattingRoomScroll.style.maxHeight = "";

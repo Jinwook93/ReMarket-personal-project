@@ -42,15 +42,22 @@ async function searchChat() {
     let searchResultText = document.getElementById("searchResultText");
     let messagedata = document.getElementById("messagedata");
     let chatRooms = document.querySelectorAll("#chattingRoomListBody tr");
+    
+    let isVisible = false; 	//검색 결과 창 태그
+    
 		const loggedUserId = document.getElementById("loggedUserId")?.value;
     // 채팅방 필터링
     chatRooms.forEach(row => {
         let roomName = row.textContent.toLowerCase();
         row.style.display = roomName.includes(input) ? "" : "none";
+        	if(row.style.display !== "none"){
+				isVisible = true;
+			}
+        
     });
 
     // 검색 결과 텍스트 표시 여부
-    searchResultText.style.display = input ? "block" : "none";
+    searchResultText.style.display = input&&isVisible ? "block" : "none";
 
     // 메시지 검색 및 결과 표시
     if (input) {
@@ -71,22 +78,28 @@ async function searchChat() {
                     <h3>메시지 검색 결과</h3>
                     <div>
                         ${roomsData.map(({ msg, room }) => `
-                            <div class="message" id="msg-${msg.id}">
-                                <ul>
-                                    <li>내용 : ${msg.messageContent}</li>
-                                    <li>보낸 사람 : ${msg.senderUserId}</li>
-                                    <li>보낸 날짜 : ${msg.sendTime}</li>
+                            <div class="message" id="msg-${msg.id}" style ="display:flex;">
+                            		<div>
+                            		<img src = ${msg.profileImageUrl1} width="50", height="50">
+                            	 ${msg.senderUserId}
+                            	 </div>
+                                	<div  style="width:60%;">
+                                 <p> ${msg.messageContent}   </p>
+                               		<div class = "date-text"> ${msg.sendTime} </div>
+                                    </div>
+                                    <div>
                                     <button class="enterChat"
                                         data-search-room-id="${msg.roomId}"
                                         data-search-title="${room.title}"
                                         data-search-userid="${room.member2UserId}"
-                                        style="background-color: #800080; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; transition: background-color 0.3s ease, transform 0.2s ease;">
+                                       >
                                             <div style="display: flex; align-items: center;">
                                                 <img src="/icon/messageIcon.png" width="15" height="15" style="margin-right: 5px;">
                                                 채팅하기
                                             </div>
                                     </button>
-                                </ul>
+                                    </div>
+                            
                             </div>
                         `).join("")}
                     </div>
@@ -99,7 +112,8 @@ async function searchChat() {
 			details.style.display = (details.style.display === 'none' || details.style.display === '') ? 'block' : 'none';
 		});
         } else {
-            messagedata.innerHTML = "<p>메시지 검색 결과가 없습니다</p>";
+//            messagedata.innerHTML = "<p>메시지 검색 결과가 없습니다</p>";
+			messagedata.innerHTML = "";
             messagedata.style.display = "block";
         }
     } else {

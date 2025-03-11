@@ -88,6 +88,7 @@ public class SearchController {
 				System.out.println("🔍 검색어: " + searchContent);
 				System.out.println("💬 메시지 목록:");
 				for (MessageDTO message : messages) {
+				    System.out.println("메시지 소속 방 프로필 사진: " + message.getProfileImageUrl1());
 				    System.out.println("메시지 소속 방 번호: " + message.getRoomId());
 				    System.out.println("메시지 내용: " + message.getMessageContent());
 				}

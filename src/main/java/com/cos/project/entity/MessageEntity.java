@@ -79,6 +79,7 @@ public class MessageEntity {
     public MessageDTO convertToDTO(MessageEntity message) {
         return new MessageDTO(
             message.getId(),
+            message.getSender().getProfileImage(),
             message.getSender().getUserid(),
             message.getMessageContent(),
             message.getChattingRoomEntity().getId(),

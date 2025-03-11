@@ -19,24 +19,24 @@
 				<input type="hidden" th:value="${isLoggedIn}" id="isLoggedIn">
 				<input type="hidden" th:value="${id}" id="loggedId"> <input
 					type="hidden" th:value="${loggedUserId}" id="loggedUserId">
-		
+
 
 				<div
 					style="display: flex; justify-content: space-between; width: 100%;">
 					<!-- 게시판 링크 (왼쪽 정렬) -->
-					
-					<div style ="display:flex; justify-content: flex-start; gap: 10px;">
-					<a href="/" style="flex-grow: 0;">홈</a>
-					<a href="/board/list" style="flex-grow: 0;">게시판</a>
-<!-- 					th:id="|mainImage-${board.id}|" -->
+
+					<div style="display: flex; justify-content: flex-start; gap: 10px;">
+						<a href="/" style="flex-grow: 0;">홈</a> <a href="/board/list"
+							style="flex-grow: 0;">게시판</a>
+						<!-- 					th:id="|mainImage-${board.id}|" -->
 					</div>
 					<!-- 나머지 링크들 (오른쪽 정렬) -->
 					<div style="display: flex; justify-content: flex-end; gap: 10px;">
-					
-							<img 
-              th:src="${profileImage != null ? profileImage:'/boardimage/nullimage.jpg'}" 
-               alt="profile image" 
-               style="display: block; width: 30px; height: 30px; object-fit: cover; margin-right: 5px;">
+
+						<img
+							th:src="${profileImage != null ? profileImage:'/boardimage/nullimage.jpg'}"
+							alt="profile image"
+							style="display: block; width: 30px; height: 30px; object-fit: cover; margin-right: 5px;">
 						<p style="margin-right: 20px;">
 							<span th:text="${name}"></span>
 						</p>
@@ -68,40 +68,37 @@
 
 
 
-<div style="display: flex; position: relative;">
-    <!-- 채팅방 리스트 (오른쪽 정렬, 하나만 활성화시 기본 위치) -->
-    <div class="chattingRoomList"
-        style="position: absolute; top: -5px; left: 0px; width: 600px; height: 600px; display: none; z-index: 1;" 
-        onclick="bringToFront(this)">
-         <!-- 🔍 검색창 추가 -->
-        <input type="text" id="chatSearch" placeholder="채팅방 검색..." 
-            style="width: 100%; padding: 8px; box-sizing: border-box; margin-bottom: 5px;">
-            <h3 id = "searchResultText" style="display:none;"> 검색 결과 (채팅방)  </h3>
-        <div id="chattingRoomScroll" >
-        
-       
-            <table>
-                <tbody id="chattingRoomListBody">
-                    <!-- 채팅방 목록이 여기에 동적으로 추가됩니다 -->
-                </tbody>
-            </table>
-            
-              <div id="messagedata" style="display: none;"></div>
-        </div>
-    </div>
-
-    <!-- 알림 리스트 (오른쪽 정렬, 하나만 활성화시 기본 위치) -->
-    <div class="alarmList"
-        style="position: absolute; top: -5px; right: 0; width: 600px; height: 500px; display: none; z-index: 1;" 
-        onclick="bringToFront(this)">
-        <table>
-            <tbody id="alarmListBody">
-                <div id="notification-container"></div>
-                <!-- 알림 목록이 여기에 동적으로 추가됩니다 -->
-            </tbody>
-        </table>
-    </div>
-</div>
+				<div style="display: flex; position: relative;">
+					<!-- 채팅방 리스트 (오른쪽 정렬, 하나만 활성화시 기본 위치) -->
+					<div class="chattingRoomList"
+						style="position: absolute; top: -5px; left: 0px; width: 600px; height: 650px; display: none; z-index: 1;"
+						onclick="bringToFront(this)">
+						<!-- 🔍 검색창 추가 -->
+						<input type="text" id="chatSearch" placeholder="채팅방 검색..."
+							style="width: 100%; padding: 8px; box-sizing: border-box; margin-bottom: 5px;">
+						<h3 id="searchResultText" style="display: none;">검색 결과 (채팅방)
+						</h3>
+						<div id="chattingRoomScroll">
+							<table>
+								<tbody id="chattingRoomListBody">
+									<!-- 채팅방 목록이 여기에 동적으로 추가됩니다 -->
+								</tbody>
+							</table>
+							<div id="messagedata" style="display: none;"></div>
+						</div>
+					</div>
+					<!-- 알림 리스트 (오른쪽 정렬, 하나만 활성화시 기본 위치) -->
+					<div class="alarmList"
+						style="position: absolute; top: -5px; right: 0; width: 600px; height: 500px; display: none; z-index: 1;"
+						onclick="bringToFront(this)">
+						<table>
+							<tbody id="alarmListBody">
+								<div id="notification-container"></div>
+								<!-- 알림 목록이 여기에 동적으로 추가됩니다 -->
+							</tbody>
+						</table>
+					</div>
+				</div>
 
 
 
@@ -112,10 +109,10 @@
 
 			<!-- 비로그인 상태인 경우 -->
 			<div th:if="${!isLoggedIn}">
-							<a href="/" style="flex-grow: 0;">홈</a>
-				<a th:href="@{/formlogin}">로그인</a> <a th:href="@{/join}">회원가입</a> <a
-					th:href="@{/findid}">아이디 찾기</a> <a th:href="@{/findpassword}">비밀번호
-					찾기</a> <a href="/board/list">게시판</a> <a href="/board/writeboard">글쓰기</a>
+				<a href="/" style="flex-grow: 0;">홈</a> <a th:href="@{/formlogin}">로그인</a>
+				<a th:href="@{/join}">회원가입</a> <a th:href="@{/findid}">아이디 찾기</a> <a
+					th:href="@{/findpassword}">비밀번호 찾기</a> <a href="/board/list">게시판</a>
+				<a href="/board/writeboard">글쓰기</a>
 
 			</div>
 
@@ -124,7 +121,7 @@
 	<script src="/js/state.js" type="module"></script>
 	<script src="/js/headerUI.js" type="module"></script>
 
-<script>
+	<script>
     function bringToFront(element) {
         // 모든 요소의 z-index를 1로 리셋
         const allElements = document.querySelectorAll('.chattingRoomList, .alarmList');

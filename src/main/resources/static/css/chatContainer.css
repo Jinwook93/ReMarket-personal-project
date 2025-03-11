@@ -296,3 +296,50 @@
 
 
 
+
+
+
+
+
+
+/* 메시지 검색 css */
+
+.message {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* 요소들을 좌우 정렬 */
+    gap: 15px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    margin-bottom: 10px;
+}
+
+.message div {
+    display: flex;
+    flex-direction: column;
+}
+
+.message div:first-child {
+    align-items: center;
+    text-align: center;
+}
+
+.message img {
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.enterChat {
+	background-color: #800080;
+	 color: white; 
+	 border: none; 
+	 padding: 10px 20px; 
+	 border-radius: 5px; 
+	 cursor: pointer;
+	  font-size: 16px; 
+	  font-weight: bold; 
+	  transition: background-color 0.3s ease, transform 0.2s ease;
+	
+}
