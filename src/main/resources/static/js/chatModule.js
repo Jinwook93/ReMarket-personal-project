@@ -559,68 +559,67 @@ export async function openChatRoom(roomId, title, loggedUserId, userid, loggedFl
 		//		console.log(board);
 		//		console.log(roomId, title, loggedUserId, userid);
 		const boardMainFile = await getBoardMainFile(board.id);
-		chatWindow.innerHTML = `
-            <div class="chat-container" id="chat-container-${roomId}">
-      <div style="display: flex; justify-content: space-between; align-items: center; 
-            background-color: lightgray; padding: 10px; border-radius: 5px; 
-            margin-top: 10px; margin-bottom: 10px;">
-    <div>
-        <h2 style="margin: 0;">${userid} 님과의 채팅방</h2>
-    </div>
-    <div>
-        <button class="close-chat" data-room-id="${roomId}" 
-                style="background-color: red; color: white; border: none; 
-                       padding: 5px 10px; cursor: pointer; border-radius: 3px;">
-            X
-        </button>
-    </div>
-</div>
-                <!-- ※ Thymeleaf의 경우 enum 타입일 경우 .name을 써야함-->
-<br>
-               <!-- 토글 가능한 항목들 -->
-        <button id = "BoardTitleButton-${board.id}">✍🏼 게시글 : ${title}</button>
-        <br>
-        <button id="toggleDetails-${roomId}">상세 정보 ▽</button>
-
-
-        <div id="details-${roomId}" style="display:none;">
-        	<div style = "display:flex;">
-        
-        	<div>
-  			  <img src=${boardMainFile} width="200" height="200" style="margin-right:5px;">
-			</div>
-
-        
-        <div>
+chatWindow.innerHTML = `
+    <div class="chat-container" id="chat-container-${roomId}">
+        <div style="display: flex; justify-content: space-between; align-items: center; 
+                    background-color: lightgray; padding: 10px; border-radius: 5px; 
+                    margin-top: 10px; margin-bottom: 10px;">
             <div>
-                <h3>판매 종류: ${board.buy_Sell}</h3>
+                <h2 style="margin: 0;">${userid} 님과의 채팅방</h2>
             </div>
-            
             <div>
-                <h3>카테고리: ${board.category}</h3>
-            </div>
-
-            <div>
-                <h3>판매물: ${board.title}</h3>
-            </div>
-
-            <div>
-                <h3>가격: ${formatCurrency(board.price)}원</h3>
-            </div>
-            	</div>
+                <button class="close-chat" data-room-id="${roomId}" 
+                        style="background-color: red; color: white; border: none; 
+                        padding: 5px 10px; cursor: pointer; border-radius: 3px;">
+                    X
+                </button>
             </div>
         </div>
 
-                <div class="chat-header"></div>
-                <div id="chat-box-${roomId}" class="chat-box"></div>
-                    <input type = "button" style="display:none;" id = "parentMessageButton"></input>
-                <div class="chat-input">
-                  <input type = "hidden" id = "parentMessageId"></input>
-                    <input type="text" id="message-input-${roomId}" placeholder="메시지를 입력하세요">
-                    <button id="send-button-${roomId}" data-room-id="${roomId}">전송</button>
+        <!-- 🔹 토글 가능한 항목들 -->
+        <button id="BoardTitleButton-${board.id}">✍🏼 게시글 : ${title}</button>
+        <br>
+        <button id="toggleDetails-${roomId}">상세 정보 ▽</button>
+
+        <div id="details-${roomId}" style="display:none;">
+            <div style="display:flex;">
+                <div>
+                    <img src=${boardMainFile} width="200" height="200" style="margin-right:5px;">
+                </div>
+                <div>
+                    <h3>판매 종류: ${board.buy_Sell}</h3>
+                    <h3>카테고리: ${board.category}</h3>
+                    <h3>판매물: ${board.title}</h3>
+                    <h3>가격: ${formatCurrency(board.price)}원</h3>
                 </div>
             </div>
-        `;
+        </div>
+
+        <!-- 🔹 검색 기능 추가 -->
+        <div class="chat-header"></div>
+        <div style="display:flex;">
+            <input type="text" id="search-box-${roomId}" placeholder="메시지 검색...">
+            <button id="search-button-${roomId}">검색</button>
+            <button id = "search-prev-button-${roomId}"><	</button>
+                        <button id = "search-next-button-${roomId}"> >	</button>
+        </div>
+
+        <!-- 🔹 채팅 메시지 박스 -->
+        <div id="chat-box-${roomId}" class="chat-box" style="overflow-y: auto; height: 400px;">
+            <div class="message-item">안녕하세요! 거래 가능할까요?</div>
+            <div class="message-item">네, 가능합니다.</div>
+            <div class="message-item">위치는 어디인가요?</div>
+        </div>
+
+        <input type="button" style="display:none;" id="parentMessageButton">
+        <div class="chat-input">
+            <input type="hidden" id="parentMessageId">
+            <input type="text" id="message-input-${roomId}" placeholder="메시지를 입력하세요">
+            <button id="send-button-${roomId}" data-room-id="${roomId}">전송</button>
+        </div>
+    </div>
+`;
+
 		document.body.appendChild(chatWindow);
 
 		// 채팅창이 생성된 후 드래그 이벤트 핸들러 추가

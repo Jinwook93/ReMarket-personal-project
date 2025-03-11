@@ -35,6 +35,180 @@ document.addEventListener("DOMContentLoaded", async () => {
 	toggleAlarmList();
 });
 
+
+//document.addEventListener("click", (event) => {
+//    // 검색 버튼 클릭 이벤트
+//    if (event.target.id.startsWith("search-button-")) {
+//        const roomId = event.target.id.split('-')[2]; // 채팅방 ID 추출
+//        const searchBox = document.getElementById(`search-box-${roomId}`);
+//        const searchTerm = searchBox.value.trim().toLowerCase(); // 검색어 (소문자로 변환)
+//        const chatBox = document.getElementById(`chat-box-${roomId}`);
+//        const messages = chatBox.querySelectorAll(".message-item"); // 채팅 메시지 가져오기
+//		const sendtime = document.querySelectorAll(".send-time");
+//		
+//		const prevButton = document.getElementById(`search-prev-button-${roomId}`);
+//    const nextButton = document.getElementById(`search-next-button-${roomId}`);
+//    
+//    let matchedMessages = [];  // 검색된 메시지 리스트
+//    let currentIndex = -1;  // 현재 선택된 메시지 인덱스
+//    
+////      let firstMatch = null; // 첫 번째 일치 메시지 저장
+//
+//messages.forEach(message => {
+//    const sendTimeElem = message.querySelector(".send-time"); // `send-time` 요소 찾기		(여러개가 겹칠 경우 .send-time의 첫번쨰요소를 반환)
+//    let messageText = message.textContent.trim().toLowerCase(); // 전체 메시지 텍스트 가져오기
+//
+//    if (sendTimeElem) {
+//        const sendTimeText = sendTimeElem.textContent.trim().toLowerCase();
+//        messageText = messageText.replace(sendTimeText, ""); // `send-time` 텍스트 제거
+//    }
+//
+//    if (messageText.includes(searchTerm)) {
+//        if (!firstMatch) firstMatch = message; // 첫 번째 일치 메시지 저장
+//        message.style.backgroundColor = "#ffff99"; // 배경색 변경 (강조 효과)
+//        matchedMessages.push(message);
+//    } else {
+//        message.style.backgroundColor = ""; // 기존 배경색 복원
+//    }
+//});
+//
+//// 첫 번째 검색 결과로 스크롤 이동
+////if (firstMatch) {
+////    chatBox.scrollTop = firstMatch.offsetTop - chatBox.offsetTop;
+////} else {
+////    alert("검색 결과가 없습니다."); // 검색 결과 없을 경우 알림
+////}
+//
+//
+//
+//if (matchedMessages) {
+//    const chatBoxHeight = chatBox.clientHeight; // 채팅창 높이
+//    const messagePosition = firstMatch.offsetTop - chatBox.offsetTop; // 메시지 위치
+//    chatBox.scrollTop = messagePosition - chatBoxHeight / 2; // 중앙에 위치하도록 조정
+//    
+////    scrollTop 증가(+)	아래로 스크롤
+////scrollTop 감소(-)	위로 스크롤
+////offsetTop	부모 요소의 맨 위에서 얼마나 떨어져 있는지
+////messagePosition - chatBoxHeight / 2	메시지를 채팅창 중앙에 위치시키는 방법
+//    
+//} else {
+//    alert("검색 결과가 없습니다."); // 검색 결과 없을 경우 알림
+//}
+//
+//
+//    }
+//});
+
+
+
+// 🔹 검색된 메시지를 저장할 전역 변수
+let matchedMessages = [];
+let currentIndex = -1;
+
+document.addEventListener("click", (event) => {
+    const targetId = event.target.id;
+    
+    if (targetId.startsWith("search-button-")) {
+        handleSearch(event);
+    } else if (targetId.startsWith("search-prev-button-")) {
+		   console.log("Prev 버튼 클릭 감지됨"); // 디버깅
+        handlePrev(event);
+    } else if (targetId.startsWith("search-next-button-")) {
+		   console.log("next 버튼 클릭 감지됨"); // 디버깅
+        handleNext(event);
+    }
+});
+
+// 🔍 **검색 버튼 클릭 시 실행**
+function handleSearch(event) {
+    const roomId = event.target.id.split('-')[2];
+    const searchBox = document.getElementById(`search-box-${roomId}`);
+    const chatBox = document.getElementById(`chat-box-${roomId}`);
+//    console.log("roomId:", roomId, "chatBox:", chatBox);
+    const messages = chatBox.querySelectorAll(".message-item");
+
+    const searchTerm = searchBox.value.trim().toLowerCase();
+    matchedMessages = []; // 검색될 때마다 초기화
+    currentIndex = -1;
+
+    messages.forEach(message => {
+        const sendTimeElem = message.querySelector(".send-time"); // 날짜 요소 찾기
+        let messageText = message.textContent.trim().toLowerCase();
+
+        if (sendTimeElem) {
+            const sendTimeText = sendTimeElem.textContent.trim().toLowerCase();
+            messageText = messageText.replace(sendTimeText, ""); // 날짜 부분 제거
+        }
+
+        if (messageText.includes(searchTerm)) {
+            matchedMessages.push(message);
+            message.style.backgroundColor = "#ffff99"; // 배경 강조
+        } else {
+            message.style.backgroundColor = ""; // 원래 배경으로
+        }
+    });
+
+    if (matchedMessages.length > 0) {
+        currentIndex = 0;
+        scrollToMessage(matchedMessages[currentIndex], chatBox);
+    } else {
+        alert("검색 결과가 없습니다.");
+    }
+}
+
+// ◀️ **이전 메시지 버튼 클릭 시 실행**
+function handlePrev(event) {
+    if (matchedMessages.length === 0) return;
+
+    const roomId = event.target.id.split('-')[3];
+    const chatBox = document.getElementById(`chat-box-${roomId}`);
+  console.log("roomId:", roomId, "chatBox:", chatBox);
+    currentIndex = (currentIndex - 1 + matchedMessages.length) % matchedMessages.length;
+    scrollToMessage(matchedMessages[currentIndex], chatBox);
+}
+
+// ▶️ **다음 메시지 버튼 클릭 시 실행**
+function handleNext(event) {
+    if (matchedMessages.length === 0) return;
+
+    const roomId = event.target.id.split('-')[3];
+    const chatBox = document.getElementById(`chat-box-${roomId}`);
+  console.log("roomId:", roomId, "chatBox:", chatBox);
+    currentIndex = (currentIndex + 1) % matchedMessages.length;
+    scrollToMessage(matchedMessages[currentIndex], chatBox);
+}
+
+// 📌 **메시지를 중앙에 위치시키는 함수**
+function scrollToMessage(message, chatBox) {
+    const chatBoxHeight = chatBox.clientHeight;
+    const messagePosition = message.offsetTop - chatBox.offsetTop;
+    chatBox.scrollTop = messagePosition - chatBoxHeight / 2; // 중앙 정렬
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 document.getElementById("chatSearch").addEventListener("input", searchChat);
 
 async function searchChat() {
