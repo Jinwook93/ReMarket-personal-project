@@ -106,85 +106,113 @@ let matchedMessages = [];
 let currentIndex = -1;
 
 document.addEventListener("click", (event) => {
-    const targetId = event.target.id;
-    
-    if (targetId.startsWith("search-button-")) {
-        handleSearch(event);
-    } else if (targetId.startsWith("search-prev-button-")) {
-		   console.log("Prev 버튼 클릭 감지됨"); // 디버깅
-        handlePrev(event);
-    } else if (targetId.startsWith("search-next-button-")) {
-		   console.log("next 버튼 클릭 감지됨"); // 디버깅
-        handleNext(event);
-    }
+	const targetId = event.target.id;
+
+	if (targetId.startsWith("search-button-")) {
+		handleSearch(event);
+	} else if (targetId.startsWith("search-prev-button-")) {
+		console.log("Prev 버튼 클릭 감지됨"); // 디버깅
+		handlePrev(event);
+	} else if (targetId.startsWith("search-next-button-")) {
+		console.log("next 버튼 클릭 감지됨"); // 디버깅
+		handleNext(event);
+	}else if (targetId.startsWith("close-search-message-") || targetId.startsWith("data-search-button-")) {
+		console.log("메시지 닫기 버튼 클릭 감지됨"); // 디버깅
+		toggleSearchMessageContainer(event);
+	}
+	
 });
 
 // 🔍 **검색 버튼 클릭 시 실행**
 function handleSearch(event) {
-    const roomId = event.target.id.split('-')[2];
-    const searchBox = document.getElementById(`search-box-${roomId}`);
-    const chatBox = document.getElementById(`chat-box-${roomId}`);
-//    console.log("roomId:", roomId, "chatBox:", chatBox);
-    const messages = chatBox.querySelectorAll(".message-item");
+	const roomId = event.target.id.split('-')[2];
+	const searchBox = document.getElementById(`search-box-${roomId}`);
+	const chatBox = document.getElementById(`chat-box-${roomId}`);
+	//    console.log("roomId:", roomId, "chatBox:", chatBox);
+	const messages = chatBox.querySelectorAll(".message-item");
 
-    const searchTerm = searchBox.value.trim().toLowerCase();
-    matchedMessages = []; // 검색될 때마다 초기화
-    currentIndex = -1;
+	const prevButton = document.getElementById(`search-prev-button-${roomId}`);
+	const nextButton = document.getElementById(`search-next-button-${roomId}`);
 
-    messages.forEach(message => {
-        const sendTimeElem = message.querySelector(".send-time"); // 날짜 요소 찾기
-        let messageText = message.textContent.trim().toLowerCase();
 
-        if (sendTimeElem) {
-            const sendTimeText = sendTimeElem.textContent.trim().toLowerCase();
-            messageText = messageText.replace(sendTimeText, ""); // 날짜 부분 제거
-        }
 
-        if (messageText.includes(searchTerm)) {
-            matchedMessages.push(message);
-            message.style.backgroundColor = "#ffff99"; // 배경 강조
-        } else {
-            message.style.backgroundColor = ""; // 원래 배경으로
-        }
-    });
+	const searchTerm = searchBox.value.trim().toLowerCase();
+	matchedMessages = []; // 검색될 때마다 초기화
+	currentIndex = -1;
 
-    if (matchedMessages.length > 0) {
-        currentIndex = 0;
-        scrollToMessage(matchedMessages[currentIndex], chatBox);
-    } else {
-        alert("검색 결과가 없습니다.");
-    }
+	messages.forEach(message => {
+		const sendTimeElem = message.querySelector(".send-time"); // 날짜 요소 찾기
+		let messageText = message.textContent.trim().toLowerCase();
+
+		if (sendTimeElem) {
+			const sendTimeText = sendTimeElem.textContent.trim().toLowerCase();
+			messageText = messageText.replace(sendTimeText, ""); // 날짜 부분 제거
+		}
+
+		if (messageText.includes(searchTerm)) {
+			matchedMessages.push(message);
+			message.style.backgroundColor = "#ffff99"; // 배경 강조
+		} else if(!messageText.includes(searchTerm) || searchTerm === ""){
+			message.style.backgroundColor = ""; // 원래 배경으로
+		}
+	});
+
+	if (matchedMessages.length > 0) {
+		currentIndex = 0;
+		scrollToMessage(matchedMessages[currentIndex], chatBox);
+		prevButton.style.display = "block";
+			nextButton.style.display = "block";
+	} else {
+			prevButton.style.display = "none";
+			nextButton.style.display = "none";
+		alert("검색 결과가 없습니다.");
+	}
 }
 
 // ◀️ **이전 메시지 버튼 클릭 시 실행**
 function handlePrev(event) {
-    if (matchedMessages.length === 0) return;
+	if (matchedMessages.length === 0) return;
 
-    const roomId = event.target.id.split('-')[3];
-    const chatBox = document.getElementById(`chat-box-${roomId}`);
-  console.log("roomId:", roomId, "chatBox:", chatBox);
-    currentIndex = (currentIndex - 1 + matchedMessages.length) % matchedMessages.length;
-    scrollToMessage(matchedMessages[currentIndex], chatBox);
+	const roomId = event.target.id.split('-')[3];
+	const chatBox = document.getElementById(`chat-box-${roomId}`);
+	console.log("roomId:", roomId, "chatBox:", chatBox);
+	currentIndex = (currentIndex - 1 + matchedMessages.length) % matchedMessages.length;
+	scrollToMessage(matchedMessages[currentIndex], chatBox);
 }
 
 // ▶️ **다음 메시지 버튼 클릭 시 실행**
 function handleNext(event) {
-    if (matchedMessages.length === 0) return;
+	if (matchedMessages.length === 0) return;
 
-    const roomId = event.target.id.split('-')[3];
-    const chatBox = document.getElementById(`chat-box-${roomId}`);
-  console.log("roomId:", roomId, "chatBox:", chatBox);
-    currentIndex = (currentIndex + 1) % matchedMessages.length;
-    scrollToMessage(matchedMessages[currentIndex], chatBox);
+	const roomId = event.target.id.split('-')[3];
+	const chatBox = document.getElementById(`chat-box-${roomId}`);
+	console.log("roomId:", roomId, "chatBox:", chatBox);
+	currentIndex = (currentIndex + 1) % matchedMessages.length;
+	scrollToMessage(matchedMessages[currentIndex], chatBox);
 }
 
 // 📌 **메시지를 중앙에 위치시키는 함수**
 function scrollToMessage(message, chatBox) {
-    const chatBoxHeight = chatBox.clientHeight;
-    const messagePosition = message.offsetTop - chatBox.offsetTop;
-    chatBox.scrollTop = messagePosition - chatBoxHeight / 2; // 중앙 정렬
+	const chatBoxHeight = chatBox.clientHeight;
+	const messagePosition = message.offsetTop - chatBox.offsetTop;
+	chatBox.scrollTop = messagePosition - chatBoxHeight / 2; // 중앙 정렬
 }
 
+function toggleSearchMessageContainer(event) {
+    const roomId = event.target.id.split('-')[3]; // roomId 추출
+    const searchContainer = document.getElementById(`search-container-${roomId}`);
+    
+        // display가 flex일 때 none으로, none일 때 flex로 토글
+        if (searchContainer.style.display === "flex") {
+            searchContainer.style.display = "none"; // 숨기기
+        } else {
+            searchContainer.style.display = "flex"; // 보이기
+           
+        }
+
+    
+
+}
 
 
 
@@ -212,42 +240,42 @@ function scrollToMessage(message, chatBox) {
 document.getElementById("chatSearch").addEventListener("input", searchChat);
 
 async function searchChat() {
-    let input = document.getElementById("chatSearch").value.trim().toLowerCase();
-    let searchResultText = document.getElementById("searchResultText");
-    let messagedata = document.getElementById("messagedata");
-    let chatRooms = document.querySelectorAll("#chattingRoomListBody tr");
-    
-    let isVisible = false; 	//검색 결과 창 태그
-    
-		const loggedUserId = document.getElementById("loggedUserId")?.value;
-    // 채팅방 필터링
-    chatRooms.forEach(row => {
-        let roomName = row.textContent.toLowerCase();
-        row.style.display = roomName.includes(input) ? "" : "none";
-        	if(row.style.display !== "none"){
-				isVisible = true;
-			}
-        
-    });
+	let input = document.getElementById("chatSearch").value.trim().toLowerCase();
+	let searchResultText = document.getElementById("searchResultText");
+	let messagedata = document.getElementById("messagedata");
+	let chatRooms = document.querySelectorAll("#chattingRoomListBody tr");
 
-    // 검색 결과 텍스트 표시 여부
-    searchResultText.style.display = input&&isVisible ? "block" : "none";
+	let isVisible = false; 	//검색 결과 창 태그
 
-    // 메시지 검색 및 결과 표시
-    if (input) {
-        const data = await searchMessage(input);
-        if (data && data.length > 0) {
-            // 비동기적으로 방 정보를 가져오기
-            const roomPromises = data.map(async (msg) => {
-                const roomResponse = await fetch(`/chat/findRoom/${msg.roomId}`);
-                const room = await roomResponse.json();
-                return { msg, room }; // msg와 room 정보를 함께 반환
-            });
+	const loggedUserId = document.getElementById("loggedUserId")?.value;
+	// 채팅방 필터링
+	chatRooms.forEach(row => {
+		let roomName = row.textContent.toLowerCase();
+		row.style.display = roomName.includes(input) ? "" : "none";
+		if (row.style.display !== "none") {
+			isVisible = true;
+		}
 
-            // 모든 방 정보를 가져오기 완료 후 처리
-            const roomsData = await Promise.all(roomPromises);
+	});
 
-            messagedata.innerHTML = `
+	// 검색 결과 텍스트 표시 여부
+	searchResultText.style.display = input && isVisible ? "block" : "none";
+
+	// 메시지 검색 및 결과 표시
+	if (input) {
+		const data = await searchMessage(input);
+		if (data && data.length > 0) {
+			// 비동기적으로 방 정보를 가져오기
+			const roomPromises = data.map(async (msg) => {
+				const roomResponse = await fetch(`/chat/findRoom/${msg.roomId}`);
+				const room = await roomResponse.json();
+				return { msg, room }; // msg와 room 정보를 함께 반환
+			});
+
+			// 모든 방 정보를 가져오기 완료 후 처리
+			const roomsData = await Promise.all(roomPromises);
+
+			messagedata.innerHTML = `
                 <div>
                     <h3>메시지 검색 결과</h3>
                     <div>
@@ -266,6 +294,7 @@ async function searchChat() {
                                         data-search-room-id="${msg.roomId}"
                                         data-search-title="${room.title}"
                                         data-search-userid="${room.member2UserId}"
+                                        data-search-message-id = "${msg.id}"
                                        >
                                             <div style="display: flex; align-items: center;">
                                                 <img src="/icon/messageIcon.png" width="15" height="15" style="margin-right: 5px;">
@@ -279,20 +308,36 @@ async function searchChat() {
                     </div>
                 </div>
             `;
-            messagedata.style.display = "block";
-            setUpEnterRoomButton(loggedUserId);
-           document.getElementById(`toggleDetails-${room.id}`).addEventListener('click', () => {
-			const details = document.getElementById(`details-${roomId}`);
-			details.style.display = (details.style.display === 'none' || details.style.display === '') ? 'block' : 'none';
-		});
-        } else {
-//            messagedata.innerHTML = "<p>메시지 검색 결과가 없습니다</p>";
+			messagedata.style.display = "block";
+			setUpEnterRoomButton(loggedUserId);
+			//           document.getElementById(`toggleDetails-${roomId}`).addEventListener('click', () => {
+			//			const details = document.getElementById(`details-${roomId}`);
+			//			details.style.display = (details.style.display === 'none' || details.style.display === '') ? 'block' : 'none';
+			//		});
+			roomsData.forEach(({ msg, room }) => {
+				const roomId = msg.roomId; // msg에서 roomId 가져오기
+				const toggleButton = document.getElementById(`toggleDetails-${roomId}`);
+				const detailsSection = document.getElementById(`details-${roomId}`);
+
+				if (toggleButton && detailsSection) {
+					toggleButton.addEventListener('click', () => {
+						detailsSection.style.display =
+							(detailsSection.style.display === 'none' || detailsSection.style.display === '')
+								? 'block' : 'none';
+					});
+				}
+			});
+
+
+
+		} else {
+			//            messagedata.innerHTML = "<p>메시지 검색 결과가 없습니다</p>";
 			messagedata.innerHTML = "";
-            messagedata.style.display = "block";
-        }
-    } else {
-        messagedata.style.display = "none";
-    }
+			messagedata.style.display = "block";
+		}
+	} else {
+		messagedata.style.display = "none";
+	}
 }
 
 
