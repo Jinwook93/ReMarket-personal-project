@@ -33,6 +33,7 @@ import com.cos.project.entity.BoardEntity;
 import com.cos.project.entity.ChattingRoomEntity;
 import com.cos.project.entity.MemberEntity;
 import com.cos.project.entity.MessageEntity;
+import com.cos.project.repository.ChattingRoomRepository;
 import com.cos.project.service.AlarmService;
 import com.cos.project.service.BoardService;
 import com.cos.project.service.ChatService;
@@ -387,7 +388,16 @@ public class ChatController {
 	}
     
     
-    
+    @GetMapping("/findRoomByBoardId/{boardId}")			//채팅방으로 예약된 방 정보 조회
+	@ResponseBody
+	public  ResponseEntity<?>  findRoomByBoardId(@PathVariable(name = "boardId") Long boardId, @AuthenticationPrincipal PrincipalDetails principalDetails)
+			throws JsonMappingException, JsonProcessingException {
+    		Long loggedId = principalDetails.getMemberEntity().getId();
+    		ChattingRoomDTO chattingRoomDTO = chatService.findBookingRoom(boardId,loggedId);
+    		
+    		return ResponseEntity.ok(chattingRoomDTO);
+			
+	}
     
     
     

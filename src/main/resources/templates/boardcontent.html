@@ -37,7 +37,7 @@ body {
 	font-weight: bold;
 }
 
-.container  input, .container textarea,.container  select {
+.container  input, .container textarea, .container  select {
 	margin-top: 5px;
 	padding: 10px;
 	font-size: 16px;
@@ -263,49 +263,95 @@ input[type="checkbox"] {
 
 
 		<!-- '삽니다' 카테고리 -->
-<!-- 		<div -->
-<!-- 			th:if="${board.memberEntity.userid == principalDetails.name && board.buy_Sell.name == '삽니다' }"> -->
-<!-- 			<button type="button" th:id="|buy-${board.id}|" -->
-<!-- 				th:data-TradeBoardId="${board.id}">거래 중</button> -->
-<!-- 		</div> -->
+		<!-- 		<div -->
+		<!-- 			th:if="${board.memberEntity.userid == principalDetails.name && board.buy_Sell.name == '삽니다' }"> -->
+		<!-- 			<button type="button" th:id="|buy-${board.id}|" -->
+		<!-- 				th:data-TradeBoardId="${board.id}">거래 중</button> -->
+		<!-- 		</div> -->
 
 		<!-- '팝니다' 카테고리 -->
-<!-- 		<div -->
-<!-- 			th:if="${board.memberEntity.userid == principalDetails.name && board.buy_Sell.name  == '팝니다'}"> -->
-<!-- 			<button type="button" th:id="|sell-${board.id}|" -->
-<!-- 				th:data-TradeBoardId="${board.id}">판매 중</button> -->
-<!-- 		</div> -->
+		<!-- 		<div -->
+		<!-- 			th:if="${board.memberEntity.userid == principalDetails.name && board.buy_Sell.name  == '팝니다'}"> -->
+		<!-- 			<button type="button" th:id="|sell-${board.id}|" -->
+		<!-- 				th:data-TradeBoardId="${board.id}">판매 중</button> -->
+		<!-- 		</div> -->
 
-<!-- 		<div -->
-<!-- 			th:if="${board.memberEntity.userid != principalDetails.name && board.buy_Sell.name  == '팝니다'}"> -->
-<!-- 			<button type="button" th:id="|enroll-Sell-${board.id}|" -->
-<!-- 				th:data-TradeSellBoardId="${board.id}">구매 요청</button> -->
-<!-- 		</div> -->
-		
-<!-- <div th:each="trade : ${board.trades}"> -->
-<!--     <div th:if="${board.memberEntity.userid != principalDetails.name}"> -->
-<!--         <div th:if="${(trade.accept1 == false || trade.accept2 == false || trade.accept1 == null || trade.accept2 == null)}"> -->
-<!--             <button type="button" th:id="|enroll-Buy-${board.id}|" -->
-<!--                     th:data-TradeBuyBoardId="${board.id}">거래 요청</button> -->
-<!--         </div> -->
-<!--     </div> -->
-<!-- </div> -->
+		<!-- 		<div -->
+		<!-- 			th:if="${board.memberEntity.userid != principalDetails.name && board.buy_Sell.name  == '팝니다'}"> -->
+		<!-- 			<button type="button" th:id="|enroll-Sell-${board.id}|" -->
+		<!-- 				th:data-TradeSellBoardId="${board.id}">구매 요청</button> -->
+		<!-- 		</div> -->
 
-    <div th:if="${board.memberEntity.userid != principalDetails.name && #lists.isEmpty(board.trades)}">
-            <button type="button" th:id="|enroll-Buy-${board.id}|"
-                    th:data-TradeBuyBoardId="${board.id}">거래 요청</button>
-</div>
-	
+		<!-- <div th:each="trade : ${board.trades}"> -->
+		<!--     <div th:if="${board.memberEntity.userid != principalDetails.name}"> -->
+		<!--         <div th:if="${(trade.accept1 == false || trade.accept2 == false || trade.accept1 == null || trade.accept2 == null)}"> -->
+		<!--             <button type="button" th:id="|enroll-Buy-${board.id}|" -->
+		<!--                     th:data-TradeBuyBoardId="${board.id}">거래 요청</button> -->
+		<!--         </div> -->
+		<!--     </div> -->
+		<!-- </div> -->
+
+
+
+
+
+					<div
+			th:if="${board.memberEntity.userid != principalDetails.name && #lists.isEmpty(board.trades)}">
+			<button type="button" th:id="|enroll-Book1-${board.id}|"
+				th:data-TradeBook1BoardId="${board.id}">예약 신청</button>
+		</div>
+
+
+		<div
+			th:if="${board.memberEntity.userid != principalDetails.name && #lists.isEmpty(board.trades)}">
+			<button type="button" th:id="|enroll-Buy-${board.id}|"
+				th:data-TradeBuyBoardId="${board.id}">거래 신청</button>
+		</div>
+
 		<div th:each="trade : ${board.trades}">
 			<div style="display: flex;">
-				<div
-					th:if="${board.id == trade.boardEntity.id && trade.accept1  && trade.accept2}">
+			
+	  	<div th:if="${
+              board.id == trade.boardEntity.id  
+             and trade.booking1 
+              and trade.booking2
+             and trade?.tradeStatus?.name != '완료'}"> 
+      <button type="button" th:id="|enroll-Book2-${board.id}|" th:data-TradeBook2BoardId="${board.id}">
+        예약 중
+    </button>
+    
+      
+</div>    
+	
+		<div th:if="${
+              board.id == trade.boardEntity.id  
+             and trade.booking1 
+              and trade.booking2
+             and trade?.tradeStatus?.name != '완료'
+            and board.memberEntity.userid == principalDetails.name}"> 
+		<button type="button" th:id="|change-enroll-Book2-${board.id}|" th:data-TradeBook2BoardId="${board.id}">
+        거래 중으로 변환
+    </button>
 
+
+
+</div>  
+
+			
+				<div
+					th:if="${board.id == trade.boardEntity.id 
+             and trade.accept1  == true
+             and trade.accept2  == true
+             and trade?.tradeStatus?.name != '완료'}">
 					<button type="button" th:id="|enroll-Sell-${board.id}|"
 						th:data-TradeSellBoardId="${board.id}">거래 진행 중</button>
 				</div>
 				<div
-					th:if="${board.id == trade.boardEntity.id && trade.accept1  && trade.accept2 && board.memberEntity.userid == principalDetails.name }">
+					th:if="${board.id == trade.boardEntity.id
+             and trade.accept1  == true
+             and trade.accept2  == true
+             and board.memberEntity.userid == principalDetails.name 
+             and trade?.tradeStatus?.name != '완료'}">
 
 					<button type="button" th:id="|complete2-Sell-${trade.id}|"
 						th:data-Complete2TradeSellBoardId="${board.id}">거래완료</button>

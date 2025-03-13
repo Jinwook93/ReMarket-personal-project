@@ -201,7 +201,18 @@ public class AlarmController {
         return ResponseEntity.ok(filteredAlarms3);
     }
 
-
-    
+    	//trade 알람 조회하기
+    @GetMapping("/findTradeAlarm/{roomId}")
+    public ResponseEntity<?> findTradeAlarm (@PathVariable(name = "roomId") Long roomId, @AuthenticationPrincipal PrincipalDetails principalDetails){
+    	
+    	Long loggedId = principalDetails.getMemberEntity().getId();
+    	
+    	AlarmDTO responseDTO = alarmService.findTradeAlarmService(roomId, loggedId);	
+    	
+    	
+System.out.println(responseDTO.toString());
+    	
+		return ResponseEntity.ok(responseDTO);
+    }
     
 }

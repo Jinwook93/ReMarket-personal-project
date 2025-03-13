@@ -17,6 +17,7 @@ import com.cos.project.dto.MessageDTO;
 import com.cos.project.dto.TradeDTO;
 import com.cos.project.entity.AlarmEntity;
 import com.cos.project.entity.BoardEntity;
+import com.cos.project.entity.ChattingRoomEntity;
 import com.cos.project.entity.MemberEntity;
 import com.cos.project.entity.TradeEntity;
 import com.cos.project.service.AlarmService;
@@ -28,6 +29,7 @@ import com.cos.project.service.TradeService;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -83,7 +85,7 @@ public class TradeController {
 			boolean result = true;
 			TradeDTO responseDTO = tradeService.createTrade(alarmId, tradeDTO);
 			AlarmEntity alarmEntity = alarmService.postAlarm(loggedId, responseDTO.getMember1Id(),
-					responseDTO.getMember2Id(), "TRADE", "거래", String.valueOf(responseDTO.getId()), "거래수락", null);
+					responseDTO.getMember2Id(), "TRADE", "거래", String.valueOf(responseDTO.getBoardEntityId()), "거래수락", null);
 			AlarmDTO responseAlarmDTO = alarmEntity.toDTO();
 
 			
@@ -171,7 +173,7 @@ public class TradeController {
 					tradeDTO.getCompleted2());
 
 			AlarmEntity alarmEntity = alarmService.postAlarm(loggedId, responseDTO.getMember1Id(),
-					responseDTO.getMember2Id(), "TRADE", "거래", String.valueOf(responseDTO.getId()), "거래 완료 확인", null);
+					responseDTO.getMember2Id(), "TRADE", "거래", String.valueOf(responseDTO.getBoardEntityId()), "거래 완료 확인", null);
 			AlarmDTO responseAlarmDTO = alarmEntity.toDTO();
 			System.out.println("여기까지 가나?" + responseAlarmDTO.toString());
 			
@@ -301,5 +303,200 @@ public class TradeController {
 //		return ResponseEntity.ok("상대방이 거래를 희망하지 않습니다");
 //		}
 //	}
+	
+	
+	@ResponseBody
+	@GetMapping("/findTrade/{roomId}")
+	public ResponseEntity<?> findTradeByRoomId(@PathVariable(name = "roomId")Long roomId,
+			@AuthenticationPrincipal PrincipalDetails principalDetails) {
+			Long loggedId = principalDetails.getMemberEntity().getId();
+		TradeDTO responseDTO = tradeService.findTradeByRoomId(roomId, loggedId);
+		System.out.println(responseDTO.toString());
+		return ResponseEntity.ok(responseDTO);
+	
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//예약 신청 보냄
+	
+	@ResponseBody
+	@PostMapping("/checkBookTrade1/{boardId}")
+	public ResponseEntity<?> checkBookTrade(@PathVariable(name = "boardId") Long boardId,
+			@RequestBody TradeDTO tradeDTO, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		Long loggedId = principalDetails.getMemberEntity().getId();
+		System.out.println(tradeDTO.toString());
+		AlarmEntity alarmEntity = alarmService.postAlarm(loggedId, tradeDTO.getMember1Id(), tradeDTO.getMember2Id(),
+				"TRADE", "거래", String.valueOf(boardId), "예약", null);
+		AlarmDTO responseDTO = alarmEntity.toDTO();
+		System.out.println(responseDTO.toString());
 
+		// 알람메시지를 채팅방으로도 전송 (상대방에게 responseDTO의 member2Content 전송)
+		//// 먼저 채팅방 ID를 조회
+
+		Long roomId = chatService.findRoomId(principalDetails.getMemberEntity(), boardId);
+
+		MessageDTO messageDTO = new MessageDTO();
+		messageDTO.setMessageContent(responseDTO.getMember2Content() + "<br><hr> <button id=\"enroll-Book2-"
+				+ responseDTO.getId() + "\" onclick=\"bookTrade2(" + responseDTO.getId() + ")\">\r\n"
+				+ "예약하기</button>" + "<button id=\"deny-enroll-Book2-" + responseDTO.getId() + "\" onclick=\"denyBookTrade("
+				+ responseDTO.getId() + ")\">\r\n" + "거절하기</button>");
+
+		BoardEntity boardEntity = boardService.findByBoardId(boardId);
+		messageDTO.setReceiverUserId(boardEntity.getMemberEntity().getUserid());
+		messageDTO.setAlarmType(true);
+		chatService.addMessage(roomId, principalDetails, messageDTO);
+
+		boolean result = true;
+		return ResponseEntity.ok(responseDTO);
+	}
+	
+	
+	
+	
+	@ResponseBody
+	@PostMapping("/checkBookTrade2/{alarmId}") // 상대방이 예약을 승낙할 경우
+	public ResponseEntity<?> bookTrade(@PathVariable(name = "alarmId") Long alarmId, @RequestBody TradeDTO tradeDTO,
+			@AuthenticationPrincipal PrincipalDetails principalDetails) throws IllegalAccessException {
+		Long loggedId = principalDetails.getMemberEntity().getId();
+		if (tradeDTO.getBooking1() && tradeDTO.getBooking2()) {
+
+			boolean result = true;
+			TradeDTO responseDTO = tradeService.bookTrade(alarmId, tradeDTO);
+			AlarmEntity alarmEntity = alarmService.postAlarm(loggedId, responseDTO.getMember1Id(),
+					responseDTO.getMember2Id(), "TRADE", "거래", String.valueOf(responseDTO.getBoardEntityId()), "예약수락", null);
+			AlarmDTO responseAlarmDTO = alarmEntity.toDTO();
+
+			
+			//알람메시지를 채팅방으로도 전송 (상대방에게 responseDTO의 member2Content 전송)
+			//// 먼저 채팅방 ID를 조회
+			MemberEntity member1 = memberService.findById(responseDTO.getMember1Id());
+			Long roomId = chatService.findRoomId(member1, responseDTO.getBoardEntityId());
+					//보드 관리자 로그인 기준으로 responseDTO 안에 정보가 있으니 member1(먼저 거래신청을 한 유저)을 타겟으로 하였다 
+			MessageDTO messageDTO = new MessageDTO();
+			messageDTO.setMessageContent(responseAlarmDTO.getMember2Content());
+			
+			BoardEntity boardEntity = boardService.findByBoardId(responseDTO.getBoardEntityId());
+			messageDTO.setReceiverUserId(member1.getUserid());
+			messageDTO.setAlarmType(true);
+			chatService.addMessage(roomId, principalDetails, messageDTO);
+			return ResponseEntity.ok(responseAlarmDTO);
+		} else {
+			Map<String, Object> tradeDTO_map = tradeService.searchMember1Member2Board(alarmId);
+
+			// tradeEntity가 존재할 시, trade Entity 삭제
+			TradeEntity IsExistTradeEntity = tradeService.findTradeEntityByMember1Member2Board(
+					(Long) tradeDTO_map.get("member1Id"), (Long) tradeDTO_map.get("member2Id"),
+					(Long) tradeDTO_map.get("boardId"));
+			if (IsExistTradeEntity != null) {
+				tradeService.deleteByTradeEntityId(IsExistTradeEntity.getId());
+			}
+			AlarmEntity alarmEntity = alarmService.postAlarm(loggedId, (Long) tradeDTO_map.get("member1Id"),
+					(Long) tradeDTO_map.get("member2Id"), "TRADE", "거래", String.valueOf(tradeDTO_map.get("boardId")),
+					"예약거절", null);
+			AlarmDTO responseAlarmDTO = alarmEntity.toDTO();
+
+			
+			//알람메시지를 채팅방으로도 전송 (상대방에게 responseDTO의 member2Content 전송)
+			//// 먼저 채팅방 ID를 조회
+			
+			
+			MemberEntity member1 = memberService.findById((Long) tradeDTO_map.get("member1Id"));
+			
+			Long roomId = chatService.findRoomId(member1,(Long) tradeDTO_map.get("boardId"));
+			
+			MessageDTO messageDTO = new MessageDTO();
+			messageDTO.setMessageContent(responseAlarmDTO.getMember2Content());
+			
+			BoardEntity boardEntity = boardService.findByBoardId((Long) tradeDTO_map.get("boardId"));
+			messageDTO.setReceiverUserId(member1.getUserid());
+			messageDTO.setAlarmType(true);
+			chatService.addMessage(roomId, principalDetails, messageDTO);
+			
+			
+			 System.out.println(IsExistTradeEntity.toString());
+			
+			return ResponseEntity.ok(responseAlarmDTO);
+		}
+	}
+	
+	
+	//보드 게시자가 로그인한 입장 (member2)에서 예약을 풀고 거래중으로 전환할 때 
+	
+	@ResponseBody
+	@PostMapping("/changeBookTrade2/{roomId}") 
+	public ResponseEntity<?> changeBookTrade(@PathVariable(name = "roomId") Long roomId, @RequestBody TradeDTO tradeDTO,
+			@AuthenticationPrincipal PrincipalDetails principalDetails) throws IllegalAccessException {
+		Long loggedId = principalDetails.getMemberEntity().getId();
+//		if (!tradeDTO.getBooking1() && !tradeDTO.getBooking2() && tradeDTO.getAccept1() && tradeDTO.getAccept2()) {
+
+			TradeDTO responseDTO = tradeService.changeBookEnrollTrade(roomId, loggedId, tradeDTO);
+				
+			AlarmEntity alarmEntity = alarmService.postAlarm(loggedId, responseDTO.getMember1Id(),
+					responseDTO.getMember2Id(), "TRADE", "거래", String.valueOf(responseDTO.getBoardEntityId()), "예약상태변경", null);
+			AlarmDTO responseAlarmDTO = alarmEntity.toDTO();
+	
+			//알람메시지를 채팅방으로도 전송 (상대방에게 responseDTO의 member2Content 전송)
+			//// 먼저 채팅방 ID를 조회
+			MemberEntity member1 = memberService.findById(responseDTO.getMember1Id());
+//			Long roomId = chatService.findRoomId(member1, responseDTO.getBoardEntityId());
+			
+//			//보드 관리자 로그인 기준으로 responseDTO 안에 정보가 있으니 member1(먼저 거래신청을 한 유저)을 타겟으로 하였다 
+			MessageDTO messageDTO = new MessageDTO();
+			messageDTO.setMessageContent(responseAlarmDTO.getMember2Content());
+			
+			BoardEntity boardEntity = boardService.findByBoardId(responseDTO.getBoardEntityId());
+			messageDTO.setReceiverUserId(member1.getUserid());
+			messageDTO.setAlarmType(true);
+			chatService.addMessage(roomId, principalDetails, messageDTO);
+			return ResponseEntity.ok(responseAlarmDTO);
+//		} 
+//		else {
+//			Map<String, Object> tradeDTO_map = tradeService.searchMember1Member2Board(alarmId);
+//
+//			// tradeEntity가 존재할 시, trade Entity 삭제
+//			TradeEntity IsExistTradeEntity = tradeService.findTradeEntityByMember1Member2Board(
+//					(Long) tradeDTO_map.get("member1Id"), (Long) tradeDTO_map.get("member2Id"),
+//					(Long) tradeDTO_map.get("boardId"));
+//			if (IsExistTradeEntity != null) {
+//				tradeService.deleteByTradeEntityId(IsExistTradeEntity.getId());
+//			}
+//
+//			AlarmEntity alarmEntity = alarmService.postAlarm(loggedId, (Long) tradeDTO_map.get("member1Id"),
+//					(Long) tradeDTO_map.get("member2Id"), "TRADE", "거래", String.valueOf(tradeDTO_map.get("boardId")),
+//					"예약거절", null);
+//			AlarmDTO responseAlarmDTO = alarmEntity.toDTO();
+//
+//			
+//			//알람메시지를 채팅방으로도 전송 (상대방에게 responseDTO의 member2Content 전송)
+//			//// 먼저 채팅방 ID를 조회
+//			
+//			
+//			MemberEntity member1 = memberService.findById((Long) tradeDTO_map.get("member1Id"));
+//			
+//			Long roomId = chatService.findRoomId(member1,(Long) tradeDTO_map.get("boardId"));
+//			
+//			MessageDTO messageDTO = new MessageDTO();
+//			messageDTO.setMessageContent(responseAlarmDTO.getMember2Content());
+//			
+//			BoardEntity boardEntity = boardService.findByBoardId((Long) tradeDTO_map.get("boardId"));
+//			messageDTO.setReceiverUserId(member1.getUserid());
+//			messageDTO.setAlarmType(true);
+//			chatService.addMessage(roomId, principalDetails, messageDTO);
+//			
+//			
+//			
+//			
+//			return ResponseEntity.ok(responseAlarmDTO);
+//		}
+	}
+	
+	
 }

@@ -103,9 +103,10 @@ public class AlarmService {
 	public AlarmEntity postAlarm(Long loggedId, Long member1Id, Long member2Id, String type, String childType, String object, String action, String priority) {
 	    AlarmDTO alarmDTO = null;
 	    AlarmEntity alarmEntity = null;
-	    
+        System.out.println("여기까지는 가냐1");
 	    // Case 1: When both member1Id and member2Id are null, it's a login alarm
 	    if (member1Id == null && member2Id == null) {
+	        System.out.println("여기까지는 가냐2");
 	        member1Id = loggedId;
 	        alarmDTO = alarmConstructor(loggedId, member1Id, member2Id, type, childType, object, action, priority);
 	        MemberEntity member1 = memberRepository.findById(member1Id).orElseThrow(() -> new IllegalAccessError("사용자를 조회할 수 없습니다"));
@@ -113,16 +114,18 @@ public class AlarmService {
 	        alarmEntity = alarmDTO.toEntity(member1, member2);
 	  
 	    } else {
+	        System.out.println("여기까지는 가냐3");
 	        // Case 2: Both member1Id and member2Id are provided
 	        MemberEntity member1 = memberRepository.findById(member1Id)
 	                .orElseThrow(() -> new IllegalAccessError("사용자를 조회할 수 없습니다"));
 	        MemberEntity member2 = memberRepository.findById(member2Id)
 	                .orElseThrow(() -> new IllegalAccessError("사용자를 조회할 수 없습니다"));
-
+	
 //	        alarmDTO = alarmConstructor(loggedId, member1Id, member2Id, type, childType, object, action, priority);
 //            alarmEntity = alarmDTO.toEntity(member1, member2);
 	        
 	        if (loggedId.equals(member1Id)) {
+	        	  System.out.println("여기까지는 가냐4");
 	            alarmDTO = alarmConstructor(loggedId, member1Id, member2Id, type, childType, object, action, priority);
 	            alarmEntity = alarmDTO.toEntity(member1, member2);
 	        } else if (loggedId.equals(member2Id)) {
@@ -403,7 +406,18 @@ public class AlarmService {
 					}else if (childType.equals("거래") && action.equals("예약")) {
 						member1Content = member2.get().getUserid() +"님에게 예약신청을 보냈습니다";
 						member2Content =  member1.get().getUserid() +" 님이 예약를 희망합니다. 수락하시겠습니까?";
-					}else if (childType.equals("거래") && action.equals("거래 완료 확인")) {
+					}else if (childType.equals("거래") && action.equals("예약수락")) {
+						member1Content = member1.get().getUserid() +"님과의 예약을 수락했습니다.";
+						member2Content =  member2.get().getUserid() +"님이 예약을 수락했습니다.";
+					}else if (childType.equals("거래") && action.equals("예약거절")) {
+						member1Content = member2.get().getUserid() +"님과의 예약을 거절했습니다.";
+						member2Content =  member1.get().getUserid() +"님이 예약 거절했습니다.";
+				}else if (childType.equals("거래") && action.equals("예약상태변경")) {
+					member1Content = member2.get().getUserid() +"님과의 거래예약을 거래 중으로 전환하였습니다 .";
+					member2Content =  member1.get().getUserid() +"님이 거래예약를 거래 중으로 전환하였습니다";
+			}
+					
+					else if (childType.equals("거래") && action.equals("거래 완료 확인")) {
 						member1Content = member2.get().getUserid() +"님에게 거래완료 신청을 보냈습니다";
 						member2Content =  member1.get().getUserid() +" 님이 거래완료를 희망합니다. 거래를 마치시겠습니까?";
 					}
@@ -502,6 +516,50 @@ public class AlarmService {
 
 	    return filteredAlarms;
 	}
+
+	@Transactional
+	public AlarmDTO findTradeAlarmService(Long roomId, Long loggedId) {
+	    ChattingRoomEntity chattingRoomEntity = chattingRoomRepository.findById(roomId).orElse(null);
+	    if (chattingRoomEntity == null) {
+	        return null;
+	    }
+
+	    BoardEntity boardEntity = chattingRoomEntity.getBoardEntity();
+
+	    // member1, member2 초기화
+	    final MemberEntity member1;
+	    final MemberEntity member2;
+
+	    if (chattingRoomEntity.getMember1().getId().equals(loggedId)) {
+	        member1 = chattingRoomEntity.getMember1();
+	        member2 = chattingRoomEntity.getMember2();
+	    } else if (chattingRoomEntity.getMember2().getId().equals(loggedId)) {
+	        member1 = chattingRoomEntity.getMember2();
+	        member2 = chattingRoomEntity.getMember1();
+	    } else {
+	        return null; // 예외 처리: 사용자가 채팅방의 멤버가 아닐 경우
+	    }
+
+	    List<AlarmEntity> alarmEntities = this.findAllAboutLoggedId(loggedId);
+	    	
+	 // 최신 알람 찾기
+	    return alarmEntities.stream()
+	        .filter(alarm -> alarm.getType().equals("TRADE"))
+	        .filter(alarm -> 
+	            (alarm.getMember1().equals(member1) && alarm.getMember2().equals(member2)) ||
+	            (alarm.getMember2().equals(member1) && alarm.getMember1().equals(member2))
+	        )
+	        .filter(alarm -> alarm.getObject().equals(String.valueOf(boardEntity.getId())))		
+	        .filter(alarm -> 
+	            alarm.getAction().equals("상대방 동의 확인") || alarm.getAction().equals("예약")
+	        )
+	        .max(Comparator.comparing(AlarmEntity::getCreateTime)) // 최신 알람 찾기
+	        .map(AlarmEntity::toDTO)
+	        .orElse(null);
+
+	}
+
+
 
 
 	

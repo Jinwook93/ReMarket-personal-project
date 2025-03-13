@@ -24,10 +24,12 @@ import com.cos.project.details.PrincipalDetails;
 import com.cos.project.dto.ChattingRoomDTO;
 import com.cos.project.dto.MessageDTO;
 import com.cos.project.dto.PagedResponse;
+import com.cos.project.dto.TradeDTO;
 import com.cos.project.entity.BoardEntity;
 import com.cos.project.entity.ChattingRoomEntity;
 import com.cos.project.entity.MemberEntity;
 import com.cos.project.entity.MessageEntity;
+import com.cos.project.entity.TradeEntity;
 import com.cos.project.repository.BoardRepository;
 import com.cos.project.repository.ChattingRoomRepository;
 import com.cos.project.repository.MemberRepository;
@@ -895,6 +897,46 @@ public class ChatService {
 		                ));
 		        })
 		        .collect(Collectors.toList());
+		}
+@Transactional
+		public ChattingRoomDTO findBookingRoom(Long boardId, Long loggedId) {
+	ChattingRoomEntity chattingRoomEntity = null;
+				BoardEntity boardEntity = boardRepository.findById(boardId).orElse(null);
+				  if (boardEntity == null) {
+				        return null;
+				    }
+				 
+			TradeDTO filteredTrade =  boardEntity.getTrades().stream().filter(trade -> trade.getBooking1() && trade.getBooking2())
+				 .map(trade -> new TradeDTO().fromEntity(trade))
+				 .findFirst()
+				 .orElse(null);
+			
+			if(loggedId.equals(filteredTrade.getMember2Id())) {				
+				 chattingRoomEntity = chattingRoomRepository.findEnableRoom(filteredTrade.getMember1Id(), filteredTrade.getMember2Id(), boardId);
+			}else if(loggedId.equals(filteredTrade.getMember1Id())) {
+				 chattingRoomEntity = chattingRoomRepository.findEnableRoom(filteredTrade.getMember2Id(), filteredTrade.getMember1Id(), boardId);
+			}
+			
+			if(chattingRoomEntity == null) {
+				return null;
+			}
+			return ChattingRoomDTO.builder()
+					.id(chattingRoomEntity.getId())
+					.member1UserId(chattingRoomEntity.getMember1().getUserid())
+					.member2UserId(chattingRoomEntity.getMember2().getUserid())
+					.member1Visible(chattingRoomEntity.getMember1Visible())
+					.member2Visible(chattingRoomEntity.getMember2Visible())
+					.exitedmemberId(chattingRoomEntity.getExitedmemberId())
+					.recentExitedmemberId(chattingRoomEntity.getRecentExitedmemberId())
+					.messageIndex1(chattingRoomEntity.getMessageIndex1())
+					.messageIndex2(chattingRoomEntity.getMessageIndex2())
+					.boardId(String.valueOf(chattingRoomEntity.getBoardEntity().getId()))
+					.createTime(chattingRoomEntity.getCreateTime())
+					.build();
+					
+		
+				
+			
 		}
 
 			
