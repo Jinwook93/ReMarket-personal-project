@@ -1,7 +1,7 @@
 import { checkUnReadMessageCount, checkUnReadMessageCount2, loadChatRooms, loadMessages, searchMessage, setUpEnterRoomButton, setUpExitRoomButton, toggleChattingRoomList } from './chatModule.js';
 import { toggleAlarmList, checkUserAlarmCount, checkUserAlarmList } from './alarmModule.js';
 import { formatDate } from "./formatDate.js";
-import { enrollTrade2 } from "./tradeModule.js";
+//import { enrollTrade2 } from "./tradeModule.js";
 
 
 let prevState = null;
@@ -111,16 +111,16 @@ document.addEventListener("click", (event) => {
 	if (targetId.startsWith("search-button-")) {
 		handleSearch(event);
 	} else if (targetId.startsWith("search-prev-button-")) {
-		console.log("Prev 버튼 클릭 감지됨"); // 디버깅
+//		console.log("Prev 버튼 클릭 감지됨"); // 디버깅
 		handlePrev(event);
 	} else if (targetId.startsWith("search-next-button-")) {
-		console.log("next 버튼 클릭 감지됨"); // 디버깅
+//		console.log("next 버튼 클릭 감지됨"); // 디버깅
 		handleNext(event);
-	}else if (targetId.startsWith("close-search-message-") || targetId.startsWith("data-search-button-")) {
-		console.log("메시지 닫기 버튼 클릭 감지됨"); // 디버깅
+	} else if (targetId.startsWith("close-search-message-") || targetId.startsWith("data-search-button-")) {
+//		console.log("메시지 닫기 버튼 클릭 감지됨"); // 디버깅
 		toggleSearchMessageContainer(event);
 	}
-	
+
 });
 
 // 🔍 **검색 버튼 클릭 시 실행**
@@ -152,7 +152,7 @@ function handleSearch(event) {
 		if (messageText.includes(searchTerm)) {
 			matchedMessages.push(message);
 			message.style.backgroundColor = "#ffff99"; // 배경 강조
-		} else if(!messageText.includes(searchTerm) || searchTerm === ""){
+		} else if (!messageText.includes(searchTerm) || searchTerm === "") {
 			message.style.backgroundColor = ""; // 원래 배경으로
 		}
 	});
@@ -161,10 +161,10 @@ function handleSearch(event) {
 		currentIndex = 0;
 		scrollToMessage(matchedMessages[currentIndex], chatBox);
 		prevButton.style.display = "block";
-			nextButton.style.display = "block";
+		nextButton.style.display = "block";
 	} else {
-			prevButton.style.display = "none";
-			nextButton.style.display = "none";
+		prevButton.style.display = "none";
+		nextButton.style.display = "none";
 		alert("검색 결과가 없습니다.");
 	}
 }
@@ -175,7 +175,7 @@ function handlePrev(event) {
 
 	const roomId = event.target.id.split('-')[3];
 	const chatBox = document.getElementById(`chat-box-${roomId}`);
-	console.log("roomId:", roomId, "chatBox:", chatBox);
+//	console.log("roomId:", roomId, "chatBox:", chatBox);
 	currentIndex = (currentIndex - 1 + matchedMessages.length) % matchedMessages.length;
 	scrollToMessage(matchedMessages[currentIndex], chatBox);
 }
@@ -186,7 +186,7 @@ function handleNext(event) {
 
 	const roomId = event.target.id.split('-')[3];
 	const chatBox = document.getElementById(`chat-box-${roomId}`);
-	console.log("roomId:", roomId, "chatBox:", chatBox);
+//	console.log("roomId:", roomId, "chatBox:", chatBox);
 	currentIndex = (currentIndex + 1) % matchedMessages.length;
 	scrollToMessage(matchedMessages[currentIndex], chatBox);
 }
@@ -199,18 +199,18 @@ function scrollToMessage(message, chatBox) {
 }
 
 function toggleSearchMessageContainer(event) {
-    const roomId = event.target.id.split('-')[3]; // roomId 추출
-    const searchContainer = document.getElementById(`search-container-${roomId}`);
-    
-        // display가 flex일 때 none으로, none일 때 flex로 토글
-        if (searchContainer.style.display === "flex") {
-            searchContainer.style.display = "none"; // 숨기기
-        } else {
-            searchContainer.style.display = "flex"; // 보이기
-           
-        }
+	const roomId = event.target.id.split('-')[3]; // roomId 추출
+	const searchContainer = document.getElementById(`search-container-${roomId}`);
 
-    
+	// display가 flex일 때 none으로, none일 때 flex로 토글
+	if (searchContainer.style.display === "flex") {
+		searchContainer.style.display = "none"; // 숨기기
+	} else {
+		searchContainer.style.display = "flex"; // 보이기
+
+	}
+
+
 
 }
 
@@ -398,56 +398,47 @@ async function checkUserAlarmData(loggedId) {
 		//		let previousChatRoomHTML = ""; // 🔹 이전 채팅방 목록 HTML 저장 변수
 		let chatRoomsUpdated1 = false;  // 🔹 중복 실행 방지 변수
 		let chatRoomsUpdated2 = false;  // 🔹 중복 실행 방지 변수
+		let room = null;
+		let roomId = null;
 		for (const data of datas) {
-			if (data.type === "MESSAGE") {
-				const room = await fetch(`/chat/findRoom/${Number(data.object)}`).then(res => res.json());
-				const roomId = Number(room.id);
+			if (data.type === "MESSAGE" && data.object != null) {
+				room = await fetch(`/chat/findRoom/${Number(data.object)}`).then(res => res.json()); //MESSAGE일 경우
+				roomId = Number(room.id);
+			}
+
+			else if (data.type === "TRADE" && data.object != null) {
+			 //게시물 이미지
+//			 console.log(data.member1Id);
+//			 	 console.log(data.member2Id);
+				room = await fetch(`/chat/findRoomByBoardIdAndMemberId/${Number(data.object)}`, {
+					method: 'POST',
+					headers: { 'Content-Type': "application/json;charset=utf-8" },
+					body: JSON.stringify({
+						member1Id: data.member1Id,
+						member2Id: data.member2Id
+					})
+
+				}).then(res => res.json()); //TRADE일 경우
 
 
-				//				updateChatRoomOrder(roomId);
-
-				if (Number(data.member1Id) === Number(loggedId) && !chatRoomsUpdated1) {
-					await loadChatRooms(loggedId);
-					setUpEnterRoomButton(loggedUserId);
-					setUpExitRoomButton();
-					chatRoomsUpdated1 = true;
-				}
-				// 🔹 상대방이 메시지를 보낸 경우에만 loadChatRooms 실행 (단, 한 번만 실행)
-				else if (Number(data.member2Id) === Number(loggedId) && !chatRoomsUpdated2) {
-					const chattingRoomListBody = document.getElementById("chattingRoomListBody");
-					//					const newChatRoomHTML = chattingRoomListBody.innerHTML; // 현재 HTML 저장
-					//
-					//					if (previousChatRoomHTML !== newChatRoomHTML) {
-					//						previousChatRoomHTML = newChatRoomHTML; // 🔹 변경된 경우만 업데이트
-					//					} else {
-					//						console.log("채팅방 목록이 동일하여 렌더링 생략");
-					//					}
-					//				}
-
-					chattingRoomListBody.innerHTML = ``;
-					await loadChatRooms(loggedId);
-					setUpEnterRoomButton(loggedUserId);
-					setUpExitRoomButton();
-
-					chatRoomsUpdated2 = true; // ✅ 중복 실행 방지
-					// ✅ 새로운 메시지가 도착한 방을 최상단으로딩 이동		
-					//					updateChatRoomOrder(data.id);				//채팅방 재입장 시 나가기 직전 메시지 시간까지 계산됨 (버그)
-				}
+				roomId = Number(room.id);
+			}
 
 
-				// ✅ 메시지를 로드한 방 ID를 저장하여 중복 호출 방지
-				if (!loadedRooms.has(roomId)) {
-					if (Number(data.member1Id) === Number(loggedId)) {
-						loadMessages(roomId, room.messageIndex1, room.recentExitedmemberId);
-					} else if (Number(data.member2Id) === Number(loggedId)) {
-						loadMessages(roomId, room.messageIndex2, room.recentExitedmemberId);
-					}
-					loadedRooms.add(roomId);
-				}
+			console.log(room);
 
+			//				updateChatRoomOrder(roomId);
 
-				//					// 🔸 innerHTML 비교 → 같으면 렌더링 X
-				//					const chattingRoomListBody = document.getElementById("chattingRoomListBody");
+			if (Number(data.member1Id) === Number(loggedId) && !chatRoomsUpdated1) {
+
+				await loadChatRooms(loggedId);
+				setUpEnterRoomButton(loggedUserId);
+				setUpExitRoomButton();
+				chatRoomsUpdated1 = true;
+			}
+			// 🔹 상대방이 메시지를 보낸 경우에만 loadChatRooms 실행 (단, 한 번만 실행)
+			else if (Number(data.member2Id) === Number(loggedId) && !chatRoomsUpdated2) {
+				const chattingRoomListBody = document.getElementById("chattingRoomListBody");
 				//					const newChatRoomHTML = chattingRoomListBody.innerHTML; // 현재 HTML 저장
 				//
 				//					if (previousChatRoomHTML !== newChatRoomHTML) {
@@ -456,7 +447,79 @@ async function checkUserAlarmData(loggedId) {
 				//						console.log("채팅방 목록이 동일하여 렌더링 생략");
 				//					}
 				//				}
+
+				chattingRoomListBody.innerHTML = ``;
+				await loadChatRooms(loggedId);
+				setUpEnterRoomButton(loggedUserId);
+				setUpExitRoomButton();
+
+				chatRoomsUpdated2 = true; // ✅ 중복 실행 방지
+				// ✅ 새로운 메시지가 도착한 방을 최상단으로딩 이동		
+				//					updateChatRoomOrder(data.id);				//채팅방 재입장 시 나가기 직전 메시지 시간까지 계산됨 (버그)
 			}
+
+
+			// ✅ 메시지를 로드한 방 ID를 저장하여 중복 호출 방지
+//			if (!loadedRooms.has(roomId) && room !== null) {
+
+//				if (data.type == "MESSAGE") {
+//					if (Number(data.member1Id) === Number(loggedId) ) {
+//
+//						if (loggedUserId === room.member1UserId) {
+//							loadMessages(roomId, room.messageIndex1, room.recentExitedmemberId);
+//						} else if (loggedUserId === room.member2UserId) {
+//							loadMessages(roomId, room.messageIndex2, room.recentExitedmemberId);
+//						}
+//					} else if (Number(data.member2Id) === Number(loggedId)) {
+//						if (loggedUserId === room.member1UserId) {
+//							loadMessages(roomId, room.messageIndex1, room.recentExitedmemberId);
+//						} else if (loggedUserId === room.member2UserId) {
+//							loadMessages(roomId, room.messageIndex2, room.recentExitedmemberId);
+//						}
+//					}
+//				} else
+				 if ((data.type === "MESSAGE" || data.type === "TRADE") && room !== null) {
+					if ((Number(data.member1Id) === Number(loggedId)  || Number(data.member2Id) === Number(loggedId) )) {
+					
+					console.log("🚀 알람 타입 정보:", data.type);
+						console.log("🚀 room 정보:", room);
+console.log("🚀 roomId:", roomId);
+console.log("🚀 member1UserId:", room.member1UserId);
+console.log("🚀 member2UserId:", room.member2UserId);
+console.log("🚀 messageIndex1:", room.messageIndex1);
+console.log("🚀 messageIndex2:", room.messageIndex2);
+console.log("🚀 recentExitedmemberId:", room.recentExitedmemberId);
+				console.log(data);
+//						if(data.type ==="TRADE"){
+//							const chatBox = document.getElementById("chat-box")
+//						}
+							
+						if (loggedUserId === room.member1UserId) {
+									console.log("로드메시지1:", data.type);
+							loadMessages(roomId, room.messageIndex1, room.recentExitedmemberId);
+								console.log("로드메시지2:", data.type);
+						} else if (loggedUserId === room.member2UserId) {
+								console.log("로드메시지3:", data.type);
+						 loadMessages(roomId, room.messageIndex2, room.recentExitedmemberId);
+						 	console.log("로드메시지4:", data.type);
+						}
+					}
+				}
+				loadedRooms.add(roomId);
+//			}
+
+
+			//					// 🔸 innerHTML 비교 → 같으면 렌더링 X
+			//					const chattingRoomListBody = document.getElementById("chattingRoomListBody");
+			//					const newChatRoomHTML = chattingRoomListBody.innerHTML; // 현재 HTML 저장
+			//
+			//					if (previousChatRoomHTML !== newChatRoomHTML) {
+			//						previousChatRoomHTML = newChatRoomHTML; // 🔹 변경된 경우만 업데이트
+			//					} else {
+			//						console.log("채팅방 목록이 동일하여 렌더링 생략");
+			//					}
+			//				}
+			//			}
 		}
 
 
@@ -471,7 +534,7 @@ async function checkUserAlarmData(loggedId) {
 
 
 
-
+   
 
 
 
@@ -608,7 +671,7 @@ document.addEventListener("click", async function(event) {
 			});
 
 			if (response.ok) {
-				console.log(`알림 ${alarmId} 읽음 처리 완료`);
+//				console.log(`알림 ${alarmId} 읽음 처리 완료`);
 
 				// ✅ 클릭한 알림을 바로 삭제 (부모 <tr> 요소 제거)
 				//				const row = target.closest("tr"); // 가장 가까운 <tr> 찾기

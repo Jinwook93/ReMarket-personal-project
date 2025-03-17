@@ -192,13 +192,23 @@ public class AlarmController {
                         && (alarm.getAction().equals("송수신") || alarm.getAction().equals("나가기")))
                 .map(AlarmEntity::toDTO)
                 .collect(Collectors.toList());
+        
+        
+        List<AlarmDTO> filteredAlarms3 = filteredAlarms.stream()
+                .filter(alarm -> alarm.getMember1().getId().equals(loggedId)  || alarm.getMember2().getId().equals(loggedId)
+                        && alarm.getType().equals("TRADE")
+                        && alarm.getObject() != null) 
+                .map(AlarmEntity::toDTO)
+                .collect(Collectors.toList());
 
         // 두 리스트를 합치기
-        List<AlarmDTO> filteredAlarms3 = new ArrayList<>();
-        filteredAlarms3.addAll(filteredAlarms1);
-        filteredAlarms3.addAll(filteredAlarms2);
+        List<AlarmDTO> filteredAlarms4 = new ArrayList<>();
 
-        return ResponseEntity.ok(filteredAlarms3);
+      
+        filteredAlarms4.addAll(filteredAlarms3);
+        filteredAlarms4.addAll(filteredAlarms2);
+        filteredAlarms4.addAll(filteredAlarms1);
+        return ResponseEntity.ok(filteredAlarms4);
     }
 
     	//trade 알람 조회하기

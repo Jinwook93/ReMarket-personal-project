@@ -122,7 +122,7 @@ public class TradeService {
 
 	    // 거래 목록 조회 및 필터링 (완료된 거래 찾기)
 	    return boardEntity.getTrades().stream()
-	        .filter(trade -> (trade.getCompleted1() && trade.getCompleted2()  // 완료된 거래만 필터링
+	        .filter(trade -> (trade.getCompleted1().equals(Boolean.TRUE) && trade.getCompleted2().equals(Boolean.TRUE)  // 완료된 거래만 필터링
 	        		|| (trade.getBooking1() || trade.getBooking2())
 	        		|| (trade.getAccept1() || trade.getAccept2())
 	        		)) 
@@ -131,6 +131,7 @@ public class TradeService {
 	        .orElse(null); // 없으면 null 반환
 	}
 
+	
 	//게시글이 미예약 상태인지 확인
 	
 	@Transactional

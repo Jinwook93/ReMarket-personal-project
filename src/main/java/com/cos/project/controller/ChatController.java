@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import com.cos.project.details.PrincipalDetails;
+import com.cos.project.dto.AlarmDTO;
 import com.cos.project.dto.ChattingRoomDTO;
 import com.cos.project.dto.MessageDTO;
 import com.cos.project.entity.BoardEntity;
@@ -232,6 +233,9 @@ public class ChatController {
 				.recentExitedmemberId(room.get().getRecentExitedmemberId())
 				.build();
 //		System.out.println(responseDTO.toString());
+		
+		
+		System.out.println("responseDTO의 ID : " + responseDTO.getId());
 		return ResponseEntity.ok(responseDTO);
 		
 	}
@@ -390,7 +394,7 @@ public class ChatController {
     
     @GetMapping("/findRoomByBoardId/{boardId}")			//채팅방으로 예약된 방 정보 조회
 	@ResponseBody
-	public  ResponseEntity<?>  findRoomByBoardId(@PathVariable(name = "boardId") Long boardId, @AuthenticationPrincipal PrincipalDetails principalDetails)
+	public  ResponseEntity<?>  findBookingRoomByBoardId(@PathVariable(name = "boardId") Long boardId, @AuthenticationPrincipal PrincipalDetails principalDetails)
 			throws JsonMappingException, JsonProcessingException {
     		Long loggedId = principalDetails.getMemberEntity().getId();
     		ChattingRoomDTO chattingRoomDTO = chatService.findBookingRoom(boardId,loggedId);
@@ -399,7 +403,18 @@ public class ChatController {
 			
 	}
     
-    
+    @PostMapping("/findRoomByBoardIdAndMemberId/{boardId}")			//게시글, body 데이터로 방 정보 조회
+	@ResponseBody
+	public  ResponseEntity<?>  findBookingRoomByBoardId(@PathVariable(name = "boardId") Long boardId, @AuthenticationPrincipal PrincipalDetails principalDetails,
+			@RequestBody AlarmDTO alarmDTO)
+			throws JsonMappingException, JsonProcessingException {
+    		Long loggedId = principalDetails.getMemberEntity().getId();
+    		ChattingRoomDTO chattingRoomDTO = 
+    				chatService.findRoomByBoardIdAndMemberId(boardId, alarmDTO.getMember1Id(), alarmDTO.getMember2Id(),loggedId);
+    		
+    		return ResponseEntity.ok(chattingRoomDTO);
+			
+	}
     
     
 }

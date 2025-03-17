@@ -43,7 +43,7 @@ public class ChattingRoomEntity {
     private MemberEntity member2;
 
   private Long exitedmemberId;		// 채팅방에 들어갈 시 null로 설정 됨
-  private Long messageIndex1;		//채팅방 재접속시 렌더링 할지에 대한 유무	
+  private Long messageIndex1 ;		//채팅방 재접속시 렌더링 할지에 대한 유무	
   private Long messageIndex2;		//채팅방 재접속시 렌더링 할지에 대한 유무
   private Long recentExitedmemberId;			//최근 나간 유저ID 정보	(채팅방을 나갈 때에만 ID가 갱신됨
   

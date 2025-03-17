@@ -61,10 +61,26 @@ public class TradeController {
 		Long roomId = chatService.findRoomId(principalDetails.getMemberEntity(), boardId);
 
 		MessageDTO messageDTO = new MessageDTO();
-		messageDTO.setMessageContent(responseDTO.getMember2Content() + "<br><hr> <button id=\"agreeMember2-"
-				+ responseDTO.getId() + "\" onclick=\"enrollTrade2(" + responseDTO.getId() + ")\">\r\n"
-				+ "거래하기</button>" + "<button id=\"denyMember2-" + responseDTO.getId() + "\" onclick=\"denyCreateTrade("
-				+ responseDTO.getId() + ")\">\r\n" + "거절하기</button>");
+		
+		
+		
+		
+		//messageDTO.setMessageContent(responseDTO.getMember2Content());
+		
+		
+		messageDTO.setMessageContent(responseDTO.getMember2Content() 
+			    + "<br><div class=\"messageButtonSelect\"><hr> " 
+			    + "<button id=\"agreeMember2-" + responseDTO.getId() + "\">거래하기</button> "
+			    + "<button id=\"denyMember2-" + responseDTO.getId() + "\">거절하기</button>"
+			    + "</div>");
+
+
+		
+		
+		//		messageDTO.setMessageContent(responseDTO.getMember2Content() + "<br><hr> <button id=\"agreeMember2-"
+//				+ responseDTO.getId() + "\" onclick=\"enrollTrade2(" + responseDTO.getId() + ")\">\r\n"
+//				+ "거래하기</button>" + "<button id=\"denyMember2-" + responseDTO.getId() + "\" onclick=\"denyCreateTrade("
+//				+ responseDTO.getId() + ")\">\r\n" + "거절하기</button>");
 
 		BoardEntity boardEntity = boardService.findByBoardId(boardId);
 		messageDTO.setReceiverUserId(boardEntity.getMemberEntity().getUserid());
@@ -214,10 +230,13 @@ public class TradeController {
 			Long roomId = chatService.findRoomId(member1, responseDTO.getBoardEntityId());
 			
 			MessageDTO messageDTO = new MessageDTO();
-			messageDTO.setMessageContent(responseAlarmDTO.getMember2Content() + 
-				    "<button id=\"complete1-Sell-" + responseDTO.getId() + "\" " + 
-				    "onclick=\"enrollTrade2(" + responseDTO.getId() + ")\">" +
-				    "거래완료</button>");
+			messageDTO.setMessageContent(
+				    responseAlarmDTO.getMember2Content() + 
+				    "<div class=\"messageButtonSelect\">" + 
+				    "<hr> <button id=\"complete1-Sell-" + responseDTO.getId() + "\">" + 
+				    "거래완료</button></div>"
+				);
+
 
 			
 			BoardEntity boardEntity = boardService.findByBoardId(responseDTO.getBoardEntityId());
@@ -344,10 +363,14 @@ public class TradeController {
 		Long roomId = chatService.findRoomId(principalDetails.getMemberEntity(), boardId);
 
 		MessageDTO messageDTO = new MessageDTO();
-		messageDTO.setMessageContent(responseDTO.getMember2Content() + "<br><hr> <button id=\"enroll-Book2-"
-				+ responseDTO.getId() + "\" onclick=\"bookTrade2(" + responseDTO.getId() + ")\">\r\n"
-				+ "예약하기</button>" + "<button id=\"deny-enroll-Book2-" + responseDTO.getId() + "\" onclick=\"denyBookTrade("
-				+ responseDTO.getId() + ")\">\r\n" + "거절하기</button>");
+		messageDTO.setMessageContent(
+			    responseDTO.getMember2Content() + 
+			    "<br><div class=\"messageButtonSelect\"> <hr>" + 
+			    "<button id=\"enroll-Book2-" + responseDTO.getId() + "\">예약하기</button> " + 
+			    "<button id=\"deny-enroll-Book2-" + responseDTO.getId() + "\">거절하기</button>" + 
+			    "</div>"
+			);
+
 
 		BoardEntity boardEntity = boardService.findByBoardId(boardId);
 		messageDTO.setReceiverUserId(boardEntity.getMemberEntity().getUserid());

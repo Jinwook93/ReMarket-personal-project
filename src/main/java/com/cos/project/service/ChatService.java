@@ -56,6 +56,8 @@ public class ChatService {
 	private EntityManager entityManager;
 
 	private final AlarmService alarmService;
+	
+	private final TradeService tradeService;
 
 	@Transactional
 	public ChattingRoomDTO findOrCreateRoom(String title, String loggedId, String userId, Long boardId, int price) {
@@ -411,8 +413,13 @@ public class ChatService {
 						null);
 			}
 		} else {
+//			TradeDTO tradeDTO = tradeService.findTradeByRoomId(roomId, senderId);
+//			if(tradeDTO != null && (tradeDTO.getCompleted1() == null || tradeDTO.getCompleted2() == null)) {
+//			tradeService.deleteByTradeEntityId(tradeDTO.getId());	
+//			}
 			forceDeleteRoom(roomId);
-
+			
+			
 			alarmService.postAlarm(senderId, senderId, receiverId, "MESSAGE", "채팅방", String.valueOf(roomId), "완전삭제",
 					null);
 //	        // 🟢 메시지 삭제
@@ -938,6 +945,42 @@ public class ChatService {
 				
 			
 		}
+
+@Transactional
+public ChattingRoomDTO findRoomByBoardIdAndMemberId(Long boardId, Long member1Id, Long member2Id, Long loggedId) {
+	
+	boolean memberFlag =true;
+	ChattingRoomEntity chattingRoomEntity = chattingRoomRepository.findEnableRoom(member1Id, member2Id, boardId);
+	
+	if(chattingRoomEntity ==null) {
+		chattingRoomEntity = chattingRoomRepository.findEnableRoom(member2Id, member1Id, boardId);
+		memberFlag =false;
+	}
+	
+	BoardEntity boardEntity = chattingRoomEntity.getBoardEntity();
+	
+	ChattingRoomDTO chattingRoomDTO = new ChattingRoomDTO ();
+	
+	
+	
+	return chattingRoomDTO.builder()
+					.id(chattingRoomEntity.getId())
+					.member1UserId(chattingRoomEntity.getMember1().getUserid())
+					.member2UserId(chattingRoomEntity.getMember2().getUserid())
+					.boardId(String.valueOf(boardEntity.getId()))
+					.member1Visible(chattingRoomEntity.getMember1Visible())
+					.member2Visible(chattingRoomEntity.getMember2Visible())
+					.exitedmemberId(chattingRoomEntity.getExitedmemberId())
+					.recentExitedmemberId(chattingRoomEntity.getRecentExitedmemberId())
+					.title(chattingRoomEntity.getTitle())
+					.price(chattingRoomEntity.getPrice())
+					.messageIndex1(chattingRoomEntity.getMessageIndex1() )
+					.messageIndex2(chattingRoomEntity.getMessageIndex2() )
+					.createTime(chattingRoomEntity.getCreateTime())
+					.build();
+			
+			
+}
 
 			
 	 
