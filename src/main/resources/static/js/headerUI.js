@@ -1,4 +1,4 @@
-import { checkUnReadMessageCount, checkUnReadMessageCount2, loadChatRooms, loadMessages, searchMessage, setUpEnterRoomButton, setUpExitRoomButton, toggleChattingRoomList } from './chatModule.js';
+import { checkUnReadMessageCount, checkUnReadMessageCount2, loadChatRooms, loadMessages, reloadDetails, searchMessage, setUpEnterRoomButton, setUpExitRoomButton, toggleChattingRoomList } from './chatModule.js';
 import { toggleAlarmList, checkUserAlarmCount, checkUserAlarmList } from './alarmModule.js';
 import { formatDate } from "./formatDate.js";
 //import { enrollTrade2 } from "./tradeModule.js";
@@ -460,7 +460,7 @@ async function checkUserAlarmData(loggedId) {
 
 
 			// ✅ 메시지를 로드한 방 ID를 저장하여 중복 호출 방지
-//			if (!loadedRooms.has(roomId) && room !== null) {
+			if (!loadedRooms.has(roomId) && room !== null) {
 
 //				if (data.type == "MESSAGE") {
 //					if (Number(data.member1Id) === Number(loggedId) ) {
@@ -496,17 +496,19 @@ console.log("🚀 recentExitedmemberId:", room.recentExitedmemberId);
 							
 						if (loggedUserId === room.member1UserId) {
 									console.log("로드메시지1:", data.type);
+									await reloadDetails(room.id, loggedUserId);
 							loadMessages(roomId, room.messageIndex1, room.recentExitedmemberId);
 								console.log("로드메시지2:", data.type);
 						} else if (loggedUserId === room.member2UserId) {
 								console.log("로드메시지3:", data.type);
+							await reloadDetails(room.id,loggedUserId);
 						 loadMessages(roomId, room.messageIndex2, room.recentExitedmemberId);
 						 	console.log("로드메시지4:", data.type);
 						}
 					}
 				}
 				loadedRooms.add(roomId);
-//			}
+			}
 
 
 			//					// 🔸 innerHTML 비교 → 같으면 렌더링 X
