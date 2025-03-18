@@ -915,13 +915,11 @@ export async function boardTitleButtonClickHandler(event, board) {
                         <div style="display: flex; justify-content: space-between; align-items: center;
                                     background-color: lightgray; padding: 10px; border-radius: 0px;
                                     margin-top: 10px; margin-bottom: 10px;">
-                            <span><b>${data.title}</b> 
-                            
-                       
-                            
-                      ${trade !== null  && (trade.booking1 !== null || trade.booking2 !== null) && trade.booking1 === true && trade.booking2 === true && trade.tradeStatus !== '완료' ? `<button>예약 중</button>` : ""}      
-                      ${trade !== null  && (trade.accept1 !== null || trade.accept2 !== null)   && (trade.accept1 === true && trade.accept2 === true)   && trade.tradeStatus !== '완료'  ? `<button>거래 중</button>` : ""}      
-                       ${trade !== null && trade.tradeStatus === '완료' ? `<button>거래완료</button>` : ""}
+                            <span>
+                      ${trade !== null  && (trade.booking1 !== null || trade.booking2 !== null) && trade.booking1 === true && trade.booking2 === true && trade.tradeStatus !== '완료' ? `<button class ="small-btn reserve">예약 중</button>` : ""}      
+                      ${trade !== null  && (trade.accept1 !== null || trade.accept2 !== null)   && (trade.accept1 === true && trade.accept2 === true)   && trade.tradeStatus !== '완료'  ? `<button  class ="small-btn progress">거래 중</button>` : ""}      
+                       ${trade !== null && trade.tradeStatus === '완료' ? `<button class="small-btn complete">거래완료</button>` : ""}
+                       <b>${data.title}</b> 
                             </span>
                             <button style="background-color: red; color: white; border: none;
                                            paddng: 5px 10px; cursor: pointer; border-radius: 3px;"

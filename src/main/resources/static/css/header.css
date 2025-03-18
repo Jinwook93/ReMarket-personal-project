@@ -376,3 +376,34 @@ button[id^="denyMember2-"] {
     border-radius: 8px;
     margin: 10px 0;
 }
+
+
+
+
+
+/* 작고 깔끔한 버튼*/
+
+.small-btn {
+  font-size: 12px;
+  padding: 4px 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f8f8f8;
+  color: #333;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  margin-right: 5px;
+    font-weight: bold; /* 글자 굵기 */
+}
+
+.small-btn:hover {
+  background-color: #e0e0e0;
+  color: #000;
+}
+
+.small-btn.reserve { background-color: green;  color: #fff; }
+.small-btn.progress { background-color: maroon; color: #fff; }
+.small-btn.complete { background-color: teal; color: #fff; }
+
+
+

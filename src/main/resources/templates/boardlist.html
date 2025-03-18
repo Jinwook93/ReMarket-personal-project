@@ -201,7 +201,7 @@ tr:hover {
                     and ${trade.booking1} == true 
                     and ${trade.booking2} == true 
                     and ${trade.tradeStatus} != '완료'"
-									type="button">예약 중</button>
+									type="button" class="small-btn reserve">예약 중</button>
 
 								<!-- 거래 중 버튼 -->
 								<button
@@ -211,7 +211,7 @@ tr:hover {
             and trade.completed1 != null 
             and trade.completed2 != null 
             and (trade.completed1 != true or trade.completed2 != true)}"
-									type="button">거래 중</button>
+									type="button" class="small-btn progress">거래 중</button>
 
 								<!-- 거래 완료 버튼 -->
 								<button
@@ -219,7 +219,7 @@ tr:hover {
             and trade.completed1 != null 
             and trade.completed2 != null 
             and (trade.completed1 == true and trade.completed2 == true)}"
-									type="button">거래완료</button>
+									type="button" class =  "small-btn complete">거래완료</button>
 
 
 								<!-- 거래 취소 버튼 (member1, member2 모두에게 노출) 
