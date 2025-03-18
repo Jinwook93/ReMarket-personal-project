@@ -411,7 +411,7 @@ public class AlarmService {
 						member2Content =  member2.get().getUserid() +"님이 예약을 수락했습니다.";
 					}else if (childType.equals("거래") && action.equals("예약거절")) {
 						member1Content = member2.get().getUserid() +"님과의 예약을 거절했습니다.";
-						member2Content =  member1.get().getUserid() +"님이 예약 거절했습니다.";
+						member2Content =  member1.get().getUserid() +"님이 예약을 거절했습니다.";
 				}else if (childType.equals("거래") && action.equals("예약상태변경")) {
 					member1Content = member2.get().getUserid() +"님과의 거래예약을 거래 중으로 전환하였습니다 .";
 					member2Content =  member1.get().getUserid() +"님이 거래예약를 거래 중으로 전환하였습니다";
@@ -425,6 +425,12 @@ public class AlarmService {
 						member1Content = member2.get().getUserid() +"님과 "+object+" 번 게시판 거래를 완료하였습니다";
 						member2Content = member1.get().getUserid()+"님이 거래완료를 수락하였습니다." +member1.get().getUserid() +"과의 "+object+" 번 게시판 거래를 완료하였습니다";
 					}
+					
+					else if (childType.equals("거래") && action.equals("거래취소")) {
+						member1Content = member2.get().getUserid() +"님과 "+object+" 번 게시판 거래를 취소하였습니다";
+						member2Content = member1.get().getUserid()+"님이 거래를 취소하였습니다";
+					}
+					
 					
 			
 				}

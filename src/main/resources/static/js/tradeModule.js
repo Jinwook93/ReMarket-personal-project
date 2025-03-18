@@ -199,6 +199,68 @@ export function CompleteTrade(tradeId, isMember) {  // 로그인유저 : member1
 
 
 
+
+
+
+//타겟 유저가 해당 거래 취소을 거절 에 대한 판단
+export function CancelTrade(tradeId, loggedId) {  // 로그인유저 : member1, 타겟 유저 : member2
+
+//		const member2Id = Number(document.getElementById("memberid").value);  // 다른 멤버의 ID
+	if (confirm("거래를 취소하겠습니까? ")) {			//수락시
+		fetch(`/trade/cancelTrade/${tradeId}`, {  // 취소 API
+			method: "POST",
+			headers: { 'Content-Type': 'application/json;charset=utf-8' },
+			body: JSON.stringify({
+								id: Number(tradeId),
+								member1Id: Number(loggedId),
+//								member2Id: member2Id,
+//								boardEntityId: boardId,
+				booking1: false,
+				booking2: false,
+				accept1: false,
+				accept2: false,
+				completed1: false,
+				completed2: false
+			})
+		})
+			.then(response => {
+				if (!response.ok) {
+					// 응답이 실패했을 경우
+					throw new Error('응답 실패');
+				}
+				return response.text();  //text 응답으로 변환
+			})
+			.then(data => {
+				console.log(data);
+				alert(data);  // 응답 데이터 처리
+				return data;
+//				return loadChatRooms(loggedId);
+			})
+//			.then(() => {
+//				setUpEnterRoomButton(loggedUserId);
+//				setUpExitRoomButton();
+//			})
+			.catch(error => {  // 오류 처리
+				alert("거래 취소를 실패하였습니다");
+				console.log(error);
+			});
+	}
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 //// 거래 완료 여부 상태 ('상대 =  로그인 유저' 기준  )
 //export function CompleteTrade1 (tradeId) {  // 로그인유저 : member1, 타겟 유저 : member2
 //
@@ -528,6 +590,15 @@ document.addEventListener('DOMContentLoaded', function() {
 			CompleteTrade(tradeId, "isMember1");
 			//      loadChatRooms(loggedId);
 		}
+		
+			if (event.target && (event.target.id.startsWith("cancel-trade-"))) {
+			const tradeId = event.target.id.replace("cancel-trade-", "");
+			console.log("거래취소 테스트1 ", tradeId);
+
+		CancelTrade(tradeId, loggedId);
+			//      loadChatRooms(loggedId);
+		}
+		
 	});
 
 

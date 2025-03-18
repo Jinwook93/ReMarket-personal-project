@@ -2,6 +2,7 @@ package com.cos.project.controller;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -195,30 +196,7 @@ public class TradeController {
 			
 			
 			
-			//알람메시지를 채팅방으로도 전송 (상대방에게 responseDTO의 member2Content 전송)
-			//// 먼저 채팅방 ID를 조회
-			
-//			Long roomId = chatService.findRoomId(principalDetails.getMemberEntity(), 	(Long) responseDTO.getBoardEntityId());
-//			
-//			MessageDTO messageDTO = new MessageDTO();  //object : 거래번호
-//			messageDTO.setMessageContent(responseAlarmDTO.getMember2Content()		
-//			+"  <button id = \"complete1-Sell-"+responseDTO.getId()+" onclick=\"enrollTrade2(${alarm.id})\">\r\n"
-//			+ "거래완료</button>"		
-//					);
-//			
-//			BoardEntity boardEntity = boardService.findByBoardId((Long) responseDTO.getBoardEntityId());
-//			messageDTO.setReceiverUserId(boardEntity.getMemberEntity().getUserid());
-//			messageDTO.setAlarmType(true);
-//			chatService.addMessage(roomId, principalDetails, messageDTO);
-			
-			
-			
-			
-			
-			
-			
-			
-			
+
 			
 			
 			//알람메시지를 채팅방으로도 전송 (상대방에게 responseDTO의 member2Content 전송)
@@ -520,6 +498,117 @@ public class TradeController {
 //			return ResponseEntity.ok(responseAlarmDTO);
 //		}
 	}
+	
+	
+	
+	
+	
+//	@ResponseBody
+//	@PostMapping("/cancelTrade/{boardId}") 
+//	public ResponseEntity<?> cancelTrade(@PathVariable(name = "boardId") Long boardId, @RequestBody TradeDTO tradeDTO,
+//			@AuthenticationPrincipal PrincipalDetails principalDetails) throws IllegalAccessException {
+//		
+//				TradeEntity tradeEntity = tradeService.findTradeEntityByMember1Member2Board(tradeDTO.getMember1Id(),tradeDTO.getMember2Id(), boardId);
+//				tradeService.deleteByTradeEntityId(tradeEntity.getId());
+//				
+//				return ResponseEntity.ok("거래가 취소되었습니다");
+//	
+//	
+//	
+//	
+//	}
+	
+	
+	
+	@ResponseBody
+	@PostMapping("/cancelTrade/{tradeId}") 
+	public ResponseEntity<?> cancelTrade(@PathVariable(name = "tradeId") Long tradeId, @RequestBody TradeDTO tradeDTO,
+			@AuthenticationPrincipal PrincipalDetails principalDetails) throws IllegalAccessException {
+		
+		TradeEntity tradeEntity = tradeService.findByTradeEntityId(tradeId);
+		AlarmEntity alarmEntity = null;
+		
+		if(tradeEntity == null) {
+			return null;
+		}
+		
+		TradeDTO responseDTO = new TradeDTO();
+			responseDTO =	responseDTO.fromEntity(tradeEntity);
+		Long loggedId = principalDetails.getMemberEntity().getId();
+		
+		
+//		if(responseDTO.getMember1Id().equals(loggedId) ) {
+//			alarmEntity = alarmService.postAlarm(loggedId, responseDTO.getMember1Id(),
+//					responseDTO.getMember2Id(), "TRADE", "거래", String.valueOf(responseDTO.getBoardEntityId()), "거래취소", null);
+//		}else if(responseDTO.getMember2Id().equals(loggedId)) {
+//			alarmEntity = alarmService.postAlarm(loggedId, responseDTO.getMember2Id(),
+//					responseDTO.getMember1Id(), "TRADE", "거래", String.valueOf(responseDTO.getBoardEntityId()), "거래취소", null);
+//		}
+		
+		
+
+			alarmEntity = alarmService.postAlarm(loggedId, responseDTO.getMember1Id(),
+					responseDTO.getMember2Id(), "TRADE", "거래", String.valueOf(responseDTO.getBoardEntityId()), "거래취소", null);
+		
+		
+		
+		AlarmDTO responseAlarmDTO = alarmEntity.toDTO();
+		
+		
+		
+//				TradeEntity tradeEntity = tradeService.findTradeEntityByMember1Member2Board(tradeDTO.getMember1Id(),tradeDTO.getMember2Id(), boardId);
+				tradeService.deleteByTradeEntityId(tradeId);
+				
+				
+				
+				System.out.println("여기까지 가나?" + responseDTO.toString());
+				
+				
+				
+				
+				
+				
+				//채팅방으로도 전송
+				
+				MemberEntity member1 = memberService.findById(responseDTO.getMember1Id());
+				MemberEntity member2 = memberService.findById(responseDTO.getMember2Id());
+				
+				Long roomId = chatService.findRoomId(member1, responseDTO.getBoardEntityId());
+				
+				MessageDTO messageDTO = new MessageDTO();
+				messageDTO.setMessageContent(
+					    responseAlarmDTO.getMember2Content()
+					);
+
+
+				
+				BoardEntity boardEntity = boardService.findByBoardId(responseDTO.getBoardEntityId());
+				messageDTO.setReceiverUserId(member1.getUserid());
+				messageDTO.setAlarmType(true);
+				chatService.addMessage(roomId, principalDetails, messageDTO);
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				return ResponseEntity.ok("거래가 취소되었습니다");
+	
+	
+	
+	
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 }

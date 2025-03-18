@@ -357,6 +357,18 @@ input[type="checkbox"] {
 						th:data-Complete2TradeSellBoardId="${board.id}">거래완료</button>
 				</div>
 			</div>
+			
+				<div
+					th:if="${
+					             (trade.booking1  == true
+             and trade.booking2  == true) 
+             or (trade.accept1  == true
+             and trade.accept2  == true)
+             and trade?.tradeStatus?.name != '완료'}">
+					<button type="button" th:id="|cancel-trade-${trade.id}|"
+						th:data-CancelTradeSellBoardId="${trade.id}">거래 취소</button>
+				</div>
+			
 			<div
 				th:if="${trade.tradeStatus != null and trade.tradeStatus.name == '완료'}">
 				<p>거래가 완료된 게시글입니다</p>

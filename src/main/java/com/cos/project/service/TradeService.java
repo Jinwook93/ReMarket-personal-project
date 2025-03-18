@@ -78,9 +78,30 @@ public class TradeService {
 	
 	@Transactional
 	public TradeEntity findTradeEntityByMember1Member2Board(Long member1Id, Long member2Id, Long boardId) {
-		return tradeRepository.findByMember1IdAndMember2IdAndBoardEntityId(member1Id, member2Id, boardId).orElse(null);
+		
+		TradeEntity tradeEntity = 
+		tradeRepository.findByMember1IdAndMember2IdAndBoardEntityId(member1Id, member2Id, boardId).orElse(null);
+		
+		
+		if(tradeEntity == null) {
+			tradeEntity =	tradeRepository.findByMember1IdAndMember2IdAndBoardEntityId(member2Id, member1Id, boardId).orElse(null);
+		}
+		
+		
+		
+		return tradeEntity;
 	}
 
+	
+	
+	@Transactional
+	public TradeEntity findByTradeEntityId(Long id) {
+		return tradeRepository.findById(id).orElse(null);
+		
+	}
+	
+	
+	
 	@Transactional
 	public void deleteByTradeEntityId(Long id) {
 		tradeRepository.deleteById(id);
@@ -131,6 +152,59 @@ public class TradeService {
 	        .orElse(null); // 없으면 null 반환
 	}
 
+	
+	
+	//계약 완료가 아닌 거래 검색
+	@Transactional
+	public TradeDTO findNotTradeByRoomId(Long roomId, Long loggedId) {
+	    // 채팅방 조회
+	    ChattingRoomEntity chattingRoomEntity = chattingRoomRepository.findById(roomId).orElse(null);
+	    if (chattingRoomEntity == null) {
+	        return null;
+	    }
+
+	    	MemberEntity member1 = chattingRoomEntity.getMember1();
+	    	MemberEntity member2 = chattingRoomEntity.getMember2();
+	    	
+//	    	if(member2.getId().equals(loggedId)) {
+//	    		member1 = chattingRoomEntity.getMember2();
+//	    		member2 = chattingRoomEntity.getMember1();
+//	    	}
+	    	
+	    
+	    // 게시글 조회
+	    BoardEntity boardEntity = chattingRoomEntity.getBoardEntity();
+	    if (boardEntity == null) {
+	        return null;
+	    }
+
+	    // 거래 목록 조회 및 필터링 (완료된 거래 찾기)
+	    return boardEntity.getTrades().stream()
+	    	    .filter(trade -> 
+	    	        // 거래가 완료되지 않았고
+	    	        (!Boolean.TRUE.equals(trade.getCompleted1()) && !Boolean.TRUE.equals(trade.getCompleted2())) 
+	    	        &&
+	    	        // member1과 member2가 거래 참여자인 경우 (양방향 체크)
+	    	        (
+	    	            (trade.getMember1().getId().equals(member1.getId()) && trade.getMember2().getId().equals(member2.getId())) 
+	    	            || 
+	    	            (trade.getMember1().getId().equals(member2.getId()) && trade.getMember2().getId().equals(member1.getId()))
+	    	        )
+	    	    )
+	    	    .map(trade -> new TradeDTO().fromEntity(trade)) // TradeDTO로 변환
+	    	    .findFirst() // 첫 번째 거래 반환
+	    	    .orElse(null); // 없으면 null
+
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	//게시글이 미예약 상태인지 확인
 	
