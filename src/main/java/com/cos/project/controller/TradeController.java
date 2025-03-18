@@ -1,6 +1,7 @@
 package com.cos.project.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -204,17 +205,28 @@ public class TradeController {
 			
 			
 			MemberEntity member1 = memberService.findById(responseDTO.getMember1Id());
+			MemberEntity member2 = memberService.findById(responseDTO.getMember2Id());
 			
 			Long roomId = chatService.findRoomId(member1, responseDTO.getBoardEntityId());
 			
 			MessageDTO messageDTO = new MessageDTO();
-			messageDTO.setMessageContent(
-				    responseAlarmDTO.getMember2Content() + 
-				    "<div class=\"messageButtonSelect\">" + 
-				    "<hr> <button id=\"complete1-Sell-" + responseDTO.getId() + "\">" + 
-				    "거래완료</button></div>"
-				);
+//			messageDTO.setMessageContent(
+//				    responseAlarmDTO.getMember2Content() + 
+//				    "<div class=\"messageButtonSelect\">" + 
+//				    "<hr> <button  id=\"complete1-Sell-" + responseDTO.getId() + "\">" + 
+//				    "거래완료</button></div>"
+//				);
 
+			
+			
+//			messageDTO.setMessageContent(
+//				    responseAlarmDTO.getMember2Content()
+//				);
+			messageDTO.setMessageContent(
+					member2.getUserid()+ " 님이 거래완료를 희망합니다. 거래를 마치시겠습니까? <div class='messageButtonSelect'><button id='complete1-Sell-" + responseDTO.getId() + "'>거래완료</button></div>"		
+			);
+			
+			
 
 			
 			BoardEntity boardEntity = boardService.findByBoardId(responseDTO.getBoardEntityId());
@@ -602,8 +614,28 @@ public class TradeController {
 	
 	}
 	
+	//BoardId 로 completed2 =true인  trade 찾기 
+	@ResponseBody
+	@GetMapping("/findCompleted2TradeByBoardId/{boardId}")
+	public ResponseEntity<?> findCompleted2TradeByBoardId(@PathVariable(name = "boardId")Long boardId,
+			@AuthenticationPrincipal PrincipalDetails principalDetails) {
+			Long loggedId = principalDetails.getMemberEntity().getId();
+			
+			BoardEntity boardEntity = boardService.findByBoardId(boardId);
+			List<TradeEntity> trades = boardEntity.getTrades();
+		
+			TradeDTO tradeDTO = trades.stream()
+				    .filter(trade -> Boolean.FALSE.equals(trade.getCompleted1()) && Boolean.TRUE.equals(trade.getCompleted2()))
+				    .findFirst()
+				    .map(trade -> new TradeDTO().fromEntity(trade))
+				    .orElse(null);
+			
+			
+//		TradeDTO responseDTO = tradeService.find
+		System.out.println(tradeDTO.toString());
+		return ResponseEntity.ok(tradeDTO);
 	
-	
+	}
 	
 	
 	

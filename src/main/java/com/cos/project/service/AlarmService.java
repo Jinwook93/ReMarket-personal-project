@@ -16,12 +16,14 @@ import org.springframework.stereotype.Service;
 
 import com.cos.project.dto.AlarmDTO;
 import com.cos.project.dto.PagedResponse;
+import com.cos.project.dto.TradeDTO;
 import com.cos.project.entity.AlarmEntity;
 import com.cos.project.entity.BoardEntity;
 import com.cos.project.entity.ChattingRoomEntity;
 import com.cos.project.entity.CommentLikeEntity;
 import com.cos.project.entity.MemberEntity;
 import com.cos.project.entity.MessageEntity;
+import com.cos.project.entity.TradeEntity;
 import com.cos.project.repository.AlarmRepository;
 import com.cos.project.repository.BoardLikeRepository;
 import com.cos.project.repository.BoardRepository;
@@ -418,8 +420,17 @@ public class AlarmService {
 			}
 					
 					else if (childType.equals("거래") && action.equals("거래 완료 확인")) {
+						BoardEntity boardEntity = boardRepository.findById(Long.valueOf(object)).orElse(null);
+						List<TradeEntity> trades = boardEntity.getTrades();
+						
+						TradeDTO tradeDTO = trades.stream()
+							    .filter(trade -> Boolean.FALSE.equals(trade.getCompleted1()) && Boolean.TRUE.equals(trade.getCompleted2()))
+							    .findFirst()
+							    .map(trade -> new TradeDTO().fromEntity(trade))
+							    .orElse(null);
 						member1Content = member2.get().getUserid() +"님에게 거래완료 신청을 보냈습니다";
-						member2Content =  member1.get().getUserid() +" 님이 거래완료를 희망합니다. 거래를 마치시겠습니까?";
+//						member2Content = member1.get().getUserid() + " 님이 거래완료를 희망합니다. 거래를 마치시겠습니까? <div class='messageButtonSelect'><button id='complete1-Sell-" + tradeDTO.getId() + "'>거래완료</button></div>";
+						member2Content = member1.get().getUserid() + " 님이 거래완료를 희망합니다. 거래를 마치시겠습니까? <button id='complete1-Sell-" + tradeDTO.getId() + "'>거래완료</button>";		
 					}
 					else if (childType.equals("거래") && action.equals("거래완료")) {
 						member1Content = member2.get().getUserid() +"님과 "+object+" 번 게시판 거래를 완료하였습니다";

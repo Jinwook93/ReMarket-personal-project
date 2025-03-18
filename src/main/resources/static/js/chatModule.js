@@ -40,7 +40,7 @@ function insertLineBreaks(text, maxLength) {
 
 //trade.accept1 && trade.accept2) || 
 
-function findTradeByBoardId(trades) {
+export function findTradeByBoardId(trades) {
 	let result = null;
 	for (let trade of trades) {
 		console.log(trade);

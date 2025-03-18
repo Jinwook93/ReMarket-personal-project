@@ -416,6 +416,47 @@ async function checkUserAlarmData(loggedId) {
 }
 
 
+export async function fetchCompleted2Trade(alarm) {
+    const boardId = Number(alarm.id);
+    try {
+        const response = await fetch(`/trade/findCompleted2TradeByBoardId/${boardId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error("서버로부터 데이터를 가져오지 못했습니다.");
+        }
+
+        const tradeData = await response.json();
+
+        if (tradeData) {
+            console.log("가져온 Trade 데이터:", tradeData);
+
+            // `complete-class-${alarm.id}` id를 가진 div를 찾음
+            const targetElement = document.getElementById(`complete-class-${alarm.id}`);
+
+            if (targetElement) {
+                // 버튼 생성
+                const button = document.createElement("button");
+                button.id = `complete1-Sell-${tradeData.id}`;  // 버튼의 id 설정
+                button.textContent = "거래완료";  // 버튼 텍스트 설정
+
+                // 버튼을 div에 추가
+                targetElement.appendChild(button);
+            }
+
+            return tradeData;  // 필요한 경우 tradeData를 반환
+        } else {
+            console.log("조건에 맞는 Trade 데이터가 없습니다.");
+        }
+
+    } catch (error) {
+        console.error("에러 발생:", error);
+    }
+}
 
 
 
@@ -453,11 +494,15 @@ export async function findAlarm(loggedId, alarmResult, alarmList, alarmListBody,
 			container.appendChild(label);
 		}
 
+	
+		
 
 		alarmList.sort((a, b) => Number(b.id) - Number(a.id));
 
 		alarmList.forEach(alarm => {
 			const row = document.createElement("tr");
+		      		fetchCompleted2Trade(alarm);
+//			console.log(trade);
 			row.innerHTML = `
                     ${alarm.member1Visible && Number(alarm.member1Id) === Number(loggedId) ? `
                    <!--     <td>${alarm.id}</td> -->
@@ -473,18 +518,27 @@ export async function findAlarm(loggedId, alarmResult, alarmList, alarmListBody,
                         <!--  <td>${alarm.id}</td> -->
                         <td  id = alarm-${alarm.id}>${alarm.member2Content}
                             ${alarm.action === "상대방 동의 확인" ? `
-                                <button id="agreeMember2-${alarm.id}" onclick="enrollTrade2(${alarm.id})">거래하기</button>
-                                <button id="denyMember2-${alarm.id}" onclick="denyCreateTrade(${alarm.id})">거절하기</button>
+                                <button id="agreeMember2-${alarm.id}" >거래하기</button>
+                                <button id="denyMember2-${alarm.id}" >거절하기</button>
                           		` : ""}
-                            ${alarm.action === "거래 완료 확인" ? `
-                                <button id="complete1-Sell-${alarm.object}" onclick="enrollTrade2(${alarm.id})">거래완료</button>
-             							 ` : ""}
+                          		
+                          		 ${alarm.action === "예약" ? `
+                                <button id="enroll-Book2-${alarm.id}" >예약하기</button>
+                                <button id="deny-enroll-Book2-${alarm.id}" >거절하기</button>
+                          		` : ""}
+
+                           <!-- ${alarm.action === "거래 완료 확인" ? `
+                            <div id = "complete-class-${alarm.id}">
+                               <button id="complete1-Sell-${alarm.object}">거래완료</button> 
+                               </div>
+             							 ` : ""} -->
                                     <div class="date-container" style="display: flex; gap: 10px;"> 
                               <p class="date-text">${formatDate(alarm.createTime)}</p>
                                        <p class="read-status">${alarm.member2Read === "READ" ? "읽음" : "읽지 않음"}</p></div>
                         </td>
                        ` : ""}
                 `;
+          
 			alarmListBody.appendChild(row);
 
 		});
