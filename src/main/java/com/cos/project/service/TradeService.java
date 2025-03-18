@@ -113,14 +113,12 @@ public class TradeService {
 	public TradeDTO setCompleted(Long tradeId,Boolean isCompleted1, Boolean isCompleted2) {
 		TradeEntity tradeEntity = tradeRepository.findById(tradeId).orElse(null);
 	
-		tradeEntity.setCompleted1(isCompleted1);
+		
+		tradeEntity.setCompleted1(isCompleted1 ==null? false : isCompleted1);
 		tradeEntity.setCompleted2(isCompleted2);
 		if((isCompleted1 != null &&isCompleted1 == true )&& (isCompleted2 != null &&isCompleted2 == true)) {
 			tradeEntity.setTradeStatus(TradeStatus.완료);
 		}
-//		if (Boolean.TRUE.equals(isCompleted1) && Boolean.TRUE.equals(isCompleted2)) {
-//		    tradeEntity.setTradeStatus(TradeStatus.완료);
-//		}
 		TradeDTO tradeDTO = new TradeDTO();
 		System.out.println("다 되었나"+ isCompleted1+ isCompleted2);
 	TradeDTO responseDTO = 	tradeDTO.fromEntity(tradeEntity);
@@ -143,9 +141,9 @@ public class TradeService {
 
 	    // 거래 목록 조회 및 필터링 (완료된 거래 찾기)
 	    return boardEntity.getTrades().stream()
-	        .filter(trade -> (trade.getCompleted1().equals(Boolean.TRUE) && trade.getCompleted2().equals(Boolean.TRUE)  // 완료된 거래만 필터링
-	        		|| (trade.getBooking1() || trade.getBooking2())
-	        		|| (trade.getAccept1() || trade.getAccept2())
+	        .filter(trade -> (trade.getCompleted1().equals(Boolean.TRUE) || trade.getCompleted2().equals(Boolean.TRUE)  // 완료된 거래만 필터링
+	        		|| (trade.getBooking1() != null ||  trade.getBooking2() != null)&& (trade.getBooking1() || trade.getBooking2())
+	        		|| (trade.getAccept1() != null ||  trade.getAccept2() != null)&& (trade.getAccept1() || trade.getAccept2())
 	        		)) 
 	        .map(trade -> new TradeDTO().fromEntity(trade)) // TradeDTO 변환
 	        .findFirst() // 가장 첫 번째 거래 선택

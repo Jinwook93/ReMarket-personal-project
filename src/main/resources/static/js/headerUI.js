@@ -360,7 +360,7 @@ async function checkUserAlarmData(loggedId) {
 			}
 
 
-			console.log(room);
+//		ㄴ	console.log(room);
 
 			//				updateChatRoomOrder(roomId);
 

@@ -906,6 +906,8 @@ export async function boardTitleButtonClickHandler(event, board) {
 					const unReadMessageCount = await checkUnReadMessageCount2(data.id);
 					const tradeResponse = await fetch(`/trade/findTrade/${data.id}`);			//거래 상태
 					const trade = await tradeResponse.json();
+						console.log("트레이드");
+					console.log(trade);
 					// 기존 DOM에서 같은 roomId가 있는지 확인
 					const existingRow = existingRows.find(row => row.dataset.roomId === roomId);
 					const newContent = `
@@ -914,6 +916,11 @@ export async function boardTitleButtonClickHandler(event, board) {
                                     background-color: lightgray; padding: 10px; border-radius: 0px;
                                     margin-top: 10px; margin-bottom: 10px;">
                             <span><b>${data.title}</b> 
+                            
+                       
+                            
+                      ${trade !== null  && (trade.booking1 !== null || trade.booking2 !== null) && trade.booking1 === true && trade.booking2 === true && trade.tradeStatus !== '완료' ? `<button>예약 중</button>` : ""}      
+                      ${trade !== null  && (trade.accept1 !== null || trade.accept2 !== null)   && (trade.accept1 === true && trade.accept2 === true)   && trade.tradeStatus !== '완료'  ? `<button>거래 중</button>` : ""}      
                        ${trade !== null && trade.tradeStatus === '완료' ? `<button>거래완료</button>` : ""}
                             </span>
                             <button style="background-color: red; color: white; border: none;
@@ -1344,14 +1351,14 @@ export async function boardTitleButtonClickHandler(event, board) {
 					&& trade.booking1 !== true && trade.booking2 !== true
 					&& trade.accept1 === true && trade.accept2 === true
 					&& trade.tradeStatus !== '완료' ?
-					`<button type="button" data-TradeSellBoardId="${board.id}"  class = "trading">거래 진행 중</button>` : ""}
+					`<button type="button"  class = "trading">거래 진행 중</button>` : ""}
 
         ${trade !== null
 					&& trade.booking1 !== true && trade.booking2 !== true
 					&& trade.accept1 === true && trade.accept2 === true
 					&& trade.tradeStatus !== '완료' && board.memberEntity.userid === loggedUserId ?
 					`<button type="button" id="chat-complete2-Sell-${trade.id}"
-             data-Complete2TradeSellBoardId="${board.id}" class = "completeTrade">거래완료</button>` : ""}
+           class = "completeTrade">거래완료</button>` : ""}
 
         ${trade !== null && trade.tradeStatus !== null && trade.tradeStatus === '완료' ?
 					`<h3 style="color:red;">※ 거래가 완료된 게시글입니다</h3>` : ""}

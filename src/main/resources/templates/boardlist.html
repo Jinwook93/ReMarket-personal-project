@@ -192,9 +192,56 @@ tr:hover {
 							<img th:id="|mainImage-${board.id}|"
 								src="/boardimage/nullimage.jpg" alt="no profile image"
 								style="display: block; width: 80px; height: 80px; object-fit: cover; margin-right: 10px;">
+
+							<!-- 거래 상태 표시 및 거래취소 버튼 -->
+							<div th:each="trade : ${board.trades}">
+								<!-- 예약 중 버튼 -->
+								<button
+									th:if="${trade != null} 
+                    and ${trade.booking1} == true 
+                    and ${trade.booking2} == true 
+                    and ${trade.tradeStatus} != '완료'"
+									type="button">예약 중</button>
+
+								<!-- 거래 중 버튼 -->
+								<button
+									th:if="${trade != null 
+            and trade.accept1 == true 
+            and trade.accept2 == true 
+            and trade.completed1 != null 
+            and trade.completed2 != null 
+            and (trade.completed1 != true or trade.completed2 != true)}"
+									type="button">거래 중</button>
+
+								<!-- 거래 완료 버튼 -->
+								<button
+									th:if="${trade != null 
+            and trade.completed1 != null 
+            and trade.completed2 != null 
+            and (trade.completed1 == true and trade.completed2 == true)}"
+									type="button">거래완료</button>
+
+
+								<!-- 거래 취소 버튼 (member1, member2 모두에게 노출) 
+								<button
+									th:if="${trade != null} 
+                    and (${trade.accept1} == true and ${trade.accept2} == true 
+                         or (${trade.booking1} == true and ${trade.booking2} == true)) 
+                    and ${trade.tradeStatus} != '완료'"
+									th:id="|chat-cancel-trade-${trade.id}|" class="cancelTrade"
+									type="button">거래 취소</button>-->
+							</div>
+
+
+
+
+
+
+							<!-- 게시글 제목 -->
 							<a th:href="@{/board/view/{id}(id=${board.id})}"
 								th:text="${board.title}"
 								style="font-size: 16px; color: #000; font-weight: bold;"></a>
+
 						</div>
 					</td>
 					<td>

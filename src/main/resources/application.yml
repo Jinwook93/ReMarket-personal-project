@@ -28,7 +28,13 @@ spring:
 
 server:
   port: 8081
-  
+  tomcat:
+    connection-timeout: 30000  
     
 #spring.web.resources.static-locations=classpath:/static/,file:./image/
 
+
+
+
+#server.connection-timeout=30000  # 연결 타임아웃 (30초)
+#server.tomcat.connection-timeout=30000  # 톰캣의 커넥션 타임아웃
