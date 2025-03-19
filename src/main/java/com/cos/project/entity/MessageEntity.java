@@ -71,8 +71,8 @@ public class MessageEntity {
     @CreationTimestamp
     private Timestamp sendTime;  // 메시지 전송 시간
 
-
-    
+    @Column(nullable = true)
+    private Boolean expired;  // messageButtonSelect 내의 버튼들의 기능을 비활성화 시킬 것
 
 
 
@@ -84,7 +84,8 @@ public class MessageEntity {
             message.getMessageContent(),
             message.getChattingRoomEntity().getId(),
             message.getStatusBar(),
-            message.getSendTime()
+            message.getSendTime(),
+            message.getExpired()
         );
     }
     

@@ -227,7 +227,7 @@ public class ChatService {
 						message.isLiked(), message.isRead(), message.isExited(), message.getExitedSenderId(),
 						message.isDeleted(), message.getParentMessageId(), message.getSender().getProfileImage(),
 						message.getReceiver().getProfileImage(), message.getAlarmType(), message.getStatusBar(),
-						message.getSendTime()))
+						message.getSendTime(),message.getExpired()))
 				.collect(Collectors.toList());
 	}
 
@@ -650,7 +650,7 @@ public class ChatService {
 							return new MessageDTO(null, null, null, "최근 메시지가 없습니다1", chattingRoomEntity.getId(), null,
 									chattingRoomEntity.getReCreateTime1() != null
 											? chattingRoomEntity.getReCreateTime1()
-											: chattingRoomEntity.getCreateTime());
+											: chattingRoomEntity.getCreateTime(),null);
 						} else if (loggedId.equals(chattingRoomEntity.getMember2().getId())
 								&& chattingRoomEntity.getMessageIndex2() > 0
 								&& (messages.size() - chattingRoomEntity.getMessageIndex2() == 0)) { // 재방문한 loggedId에
@@ -658,11 +658,11 @@ public class ChatService {
 							return new MessageDTO(null, null, null, "최근 메시지가 없습니다2", chattingRoomEntity.getId(), null,
 									chattingRoomEntity.getReCreateTime2() != null
 											? chattingRoomEntity.getReCreateTime2()
-											: chattingRoomEntity.getCreateTime());
+											: chattingRoomEntity.getCreateTime(),null);
 						}
 						return message.convertToDTO(message); // message 객체에서 convertToDTO 호출
 					}).orElse(new MessageDTO(null, null, null, "최근 메시지가 없습니다3", chattingRoomEntity.getId(), null,
-							reCreateTime != null ? reCreateTime : chattingRoomEntity.getCreateTime())); // 최신 메시지가 없으면
+							reCreateTime != null ? reCreateTime : chattingRoomEntity.getCreateTime(),null)); // 최신 메시지가 없으면
 																										// null 반환
 		} else {
 
@@ -679,7 +679,7 @@ public class ChatService {
 							return new MessageDTO(null, null, null, "최근 메시지가 없습니다4", chattingRoomEntity.getId(), null,
 									chattingRoomEntity.getReCreateTime1() != null
 											? chattingRoomEntity.getReCreateTime1()
-											: chattingRoomEntity.getCreateTime());
+											: chattingRoomEntity.getCreateTime(),null);
 						} else if (loggedId.equals(chattingRoomEntity.getMember2().getId())
 								&& chattingRoomEntity.getMessageIndex2() > 0
 								&& (messages.size() - chattingRoomEntity.getMessageIndex2() == 0)) { // 재방문한 loggedId에
@@ -687,11 +687,11 @@ public class ChatService {
 							return new MessageDTO(null, null, null, "최근 메시지가 없습니다5", chattingRoomEntity.getId(), null,
 									chattingRoomEntity.getReCreateTime2() != null
 											? chattingRoomEntity.getReCreateTime2()
-											: chattingRoomEntity.getCreateTime());
+											: chattingRoomEntity.getCreateTime(),null);
 						}
 						return message.convertToDTO(message); // message 객체에서 convertToDTO 호출
 					}).orElse(new MessageDTO(null, null, null, "최근 메시지가 없습니다6", chattingRoomEntity.getId(), null,
-							reCreateTime != null ? reCreateTime : chattingRoomEntity.getCreateTime())); // 최신 메시지가 없으면
+							reCreateTime != null ? reCreateTime : chattingRoomEntity.getCreateTime(),null)); // 최신 메시지가 없으면
 																										// null 반환
 
 		}
@@ -903,7 +903,7 @@ public class ChatService {
 							message.getSender().getProfileImage() != null ? message.getSender().getProfileImage()
 									: "/boardimage/nullimage.jpg",
 							message.getSender().getUserid(), message.getMessageContent(), room.getId(), // room을 여기서 참조
-							message.getStatusBar(), message.getSendTime()));
+							message.getStatusBar(), message.getSendTime(),message.getExpired()));
 		}).collect(Collectors.toList());
 	}
 
@@ -974,6 +974,15 @@ public class ChatService {
 				.messageIndex2(chattingRoomEntity.getMessageIndex2()).createTime(chattingRoomEntity.getCreateTime())
 				.build();
 
+	}
+
+	@Transactional			//메시지 내부 버튼 기능 만료
+	public void setMessageExpired(ChattingRoomEntity chattingRoomEntity) {
+			List<MessageEntity> messages = messageRepository.findByChattingRoomEntity(chattingRoomEntity.getId());
+				for(MessageEntity message : messages) {
+					message.setExpired(true);
+				}
+		
 	}
 
 }

@@ -22,6 +22,7 @@ import com.cos.project.entity.BoardEntity;
 import com.cos.project.entity.ChattingRoomEntity;
 import com.cos.project.entity.MemberEntity;
 import com.cos.project.entity.TradeEntity;
+import com.cos.project.entity.TradeStatus;
 import com.cos.project.service.AlarmService;
 import com.cos.project.service.BoardService;
 import com.cos.project.service.ChatService;
@@ -52,6 +53,19 @@ public class TradeController {
 	public ResponseEntity<?> checkCreateTrade(@PathVariable(name = "boardId") Long boardId,
 			@RequestBody TradeDTO tradeDTO, @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		Long loggedId = principalDetails.getMemberEntity().getId();
+		
+		BoardEntity boardEntity = boardService.findByBoardId(boardId);
+		List<TradeEntity> boardTrades = boardEntity.getTrades();
+		TradeEntity tradeEntity = boardTrades.stream().filter(tr -> tr != null).findFirst()
+				  .orElse(null);
+		
+		if (tradeEntity != null) {
+		    String expiredMessage = "만료된 정보입니다";
+		    return ResponseEntity.ok(expiredMessage);
+		}
+		
+		
+		
 		AlarmEntity alarmEntity = alarmService.postAlarm(loggedId, tradeDTO.getMember1Id(), tradeDTO.getMember2Id(),
 				"TRADE", "거래", String.valueOf(boardId), "상대방 동의 확인", null);
 		AlarmDTO responseDTO = alarmEntity.toDTO();
@@ -84,9 +98,17 @@ public class TradeController {
 //				+ "거래하기</button>" + "<button id=\"denyMember2-" + responseDTO.getId() + "\" onclick=\"denyCreateTrade("
 //				+ responseDTO.getId() + ")\">\r\n" + "거절하기</button>");
 
-		BoardEntity boardEntity = boardService.findByBoardId(boardId);
-		messageDTO.setReceiverUserId(boardEntity.getMemberEntity().getUserid());
+		BoardEntity boardEntity3 = boardService.findByBoardId(boardId);
+		messageDTO.setReceiverUserId(boardEntity3.getMemberEntity().getUserid());
 		messageDTO.setAlarmType(true);
+		
+		ChattingRoomEntity chattingRoomEntity2= chatService.findChatRoom(roomId).orElse(null);
+		
+	if(chattingRoomEntity2 == null) {
+		return null;
+	}
+	chatService.setMessageExpired(chattingRoomEntity2);	//메시지 내부 버튼 기능 만료
+		
 		chatService.addMessage(roomId, principalDetails, messageDTO);
 
 		boolean result = true;
@@ -98,8 +120,23 @@ public class TradeController {
 	public ResponseEntity<?> createTrade2(@PathVariable(name = "alarmId") Long alarmId, @RequestBody TradeDTO tradeDTO,
 			@AuthenticationPrincipal PrincipalDetails principalDetails) throws IllegalAccessException {
 		Long loggedId = principalDetails.getMemberEntity().getId();
+		
+		
+		TradeEntity tradeEntity = tradeService.findByTradeAlarmId(alarmId);
+		if(tradeEntity != null) {
+			String expiredMessage = "만료된 정보입니다";
+			return ResponseEntity.ok(expiredMessage);
+		}
+		
 		if (tradeDTO.getAccept1() && tradeDTO.getAccept2()) {
-
+				
+//			TradeEntity tradeEntity = tradeService.findByTradeAlarmId(alarmId);
+//			if(tradeEntity != null) {
+//				String expiredMessage = "만료된 정보입니다";
+//				return ResponseEntity.ok(expiredMessage);
+//			}
+			
+			
 			boolean result = true;
 			TradeDTO responseDTO = tradeService.createTrade(alarmId, tradeDTO);
 			AlarmEntity alarmEntity = alarmService.postAlarm(loggedId, responseDTO.getMember1Id(),
@@ -118,6 +155,15 @@ public class TradeController {
 			BoardEntity boardEntity = boardService.findByBoardId(responseDTO.getBoardEntityId());
 			messageDTO.setReceiverUserId(member1.getUserid());
 			messageDTO.setAlarmType(true);
+			
+			ChattingRoomEntity chattingRoomEntity2= chatService.findChatRoom(roomId).orElse(null);
+			
+		if(chattingRoomEntity2 == null) {
+			return null;
+		}
+		chatService.setMessageExpired(chattingRoomEntity2);	//메시지 내부 버튼 기능 만료
+			
+			
 			chatService.addMessage(roomId, principalDetails, messageDTO);
 			
 			
@@ -128,6 +174,8 @@ public class TradeController {
 			
 			return ResponseEntity.ok(responseAlarmDTO);
 		} else {
+			
+			
 			Map<String, Object> tradeDTO_map = tradeService.searchMember1Member2Board(alarmId);
 
 			// 메시지가 존재할 시, trade Entity 삭제
@@ -158,6 +206,15 @@ public class TradeController {
 			BoardEntity boardEntity = boardService.findByBoardId((Long) tradeDTO_map.get("boardId"));
 			messageDTO.setReceiverUserId(member1.getUserid());
 			messageDTO.setAlarmType(true);
+			
+			
+			ChattingRoomEntity chattingRoomEntity2= chatService.findChatRoom(roomId).orElse(null);
+			
+		if(chattingRoomEntity2 == null) {
+			return null;
+		}
+		chatService.setMessageExpired(chattingRoomEntity2);	//메시지 내부 버튼 기능 만료
+		
 			chatService.addMessage(roomId, principalDetails, messageDTO);
 			
 			
@@ -185,6 +242,18 @@ public class TradeController {
 	public ResponseEntity<?> CompleteTrade(@PathVariable(name = "tradeId") Long tradeId, @RequestBody TradeDTO tradeDTO,
 			@AuthenticationPrincipal PrincipalDetails principalDetails) throws IllegalAccessException {
 		Long loggedId = principalDetails.getMemberEntity().getId();
+		
+		
+		TradeEntity tradeEntity = tradeService.findByTradeEntityId(tradeId);
+		if (tradeEntity == null || (tradeEntity != null && tradeEntity.getTradeStatus() != null && tradeEntity.getTradeStatus().equals(TradeStatus.완료))) {
+		    String expiredMessage = "만료된 정보입니다";
+		    return ResponseEntity.ok(expiredMessage);
+		}
+
+		
+		
+		
+		
 		if (tradeDTO.getCompleted1() == null && tradeDTO.getCompleted2()) { // 보드 관리자 쪽에서 먼저 거래완료
 			System.out.println("completed1,completed2 확인" + tradeDTO.getCompleted1() + tradeDTO.getCompleted2());
 			TradeDTO responseDTO = tradeService.setCompleted(tradeId, tradeDTO.getCompleted1(),
@@ -232,6 +301,14 @@ public class TradeController {
 			BoardEntity boardEntity = boardService.findByBoardId(responseDTO.getBoardEntityId());
 			messageDTO.setReceiverUserId(member1.getUserid());
 			messageDTO.setAlarmType(true);
+			
+			
+			ChattingRoomEntity chattingRoomEntity2= chatService.findChatRoom(roomId).orElse(null);
+			
+		if(chattingRoomEntity2 == null) {
+			return null;
+		}
+		chatService.setMessageExpired(chattingRoomEntity2);	//메시지 내부 버튼 기능 만료
 			chatService.addMessage(roomId, principalDetails, messageDTO);
 			
 			
@@ -252,6 +329,10 @@ public class TradeController {
 			TradeDTO responseDTO = tradeService.setCompleted(tradeId, tradeDTO.getCompleted1(),
 					tradeDTO.getCompleted2());
 
+			
+			
+			
+			
 			AlarmEntity alarmEntity = alarmService.postAlarm(loggedId, responseDTO.getMember1Id(),
 					responseDTO.getMember2Id(), "TRADE", "거래", String.valueOf(responseDTO.getBoardEntityId()), "거래완료", null);
 			AlarmDTO responseAlarmDTO = alarmEntity.toDTO();
@@ -266,6 +347,13 @@ public class TradeController {
 			
 			MessageDTO messageDTO = new MessageDTO();  //object : 거래번호
 			messageDTO.setMessageContent(responseAlarmDTO.getMember2Content());
+			
+			ChattingRoomEntity chattingRoomEntity = chatService.findChatRoom(roomId).orElse(null);
+			if(chattingRoomEntity == null) {
+				return null;
+			}
+			chatService.setMessageExpired(chattingRoomEntity);	//메시지 내부 버튼 기능 만료
+			
 			
 			BoardEntity boardEntity = boardService.findByBoardId((Long) responseDTO.getBoardEntityId());
 			messageDTO.setReceiverUserId(boardEntity.getMemberEntity().getUserid());
@@ -341,6 +429,18 @@ public class TradeController {
 	public ResponseEntity<?> checkBookTrade(@PathVariable(name = "boardId") Long boardId,
 			@RequestBody TradeDTO tradeDTO, @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		Long loggedId = principalDetails.getMemberEntity().getId();
+		
+		BoardEntity boardEntity = boardService.findByBoardId(boardId);
+		List<TradeEntity> boardTrades = boardEntity.getTrades();
+		TradeEntity tradeEntity = boardTrades.stream().filter(tr -> tr != null).findFirst()
+				  .orElse(null);
+		
+		if (tradeEntity != null) {
+		    String expiredMessage = "만료된 정보입니다";
+		    return ResponseEntity.ok(expiredMessage);
+		}
+		
+		
 		System.out.println(tradeDTO.toString());
 		AlarmEntity alarmEntity = alarmService.postAlarm(loggedId, tradeDTO.getMember1Id(), tradeDTO.getMember2Id(),
 				"TRADE", "거래", String.valueOf(boardId), "예약", null);
@@ -362,9 +462,16 @@ public class TradeController {
 			);
 
 
-		BoardEntity boardEntity = boardService.findByBoardId(boardId);
-		messageDTO.setReceiverUserId(boardEntity.getMemberEntity().getUserid());
+		BoardEntity boardEntity2 = boardService.findByBoardId(boardId);
+		messageDTO.setReceiverUserId(boardEntity2.getMemberEntity().getUserid());
 		messageDTO.setAlarmType(true);
+		
+		ChattingRoomEntity chattingRoomEntity = chatService.findChatRoom(roomId).orElse(null);
+		if(chattingRoomEntity == null) {
+			return null;
+		}
+		chatService.setMessageExpired(chattingRoomEntity);	//메시지 내부 버튼 기능 만료
+		
 		chatService.addMessage(roomId, principalDetails, messageDTO);
 
 		boolean result = true;
@@ -379,6 +486,17 @@ public class TradeController {
 	public ResponseEntity<?> bookTrade(@PathVariable(name = "alarmId") Long alarmId, @RequestBody TradeDTO tradeDTO,
 			@AuthenticationPrincipal PrincipalDetails principalDetails) throws IllegalAccessException {
 		Long loggedId = principalDetails.getMemberEntity().getId();
+		
+		
+		TradeEntity tradeEntity = tradeService.findByTradeAlarmId(alarmId);
+		if(tradeEntity != null) {
+			String expiredMessage = "만료된 정보입니다";
+			return ResponseEntity.ok(expiredMessage);
+		}
+		
+		
+		
+		
 		if (tradeDTO.getBooking1() && tradeDTO.getBooking2()) {
 
 			boolean result = true;
@@ -399,6 +517,17 @@ public class TradeController {
 			BoardEntity boardEntity = boardService.findByBoardId(responseDTO.getBoardEntityId());
 			messageDTO.setReceiverUserId(member1.getUserid());
 			messageDTO.setAlarmType(true);
+			
+			
+			
+			ChattingRoomEntity chattingRoomEntity= chatService.findChatRoom(roomId).orElse(null);
+			
+			if(chattingRoomEntity == null) {
+				return null;
+			}
+			chatService.setMessageExpired(chattingRoomEntity);	//메시지 내부 버튼 기능 만료
+			
+			
 			chatService.addMessage(roomId, principalDetails, messageDTO);
 			return ResponseEntity.ok(responseAlarmDTO);
 		} else {
@@ -431,6 +560,16 @@ public class TradeController {
 			BoardEntity boardEntity = boardService.findByBoardId((Long) tradeDTO_map.get("boardId"));
 			messageDTO.setReceiverUserId(member1.getUserid());
 			messageDTO.setAlarmType(true);
+			
+			ChattingRoomEntity chattingRoomEntity= chatService.findChatRoom(roomId).orElse(null);
+			
+			if(chattingRoomEntity == null) {
+				return null;
+			}
+			chatService.setMessageExpired(chattingRoomEntity);	//메시지 내부 버튼 기능 만료
+			
+			
+			
 			chatService.addMessage(roomId, principalDetails, messageDTO);
 			
 			
@@ -448,6 +587,17 @@ public class TradeController {
 	public ResponseEntity<?> changeBookTrade(@PathVariable(name = "roomId") Long roomId, @RequestBody TradeDTO tradeDTO,
 			@AuthenticationPrincipal PrincipalDetails principalDetails) throws IllegalAccessException {
 		Long loggedId = principalDetails.getMemberEntity().getId();
+		
+		
+		
+		TradeDTO tradeDTOisNotNull = tradeService.findNotTradeByRoomId(roomId, loggedId);
+		if(tradeDTOisNotNull == null) {
+			String expiredMessage = "만료된 정보입니다";
+			return ResponseEntity.ok(expiredMessage);
+		}
+		
+		
+		
 //		if (!tradeDTO.getBooking1() && !tradeDTO.getBooking2() && tradeDTO.getAccept1() && tradeDTO.getAccept2()) {
 
 			TradeDTO responseDTO = tradeService.changeBookEnrollTrade(roomId, loggedId, tradeDTO);
@@ -468,6 +618,18 @@ public class TradeController {
 			BoardEntity boardEntity = boardService.findByBoardId(responseDTO.getBoardEntityId());
 			messageDTO.setReceiverUserId(member1.getUserid());
 			messageDTO.setAlarmType(true);
+			
+			
+			ChattingRoomEntity chattingRoomEntity= chatService.findChatRoom(roomId).orElse(null);
+			
+			if(chattingRoomEntity == null) {
+				return null;
+			}
+			chatService.setMessageExpired(chattingRoomEntity);	//메시지 내부 버튼 기능 만료
+			
+			
+			
+			
 			chatService.addMessage(roomId, principalDetails, messageDTO);
 			return ResponseEntity.ok(responseAlarmDTO);
 //		} 
@@ -515,20 +677,6 @@ public class TradeController {
 	
 	
 	
-//	@ResponseBody
-//	@PostMapping("/cancelTrade/{boardId}") 
-//	public ResponseEntity<?> cancelTrade(@PathVariable(name = "boardId") Long boardId, @RequestBody TradeDTO tradeDTO,
-//			@AuthenticationPrincipal PrincipalDetails principalDetails) throws IllegalAccessException {
-//		
-//				TradeEntity tradeEntity = tradeService.findTradeEntityByMember1Member2Board(tradeDTO.getMember1Id(),tradeDTO.getMember2Id(), boardId);
-//				tradeService.deleteByTradeEntityId(tradeEntity.getId());
-//				
-//				return ResponseEntity.ok("거래가 취소되었습니다");
-//	
-//	
-//	
-//	
-//	}
 	
 	
 	
@@ -586,13 +734,26 @@ public class TradeController {
 				MemberEntity member2 = memberService.findById(responseDTO.getMember2Id());
 				
 				Long roomId = chatService.findRoomId(member1, responseDTO.getBoardEntityId());
+				ChattingRoomEntity chattingRoomEntity= chatService.findChatRoom(roomId).orElse(null);
+				
+				if(chattingRoomEntity == null) {
+					return null;
+				}
+				chatService.setMessageExpired(chattingRoomEntity);	//메시지 내부 버튼 기능 만료
+				
+				
 				
 				MessageDTO messageDTO = new MessageDTO();
 				messageDTO.setMessageContent(
 					    responseAlarmDTO.getMember2Content()
 					);
 
-
+					ChattingRoomEntity chattingRoomEntity2= chatService.findChatRoom(roomId).orElse(null);
+				
+				if(chattingRoomEntity2 == null) {
+					return null;
+				}
+				chatService.setMessageExpired(chattingRoomEntity2);	//메시지 내부 버튼 기능 만료
 				
 				BoardEntity boardEntity = boardService.findByBoardId(responseDTO.getBoardEntityId());
 				messageDTO.setReceiverUserId(member1.getUserid());

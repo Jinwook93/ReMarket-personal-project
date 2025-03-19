@@ -30,13 +30,15 @@ public class MessageDTO {
     private String profileImageUrl2;
     private Boolean alarmType;
     private Boolean statusBar;
+
     
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private Timestamp sendTime;    // 메시지 전송 시간
 	
+    private Boolean expired;
     
-    
-    public MessageDTO(Long id, String profileImageUrl1,String senderUserId, String messageContent, Long roomId,Boolean statusBar,Timestamp sendTime) {
+    public MessageDTO(Long id, String profileImageUrl1,String senderUserId, String messageContent, Long roomId,Boolean statusBar,Timestamp sendTime
+    		,Boolean expired) {
 		super();
 		this.id = id;
 		this.profileImageUrl1 = profileImageUrl1;
@@ -45,7 +47,11 @@ public class MessageDTO {
 		this.roomId = roomId;
 		this.statusBar = statusBar;
 		this.sendTime = sendTime;
+		this.expired = expired;
 	}
+
+
+
 
     
     

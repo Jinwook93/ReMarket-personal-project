@@ -298,5 +298,42 @@ public class TradeService {
 	    
 	    return filteredDTO;
 	}
+
+	//알람아이디로 Trade 목록 조회
+	@Transactional
+	public TradeEntity findByTradeAlarmId(Long alarmId) {
+	    // Find the AlarmEntity by its ID
+	    AlarmEntity alarmEntity = alarmRepository.findById(alarmId).orElse(null);
+
+	    if (alarmEntity == null) {
+	        return null; // If AlarmEntity doesn't exist, return null
+	    }
+
+	    Long boardId = Long.valueOf(alarmEntity.getObject());
+	    
+	    if (boardId == null) {
+	        return null; // If boardId is null, return null
+	    }
+	    
+	    // Find the BoardEntity by its ID
+	    BoardEntity boardEntity = boardRepository.findById(boardId).orElse(null);
+
+	    if (boardEntity == null) {
+	        return null; // If BoardEntity doesn't exist, return null
+	    }
+
+	    // Get the trades from the boardEntity
+	    List<TradeEntity> trades = boardEntity.getTrades();
+
+	    // Find the trade based on the provided conditions
+	    return trades.stream()
+	            .filter(tr -> tr != null && (
+	                    (tr.getAccept1().equals(Boolean.TRUE) && tr.getAccept2().equals(Boolean.TRUE)) ||
+	                    (tr.getBooking1().equals(Boolean.TRUE) && tr.getBooking2().equals(Boolean.TRUE))
+	            ))
+	            .findFirst()
+	            .orElse(null); // Return the first trade that matches, or null if none match
+	}
+
 	
 }

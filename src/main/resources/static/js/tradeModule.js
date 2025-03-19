@@ -64,40 +64,35 @@ export function enrollTrade2(alarmId, loggedUserId) {  // 로그인유저 : memb
 					// 응답이 실패했을 경우
 					throw new Error('응답 실패');
 				}
-				return response.json();  // JSON 응답으로 변환
+				//return response.json();  // JSON 응답으로 변환
+				const contentType = response.headers.get("Content-Type");
+
+				if (contentType && contentType.includes("application/json")) {
+					return response.json();  // Parse as JSON
+				} else {
+					return response.text();  // Parse as text
+				}
 			})
 			.then(async data => {
-				console.log(data);
-				//				alert("거래가 성사되었습니다");
-				alert(data.member2Content);  // 응답 데이터 처리
-				return data;
-				//			const room = await fetch(`/chat/findRoomByBoardIdAndMemberId/${Number(data.object)}`, {
-				//					method: 'POST',
-				//					headers: { 'Content-Type': "application/json;charset=utf-8" },
-				//					body: JSON.stringify({
-				//						member1Id: data.member1Id,
-				//						member2Id: data.member2Id
-				//					})
-				//
-				//				}).then(res => res.json()); //TRADE일 경우
-				//			
-				//			
-				//			if (loggedUserId === room.member1UserId) {
-				//					messageIndex = room.messageIndex1;
-				////					openChatRoom(roomId, board.title, room.member1UserId, room.member2UserId, "logged1");
-				//				} else if (loggedUserId === room.member2UserId) {
-				//					messageIndex = room.messageIndex2;
-				////					openChatRoom(roomId, room.title, room.member2UserId, room.member1UserId, "logged2");
-				//				}
-				//			
-				//			
-				//				 await loadMessages(room.id, messageIndex, room.recentExitedmemberId);
-				//				return loadChatRooms(loggedId);
+
+				//				console.log(data);
+				//				alert(data.member2Content);  // 응답 데이터 처리
+				//				return data;
+
+				//console.log(data);
+				if (typeof data !== 'object' && data === "만료된 정보입니다") {
+					alert(data);
+					return;
+				}
+				if (typeof data === 'object') {
+					console.log(data);
+					alert(data.member2Content);  // 응답 데이터 처리
+					return data;
+				}
+
+
 			})
-			//			.then(() => {
-			//				setUpEnterRoomButton(loggedUserId);
-			//				setUpExitRoomButton();
-			//			})
+
 			.catch(error => {  // 오류 처리
 				alert("거래 신청을 실패하였습니다");
 				console.log(error);
@@ -132,12 +127,42 @@ export function denyCreateTrade(alarmId, loggedUserId) {  // 로그인유저 : m
 					// 응답이 실패했을 경우
 					throw new Error('응답 실패');
 				}
-				return response.json();  // JSON 응답으로 변환
+				//return response.json();  // JSON 응답으로 변환
+
+
+
+				const contentType = response.headers.get("Content-Type");
+
+				if (contentType && contentType.includes("application/json")) {
+					return response.json();  // Parse as JSON
+				} else {
+					return response.text();  // Parse as text
+				}
+
+
 			})
 			.then(data => {
-				console.log(data);
-				alert(data.member2Content);  // 응답 데이터 처리
-				return data;
+				//				console.log(data);
+				//				alert(data.member2Content);  // 응답 데이터 처리
+				//				return data;
+
+
+				
+				if (typeof data !== 'object' && data === "만료된 정보입니다") {
+					console.log(data);
+					alert(data);
+					return;
+				}
+				if (typeof data === 'object') {
+					console.log(data);
+					alert(data.member2Content);  // 응답 데이터 처리
+					return data;
+				}
+
+
+
+
+
 				//				return loadChatRooms(loggedId);
 			})
 			//			.then(() => {
@@ -180,15 +205,47 @@ export function CompleteTrade(tradeId, isMember) {  // 로그인유저 : member1
 					// 응답이 실패했을 경우
 					throw new Error('응답 실패');
 				}
-				return response.json();  // JSON 응답으로 변환
+				//	return response.json();  // JSON 응답으로 변환
+
+				const contentType = response.headers.get("Content-Type");
+
+				if (contentType && contentType.includes("application/json")) {
+					return response.json();  // Parse as JSON
+				} else {
+					return response.text();  // Parse as text
+				}
+
 			})
 			.then(data => {
-				console.log(data);
-				if (data.isCompleted1 === true && data.isCompleted2 === true) {
-					alert("거래상태가 최종완료되었습니다");
-				} else {
-					alert("거래가 완료되었습니다  ( ※ 상대방도 거래를 완료해야 거래가 완료됩니다)");  // 응답 데이터 처리
+
+
+
+				if (typeof data !== 'object' && data === "만료된 정보입니다") {
+					alert(data);
+					return;
 				}
+				if (typeof data === 'object') {
+					console.log(data);
+					if (data.isCompleted1 === true && data.isCompleted2 === true) {
+						alert("거래상태가 최종완료되었습니다");
+					} else {
+						alert("거래가 완료되었습니다  ( ※ 상대방도 거래를 완료해야 거래가 완료됩니다)");  // 응답 데이터 처리
+					}
+				}
+
+
+
+
+
+
+
+
+				//				console.log(data);
+				//				if (data.isCompleted1 === true && data.isCompleted2 === true) {
+				//					alert("거래상태가 최종완료되었습니다");
+				//				} else {
+				//					alert("거래가 완료되었습니다  ( ※ 상대방도 거래를 완료해야 거래가 완료됩니다)");  // 응답 데이터 처리
+				//				}
 
 			})
 			.catch(error => {  // 오류 처리
@@ -317,8 +374,8 @@ export function bookTrade1(boardId, loggedId, member2Id, loggedUserId) {
 			member1Id: Number(loggedId),
 			member2Id: Number(member2Id),
 			boardEntityId: Number(boardId),
-						accept1: false,
-						accept2: false,
+			accept1: false,
+			accept2: false,
 			booking1: true,
 			booking2: false,
 			completed1: false,
@@ -376,12 +433,41 @@ export function bookTrade2(alarmId, loggedUserId) {  // 로그인유저 : member
 					// 응답이 실패했을 경우
 					throw new Error('응답 실패');
 				}
-				return response.json();  // JSON 응답으로 변환
+				//return response.json();  // JSON 응답으로 변환
+
+				const contentType = response.headers.get("Content-Type");
+
+				if (contentType && contentType.includes("application/json")) {
+					return response.json();  // Parse as JSON
+				} else {
+					return response.text();  // Parse as text
+				}
 			})
 			.then(data => {
-				console.log(data);
-				//				alert("거래가 성사되었습니다");
-				alert(data.member1Content);  // 응답 데이터 처리
+				
+				
+				
+				
+				if (typeof data !== 'object' && data === "만료된 정보입니다") {
+					console.log(data);
+					alert(data);
+					return;
+				}
+				if (typeof data === 'object') {
+					console.log(data);
+					alert(data.member2Content);  // 응답 데이터 처리
+//					return data;
+				}
+				
+				
+				
+				
+				
+				
+//				console.log(data);
+//				alert(data.member1Content);  // 응답 데이터 처리
+
+
 				//				return loadChatRooms(loggedId);
 			})
 			//			.then(() => {
@@ -422,11 +508,46 @@ export function denyBookTrade(alarmId, loggedUserId) {  // 로그인유저 : mem
 					// 응답이 실패했을 경우
 					throw new Error('응답 실패');
 				}
-				return response.json();  // JSON 응답으로 변환
+				//	return response.json();  // JSON 응답으로 변환
+				const contentType = response.headers.get("Content-Type");
+
+				if (contentType && contentType.includes("application/json")) {
+					return response.json();  // Parse as JSON
+				} else {
+					return response.text();  // Parse as text
+				}
 			})
 			.then(data => {
-				console.log(data);
-				alert(data.member2Content);  // 응답 데이터 처리
+				
+				
+				
+						
+				if (typeof data !== 'object' && data === "만료된 정보입니다") {
+					console.log(data);
+					alert(data);
+					return;
+				}
+				if (typeof data === 'object') {
+					console.log(data);
+					alert(data.member2Content);  // 응답 데이터 처리
+//					return data;
+				}
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+//				console.log(data);
+//				alert(data.member2Content);  // 응답 데이터 처리
+				
+				
 				//				return loadChatRooms(loggedId);
 			})
 			//			.then(() => {
@@ -468,11 +589,50 @@ export function changeBookTrade(roomId, loggedUserId) {  // 로그인유저 : me
 					// 응답이 실패했을 경우
 					throw new Error('응답 실패');
 				}
-				return response.json();  // JSON 응답으로 변환
+			//	return response.json();  // JSON 응답으로 변환
+			
+				const contentType = response.headers.get("Content-Type");
+
+				if (contentType && contentType.includes("application/json")) {
+					return response.json();  // Parse as JSON
+				} else {
+					return response.text();  // Parse as text
+				}
+			
 			})
 			.then(data => {
-				console.log(data);
-				alert(data.member2Content);  // 응답 데이터 처리
+				
+				
+				
+				if (typeof data !== 'object' && data === "만료된 정보입니다") {
+					console.log(data);
+					alert(data);
+					return;
+				}
+				if (typeof data === 'object') {
+					console.log(data);
+					alert(data.member2Content);  // 응답 데이터 처리
+//					return data;
+				}
+				
+				
+				
+				
+				
+				
+				
+				
+				
+//				console.log(data);
+//				alert(data.member2Content);  // 응답 데이터 처리
+				
+				
+				
+				
+				
+				
+				
+				
 				//				return loadChatRooms(loggedId);
 			})
 			//			.then(() => {
