@@ -110,14 +110,28 @@ export async function loadMessages(roomId, messageIndex, recentExitedmemberId, s
 			filteredMessages.push(msg);			//필터링된 메시지에 msg 저장
 
 
-
+			
+						
 			if (msg.statusBar === true) {
 				const statusBar = document.createElement("p");
 				statusBar.className = "statusBar"; // className으로 클래스 추가
 				statusBar.innerText = "- " + msg.messageContent + " -";
 
 				// 직접 스타일 적용
-				statusBar.style.display = "flex";
+				
+				
+				
+			 if (
+            filteredMessages[0] === msg &&
+            msg.statusBar === true &&
+            msg.senderUserId === loggedUserId &&
+            msg.messageContent.includes("님이 입장하였습니다")
+        ) {
+            statusBar.style.display = "none";
+        } else {
+            statusBar.style.display = "flex";
+        }
+//				statusBar.style.display = "flex";
 				statusBar.style.justifyContent = "center";
 				statusBar.style.alignItems = "center";
 				statusBar.style.width = "100%";

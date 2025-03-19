@@ -189,7 +189,7 @@ public class AlarmController {
         List<AlarmDTO> filteredAlarms2 = filteredAlarms.stream()
                 .filter(alarm -> alarm.getMember1().getId().equals(loggedId)  || alarm.getMember2().getId().equals(loggedId)
                         && alarm.getType().equals("MESSAGE") 
-                        && (alarm.getAction().equals("송수신") || alarm.getAction().equals("나가기")))
+                        && (alarm.getAction().equals("송수신") || alarm.getAction().equals("나가기") || alarm.getAction().equals("재입장")) )
                 .map(AlarmEntity::toDTO)
                 .collect(Collectors.toList());
         

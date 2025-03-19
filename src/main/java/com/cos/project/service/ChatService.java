@@ -25,6 +25,7 @@ import com.cos.project.dto.ChattingRoomDTO;
 import com.cos.project.dto.MessageDTO;
 import com.cos.project.dto.PagedResponse;
 import com.cos.project.dto.TradeDTO;
+import com.cos.project.entity.AlarmEntity;
 import com.cos.project.entity.BoardEntity;
 import com.cos.project.entity.ChattingRoomEntity;
 import com.cos.project.entity.MemberEntity;
@@ -91,11 +92,14 @@ public class ChatService {
 //				resetExitedMessages(chattingRoomEntity);
 
 //				//입장 시 메시지 상태창 추가 
-//				this.setMessageEntityStatusBar(chattingRoomEntity.getId(), member1.getId(), "enterRoom");
-
+				this.setMessageEntityStatusBar(chattingRoomEntity.getId(), member1.getId(), "enterRoom");
+				
 				Long messagesCount = (long) messageRepository.findByChattingRoomEntity(chattingRoomEntity.getId())
 						.size();
 
+				AlarmEntity alarmEntity = alarmService.postAlarm(member1.getId(), member1.getId(),
+						member2.getId(), "MESSAGE", "채팅방", String.valueOf(chattingRoomEntity.getId()), "재입장", null);
+				
 				if (!member1.getId().equals(boardMember.getId())) {
 					chattingRoomEntity.setMessageIndex1(messagesCount); // 메시지 수에 맞게 messageIndex 업데이트
 				} else if (member1.getId().equals(boardMember.getId())) {
@@ -251,15 +255,29 @@ public class ChatService {
 			if (sender.getId().equals(chattingRoomEntity.getMember1().getId())
 					&& chattingRoomEntity.getMessageIndex1() > 0
 					&& messages.size() - chattingRoomEntity.getMessageIndex1() == 0) {
-				this.setMessageEntityStatusBar(chattingRoomEntity.getId(), principalDetails.getMemberEntity().getId(),
-						"enterRoom");
-				chattingRoomEntity.setMessageIndex1(chattingRoomEntity.getMessageIndex1() + 1);
+//				this.setMessageEntityStatusBar(chattingRoomEntity.getId(), principalDetails.getMemberEntity().getId(),
+//						"enterRoom");
+//				chattingRoomEntity.setMessageIndex1(chattingRoomEntity.getMessageIndex1() + 1);
+			
+				
+//				this.setMessageEntityStatusBar(chattingRoomEntity.getId(), principalDetails.getMemberEntity().getId(),
+//						"enterRoom");
+				chattingRoomEntity.setMessageIndex1(chattingRoomEntity.getMessageIndex1());
+				
+				
+				
 			} else if (sender.getId().equals(chattingRoomEntity.getMember2().getId())
 					&& chattingRoomEntity.getMessageIndex2() > 0
 					&& messages.size() - chattingRoomEntity.getMessageIndex2() == 0) {
-				this.setMessageEntityStatusBar(chattingRoomEntity.getId(), principalDetails.getMemberEntity().getId(),
-						"enterRoom");
-				chattingRoomEntity.setMessageIndex2(chattingRoomEntity.getMessageIndex2() + 1);
+//				this.setMessageEntityStatusBar(chattingRoomEntity.getId(), principalDetails.getMemberEntity().getId(),
+//						"enterRoom");
+//				chattingRoomEntity.setMessageIndex2(chattingRoomEntity.getMessageIndex2() + 1);
+				
+				
+				
+//				this.setMessageEntityStatusBar(chattingRoomEntity.getId(), principalDetails.getMemberEntity().getId(),
+//				"enterRoom");
+		chattingRoomEntity.setMessageIndex2(chattingRoomEntity.getMessageIndex2());
 			}
 
 			MessageEntity messageEntity = MessageEntity.builder().chattingRoomEntity(chattingRoomEntity).sender(sender)

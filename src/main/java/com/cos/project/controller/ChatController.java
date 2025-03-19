@@ -74,7 +74,10 @@ public class ChatController {
     	if(responseDTO != null) {
     		chatService.myChattingRoomList(loggedMember.getId());
     	}
+    	if(responseDTO.getExitedmemberId() == null && responseDTO.getRecentExitedmemberId() == null ) {
     	alarmService.postAlarm( loggedMember.getId(),  loggedMember.getId(), member2Id, "MESSAGE", "채팅방", null, "채팅방 만듬", null);
+    	}
+    	
     	return ResponseEntity.ok(responseDTO);
     }
     

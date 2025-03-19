@@ -367,7 +367,13 @@ public class AlarmService {
 					member1Content = member1Content = member1.get().getUserid() +"님과 " +member2.get().getUserid()+"님의 채팅창이 삭제되었습니다";
 					member2Content = member1Content = member2.get().getUserid() +"님과 " +member1.get().getUserid()+"님의 채팅창이 삭제되었습니다";
 					member2Visible = false;
-				}  else if (childType.equals("메시지") && action.equals("송수신")) {
+				} else if (childType.equals("채팅방") && action.equals("재입장")) {
+					member1Content = member2.get().getUserid()+"님의 채팅방에 재입장하였습니다";
+					member2Content =  member1.get().getUserid() +"님이 재입장하였습니다";
+				}  
+			
+			
+			else if (childType.equals("메시지") && action.equals("송수신")) {
 				ChattingRoomEntity chattingRoomEntity =chattingRoomRepository.findById(Long.valueOf(object)).orElse(null);
 					
 					member1Content =  member2.get().getUserid() +"님에게 메시지를 보냈습니다"; 
@@ -377,7 +383,7 @@ public class AlarmService {
 					member1Content =  "⚠️"+member2.get().getUserid() +"님은 이미 나간 유저이므로 메시지를 보낼 수 없습니다";
 				member2Visible= false;
 				}
-			}
+			} 
 //		else if (childType.equals("메시지") && action.equals("삭제")) {
 //			member1Content = member1.get().getUserid()+"님의 메시지가 삭제되었습니다";
 //			member2Content = member2.get().getUserid() + "님의 게시글이 삭제되었습니다";

@@ -360,7 +360,7 @@ async function checkUserAlarmData(loggedId) {
 			}
 
 
-//		ㄴ	console.log(room);
+			//		ㄴ	console.log(room);
 
 			//				updateChatRoomOrder(roomId);
 
@@ -417,45 +417,45 @@ async function checkUserAlarmData(loggedId) {
 
 
 export async function fetchCompleted2Trade(alarm) {
-    const boardId = Number(alarm.id);
-    try {
-        const response = await fetch(`/trade/findCompleted2TradeByBoardId/${boardId}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
+	const boardId = Number(alarm.id);
+	try {
+		const response = await fetch(`/trade/findCompleted2TradeByBoardId/${boardId}`, {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		});
 
-        if (!response.ok) {
-            throw new Error("서버로부터 데이터를 가져오지 못했습니다.");
-        }
+		if (!response.ok) {
+			throw new Error("서버로부터 데이터를 가져오지 못했습니다.");
+		}
 
-        const tradeData = await response.json();
+		const tradeData = await response.json();
 
-        if (tradeData) {
-            console.log("가져온 Trade 데이터:", tradeData);
+		if (tradeData) {
+			console.log("가져온 Trade 데이터:", tradeData);
 
-            // `complete-class-${alarm.id}` id를 가진 div를 찾음
-            const targetElement = document.getElementById(`complete-class-${alarm.id}`);
+			// `complete-class-${alarm.id}` id를 가진 div를 찾음
+			const targetElement = document.getElementById(`complete-class-${alarm.id}`);
 
-            if (targetElement) {
-                // 버튼 생성
-                const button = document.createElement("button");
-                button.id = `complete1-Sell-${tradeData.id}`;  // 버튼의 id 설정
-                button.textContent = "거래완료";  // 버튼 텍스트 설정
+			if (targetElement) {
+				// 버튼 생성
+				const button = document.createElement("button");
+				button.id = `complete1-Sell-${tradeData.id}`;  // 버튼의 id 설정
+				button.textContent = "거래완료";  // 버튼 텍스트 설정
 
-                // 버튼을 div에 추가
-                targetElement.appendChild(button);
-            }
+				// 버튼을 div에 추가
+				targetElement.appendChild(button);
+			}
 
-            return tradeData;  // 필요한 경우 tradeData를 반환
-        } else {
-            console.log("조건에 맞는 Trade 데이터가 없습니다.");
-        }
+			return tradeData;  // 필요한 경우 tradeData를 반환
+		} else {
+			console.log("조건에 맞는 Trade 데이터가 없습니다.");
+		}
 
-    } catch (error) {
-        console.error("에러 발생:", error);
-    }
+	} catch (error) {
+		console.error("에러 발생:", error);
+	}
 }
 
 
@@ -494,18 +494,17 @@ export async function findAlarm(loggedId, alarmResult, alarmList, alarmListBody,
 			container.appendChild(label);
 		}
 
-	
-		
+
+
 
 		alarmList.sort((a, b) => Number(b.id) - Number(a.id));
 
 		alarmList.forEach(alarm => {
 			const row = document.createElement("tr");
-		      		fetchCompleted2Trade(alarm);
-//			console.log(trade);
+			fetchCompleted2Trade(alarm);
+			//			console.log(trade);
 			row.innerHTML = `
                     ${alarm.member1Visible && Number(alarm.member1Id) === Number(loggedId) ? `
-                   <!--     <td>${alarm.id}</td> -->
                         <td id = alarm-${alarm.id}>${alarm.member1Content} 
     <div class="date-container" style="display: flex; gap: 10px;"> 
         <p class="date-text">${formatDate(alarm.createTime)}</p>
@@ -515,7 +514,6 @@ export async function findAlarm(loggedId, alarmResult, alarmList, alarmListBody,
 
                 ` : ""}
                     ${alarm.member2Visible && Number(alarm.member2Id) === Number(loggedId) ? `
-                        <!--  <td>${alarm.id}</td> -->
                         <td  id = alarm-${alarm.id}>${alarm.member2Content}
                             ${alarm.action === "상대방 동의 확인" ? `
                                 <button id="agreeMember2-${alarm.id}" >거래하기</button>
@@ -538,7 +536,7 @@ export async function findAlarm(loggedId, alarmResult, alarmList, alarmListBody,
                         </td>
                        ` : ""}
                 `;
-          
+
 			alarmListBody.appendChild(row);
 
 		});
