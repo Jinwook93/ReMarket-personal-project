@@ -226,10 +226,10 @@ export function CompleteTrade(tradeId, isMember) {  // 로그인유저 : member1
 				}
 				if (typeof data === 'object') {
 					console.log(data);
-					if (data.isCompleted1 === true && data.isCompleted2 === true) {
+					if (data.isCompleted1 !== null && data.isCompleted2 !== null &&data.isCompleted1 === true && data.isCompleted2 === true) {
 						alert("거래상태가 최종완료되었습니다");
 					} else {
-						alert("거래가 완료되었습니다  ( ※ 상대방도 거래를 완료해야 거래가 완료됩니다)");  // 응답 데이터 처리
+						alert("거래가 완료되었습니다");  // 응답 데이터 처리
 					}
 				}
 
@@ -455,7 +455,7 @@ export function bookTrade2(alarmId, loggedUserId) {  // 로그인유저 : member
 				}
 				if (typeof data === 'object') {
 					console.log(data);
-					alert(data.member2Content);  // 응답 데이터 처리
+					alert(data.member1Content);  // 응답 데이터 처리
 //					return data;
 				}
 				
@@ -611,7 +611,7 @@ export function changeBookTrade(roomId, loggedUserId) {  // 로그인유저 : me
 				}
 				if (typeof data === 'object') {
 					console.log(data);
-					alert(data.member2Content);  // 응답 데이터 처리
+					alert(data.member1Content);  // 응답 데이터 처리
 //					return data;
 				}
 				

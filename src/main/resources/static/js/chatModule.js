@@ -957,8 +957,8 @@ export async function loadChatRooms(loggedId) {
 				const unReadMessageCount = await checkUnReadMessageCount2(data.id);
 				const tradeResponse = await fetch(`/trade/findTrade/${data.id}`);			//거래 상태
 				const trade = await tradeResponse.json();
-				console.log("트레이드");
-				console.log(trade);
+//				console.log("트레이드");
+//				console.log(trade);
 				// 기존 DOM에서 같은 roomId가 있는지 확인
 				const existingRow = existingRows.find(row => row.dataset.roomId === roomId);
 				const newContent = `

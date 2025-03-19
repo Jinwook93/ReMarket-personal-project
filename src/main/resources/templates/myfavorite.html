@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>내 게시글 목록</title>
+<title>거래 목록</title>
 <style>
 body {
 	font-family: Arial, sans-serif;
@@ -76,13 +76,13 @@ h1 {
 </style>
 </head>
 <body>
-    <div th:replace="~{header.html}"></div>
-	<div class="container">
-		<h1>내 게시글 목록</h1>
+	<div th:replace="~{header.html}"></div>
+		<div class="container">
+		<h1>관심 목록</h1>			<!-- like한 목록을 가져오기 -->
 
 		<div class="board-list">
 			<!-- 게시글 목록 반복 -->
-			<div th:each="board : ${myboards}">
+			<div th:each="board : ${likedBoards}">
 				<a th:href="@{/board/view/{id}(id=${board.id})}">
 					<div class="board">
 						<div class="board-header">
@@ -107,10 +107,11 @@ h1 {
 								<!-- 이름 -->
 								<span th:text="${board.memberEntity.name}">작성자 이름</span>
 							</div>
-							
+
+
 							<span
 								style="display: flex; justify-content: center; align-items: center; flex-direction: row; height: 100%;">
-															<!-- 거래 상태 표시 및 거래취소 버튼 -->
+								<!-- 거래 상태 표시 및 거래취소 버튼 -->
 								<div th:each="trade : ${board.trades}">
 									<!-- 예약 중 버튼 -->
 									<button
@@ -145,15 +146,13 @@ h1 {
 
 
 								</div>
-							
-							<p class="board-text" th:text="${board.title}">게시글 제목</p>
+								<p class="board-text" th:text="${board.title}">게시글 제목</p>
 							</span>
 							<p class="board-time"
 								th:text="${#dates.format(board.createTime, 'yyyy-MM-dd HH:mm')}">작성
 								시간</p>
 						</div>
-						<!--                         <p class="board-text" th:text="${board.contents}">게시글 내용</p> -->
-					</div>
+						<!-- 						                        <p class="board-text" th:text="${board.contents}">게시글 내용</p> -->
 				</a>
 			</div>
 		</div>
@@ -161,7 +160,12 @@ h1 {
 		<!-- 뒤로 가기 버튼 -->
 		<a href="javascript:history.back()" class="back-button">뒤로 가기</a>
 	</div>
-	    <div th:replace="~{footer.html}"></div>
-<!-- 		 <th:block th:replace="/footer :: footerFragment"></th:block> -->
+	
+	
+	
+	
+	
+	<div th:replace="~{footer.html}"></div>
+	<!-- 		 <th:block th:replace="/footer :: footerFragment"></th:block> -->
 </body>
 </html>

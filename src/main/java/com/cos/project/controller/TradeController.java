@@ -4,10 +4,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,13 +21,16 @@ import com.cos.project.dto.MessageDTO;
 import com.cos.project.dto.TradeDTO;
 import com.cos.project.entity.AlarmEntity;
 import com.cos.project.entity.BoardEntity;
+import com.cos.project.entity.BoardLikeEntity;
 import com.cos.project.entity.ChattingRoomEntity;
 import com.cos.project.entity.MemberEntity;
 import com.cos.project.entity.TradeEntity;
 import com.cos.project.entity.TradeStatus;
+import com.cos.project.repository.BoardLikeRepository;
 import com.cos.project.service.AlarmService;
 import com.cos.project.service.BoardService;
 import com.cos.project.service.ChatService;
+import com.cos.project.service.LikeService;
 import com.cos.project.service.MemberService;
 import com.cos.project.service.MessageService;
 import com.cos.project.service.TradeService;
@@ -47,6 +52,7 @@ public class TradeController {
 	private final MemberService memberService;
 	private final ChatService chatService;
 	private final BoardService boardService;
+	private final BoardLikeRepository boardLikeRepository;
 
 	@ResponseBody
 	@PostMapping("/checkCreateTrade1/{boardId}")
@@ -796,6 +802,154 @@ public class TradeController {
 		System.out.println(tradeDTO.toString());
 		return ResponseEntity.ok(tradeDTO);
 	
+	}
+	
+	
+	// 나의 거래 목록
+//	@GetMapping("/mytrade/{loggedId}")
+//	public String myTrade(@PathVariable(name = "loggedId") Long loggedId,
+//	                      @AuthenticationPrincipal PrincipalDetails principalDetails,
+//	                      Model model) throws IllegalAccessException {
+//
+//		MemberEntity loggedMember = memberService.findById(loggedId);
+//	    List<BoardEntity> boards = boardService.allContents();
+//
+//	    // Stream으로 필터링
+//	    List<TradeEntity> filteredTrades = boards.stream()
+//	            .flatMap(board -> board.getTrades().stream())
+//	            .filter(trade ->
+//	                    (trade.getMember1().getId().equals(loggedId) || trade.getMember2().getId().equals(loggedId)) &&
+//	                    (Boolean.TRUE.equals(trade.getAccept1()) || Boolean.TRUE.equals(trade.getAccept2()) ||
+//	                     Boolean.TRUE.equals(trade.getBooking1()) || Boolean.TRUE.equals(trade.getBooking2())
+//	                    )
+//	            )
+//	            .collect(Collectors.toList());
+//
+//	    // DTO 변환 (필요하다면 TradeDTO.fromEntityList 형태로 구현 추천)
+//	    List<TradeDTO> filteredDTO = filteredTrades.stream()
+//	            .map(TradeDTO::fromEntity)			//   ==   trade -> tradeDTO.fromEntity(trade)      파라미터가 하나일 경우에 :: 사용 가능 . 그 외에는 -> 사용
+//	            .collect(Collectors.toList());
+//	    model.addAttribute("loggedMember", loggedMember);
+//	    model.addAttribute("trades", filteredDTO);
+//	    model.addAttribute("boards", boards);
+//	    return "/mytradelist";
+//	}
+
+	
+	
+	
+	
+	@GetMapping("/mytrade/{loggedId}")
+	public String myTrade(@PathVariable(name = "loggedId") Long loggedId,
+	                      @AuthenticationPrincipal PrincipalDetails principalDetails,
+	                      Model model) throws IllegalAccessException {
+
+		MemberEntity loggedMember = memberService.findById(loggedId);
+	    List<BoardEntity> boards = boardService.allContents();
+
+	    
+	    
+	    
+	    
+	    
+//	    .anyMatch() VS .filter() 차이점
+
+//	    .anyMatch(Predicate)	: 조건을 만족하는 요소가 하나라도 있는지 검사	반환 : boolean (true / false)  용도 : 요소 걸러내기 (선별)
+//	    .filter(Predicate)	: 조건을 만족하는 요소만 추려냄      반환 : 	Stream <원본타입>   용도 : 조건 충족 여부 검사
+	    
+	    
+	    List<BoardEntity> filteredBoards = boards.stream()
+	            .filter(board -> board.getTrades().stream()
+	                    .anyMatch(trade ->
+	                            (trade.getMember1().getId().equals(loggedId) || trade.getMember2().getId().equals(loggedId)) &&
+	                            (Boolean.TRUE.equals(trade.getAccept1()) || Boolean.TRUE.equals(trade.getAccept2()) ||
+	                             Boolean.TRUE.equals(trade.getBooking1()) || Boolean.TRUE.equals(trade.getBooking2()))
+	                    )
+	            )
+	            .collect(Collectors.toList());
+
+	    
+//	    List<BoardEntity> likedBoards = boards.stream()
+//	            .filter(board -> board.get().stream()
+//	                    .anyMatch(trade ->
+//	                            (trade.getMember1().getId().equals(loggedId) || trade.getMember2().getId().equals(loggedId)) &&
+//	                    )
+//	            )
+//	            .collect(Collectors.toList());
+	    
+	    
+//	    List<BoardEntity> likedBoards = boards.stream()
+//	            .filter(board -> {
+//	                Optional<BoardLikeEntity> boardLikeEntityOptional = boardLikeRepository.findBoardLikeEntity(board.getId(), loggedId);
+//	                return boardLikeEntityOptional.isPresent() && 
+//	                       boardLikeEntityOptional.get().isFlag() == true;
+//	            })
+//	            .collect(Collectors.toList());
+
+
+
+	    
+	    
+	    
+	    
+	    model.addAttribute("loggedMember", loggedMember);
+	    model.addAttribute("boards", filteredBoards);
+//	    model.addAttribute("likedBoards", likedBoards);
+	    return "/mytradelist";
+	}
+	
+	
+	
+	
+	@GetMapping("/myfavorite/{loggedId}")
+	public String myFavorite(@PathVariable(name = "loggedId") Long loggedId,
+	                      @AuthenticationPrincipal PrincipalDetails principalDetails,
+	                      Model model) throws IllegalAccessException {
+
+		MemberEntity loggedMember = memberService.findById(loggedId);
+	    List<BoardEntity> boards = boardService.allContents();
+
+	    
+	    
+	    
+	    
+	    
+//	    .anyMatch() VS .filter() 차이점
+
+//	    .anyMatch(Predicate)	: 조건을 만족하는 요소가 하나라도 있는지 검사	반환 : boolean (true / false)  용도 : 요소 걸러내기 (선별)
+//	    .filter(Predicate)	: 조건을 만족하는 요소만 추려냄      반환 : 	Stream <원본타입>   용도 : 조건 충족 여부 검사
+	    
+	    
+//	    List<BoardEntity> filteredBoards = boards.stream()
+//	            .filter(board -> board.getTrades().stream()
+//	                    .anyMatch(trade ->
+//	                            (trade.getMember1().getId().equals(loggedId) || trade.getMember2().getId().equals(loggedId)) &&
+//	                            (Boolean.TRUE.equals(trade.getAccept1()) || Boolean.TRUE.equals(trade.getAccept2()) ||
+//	                             Boolean.TRUE.equals(trade.getBooking1()) || Boolean.TRUE.equals(trade.getBooking2()))
+//	                    )
+//	            )
+//	            .collect(Collectors.toList());
+
+	    
+	    
+	    List<BoardEntity> likedBoards = boards.stream()
+	            .filter(board -> {
+	                Optional<BoardLikeEntity> boardLikeEntityOptional = boardLikeRepository.findBoardLikeEntity(board.getId(), loggedId);
+	                return boardLikeEntityOptional.isPresent() && 
+	                       boardLikeEntityOptional.get().isFlag() == true;
+	            })
+	            .collect(Collectors.toList());
+
+
+
+	    
+	    
+	    
+	    
+	    model.addAttribute("loggedMember", loggedMember);
+//	    model.addAttribute("boards", filteredBoards);
+	    model.addAttribute("likedBoards", likedBoards);
+	    return "/myfavorite";
 	}
 	
 	

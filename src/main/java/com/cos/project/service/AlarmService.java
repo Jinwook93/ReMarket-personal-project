@@ -406,20 +406,25 @@ public class AlarmService {
 						member1Content = member2.get().getUserid() +"님에게 거래신청을 보냈습니다";
 						member2Content =  member1.get().getUserid() +" 님이 거래를 희망합니다. 거래하시겠습니까?";
 					} else if (childType.equals("거래") && action.equals("거래수락")) {
-						member1Content =  member1.get().getUserid() +"님과의 거래를 수락했습니다. 거래상태가 거래 중으로 전환됩니다";
-						member2Content =  member2.get().getUserid() +"님이 거래를 수락했습니다. 거래상태가 거래 중으로 전환됩니다";
+						member1Content =  member2.get().getUserid() +"님이 거래를 수락했습니다. 거래상태가 거래 중으로 전환됩니다";
+						member2Content =  member1.get().getUserid() +"님과의 거래를 수락했습니다. 거래상태가 거래 중으로 전환됩니다";
+					
 					}	else if (childType.equals("거래") && action.equals("거래거절")) {
-							member1Content = member2.get().getUserid() +"님과의 거래를 거절했습니다.";
-							member2Content =  member1.get().getUserid() +"님이 거래를 거절했습니다.";
+						member1Content =  member1.get().getUserid() +"님이 거래를 거절했습니다.";
+							member2Content = member2.get().getUserid() +"님과의 거래를 거절했습니다.";
+							
 					}else if (childType.equals("거래") && action.equals("예약")) {
 						member1Content = member2.get().getUserid() +"님에게 예약신청을 보냈습니다";
 						member2Content =  member1.get().getUserid() +" 님이 예약를 희망합니다. 수락하시겠습니까?";
 					}else if (childType.equals("거래") && action.equals("예약수락")) {
-						member1Content = member1.get().getUserid() +"님과의 예약을 수락했습니다.";
-						member2Content =  member2.get().getUserid() +"님이 예약을 수락했습니다.";
+						member1Content = member2.get().getUserid() +"님과의 예약을 수락했습니다.";
+						member2Content =  member1.get().getUserid() +"님이 예약을 수락했습니다.";
+
+				
 					}else if (childType.equals("거래") && action.equals("예약거절")) {
-						member1Content = member2.get().getUserid() +"님과의 예약을 거절했습니다.";
-						member2Content =  member1.get().getUserid() +"님이 예약을 거절했습니다.";
+						member1Content =  member1.get().getUserid() +"님이 예약을 거절했습니다.";
+						member2Content = member2.get().getUserid() +"님과의 예약을 거절했습니다.";
+					
 				}else if (childType.equals("거래") && action.equals("예약상태변경")) {
 					member1Content = member2.get().getUserid() +"님과의 거래예약을 거래 중으로 전환하였습니다 .";
 					member2Content =  member1.get().getUserid() +"님이 거래예약를 거래 중으로 전환하였습니다";

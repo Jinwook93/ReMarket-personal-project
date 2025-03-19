@@ -40,11 +40,11 @@
 						<p style="margin-right: 20px;">
 							<span th:text="${name}"></span>
 						</p>
-						<a th:href="@{/logout}" style="margin-left: 10px;">로그아웃</a> <a
-							th:href="@{/mypage/{id}(id=${id})}">마이페이지</a> <a
+						<a th:href="@{/logout}" style="margin-left: 10px;">로그아웃</a>
+						 <a th:href="@{/mypage/{id}(id=${id})}">마이페이지</a> <a
 							href="/board/writeboard">글쓰기</a>
-
-
+						<a th:href="@{/trade/mytrade/{id}(id=${id})}">거래목록</a>
+						<a th:href="@{/trade/myfavorite/{id}(id=${id})}">관심목록</a>
 						<!-- 나의 채팅방 버튼 -->
 						<a href="#" id="myChattingRoomList"
 							style="position: relative; display: inline-block;"> <img
