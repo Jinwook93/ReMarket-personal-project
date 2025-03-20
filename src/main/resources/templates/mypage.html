@@ -96,7 +96,8 @@
         <a
 					th:href="@{/boardlist/{id}(id=${id})}">내가 쓴 게시글</a> <a
 					th:href="@{/commentlist/{id}(id=${id})}">내가 쓴 댓글</a>
-        
+        						<a th:href="@{/trade/mytrade/{id}(id=${id})}">거래목록</a>
+						<a th:href="@{/trade/myfavorite/{id}(id=${id})}">관심목록</a>
 <!--     </form> -->
     <div th:replace="~{footer.html}"></div>
 <!-- 	 <th:block th:replace="/footer :: footerFragment"></th:block> -->

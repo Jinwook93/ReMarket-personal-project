@@ -1,5 +1,7 @@
 package com.cos.project.dto;
 
+import java.sql.Timestamp;
+
 import com.cos.project.entity.BoardEntity;
 import com.cos.project.entity.MemberEntity;
 import com.cos.project.entity.TradeEntity;
@@ -25,6 +27,8 @@ public class TradeDTO {
 	private String tradeStatus; // TradeStatus의 Enum 값을 String으로 받음
 	private Boolean booking1;
 	private Boolean booking2;
+	private Timestamp createTime;
+	private Timestamp updateTime;
 
 	public TradeDTO(Long id, Long member1Id, Long member2Id, Long boardEntityId, Boolean accept1, Boolean accept2,
 			Boolean completed1, Boolean completed2, String tradeStatus) {
@@ -51,7 +55,10 @@ public class TradeDTO {
 				tradeEntity.getCompleted2(),
 				tradeEntity.getTradeStatus() != null ? tradeEntity.getTradeStatus().name() : null,
 				tradeEntity.getBooking1() != null ? tradeEntity.getBooking1() : null,
-				tradeEntity.getBooking2() != null ? tradeEntity.getBooking2() : null
+				tradeEntity.getBooking2() != null ? tradeEntity.getBooking2() : null,
+				tradeEntity.getCreateTime(),
+				tradeEntity.getUpdateTime()
+						
 						);
 	}
 
@@ -70,6 +77,8 @@ public class TradeDTO {
 		tradeEntity.setTradeStatus(this.tradeStatus != null ? TradeStatus.valueOf(this.tradeStatus) : null);
 		tradeEntity.setBooking1(this.getBooking1()); 
 		tradeEntity.setBooking2(this.getBooking2());
+		tradeEntity.setCreateTime(this.createTime);
+		tradeEntity.setUpdateTime(this.updateTime);
 		return tradeEntity;
 	}
 }

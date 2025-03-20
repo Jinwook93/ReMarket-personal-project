@@ -1,5 +1,6 @@
 package com.cos.project.controller;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -794,13 +795,13 @@ public class TradeController {
 			TradeDTO tradeDTO = trades.stream()
 				    .filter(trade -> Boolean.FALSE.equals(trade.getCompleted1()) && Boolean.TRUE.equals(trade.getCompleted2()))
 				    .findFirst()
-				    .map(trade -> new TradeDTO().fromEntity(trade))
+				    .map(trade -> new TradeDTO().fromEntity(trade))			//   ==    .map(TradeDTO::fromEntity)	      파라미터가 하나일 경우에 :: 사용 가능 . 그 외에는 -> 사용
 				    .orElse(null);
 			
 			
 //		TradeDTO responseDTO = tradeService.find
 		System.out.println(tradeDTO.toString());
-		return ResponseEntity.ok(tradeDTO);
+		return ResponseEntity.ok(tradeDTO);		
 	
 	}
 	
@@ -869,34 +870,40 @@ public class TradeController {
 	            .collect(Collectors.toList());
 
 	    
-//	    List<BoardEntity> likedBoards = boards.stream()
-//	            .filter(board -> board.get().stream()
-//	                    .anyMatch(trade ->
-//	                            (trade.getMember1().getId().equals(loggedId) || trade.getMember2().getId().equals(loggedId)) &&
-//	                    )
-//	            )
-//	            .collect(Collectors.toList());
+	    
+	    List<TradeDTO> filteredBoardTrades = filteredBoards.stream()
+	            .flatMap(board -> board.getTrades().stream()
+	                    .map(trade -> new TradeDTO().fromEntity(trade)))
+	            .collect(Collectors.toList());
 	    
 	    
-//	    List<BoardEntity> likedBoards = boards.stream()
-//	            .filter(board -> {
-//	                Optional<BoardLikeEntity> boardLikeEntityOptional = boardLikeRepository.findBoardLikeEntity(board.getId(), loggedId);
-//	                return boardLikeEntityOptional.isPresent() && 
-//	                       boardLikeEntityOptional.get().isFlag() == true;
-//	            })
-//	            .collect(Collectors.toList());
+	    
 
-
-
+	    for (BoardEntity board : filteredBoards) {
+	        board.getTrades().stream()
+	            .filter(trade -> trade != null)
+	            .forEach(trade -> board.setCreateTime(
+	                trade.getCreateTime().equals(trade.getUpdateTime()) ? trade.getCreateTime() : trade.getUpdateTime()
+	            ));
+	    }
+	    
+	    // board를 createTime 역순으로 정렬
+	    
+	    filteredBoards.sort(Comparator.comparing(BoardEntity::getCreateTime).reversed());
 	    
 	    
-	    
-	    
-	    model.addAttribute("loggedMember", loggedMember);
 	    model.addAttribute("boards", filteredBoards);
-//	    model.addAttribute("likedBoards", likedBoards);
+	    model.addAttribute("trades", filteredBoardTrades);
 	    return "/mytradelist";
 	}
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
@@ -914,21 +921,6 @@ public class TradeController {
 	    
 	    
 	    
-//	    .anyMatch() VS .filter() 차이점
-
-//	    .anyMatch(Predicate)	: 조건을 만족하는 요소가 하나라도 있는지 검사	반환 : boolean (true / false)  용도 : 요소 걸러내기 (선별)
-//	    .filter(Predicate)	: 조건을 만족하는 요소만 추려냄      반환 : 	Stream <원본타입>   용도 : 조건 충족 여부 검사
-	    
-	    
-//	    List<BoardEntity> filteredBoards = boards.stream()
-//	            .filter(board -> board.getTrades().stream()
-//	                    .anyMatch(trade ->
-//	                            (trade.getMember1().getId().equals(loggedId) || trade.getMember2().getId().equals(loggedId)) &&
-//	                            (Boolean.TRUE.equals(trade.getAccept1()) || Boolean.TRUE.equals(trade.getAccept2()) ||
-//	                             Boolean.TRUE.equals(trade.getBooking1()) || Boolean.TRUE.equals(trade.getBooking2()))
-//	                    )
-//	            )
-//	            .collect(Collectors.toList());
 
 	    
 	    
@@ -942,13 +934,36 @@ public class TradeController {
 
 
 
+	    List<TradeDTO> filteredBoardTrades = likedBoards.stream()
+	            .flatMap(board -> board.getTrades().stream()
+	                    .map(trade -> new TradeDTO().fromEntity(trade)))
+	            .collect(Collectors.toList());
+
+	    for (BoardEntity board : likedBoards) {
+	    	
+	    	Optional<BoardLikeEntity> boardLikeEntityOptional = boardLikeRepository.findBoardLikeEntity(board.getId(), loggedId);
+	    	
+	    	if(boardLikeEntityOptional.isEmpty()) {
+	    		continue;
+	    	}
+	    	
+	    	if(!boardLikeEntityOptional.get().isFlag()== true) {
+	    		continue;
+	    	}
+	    	
+	    	board.setCreateTime(boardLikeEntityOptional.get().getCreateTime());
+	    	
+	    }
+	    
+	    
+	    // board를 boardLikeEntity의 createTime 역순으로 정렬
+	    
+	    likedBoards.sort(Comparator.comparing(BoardEntity::getCreateTime).reversed());
 	    
 	    
 	    
-	    
-	    model.addAttribute("loggedMember", loggedMember);
-//	    model.addAttribute("boards", filteredBoards);
 	    model.addAttribute("likedBoards", likedBoards);
+	    model.addAttribute("trades", filteredBoardTrades);
 	    return "/myfavorite";
 	}
 	

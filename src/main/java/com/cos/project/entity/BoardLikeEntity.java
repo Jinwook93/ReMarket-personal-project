@@ -1,5 +1,9 @@
 package com.cos.project.entity;
 
+import java.sql.Timestamp;
+
+import org.hibernate.annotations.CreationTimestamp;
+
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -38,5 +42,8 @@ public class BoardLikeEntity {
 			@JoinColumn(name= "member_id" )
 			@JsonIncludeProperties({"id","userid"})
 			MemberEntity memberEntity;
+			
+			@CreationTimestamp
+			Timestamp createTime;
 	
 }

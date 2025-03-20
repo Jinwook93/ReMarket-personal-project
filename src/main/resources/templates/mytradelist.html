@@ -14,15 +14,14 @@ body {
 }
 
 .container {
-    max-width: 800px;
-    margin: 0 auto;
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    min-height: 100vh;  /* 화면 높이를 최소화하여 늘리기 */
+	max-width: 900px;
+	margin: 0 auto;
+	background: #fff;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+	min-height: 100vh; /* 화면 높이를 최소화하여 늘리기 */
 }
-
 
 h1 {
 	text-align: center;
@@ -35,10 +34,10 @@ h1 {
 
 .board {
 	margin-bottom: 20px;
-	padding: 15px;
+/* 	padding: 15px; */
 	background-color: #f1f1f1;
-	border-radius: 8px;
-	box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+/* 	border-radius: 8px; */
+/* 	box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); */
 }
 
 .board-header {
@@ -47,13 +46,10 @@ h1 {
 	align-items: center;
 }
 
-.board-author {
-	font-weight: bold;
-	font-size: 16px;
-}
+
 
 .board-text {
-	margin-top: 10px;
+ 	margin-top: 10px; 
 	font-size: 14px;
 }
 
@@ -76,152 +72,198 @@ h1 {
 	background-color: #0056b3;
 }
 
-
-
-
-
 /* Selectbox 스타일 */
 .select-box {
-/*     float: right; */
-    padding: 10px;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    margin-bottom: 20px;
+	/*     float: right; */
+	padding: 10px;
+	background-color: #fff;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	margin-bottom: 20px;
 }
 
+.board-list a {
+	text-decoration: none;
+	/*     color: inherit; */
+}
+
+.board-list a:hover {
+	text-decoration: none;
+}
+
+/*  .board-list p {  */
+	
+/* 	color: black;  */
+/* }  */
+
+/* .board-list p:hover { */
+/* 	color: gray; */
+/* } */
+
+.board-content-text div{
+font-family: 'Noto Sans KR', Arial, sans-serif; 
+		color: black;
+ font-weight: bold; /* 텍스트 굵게 */
+}
 
 </style>
 </head>
 <body>
 	<div th:replace="~{header.html}"></div>
 	<div class="container">
-		<h1>거래 목록</h1>
+		<h1>나의 거래 목록</h1>
 
-			<div>
-		<!-- Select 박스 추가 -->
-		<select class="select-box" id="tradeStatusSelect" onchange="filterBoards()">
-			<option value="">전체</option>
-			<option value="complete">거래완료</option>
-			<option value="progress">거래 중</option>
-			<option value="reserve">예약 중</option>
-		</select>
-			</div>
+		<div>
+			<!-- Select 박스 추가 -->
+			<select class="select-box" id="tradeStatusSelect"
+				onchange="filterBoards()">
+				<option value="">전체</option>
+				<option value="complete">거래완료</option>
+				<option value="progress">거래 중</option>
+				<option value="reserve">예약 중</option>
+			</select>
+		</div>
 
-		<div class="board-list" >
+		<div class="board-list">
 			<!-- 게시글 목록 반복 -->
 			<div th:each="board : ${boards}">
 				<a th:href="@{/board/view/{id}(id=${board.id})}">
-					<div class="board board-item">
-						<div class="board-header">
-							<div style="display: flex; align-items: center;">
-								<!-- 프로필 이미지 -->
-								<div th:if="${board.memberEntity.profileImage != null}">
-									<div id="imagePreview" style="margin-top: 10px;">
-										<img id="previewImage"
-											th:src="@{{imagePath}(imagePath=${board.memberEntity.profileImage})}"
-											alt="Profile Image Preview"
-											style="display: block; width: 50px; height: 50px; margin-right: 10px;">
+					<div class="board board-item" th:data-board-id='${board.id}'>
+						<div class="board-header" >
+								<div
+									style="display: flex; align-items: center; padding: 15px;">
+									<div>
+										<img th:id="|mainImage-${board.id}|"
+											src="/boardimage/nullimage.jpg" alt="no profile image"
+											style="display: block; width: 120px; height: 120px; object-fit: cover; margin-right: 10px;">
+									</div>
+									<div class = "board-content-text" >
+
+									<div class="board-text" th:text="${board.title}">게시글 제목</div>
+									<div style = "margin-bottom:30px;" th:text=|${board.price}원| th:id="|price-${board.id}|">가격</div>
+
+								
+									<div style="display: flex;height:30px;flex-direction: row; align-content: center;align-items: center;">
+
+											<button
+												th:if="${board.memberEntity != null and board.buy_Sell.name == '팝니다'}"
+												type="button" class="seller-small-btn">판매자</button>
+
+											<button
+												th:if="${board.memberEntity != null and board.buy_Sell.name == '삽니다'}"
+												type="button" class="buyer-small-btn">구매자</button>
+
+											<!-- 이름 -->
+											<p style="font-size:13px; margin-top:14px;" th:text="${board.memberEntity.name}">작성자 이름
+											<p class="board-time" style ="color:gray;margin-top:12px;" th:if="${board.memberEntity.id == loggedId}">&nbsp;(나)</p>
+											</p>
+											
+										</div>
 									</div>
 								</div>
 
-								<div th:if="${board.memberEntity.profileImage == null}">
-									<div id="imagePreview" style="margin-top: 10px;">
-										<img id="previewImage" src="/boardimage/nullimage.jpg"
-											alt="no profile image"
-											style="display: block; width: 50px; height: 50px; margin-right: 10px;">
-									</div>
-								</div>
-								<!-- 이름 -->
-								<span th:text="${board.memberEntity.name}">작성자 이름</span>
-							</div>
 
 
-							<span
-								style="display: flex; justify-content: center; align-items: center; flex-direction: row; height: 100%;">
-								<!-- 거래 상태 표시 및 거래취소 버튼 -->
-								<div th:each="trade : ${board.trades}">
-									<!-- 예약 중 버튼 -->
-									<button
-										th:if="${trade != null} 
+
+								<div
+									style="background-color:whitesmoke; display: flex; align-items: center;
+									justify-content: center;
+										 flex-direction: column;width: 150px; height: 150px;">
+
+									<!-- 거래 상태 표시 및 거래취소 버튼 -->
+									<div th:each="trade : ${board.trades}">
+										<!-- 예약 중 버튼 -->
+										<button
+											th:if="${trade != null} 
                     and ${trade.booking1} == true 
                     and ${trade.booking2} == true 
                     and ${trade.tradeStatus} != '완료'"
-										type="button" class="small-btn reserve">예약 중</button>
+											type="button" class="small-btn reserve">예약 중</button>
 
-									<!-- 거래 중 버튼 -->
-									<button
-										th:if="${trade != null 
+										<!-- 거래 중 버튼 -->
+										<button
+											th:if="${trade != null 
             and trade.accept1 == true 
             and trade.accept2 == true 
             and trade.completed1 != null 
             and trade.completed2 != null 
             and (trade.completed1 != true or trade.completed2 != true)}"
-										type="button" class="small-btn progress">거래 중</button>
+											type="button" class="small-btn progress">거래 중</button>
 
-									<!-- 거래 완료 버튼 -->
-									<button
-										th:if="${trade != null 
+										<!-- 거래 완료 버튼 -->
+										<button
+											th:if="${trade != null 
             and trade.completed1 != null 
             and trade.completed2 != null 
             and (trade.completed1 == true and trade.completed2 == true)}"
-										type="button" class="small-btn complete">거래완료</button>
+											type="button" class="small-btn complete">거래완료</button>
 
 
-
-
-
-
-
+									</div>
+									<p class="board-time"
+										th:text="${#dates.format(board.createTime, 'yyyy-MM-dd HH:mm')}">작성
+										시간</p>
 								</div>
-								<p class="board-text" th:text="${board.title}">게시글 제목</p>
-							</span>
-							<p class="board-time"
-								th:text="${#dates.format(board.createTime, 'yyyy-MM-dd HH:mm')}">작성
-								시간</p>
-						</div>
-						<!-- 						                        <p class="board-text" th:text="${board.contents}">게시글 내용</p> -->
+							</div>
+					</div>
 				</a>
 			</div>
 		</div>
-
 		<!-- 뒤로 가기 버튼 -->
 		<a href="javascript:history.back()" class="back-button">뒤로 가기</a>
+
+
 	</div>
-	
-	
 	<div th:replace="~{footer.html}"></div>
-	
-<script>
-    function filterBoards() {
-        let selectedStatus = document.getElementById("tradeStatusSelect").value;
-        let boards = document.querySelectorAll(".board-item");
-        let statusButtons = document.querySelectorAll(".board-item .small-btn");
 
-        boards.forEach(function(board, index) {
-            let statusButton = statusButtons[index]; 
-            let shouldShowBoard = false; 
+	<script>
+		function filterBoards() {
+			let selectedStatus = document.getElementById("tradeStatusSelect").value;
+			let boards = document.querySelectorAll(".board-item");
+			let statusButtons = document
+					.querySelectorAll(".board-item .small-btn");
 
-            if (selectedStatus === "" || statusButton.classList.contains(selectedStatus)) {
-                shouldShowBoard = true;
-            }
+			boards.forEach(function(board, index) {
+				let statusButton = statusButtons[index];
+				let shouldShowBoard = false;
 
-            if (shouldShowBoard) {
-                board.style.display = "block"; 
-            } else {
-                board.style.display = "none"; 
-            }
-        });
-    }
+				if (selectedStatus === ""
+						|| statusButton.classList.contains(selectedStatus)) {
+					shouldShowBoard = true;
+				}
+
+				if (shouldShowBoard) {
+					board.style.display = "block";
+				} else {
+					board.style.display = "none";
+				}
+			});
+		}
+	</script>
+	<script src="/js/formatCurrency.js" type="module"></script>
+
+
+	<script type="module">
+ import { getBoardMainFile } from '/js/boardModule.js';
+
+ document.addEventListener("DOMContentLoaded", function () {
+      let boards = document.querySelectorAll(".board-item");
+    
+    boards.forEach(async (board) => {
+        const boardId = board.getAttribute("data-board-id");
+        const imageUrl = await getBoardMainFile(boardId); // Await the result
+
+        const imageElement = document.getElementById(`mainImage-${boardId}`);
+        if (imageElement) {
+            imageElement.src = imageUrl || '/boardimage/nullimage.jpg'; // Fallback if no image URL
+        }
+    });
+ });
 </script>
 
 
-	
-	
-	
-	
-	
-	
+
+
 	<!-- 		 <th:block th:replace="/footer :: footerFragment"></th:block> -->
 </body>
 </html>

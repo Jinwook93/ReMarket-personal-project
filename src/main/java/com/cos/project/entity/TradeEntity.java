@@ -1,5 +1,10 @@
 package com.cos.project.entity;
 
+import java.sql.Timestamp;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -55,5 +60,14 @@ public class TradeEntity {
 	
 	@Enumerated(EnumType.STRING)
 	private TradeStatus tradeStatus;			//거래 상태
+	
+	@Column(nullable = true)
+	@CreationTimestamp
+	private Timestamp createTime;
+	
+	@Column(nullable = true)
+	@UpdateTimestamp
+	private Timestamp updateTime;
+	
 	
 }

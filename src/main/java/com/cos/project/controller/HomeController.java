@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.Key;
 import java.util.Base64;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -160,7 +161,10 @@ public class HomeController {
 	@GetMapping("/commentlist/{id}")
 	public String myComment(@PathVariable("id") Long id, Model model) throws IllegalAccessException {
 		MemberEntity member = memberService.findById(id);
-		model.addAttribute("mycomments", member.getComments());
+		List<CommentEntity> comments = member.getComments();
+		comments.sort(Comparator.comparing(CommentEntity::getCreateTime).reversed());
+		
+		model.addAttribute("mycomments", comments);
 		
 		return "mycommentlist";
 	}
@@ -171,6 +175,8 @@ public class HomeController {
 	@GetMapping("/boardlist/{id}")
 	public String myBoard(@PathVariable("id") Long id, Model model) {
 		List<BoardEntity> myboards = boardService.findMyBoards(id);
+		
+	    myboards.sort(Comparator.comparing(BoardEntity::getCreateTime).reversed());
 		model.addAttribute("myboards", myboards);
 		
 		return "myboardlist";

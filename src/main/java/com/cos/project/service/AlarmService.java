@@ -265,17 +265,17 @@ public class AlarmService {
 			} else if (childType.equals("게시판") &&  action.equals("수정")) {
 				member1Content = member1.get().getUserid() + "님의 "+object +"번 게시글이 수정되었습니다";
 			}else if (childType.equals("게시판") && object.equals("좋아요")   && action.equals("활성화")) {
-				member1Content = member1.get().getUserid()+"님이 " + member2.get().getUserid() + "님의 게시글을 좋아합니다";
-				member2Content = member2.get().getUserid() + "님의 게시글에 좋아요를 눌렀습니다";
+				member2Content = member1.get().getUserid()+"님이 " + member2.get().getUserid() + "님의 게시글을 좋아합니다";
+				member1Content = member2.get().getUserid() + "님의 게시글에 좋아요를 눌렀습니다";
 			}else if (childType.equals("게시판") && object.equals("좋아요")   && action.equals("취소")) {
-				member1Content = member1.get().getUserid()+"님이 " + member2.get().getUserid() + " 님의 게시글의 좋아요를 취소하였습니다";
-				member2Content = member2.get().getUserid() + "님의 게시글에 좋아요를 취소하였습니다";
+				member2Content = member1.get().getUserid()+"님이 " + member2.get().getUserid() + " 님의 게시글의 좋아요를 취소하였습니다";
+				member1Content = member2.get().getUserid() + "님의 게시글에 좋아요를 취소하였습니다";
 			}else if (childType.equals("게시판") && object.equals("싫어요")   && action.equals("활성화")) {
-				member1Content = member1.get().getUserid()+"님이 " + member2.get().getUserid() + " 님의 게시글을 싫어합니다";
-				member2Content = member2.get().getUserid() + "님의 게시글에 싫어요를 눌렀습니다";
+				member2Content = member1.get().getUserid()+"님이 " + member2.get().getUserid() + " 님의 게시글을 싫어합니다";
+				member1Content = member2.get().getUserid() + "님의 게시글에 싫어요를 눌렀습니다";
 			}else if (childType.equals("게시판") && object.equals("싫어요")   && action.equals("취소")) {
-				member1Content = member1.get().getUserid()+"님이 " + member2.get().getUserid() + " 님의 게시글의 싫어요를 취소하였습니다";
-				member2Content = member2.get().getUserid() + "님의 게시글에 싫어요를 취소하였습니다";
+				member2Content = member1.get().getUserid()+"님이 " + member2.get().getUserid() + " 님의 게시글의 싫어요를 취소하였습니다";
+				member1Content = member2.get().getUserid() + "님의 게시글에 싫어요를 취소하였습니다";
 			}
 			
 			else if (childType.equals("댓글")  && action.equals("등록")) {//member1, member2 의 정보를 다 받아와야 함
