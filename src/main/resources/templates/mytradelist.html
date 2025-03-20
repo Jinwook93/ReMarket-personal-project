@@ -124,6 +124,12 @@ font-family: 'Noto Sans KR', Arial, sans-serif;
 			</select>
 		</div>
 
+
+		 <div th:if="${boards.size() == 0 }">
+				<p> 작성한 게시글이 없습니다 </p>
+			</div>  
+
+
 		<div class="board-list">
 			<!-- 게시글 목록 반복 -->
 			<div th:each="board : ${boards}">

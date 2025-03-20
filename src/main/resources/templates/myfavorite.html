@@ -119,6 +119,11 @@ h1 {
 				<option value="reserve">예약 중</option>
 			</select>
 		</div>
+		
+		
+			 <div th:if="${likedBoards.size() == 0 }">
+				<p> 작성한 게시글이 없습니다 </p>
+			</div>  
 
 		<div class="board-list">
 			<!-- 게시글 목록 반복 -->

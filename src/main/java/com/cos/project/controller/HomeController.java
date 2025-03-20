@@ -162,8 +162,9 @@ public class HomeController {
 	public String myComment(@PathVariable("id") Long id, Model model) throws IllegalAccessException {
 		MemberEntity member = memberService.findById(id);
 		List<CommentEntity> comments = member.getComments();
+		//sort는 반환 값이 void
 		comments.sort(Comparator.comparing(CommentEntity::getCreateTime).reversed());
-		
+
 		model.addAttribute("mycomments", comments);
 		
 		return "mycommentlist";

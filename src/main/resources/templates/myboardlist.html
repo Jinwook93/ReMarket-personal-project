@@ -81,6 +81,11 @@ h1 {
 		<h1>내 게시글 목록</h1>
 
 		<div class="board-list">
+		
+				 <div th:if="${myboards.size() == 0 }">
+				<p> 작성한 게시글이 없습니다 </p>
+			</div>    
+		
 			<!-- 게시글 목록 반복 -->
 			<div th:each="board : ${myboards}">
 				<a th:href="@{/board/view/{id}(id=${board.id})}">

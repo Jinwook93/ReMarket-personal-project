@@ -71,6 +71,9 @@
         <h1>내 댓글 목록</h1>
 
         <div class="comment-list">
+        	 <div th:if="${mycomments.size() == 0 }">
+				<p> 작성한 댓글이 없습니다 </p>
+			</div>        
             <!-- 댓글 목록 반복 -->
             <div th:each="comment : ${mycomments}">
                 <div class="comment">
