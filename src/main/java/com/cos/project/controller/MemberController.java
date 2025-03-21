@@ -155,6 +155,7 @@ public ResponseEntity<?>  joinUser(@RequestBody MemberDTO entity) {
 	        @RequestParam(name = "gender") Gender gender,
 	        @RequestParam(name = "phone") String phone,
 	        @RequestParam(name = "address") String address,
+	        @RequestParam(name = "address2") String address2,
 	        @RequestParam(value = "profileImage", required = false) MultipartFile profileImage,
 	        @AuthenticationPrincipal PrincipalDetails principalDetails) throws IOException {
 
@@ -191,6 +192,8 @@ public ResponseEntity<?>  joinUser(@RequestBody MemberDTO entity) {
 	        
 	        // Perform the update through the service layer
 	        try {
+	        	address += "/"+address2;
+	        	
 	            String isUpdated = memberService.updateMember(id, userid, password, name, age, gender, phone, address, profileImagePath, principalDetails);
 	            if (isUpdated != null) {
 	                return ResponseEntity.ok( "회원 정보 업데이트 성공");

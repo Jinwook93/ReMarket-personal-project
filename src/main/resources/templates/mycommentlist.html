@@ -19,6 +19,7 @@
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 65px;
         }
         h1 {
             text-align: center;
@@ -63,6 +64,11 @@
         .back-button:hover {
             background-color: #0056b3;
         }
+        
+        .comment-list  a {
+text-decoration: none;
+color : black;
+}
     </style>
 </head>
 <body>
@@ -76,6 +82,7 @@
 			</div>        
             <!-- 댓글 목록 반복 -->
             <div th:each="comment : ${mycomments}">
+            	<a th:href="@{/board/view/{id}(id=${comment.boardEntity.id})}">
                 <div class="comment">
                     <div class="comment-header">
 <!--                         <p class="comment-author" th:text="${comment.memberEntity.name}">작성자 이름</p> -->
@@ -100,10 +107,13 @@
                                 <!-- 이름 -->
                                 <span th:text="${comment.memberEntity.name}">작성자 이름</span>
                             </div>
-                        <p class="comment-time" th:text="${comment.createTime}">작성 시간</p>
+                        <p class="comment-time" 
+                        th:text="${#dates.format(comment.createTime, 'yyyy-MM-dd HH:mm')}"
+                        >작성 시간</p>
                     </div>
                     <p class="comment-text" th:text="${comment.content}">댓글 내용</p>
                 </div>
+                </a>
             </div>
         </div>
 

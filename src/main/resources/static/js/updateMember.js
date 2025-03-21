@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function () {
         formData.append('gender', document.getElementById('gender').value);
         formData.append('phone', document.getElementById('phone').value);
         formData.append('address', document.getElementById('address').value);
-
+		 formData.append('address2', document.getElementById('address2').value);
         // If there is a profile image, append it to the form data
         const profileImage = document.getElementById('profileImage').files[0];
         if (profileImage) {

@@ -20,6 +20,7 @@ body {
 	padding: 20px;
 	border-radius: 8px;
 	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+	margin-top: 65px;
 }
 
 h1 {
@@ -149,6 +150,9 @@ tr:hover {
 	border: 1px solid #ccc;
 	border-radius: 5px;
 }
+table a {
+text-decoration: none;
+}
 </style>
 </head>
 <body>
@@ -188,61 +192,38 @@ tr:hover {
 					<td th:text="${board.category}"
 						style="text-align: center; padding: 10px;"></td>
 					<td th:data-board-id="${board.id}" style="padding: 10px;">
-						<div style="display: flex; align-items: center;">
-							<img th:id="|mainImage-${board.id}|"
-								src="/boardimage/nullimage.jpg" alt="no profile image"
-								style="display: block; width: 80px; height: 80px; object-fit: cover; margin-right: 10px;">
+<div style="display: flex; align-items: center; justify-content: flex-start;">
+<!-- a는 인라인 요소이므로 flex 적용이 안된다. 부모 뿐만 아니라 a에도 flex를 걸어주어야 함 -->
+    <a th:href="@{/board/view/{id}(id=${board.id})}" style="display: flex; align-items: center; text-decoration: none;">
+        <div>
+            <img th:id="|mainImage-${board.id}|"
+                 src="/boardimage/nullimage.jpg" alt="no profile image"
+                 style="display: block; width: 80px; height: 80px; object-fit: cover; margin-right: 10px;">
+        </div>
+        
+        <!-- 거래 상태 표시 및 거래취소 버튼 -->
+        <div th:each="trade : ${board.trades}">
+            <!-- 예약 중 버튼 -->
+            <button th:if="${trade != null and trade.booking1 == true and trade.booking2 == true and trade.tradeStatus != '완료'}"
+                    type="button" class="small-btn reserve">예약 중</button>
 
-							<!-- 거래 상태 표시 및 거래취소 버튼 -->
-							<div th:each="trade : ${board.trades}">
-								<!-- 예약 중 버튼 -->
-								<button
-									th:if="${trade != null} 
-                    and ${trade.booking1} == true 
-                    and ${trade.booking2} == true 
-                    and ${trade.tradeStatus} != '완료'"
-									type="button" class="small-btn reserve">예약 중</button>
+            <!-- 거래 중 버튼 -->
+            <button th:if="${trade != null and trade.accept1 == true and trade.accept2 == true and trade.completed1 != null 
+                            and trade.completed2 != null and (trade.completed1 != true or trade.completed2 != true)}"
+                    type="button" class="small-btn progress">거래 중</button>
 
-								<!-- 거래 중 버튼 -->
-								<button
-									th:if="${trade != null 
-            and trade.accept1 == true 
-            and trade.accept2 == true 
-            and trade.completed1 != null 
-            and trade.completed2 != null 
-            and (trade.completed1 != true or trade.completed2 != true)}"
-									type="button" class="small-btn progress">거래 중</button>
+            <!-- 거래 완료 버튼 -->
+            <button th:if="${trade != null and trade.completed1 != null and trade.completed2 != null 
+                            and (trade.completed1 == true and trade.completed2 == true)}"
+                    type="button" class="small-btn complete">거래완료</button>
+        </div>
 
-								<!-- 거래 완료 버튼 -->
-								<button
-									th:if="${trade != null 
-            and trade.completed1 != null 
-            and trade.completed2 != null 
-            and (trade.completed1 == true and trade.completed2 == true)}"
-									type="button" class =  "small-btn complete">거래완료</button>
+        <!-- 게시글 제목 -->
+        <div th:text="${board.title}"
+             style="font-size: 16px; color: #000; font-weight: bold; margin-left: 10px;"></div>
+    </a>
+</div>
 
-
-								<!-- 거래 취소 버튼 (member1, member2 모두에게 노출) 
-								<button
-									th:if="${trade != null} 
-                    and (${trade.accept1} == true and ${trade.accept2} == true 
-                         or (${trade.booking1} == true and ${trade.booking2} == true)) 
-                    and ${trade.tradeStatus} != '완료'"
-									th:id="|chat-cancel-trade-${trade.id}|" class="cancelTrade"
-									type="button">거래 취소</button>-->
-							</div>
-
-
-
-
-
-
-							<!-- 게시글 제목 -->
-							<a th:href="@{/board/view/{id}(id=${board.id})}"
-								th:text="${board.title}"
-								style="font-size: 16px; color: #000; font-weight: bold;"></a>
-
-						</div>
 					</td>
 					<td>
 						<div class="enterChatRoom" style="cursor: pointer;"

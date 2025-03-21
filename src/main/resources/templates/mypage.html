@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>마이페이지</title>
+     <link rel="stylesheet" href="/css/mypageForm.css">
 </head>
 <body>
     <div th:replace="~{header.html}"></div>
+    <div class="mypageForm">
     <h2>마이페이지</h2>
 
-
+		<div class ="formdata">
 <!--         아이디(고유 식별번호) -->
 <!--         <label for="id">식별 번호</label> -->
         <input type="hidden" id="id" name="id" th:value="${member.id}" required />
@@ -92,13 +94,20 @@
 
 <!--         회원수정 버튼 -->
         <button type="button" id ="updateMember">회원수정</button>
-        
+        <br>     <br>     <br>
         <a
-					th:href="@{/boardlist/{id}(id=${id})}">내가 쓴 게시글</a> <a
+					th:href="@{/boardlist/{id}(id=${id})}">내가 쓴 게시글</a>
+					<span>|</span>
+					 <a
 					th:href="@{/commentlist/{id}(id=${id})}">내가 쓴 댓글</a>
+						<span>|</span>
         						<a th:href="@{/trade/mytrade/{id}(id=${id})}">거래목록</a>
+        							<span>|</span>
 						<a th:href="@{/trade/myfavorite/{id}(id=${id})}">관심목록</a>
+						
+						</div>
 <!--     </form> -->
+</div>
     <div th:replace="~{footer.html}"></div>
 <!-- 	 <th:block th:replace="/footer :: footerFragment"></th:block> -->
     <script src="https://code.jquery.com/jquery-3.6.4.min.js" defer></script>
@@ -106,6 +115,25 @@
 <!--     <script src="/js/joinValidation.js" defer></script> -->
 <!-- 		<script src="/js/checkId.js" defer></script> -->
 	<script src="/js/goUpdateMemberForm.js" defer></script> 
+	<script>
+	// 주소에서 '/'를 공백으로 바꾸는 함수
+	function updateAddress1() {
+	    // 입력받은 주소 (예: 사용자가 입력한 값)
+	    const address = document.getElementById("address").value;
+	    
+	    // '/'를 공백으로 바꿈
+	    const updatedAddress = address.replace(/\//g, " "); // 모든 '/'를 공백으로 바꿈
+	    
+	    // 변경된 주소를 다시 input에 넣기
+	    document.getElementById("address").value = updatedAddress;
 
+	    console.log("변경된 주소: ", updatedAddress); // 콘솔에 출력 (디버깅용)
+	}
+
+	// 버튼 클릭 시 updateAddress 함수 호출
+	document.addEventListener("DOMContentLoaded", updateAddress1);
+	
+	</script>
+	
 </body>
 </html>

@@ -3,14 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>마이페이지</title>
+    <title>마이페이지(수정)</title>
+         <link rel="stylesheet" href="/css/mypageForm.css">
+                 <link rel="stylesheet" href="/css/addressModal.css">
 </head>
 <body>
     <div th:replace="~{header.html}"></div>
+    <div class="mypageForm">
     <h2>마이페이지 (수정)</h2>
 
 
-
+  <div class="formdata">
 <!--         아이디(고유 식별번호) -->
 <!--         <label for="id">식별 번호</label> -->
         <input type="hidden" id="id" name="id" th:value="${member.id}" required />
@@ -19,13 +22,15 @@
 
 
 <!--         아이디 -->
-        <label for="userid">아이디</label>
+		<div style="display:flex;">
+        <label for="userid">아이디</label>  <button type="button" onclick="checkId()" id = "isExistId">중복확인</button>
+        </div>
         <input type="text" id="userid" name="userid" th:value="${member.userid}" required />
-        <button type="button" onclick="checkId()">중복확인</button><br>
+      <br>
         
         
    <!-- 비밀번호 -->
-        <label for="password">비밀번호:</label>
+        <label for="password">비밀번호</label>
         <input type="password" id="password" name="password" required><br>
         
         <!-- 비밀번호 확인 -->
@@ -81,8 +86,44 @@
         <input type="tel" id="phone" name="phone" th:value="${member.phone}" required /><br>
 
 <!--         주소 -->
-        <label for="address">주소</label>
-        <textarea id="address" name="address" cols="40" rows="3" th:text="${member.address}" required></textarea><br>
+<!--         <label for="address">주소</label> -->
+<!--         <textarea id="address" name="address" cols="40" rows="3" th:text="${member.address}" required></textarea><br> -->
+
+            <!-- 주소 -->
+            <div style ="display:flex; flex-direction: row;">
+            <label for="address2">주소</label><button type ="button"  id="addressButton" >검색</button>
+            </div>
+            <br>
+           	<input type="text"  id="address"  name="address"  placeholder="주소를 검색하세요"  th:value="${member.address}" readonly>
+            
+            
+            
+            <!-- 모달 창 -->
+<div id="addressModal" class="modal">
+  <div class="modal-content">
+    <span id="closeModal" class="close">&times;</span>
+    <h2>주소 검색</h2>
+    <input type="text" id="addressKeywordModal" placeholder="검색할 주소">
+    <button type="button" id="addressButtonModal">검색</button>
+    <div id="addressResult"></div>
+  </div>
+</div>
+            
+            <input type ="text"  id="address2" name="address2" placeholder="세부 주소를 입력하세요"  th:value="${member.address}" ></textarea>
+            <br>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <!--         역할 -->
 <!--         <label for="roles">역할</label> -->
@@ -90,7 +131,10 @@
 
 <!--         회원수정 버튼 -->
         <button type="button" id ="updateMember">수정완료</button>
+             </div>
      </form> 
+     </div>
+
     <div th:replace="~{footer.html}"></div>
 <!-- 		 <th:block th:replace="/footer :: footerFragment"></th:block> -->
 
@@ -98,6 +142,15 @@
 <!--     <script src="/js/joinValidation.js" defer></script> -->
 		<script src="/js/checkId.js" defer></script>
 	    <script src="/js/updateMember.js" defer></script>
+	            <script  src="/js/kakaoAddressApi.js" type="module"></script>
+	            
+	            
+	            
+	            
+	            
+	            
+	            
+	            
 		<script>
         // 프로필 이미지 미리보기
         document.getElementById('profileImage').addEventListener('change', function(event) {

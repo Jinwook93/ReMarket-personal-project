@@ -148,6 +148,8 @@ public class BoardController {
 			@RequestParam(name = "price") int price, @RequestParam(name = "userid") String userid,
 			@RequestParam(name = "category") String category, @RequestParam(name = "product") String product,
 			@RequestParam(name = "buy_Sell") String buy_Sell,
+			@RequestParam(name = "address") String address,
+			@RequestParam(name = "address2") String address2,
 			@RequestParam(name = "boardFiles", required = false) MultipartFile[] boardFiles,
 			@RequestParam(name = "contents") String contents,
 			@AuthenticationPrincipal PrincipalDetails principalDetails) throws IOException {
@@ -182,7 +184,9 @@ public class BoardController {
 
 		// BoardEntity 생성 및 저장
 		BoardEntity boardEntity = BoardEntity.builder().title(title).price(price).category(category_enum)
-				.product(product).buy_Sell(buy_Sell_enum).contents(contents).boardFiles(boardFileJson).build();
+				.product(product).buy_Sell(buy_Sell_enum).contents(contents).boardFiles(boardFileJson)
+				.address(address+"/"+address2)
+				.build();
 
 		boardService.writeContents(boardEntity);
 		Long loggedId = principalDetails.getMemberEntity().getId();

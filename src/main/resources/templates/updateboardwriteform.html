@@ -20,6 +20,7 @@ body {
 	padding: 20px;
 	border-radius: 8px;
 	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+	margin-top: 65px;
 }
 
 h1 {
@@ -66,7 +67,9 @@ button {
 button:hover {
 	background-color: #0056b3;
 }
+  
 </style>
+ <link rel="stylesheet" href="/css/addressModal.css">
 </head>
 <body>
     <div th:replace="~{header.html}"></div>
@@ -140,6 +143,32 @@ button:hover {
 		<label for="price">가격</label> 
 		<input type="text" id="price"
 				name="price" th:value="${board.price}" placeholder="가격을 입력하세요" required />
+				
+				
+				
+				     <!-- 주소 -->
+				            <input type ="hidden"  id="boardAddress" name="boardAddress"  th:value = "${board.address}" placeholder="게시물의 거래 장소">
+            <div style ="display:inline-block;">
+            <label for="address2">주소</label><button type ="button"  id="addressButton" >검색</button>
+            </div>
+            <br>
+           	<input type="text"  id="address"  name="address"  placeholder="주소를 검색하세요" readonly>
+            
+            
+            
+            <!-- 모달 창 -->
+<div id="addressModal" class="modal">
+  <div class="modal-content">
+    <span id="closeModal" class="close">&times;</span>
+    <h2>주소 검색</h2>
+    <input type="text" id="addressKeywordModal" placeholder="검색할 주소">
+    <button type="button" id="addressButtonModal">검색</button>
+    <div id="addressResult"></div>
+  </div>
+</div>
+            
+            <input type ="text"  id="address2" name="address2" placeholder="세부 주소를 입력하세요"></textarea>
+            <br>
 		
 		
 		<!--             작성자 선택 -->
@@ -214,7 +243,7 @@ button:hover {
 			}
 		});
 	</script>
-
+    <script  src="/js/kakaoAddressApi.js" type="module"></script>
 </body>
 
 </html>

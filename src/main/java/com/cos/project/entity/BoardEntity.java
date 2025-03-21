@@ -61,6 +61,8 @@ public class BoardEntity {
     
     private int price;
     
+    @Column(nullable = true)
+    private String address;			//거래 장소
     
     
     @ManyToOne(fetch = FetchType.EAGER)

@@ -1,0 +1,38 @@
+/* 모달 스타일 */
+.modal {
+  display: none; /* 기본적으로 숨겨짐 */
+  position: fixed;
+  z-index: 1; /* 화면 위에 보이도록 설정 */
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.4); /* 반투명 배경 */
+}
+
+/* 모달 콘텐츠 위치를 위쪽과 오른쪽으로 조정 */
+.modal-content {
+  background-color: white;
+  margin: 0 auto; /* 좌우는 중앙 배치 */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 600px;
+  position: absolute;
+  top: 5%; /* 화면 상단에서 5% 떨어지게 배치 */
+  left: 12%; /* 왼쪽에서 30%만큼 이동 (오른쪽으로 살짝 이동) */
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}

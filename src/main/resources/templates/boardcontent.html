@@ -20,6 +20,7 @@ body {
 	padding: 20px;
 	border-radius: 8px;
 	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+	margin-top: 65px;
 }
 
 .container h1 {
@@ -215,9 +216,25 @@ input[type="checkbox"] {
 			placeholder="물건명을 입력하세요" readonly>
 
 		<!-- 가격 입력 -->
-		<label for="title">가격</label> <input type="text"
+		<label for="price">가격</label> <input type="text"
 			th:value="${board.price}" id="price" name="price"
-			placeholder="가격을 입력하세요" readonly> <br> <br>
+			placeholder="가격을 입력하세요" readonly> <br>
+			
+			
+			
+			
+			     <!-- 주소 -->
+			     	<label for="address">주소</label> 
+               <input type="text" id="address" name="address" th:value="${board.address}" required /><br>
+            
+            
+            
+          
+			
+			
+			
+			
+			 <br>
 		<!-- 조회수 (disabled) -->
 		<label for="view">조회수</label> <input type="text"
 			th:value="${board.view}" id="view" name="view" disabled> <label
@@ -422,6 +439,7 @@ input[type="checkbox"] {
 			</div>
 		</div>
 	</div>
+		<div th:replace="~{footer.html}"></div>
 
 	<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 

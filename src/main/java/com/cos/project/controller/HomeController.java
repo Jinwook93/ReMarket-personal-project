@@ -95,6 +95,7 @@ public class HomeController {
 	        @RequestParam(name = "phone") String phone,
 	        @RequestParam(name = "age") int age,
 	        @RequestParam(name = "address") String address,
+	        @RequestParam(name = "address2") String address2,
 	        @RequestParam(name = "gender") Gender gender,
 	        @RequestParam(name = "password_admin") String password_admin,
 	        @RequestParam(value = "profileImage", required = false) MultipartFile profileImage // 프로필 이미지 추가
@@ -130,7 +131,7 @@ public class HomeController {
 	            .name(name)
 	            .phone(phone)
 	            .age(age)
-	            .address(address)
+	            .address(address+"/"+address2)
 	            .gender(gender)
 	            .roles(role)
 	            .profileImage(profileImagePath) // 이미지 경로를 설정
@@ -188,9 +189,6 @@ public class HomeController {
 	@GetMapping("/mypage/{id}")
 	public String myPage(@PathVariable("id") Long id, Model model, @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		MemberEntity memberEntity = principalDetails.getMemberEntity();
-		System.out.println("나이"+memberEntity.getAge());
-		System.out.println("성별"+memberEntity.getGender());
-		System.out.println("이미지 : "+memberEntity.getProfileImage());
 //		System.out.println("이미지2 : "+memberService.convertByteArrayToString(memberEntity.getProfileImage()));		Base64
 		
 		
@@ -205,6 +203,8 @@ public class HomeController {
 			model.addAttribute("message", "사용자 정보를 조회할 수 없습니다");
 		}
 		else {
+//			String updateAddress = memberEntity.getAddress().replace("/", " ");
+//			memberEntity.setAddress(updateAddress);
 			model.addAttribute("member", memberEntity);
 			System.out.println("이미지는 null이다");
 		}

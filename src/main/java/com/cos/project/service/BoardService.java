@@ -97,6 +97,7 @@ public class BoardService {
 		boardEntity.setPrice(boardDTO.getPrice());
 		boardEntity.setCategory(boardDTO.getCategory());
 		boardEntity.setProduct(boardDTO.getProduct());
+		boardEntity.setAddress(boardDTO.getAddress());
 		
 		boardRepository.save(boardEntity);
 		System.out.println("게시글 수정이 완료되었습니다");

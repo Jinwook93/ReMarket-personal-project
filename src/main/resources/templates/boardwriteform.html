@@ -20,6 +20,7 @@ body {
 	padding: 20px;
 	border-radius: 8px;
 	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+	margin-top: 65px;
 }
 
 h1 {
@@ -66,14 +67,17 @@ button {
 button:hover {
 	background-color: #0056b3;
 }
+
+     
 </style>
+   <link rel="stylesheet" href="/css/addressModal.css">
 </head>
 <body>
-    <div th:replace="~{header.html}"></div>
+	<div th:replace="~{header.html}"></div>
 	<div class="container">
 		<h1>게시글 작성</h1>
-		<form id = "boardForm"  action="/board/writeboard" enctype="multipart/form-data"
-			method="POST">
+		<form id="boardForm" action="/board/writeboard"
+			enctype="multipart/form-data" method="POST">
 			<!-- 제목 입력 -->
 			<label for="title">제목</label> <input type="text" id="title"
 				name="title" placeholder="제목을 입력하세요" required> <label
@@ -110,34 +114,56 @@ button:hover {
 			<!-- 			  <input type="text" th:value="${userid}" id="userid" name="userid" readOnly/> -->
 
 			<!-- <br> -->
-			
-			
+
+
 			<label for="buy_Sell">항목</label> <select id="buy_Sell"
 				name="buy_Sell" required>
 				<option value="">항목을 선택하세요</option>
 				<!--                 서버에서 작성자 목록을 동적으로 채워야 함 -->
 				<option value="팝니다">팝니다</option>
 				<option value="삽니다">삽니다</option>
-			</select>
-			
-
-			<label for="category">물품 종류</label> <select id="category"
+			</select> <label for="category">물품 종류</label> <select id="category"
 				name="category" required>
 				<option value="">물품 종류을 선택하세요</option>
 				<!--                 서버에서 작성자 목록을 동적으로 채워야 함 -->
 				<option value="예제A">예제A</option>
 				<option value="예제B">예제B</option>
 				<option value="예제C">예제C</option>
-			</select> 
-			
-				<label for="price">물풍명</label>
-			 <input type="text" id="product"
-	name="product" placeholder="물품명을 입력하세요" required />
-			
-			
-			<label for="price">가격</label>
-			 <input type="text" id="price"
-	name="price" placeholder="가격을 입력하세요" required />
+			</select> <label for="price">물풍명</label> <input type="text" id="product"
+				name="product" placeholder="물품명을 입력하세요" required /> <label
+				for="price">가격</label> <input type="text" id="price" name="price"
+				placeholder="가격을 입력하세요" required />
+
+
+
+			<!-- 주소 -->
+			<div style="display: inline-block;">
+				<label for="address2">주소</label>
+				<button type="button" id="addressButton">검색</button>
+			</div>
+			<br> <input type="text" id="address" name="address"
+				placeholder="주소를 검색하세요" readonly>
+
+
+
+			<!-- 모달 창 -->
+			<div id="addressModal" class="modal">
+				<div class="modal-content">
+					<span id="closeModal" class="close">&times;</span>
+					<h2>주소 검색</h2>
+					<input type="text" id="addressKeywordModal" placeholder="검색할 주소">
+					<button type="button" id="addressButtonModal">검색</button>
+					<div id="addressResult"></div>
+				</div>
+			</div>
+
+			<input type="text" id="address2" name="address2"
+				placeholder="세부 주소를 입력하세요">
+			</textarea>
+			<br>
+
+
+
 
 			<!-- 첨부 파일 -->
 			<label for="boardFiles">첨부 파일</label> <input type="file"
@@ -155,8 +181,8 @@ button:hover {
 			<button type="submit">작성</button>
 		</form>
 	</div>
-    <div th:replace="~{footer.html}"></div>
-		<script>
+	<div th:replace="~{footer.html}"></div>
+	<script>
 		document.getElementById("boardForm").addEventListener("submit", (e) => {
 		    e.preventDefault();  // 기본 동작을 막음
 		    
@@ -166,8 +192,8 @@ button:hover {
 
 		
 		</script>
-	
-	
-	
+
+    <script  src="/js/kakaoAddressApi.js" type="module"></script>
+
 </body>
 </html>

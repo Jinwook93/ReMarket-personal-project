@@ -3,21 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>로그인</title>
+     <link rel="stylesheet" href="/css/loginForm.css">
 </head>
 <body>
         <div th:replace="~{header.html}"></div>
-    <h2>Login</h2>
-    <form id = "formlogin" action="/formlogin" method="post">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="userid" required><br>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required><br>
-        <button type="submit">Login</button>
-    </form>
+<!--     <h2>Login</h2> -->
+<!--     <form id = "formlogin" action="/formlogin" method="post"> -->
+<!--         <label for="username">Username:</label> -->
+<!--         <input type="text" id="username" name="userid" required><br> -->
+<!--         <label for="password">Password:</label> -->
+<!--         <input type="password" id="password" name="password" required><br> -->
+<!--         <button type="submit">Login</button> -->
+        
+<!--         	<a th:href="@{/join}">회원가입</a> <a th:href="@{/findid}">아이디 찾기</a> <a -->
+<!-- 					th:href="@{/findpassword}">비밀번호 찾기</a> -->
+<!--     </form> -->
+			<div class="login-container">
+        <h2>로그인</h2>
+        <form id="formlogin" action="/formlogin" method="post">
+            <label for="username">아이디</label>
+            <input type="text" id="username" name="userid" placeholder="아이디 입력" required>
+
+            <label for="password">비밀번호</label>
+            <input type="password" id="password" name="password" placeholder="비밀번호 입력" required>
+
+			<input type="checkbox"  id="saveId" style="margin-bottom:15px;"> 아이디 저장</input>
+
+            <button type="submit">로그인</button>
+
+            <div class="links">
+                <a th:href="@{/join}">회원가입</a>
+                <span> | </span>
+                <a th:href="@{/findid}">아이디 찾기</a>
+                      <span> | </span>
+                <a th:href="@{/findpassword}">비밀번호 찾기</a>
+            </div>
+        </form>
+    </div>
+
+
+
+
+
+
+
+
         <div th:replace="~{footer.html}"></div>
 <!--     	 <th:block th:replace="/footer :: footerFragment"></th:block> -->
 </body>
+
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const savedId = localStorage.getItem('savedId');
+        const saveIdChecked = localStorage.getItem('saveIdChecked');
+
+        if (savedId && saveIdChecked === 'true') {
+            document.getElementById('username').value = savedId;
+            document.getElementById('saveId').checked = true;
+        } else {
+            document.getElementById('saveId').checked = false;
+        }
+    });
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
 	 <script type="module">
 	import {loginAlarm} from "/js/alarmModule.js";
 	 document.getElementById("formlogin").addEventListener("submit", async (e) => {
@@ -25,6 +88,8 @@
 
 		    const userid = document.getElementById("username").value;
 		    const password = document.getElementById("password").value;
+				
+			  const saveIdCheckbox = document.getElementById('saveId');
 
 		    try {
 		        // 🔹 1. 로그인 요청
@@ -41,10 +106,17 @@
 		        }
 
 		        const responseData = Number(await response.json()); // JSON 변환
+	if (saveIdCheckbox.checked) {
+    localStorage.setItem('savedId', userid);
+    localStorage.setItem('saveIdChecked', 'true');  // 체크 여부 저장
+} else {
+    localStorage.removeItem('savedId');
+    localStorage.setItem('saveIdChecked', 'false');
+}
+
 
 		        alert("로그인에 성공하였습니다");
 
-		        
 		        
 		    //    loginAlarm(responseData);
 // 		        // 🔹 3. 로그인 성공 알람 요청

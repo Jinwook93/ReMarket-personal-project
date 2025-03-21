@@ -103,7 +103,7 @@
 
 
 .chat-container {			
- 	   position: absolute; /* Add this line */
+ 	   position: fixed; /* Add this line */
     width: 400px;
     margin: 0 auto;
     border: 1px solid #ccc;
