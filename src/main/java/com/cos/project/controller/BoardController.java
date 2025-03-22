@@ -31,8 +31,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -105,24 +107,49 @@ public class BoardController {
 //	}
 
 	
-	  @GetMapping("/list")
-	    public String boardList(@RequestParam(name = "page", defaultValue = "1") Integer page, Model model) {
-	        int pageSize = 9; // 페이지당 9개씩 출력
-	        
-        int pageNumber = page - 1; // 1-based page를 0-based page로 변환
-	        
-	        Page<BoardEntity> searchresult = boardService.getBoardList(pageNumber, pageSize);
+	@GetMapping("/list")
+	public String boardList(@RequestParam(name = "page", defaultValue = "1") Integer page,
+	                        @RequestParam(name = "condition", defaultValue = "0") Integer condition,
+	                        Model model) {
+//	                        ,@RequestParam(name = "loggedAddress", required = false) String loggedAddress) {
+	    int pageSize = 9;
+	    int pageNumber = page - 1; // 페이지 번호 보정
 
-	       
-	        
-	     //   totalPages는 Page 객체에서 직접 가져올 수 있습니다. Page<BoardEntity> 객체에는 총 페이지 수와 같은 정보가 포함되어 있기 때문입니다.
-	        int totalPages = searchresult.getTotalPages();
-	        model.addAttribute("allBoards", searchresult);
-	        model.addAttribute("totalPages", totalPages);		//전체 페이지
-	        model.addAttribute("currentPage", page); // 현재 페이지 번호
+	    Page<BoardEntity> searchresult;
+	    String loggedAddress = null;
+	 // 모델에서 principalDetails 가져오기
+	    Authentication authentication = (Authentication) model.getAttribute("principalDetails");
+	    if (authentication != null && authentication.getPrincipal() instanceof PrincipalDetails) {
+	        // Authentication에서 PrincipalDetails 객체를 가져옵니다.
+	        PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
 
-	        return "boardlist";
+	        // PrincipalDetails에서 MemberEntity를 가져옵니다.
+	        MemberEntity memberEntity = principalDetails.getMemberEntity();
+	        
+	        // memberEntity 사용 (예: memberEntity의 ID와 사용자 ID 출력)
+	        	loggedAddress = memberEntity.getAddress();
 	    }
+
+	   System.out.println("컨디션"+condition);
+	   System.out.println("loggedAddress"+loggedAddress);
+	    
+	    
+	    if (loggedAddress != null && !loggedAddress.isEmpty()) {
+	        String[] splitedAddress = loggedAddress.split("/");
+	        searchresult = boardService.getBoardList(pageNumber, pageSize, splitedAddress[0], condition);
+	    } else {
+	        // loggedAddress가 없으면 전체 검색 또는 디폴트 동작
+	        searchresult = boardService.getBoardList(pageNumber, pageSize, null, condition);
+	    }
+
+	    int totalPages = searchresult.getTotalPages();
+	    model.addAttribute("allBoards", searchresult);
+	    model.addAttribute("totalPages", totalPages);
+	    model.addAttribute("currentPage", page); // 현재 페이지 번호
+
+	    return "boardlist";
+	}
+
 
 	
 	
@@ -313,6 +340,199 @@ public class BoardController {
 	
 	
 	
+//	@GetMapping("/addressfilter")
+//	@ResponseBody		//address 검색 범위에 따라 주소 검색
+//	public ResponseEntity<?> addressFilter(@RequestParam(name = "address") Long condition , @AuthenticationPrincipal PrincipalDetails principalDetails)
+//			throws JsonMappingException, JsonProcessingException {
+//			String[] loggedAddress = principalDetails.getMemberEntity().getAddress().split("/");
+//			List<BoardEntity> filteredBoards= boardService.searchBoardListByAddressFilter(condition, loggedAddress[0]);
+//			return ResponseEntity.ok(filteredBoards);
+//	}
 	
+	
+	
+
+//	@PostMapping("/searchBoardManager")
+//	public String getBoardResult(@RequestParam(name = "page", defaultValue = "1") Integer page,
+//	                             @ModelAttribute BoardDTO boardDTO, 
+//	                             Model model) {
+//	    int pageSize = 9;
+//	    int pageNumber = page - 1; // 페이지 번호 보정
+//	    
+//	    // 전체 게시글 목록을 가져옴
+//	    List<BoardEntity> boards = boardService.allContents();
+//	    
+//	    // 필터링 조건에 맞는 게시글을 추출
+//	    List<BoardEntity> filteredBoards = boards.stream()
+//	        .filter(board -> {
+//	            boolean matchesTitle = true;
+//	            boolean matchesContents = true;
+//	            boolean matchesMemberUserId = true;
+//	            boolean matchesPrice = true;
+//	            boolean matchesAddress = true;
+//	            boolean matchesCategory = true;
+//	            boolean matchesBuySell = true;
+//	            boolean matchesProduct = true;
+//
+//	            // 필터링 로직 (이전과 동일)
+//	            if (boardDTO.getTitle() != null && !boardDTO.getTitle().isEmpty()) {
+//	                matchesTitle = board.getTitle().contains(boardDTO.getTitle());
+//	            }
+//	            if (boardDTO.getContents() != null && !boardDTO.getContents().isEmpty()) {
+//	                matchesContents = board.getContents().contains(boardDTO.getContents());
+//	            }
+//	            if (boardDTO.getMemberUserId() != null && !boardDTO.getMemberUserId().isEmpty()) {
+//	                matchesMemberUserId = board.getMemberEntity().getUserid().contains(boardDTO.getMemberUserId());
+//	            }
+//	            if (boardDTO.getPrice() != null && boardDTO.getPrice() > 0) {
+//	                matchesPrice = board.getPrice() == boardDTO.getPrice();
+//	            }
+//	            if (boardDTO.getAddress() != null && !boardDTO.getAddress().isEmpty()) {
+//	                matchesAddress = board.getAddress().contains(boardDTO.getAddress());
+//	            }
+//	            if (boardDTO.getCategory() != null) {
+//	                matchesCategory = board.getCategory().name().equals(boardDTO.getCategory().name());
+//	            }
+//	            if (boardDTO.getBuy_Sell() != null) {
+//	                matchesBuySell = board.getBuy_Sell().name().equals(boardDTO.getBuy_Sell().name());
+//	            }
+//	            if (boardDTO.getProduct() != null && !boardDTO.getProduct().isEmpty()) {
+//	                matchesProduct = board.getProduct().contains(boardDTO.getProduct());
+//	            }
+//
+//	            return matchesTitle && matchesContents && matchesMemberUserId &&
+//	                   matchesPrice && matchesAddress && matchesCategory && matchesBuySell && matchesProduct;
+//	        })
+//	        .collect(Collectors.toList());
+//
+//	    filteredBoards.sort(Comparator.comparing(BoardEntity::getCreateTime).reversed());
+//
+//	    // 페이징 처리
+//	    int startIndex = pageNumber * pageSize;
+//	    int endIndex = Math.min(startIndex + pageSize, filteredBoards.size());
+//	    
+//	    List<BoardEntity> pagedBoards = filteredBoards.subList(startIndex, endIndex);
+//	    
+//	    // 총 페이지 수 계산
+//	    int totalPages = (int) Math.ceil((double) filteredBoards.size() / pageSize);
+//	    
+//	    // 검색된 결과와 페이지 정보 모델에 추가
+//	    model.addAttribute("allBoards", pagedBoards);
+//	    model.addAttribute("currentPage", page);
+//	    model.addAttribute("totalPages", totalPages);
+//	    model.addAttribute("boardDTO", boardDTO);  // 검색 조건도 다시 추가
+//	    
+//	    return "searchboardresult";
+//	}
+
+	
+	@GetMapping("/searchBoardManager")
+	public String searchBoardManagerPage(@RequestParam(name = "page",defaultValue = "1") int page,
+			@RequestParam(name = "condition", required = false) Integer condition,
+	                                     @ModelAttribute BoardDTO boardDTO, 
+	                                     Model model) {
+	    int pageSize = 9;
+	    int pageNumber = page - 1; // 페이지 번호 보정
+	    
+	    
+	    // 전체 게시글 목록을 가져옴
+	    List<BoardEntity> boards = boardService.allContents();
+	    
+//	    if(condition != null && !boardDTO.getAddress().isEmpty() && boardDTO.getAddress() !=null) {
+//	    String [] splitedAddress = boardDTO.getAddress().split("/");
+//	    boards =   boardService.getBoardList2( splitedAddress[0], condition);
+//	    }
+	    // 필터링 조건에 맞는 게시글을 추출
+	    List<BoardEntity> filteredBoards = boards.stream()
+	        .filter(board -> {
+	            boolean matchesTitle = true;
+	            boolean matchesContents = true;
+	            boolean matchesMemberUserId = true;
+	            boolean matchesPrice = true;
+	            boolean matchesAddress = true;
+	            boolean matchesCategory = true;
+	            boolean matchesBuySell = true;
+	            boolean matchesProduct = true;
+
+	            // 필터링 로직 (이전과 동일)
+	            if (boardDTO.getTitle() != null && !boardDTO.getTitle().isEmpty()) {
+	                matchesTitle = board.getTitle().contains(boardDTO.getTitle());
+	            }
+	            if (boardDTO.getContents() != null && !boardDTO.getContents().isEmpty()) {
+	                matchesContents = board.getContents().contains(boardDTO.getContents());
+	            }
+	            if (boardDTO.getMemberUserId() != null && !boardDTO.getMemberUserId().isEmpty()) {
+	                matchesMemberUserId = board.getMemberEntity().getUserid().contains(boardDTO.getMemberUserId());
+	            }
+	            if (boardDTO.getPrice() != null && boardDTO.getPrice() > 0) {
+	                matchesPrice = board.getPrice() == boardDTO.getPrice();
+	            }
+//	            if (boardDTO.getAddress() != null && !boardDTO.getAddress().isEmpty() && board.getAddress() != null && !board.getAddress().isEmpty()) {
+//	                matchesAddress = board.getAddress().contains(boardDTO.getAddress());
+//	            }
+	            
+	            
+	            
+	            if (boardDTO.getAddress() != null && !boardDTO.getAddress().isEmpty()) {
+	                // board.getAddress()가 null이거나 비어있으면 무조건 false 처리
+	                if (board.getAddress() == null || board.getAddress().isEmpty()) {
+	                    matchesAddress = false;
+	                } else {
+	                	String [] splitedAddress = boardDTO.getAddress().split("/");
+    	    		    String [] splitedAddress2 = splitedAddress[0].split(" ");
+	                	
+	            	    if(condition != null && condition == 0 ) {
+	    	    		    boardDTO.setAddress(""); 
+	    	    		    }else if(condition != null && condition ==1 &&  splitedAddress2.length > 0) {
+		    	    		    boardDTO.setAddress(splitedAddress2[0]); 
+		    	    		    }else if(condition != null && condition ==2 &&  splitedAddress2.length > 1) {
+			    	    		    boardDTO.setAddress(splitedAddress2[0] + " " +splitedAddress2[1]); 
+			    	    		    }
+		    	    		    else if(condition != null && condition ==3 &&  splitedAddress2.length > 2) {
+				    	    		    boardDTO.setAddress(boardDTO.getAddress()); 
+				    	    		    }
+	                	
+	                    matchesAddress = board.getAddress().contains(boardDTO.getAddress());
+	                }
+	            }
+	            
+	            
+	            
+	            
+	            if (boardDTO.getCategory() != null) {
+	                matchesCategory = board.getCategory().name().equals(boardDTO.getCategory().name());
+	            }
+	            if (boardDTO.getBuy_Sell() != null) {
+	                matchesBuySell = board.getBuy_Sell().name().equals(boardDTO.getBuy_Sell().name());
+	            }
+	            if (boardDTO.getProduct() != null && !boardDTO.getProduct().isEmpty()) {
+	                matchesProduct = board.getProduct().contains(boardDTO.getProduct());
+	            }
+
+	            return matchesTitle && matchesContents && matchesMemberUserId &&
+	                   matchesPrice && matchesAddress && matchesCategory && matchesBuySell && matchesProduct;
+	        })
+	        .collect(Collectors.toList());
+
+	    filteredBoards.sort(Comparator.comparing(BoardEntity::getCreateTime).reversed());
+
+	    // 페이징 처리
+	    int startIndex = pageNumber * pageSize;
+	    int endIndex = Math.min(startIndex + pageSize, filteredBoards.size());
+	    
+	    List<BoardEntity> pagedBoards = filteredBoards.subList(startIndex, endIndex);
+	    
+	    // 총 페이지 수 계산
+	    int totalPages = (int) Math.ceil((double) filteredBoards.size() / pageSize);
+	    
+	    // 검색된 결과와 페이지 정보 모델에 추가
+	    model.addAttribute("allBoards", pagedBoards);
+	    model.addAttribute("currentPage", page);
+	    model.addAttribute("totalPages", totalPages);
+	    model.addAttribute("boardDTO", boardDTO);  // 검색 조건 유지
+	    
+	    return "searchboardresult";
+	}
+
 	
 }

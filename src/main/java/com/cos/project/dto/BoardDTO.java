@@ -26,9 +26,9 @@ public class BoardDTO {
     private Timestamp createTime;     // 생성 시간
     private String boardFiles;        // 첨부 파일 URL
 
-    private MemberDTO member;         // 작성자 정보
+    private String  memberUserId;         // 작성자 정보
     private List<CommentDTO> comments; // 댓글 리스트
-    private int price;
+    private Integer price;
     private String address;				//거래 장소
     private Category category;
     private Buy_Sell buy_Sell;

@@ -1,11 +1,13 @@
 package com.cos.project.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -205,15 +207,40 @@ public class BoardService {
 			return boardRepository.findById(boardId).orElse(null);
 	}
 
-	public Page<BoardEntity> getBoardList(int page, int pageSize) {
-        PageRequest pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "id"));
-        return boardRepository.findAll(pageable); // 자동으로 페이징 처리됨
-    }
+	@Transactional
+	public Page<BoardEntity> getBoardList(int page, int pageSize, String address, int condition) {
+	    // 페이지 요청 생성
+	    PageRequest pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "id"));
+	    
+	    // address가 null이거나 비어있는지 체크
+	    if (address == null || address.trim().isEmpty()) {
+	        address = "";  // address가 비어있으면 빈 문자열로 처리
+	    }
+
+	    String[] filteredAddress = address.split(" ");
+	    
+
+	    
+	    // 주소와 condition에 따른 필터링
+	    if (condition == 0 || address.isEmpty()) {
+	        // condition이 0이거나 address가 비어있으면 모든 boardEntity를 가져옴
+	        return boardRepository.findAll(pageable);  // 조건 없이 모든 데이터 반환
+	    } else if (condition == 1 && filteredAddress.length > 0) {
+	        return boardRepository.findAllByAddress(filteredAddress[0], pageable);  // 첫 번째 주소 단어 기준
+	    } else if (condition == 2 && filteredAddress.length > 1) {
+	        return boardRepository.findAllByAddress(filteredAddress[0] + " " + filteredAddress[1], pageable);  // 첫 두 단어 기준
+	    } else if (condition == 3) {
+	        return boardRepository.findAllByAddress(address, pageable);  // 전체 주소 기준
+	    }
+
+	    return boardRepository.findAll(pageable);  // 기본적으로 모든 데이터를 반환
+	}
 
 
+
 	
 	
-	
+	@Transactional
 	public String getBoardMainFile(Long boardId)
 	        throws JsonMappingException, JsonProcessingException {
 	    BoardEntity boardEntity = boardRepository.findById(boardId).orElse(null);
@@ -232,6 +259,102 @@ public class BoardService {
 	        return "/boardimage/nullimage.jpg";
 	    }
 	}
+
+//	public List<BoardEntity> getBoardList2(String address, int condition) {
+//	    // 페이지 요청 생성
+//
+//	    // address가 null이거나 비어있는지 체크
+//	    if (address == null || address.trim().isEmpty()) {
+//	        address = "";  // address가 비어있으면 빈 문자열로 처리
+//	    }
+//
+//	    // 주소를 공백으로 분리
+//	    String[] filteredAddress = address.split("\\s+");  // 여러 공백을 하나로 처리하는 정규식
+//
+//	    // 디버깅: 로그 출력
+//	    System.out.println("컨디션: " + condition);
+//	    if (filteredAddress.length > 0) {
+//	        System.out.println("시: " + filteredAddress[0]);
+//	    }
+//	    if (filteredAddress.length > 1) {
+//	        System.out.println("군: " + filteredAddress[1]);
+//	    }
+//	    if (filteredAddress.length > 2) {
+//	        System.out.println("구: " + filteredAddress[2]);
+//	    }
+//
+//	    // 주소와 condition에 따른 필터링
+//	    if (condition == 0 || address.isEmpty()) {
+//	        // condition이 0이거나 address가 비어있으면 모든 boardEntity를 가져옴
+//	        return boardRepository.findAll();  // 조건 없이 모든 데이터 반환
+//	    } else if (condition == 1 && filteredAddress.length > 0) {
+//	        // 첫 번째 주소 단어 기준으로 필터링
+//	        return boardRepository.findAllByAddress2(filteredAddress[0]);
+//	    } else if (condition == 2 && filteredAddress.length > 1) {
+//	        // 첫 두 단어 기준으로 필터링
+//	        return boardRepository.findAllByAddress2(filteredAddress[0] + " " + filteredAddress[1]);
+//	    } else if (condition == 3) {
+//	        // 전체 주소 기준으로 필터링
+//	        return boardRepository.findAllByAddress2(address);
+//	    }
+//
+//	    // 기본적으로 모든 데이터를 반환
+//	    return boardRepository.findAll();
+//	}
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+//	// addressFilter condition (주소 검색 범위)
+//	@Transactional
+//	public List<BoardEntity> searchBoardListByAddressFilter(Long condition, String loggedAddress) {
+//	    List<BoardEntity> boards = boardRepository.findAll();
+//
+//	    // 내 주소를 공백으로 나눔 (예: "서울특별시 강남구 역삼동")
+//	    String[] splitedAddress = loggedAddress.split(" ");
+//	    System.out.println("내 주소 분리 결과: " + Arrays.toString(splitedAddress));
+//
+//	    // 0번이면 전체 조회
+//	    if (condition == 0L) {
+//	        return boards;
+//	    }
+//
+//	    // 비교 범위 계산 (4 -> 시/도까지, 3 -> 시/군/구까지, 2 -> 동까지 등등)
+//	    int compareDepth = condition.intValue();
+//
+//	    List<BoardEntity> filteredBoards = boards.stream().filter(board -> {
+//	        String boardAddress = board.getAddress();  // "서울특별시 강남구 역삼동/상세주소"
+//	        String[] boardSplited = boardAddress.split(" ");
+//
+//	        // 주소 depth가 부족하면 제외
+//	        if (splitedAddress.length < compareDepth || boardSplited.length < compareDepth) return false;
+//
+//	        // depth만큼 비교
+//	        for (int i = 0; i < compareDepth; i++) {
+//	            if (!splitedAddress[i].equals(boardSplited[i])) {
+//	                return false;
+//	            }
+//	        }
+//
+//	        return true;
+//	    }).collect(Collectors.toList());
+//
+//	    return filteredBoards;
+//	}
+
 
 	
 	

@@ -26,8 +26,8 @@
 					<!-- 게시판 링크 (왼쪽 정렬) -->
 
 					<div style="display: flex; justify-content: flex-start; gap: 10px;">
-						<a href="/" style="flex-grow: 0;">홈</a> <a href="/board/list"
-							style="flex-grow: 0;">게시판</a>
+						<a href="/" style="flex-grow: 0;">홈</a> <a href="/board/list" th:href="@{|/board/list?condition=3|}"
+   style="flex-grow: 0;">게시판</a>
 						<!-- 					th:id="|mainImage-${board.id}|" -->
 						<a	 href="/board/writeboard">글쓰기</a>
 					</div>

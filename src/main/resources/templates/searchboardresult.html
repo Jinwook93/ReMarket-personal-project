@@ -1,211 +1,572 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>게시판</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 20px;
-            background-color: #f9f9f9;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>게시판</title>
+<style>
+body {
+	font-family: Arial, sans-serif;
+	line-height: 1.6;
+	margin: 0;
+	padding: 20px;
+	background-color: #f9f9f9;
+}
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            margin-top: 65px;
-        }
+.container {
+	max-width: 95%;
+	margin: 0 auto;
+	background: #fff;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+	margin-top: 65px;
+}
 
-        h1 {
-            text-align: center;
-            color: #333;
-        }
+h1 {
+	text-align: center;
+	color: #333;
+}
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
+table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-top: 20px;
+}
 
-        th, td {
-            border: 1px solid #ddd;
-            text-align: center;
-            padding: 10px;
-        }
+th, td {
+	border: 1px solid #ddd;
+	text-align: center;
+	padding: 10px;
+}
 
-        th {
-            background-color: #f4f4f4;
-        }
+th {
+	background-color: #f4f4f4;
+}
 
-        tr:hover {
-            background-color: #f1f1f1;
-        }
+tr:hover {
+	background-color: #f1f1f1;
+}
 
-        .write-btn {
-            display: block;
-            width: 100px;
-            margin: 20px 0;
-            padding: 10px 20px;
-            text-align: center;
-            color: #fff;
-            background-color: #007bff;
-            border: none;
-            border-radius: 4px;
-            text-decoration: none;
-            font-size: 16px;
-        }
+.write-btn, .reset-btn {
+	display: block;
+	width: 100px;
+	margin: 20px 0;
+	padding: 10px 20px;
+	text-align: center;
+	color: #fff;
+	background-color: #007bff;
+	border: none;
+	border-radius: 4px;
+	text-decoration: none;
+	font-size: 16px;
+}
 
-        .write-btn:hover {
-            background-color: #0056b3;
-        }
+.write-btn:hover {
+	background-color: #0056b3;
+}
 
-        .pagination {
-            text-align: center;
-            margin-top: 20px;
-        }
+.pagination {
+	text-align: center;
+	margin-top: 20px;
+}
 
-        .pagination a {
-            margin: 0 5px;
-            text-decoration: none;
-            color: #007bff;
-        }
+.pagination a {
+	margin: 0 5px;
+	text-decoration: none;
+	color: #007bff;
+}
 
-        .pagination a.active {
-            font-weight: bold;
-            color: #0056b3;
-        }
+.pagination a.active {
+	font-weight: bold;
+	color: #0056b3;
+}
 
-        .search-container {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
+.search-container {
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 20px;
+}
 
-        .search-container select, .search-container input {
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
+.search-container select, .search-container input {
+	padding: 10px;
+	border-radius: 5px;
+	border: 1px solid #ccc;
+}
 
-        .search-container button {
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            border-radius: 5px;
-            border: none;
-            cursor: pointer;
-        }
+.search-container button {
+	padding: 10px 20px;
+	background-color: #007bff;
+	color: white;
+	border-radius: 5px;
+	border: none;
+	cursor: pointer;
+}
 
-        .search-container button:hover {
-            background-color: #0056b3;
-        }
-    </style>
+.search-container button:hover {
+	background-color: #0056b3;
+}
+/* 채팅창 스타일 (필요 시 사용) */
+#chatBox {
+	display: none;
+	position: fixed;
+	bottom: 20px;
+	right: 20px;
+	width: 300px;
+	height: 400px;
+	background: #fff;
+	border: 1px solid #ddd;
+	border-radius: 8px;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+	z-index: 1000;
+}
+
+#chatBox .header {
+	background: #007bff;
+	color: #fff;
+	padding: 10px;
+	text-align: center;
+	border-radius: 8px 8px 0 0;
+}
+
+#chatBox .content {
+	height: calc(100% - 60px);
+	overflow-y: auto;
+	padding: 10px;
+}
+
+#chatBox .footer {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	padding: 10px;
+	background: #f4f4f4;
+	border-radius: 0 0 8px 8px;
+}
+
+#chatBox .footer input {
+	width: calc(100% - 20px);
+	padding: 10px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+}
+table a {
+text-decoration: none;
+}
+</style>
+      <link rel="stylesheet" href="/css/addressFilter.css">
 </head>
 <body>
-    <div th:replace="~{header.html}"></div>
-    <div class="container">
-        <h1>게시판 (검색 결과)</h1>
+	<div th:replace="~{header.html}"></div>
+	<div class="container">
+		<h1>게시판</h1>
+	<div style="display: flex; justify-content: space-between;" >
+		<!-- 글쓰기 버튼 -->
+		<div class="button-container" style="display: flex;">
+			<a href="/board/writeboard" class="write-btn">글쓰기</a>
+			<button type="button" onclick="window.location.href='/board/list'"
+				class="reset-btn"
+				style="color: white; background-color: green; margin-left: 30px;">초기화</button>
+				
+			
+				
+		</div>
+			<div  style="display: flex; align-items: center;">
+		<div>
+			<select id = "addressFilter" >
+				<option value = "0"> 지역 범위를 선택하세요</option>
+				<option value = "3">매우 가까운 지역 </option>
+						<option value = "2"> 가까운 지역</option>
+				<option value = "1">먼 지역</option>			
+					<option value = "0">전체 지역</option>						
+				</select>
+				</div>
+				
+					<div style = "margin-left: 5px;" th:replace="~{searchBoardManager.html}"></div>
+					</div>
+				</div>
+		<table
+			style="width: 100%; margin-bottom: 20px; border-collapse: collapse;">
+			<thead>
+				<tr style="background-color: #f8f8f8; text-align: center;">
+					<th style="padding: 10px;">번호</th>
+					<th style="padding: 10px;">판매/구매</th>
+					<th style="padding: 10px;">종류</th>
+					<th style="padding: 10px;">제목</th>
+					<th style="padding: 10px;">작성자</th>
+					<th style="padding: 10px;">가격</th>
+					<th style="padding: 10px;">작성일</th>
+					<th style="padding: 10px;">조회수</th>
+					<th style="padding: 10px;">수정/삭제/대화</th>
+				</tr>
+			</thead>
+			<tbody>
+				<!-- 게시글 데이터 반복 -->
+				<tr th:each="board : ${allBoards}"
+					style="border-bottom: 1px solid #ddd;">
+					<td th:text="${board.id}"
+						style="text-align: center; padding: 10px;"></td>
+					<td th:text="${board.buy_Sell}"
+						style="text-align: center; padding: 10px; color: #ff5722; font-weight: bold;"></td>
+					<td th:text="${board.category}"
+						style="text-align: center; padding: 10px;"></td>
+					<td th:data-board-id="${board.id}" style="padding: 10px;">
+<div style="display: flex; align-items: center; justify-content: flex-start;">
+<!-- a는 인라인 요소이므로 flex 적용이 안된다. 부모 뿐만 아니라 a에도 flex를 걸어주어야 함 -->
+    <a th:href="@{/board/view/{id}(id=${board.id})}" style="display: flex; align-items: center; text-decoration: none;">
+        <div>
+            <img th:id="|mainImage-${board.id}|"
+                 src="/boardimage/nullimage.jpg" alt="no profile image"
+                 style="display: block; width: 80px; height: 80px; object-fit: cover; margin-right: 10px;">
+        </div>
+        
+        <!-- 거래 상태 표시 및 거래취소 버튼 -->
+        <div th:each="trade : ${board.trades}">
+            <!-- 예약 중 버튼 -->
+            <button th:if="${trade != null and trade.booking1 == true and trade.booking2 == true and trade.tradeStatus != '완료'}"
+                    type="button" class="small-btn reserve">예약 중</button>
 
-        <!-- 글쓰기 버튼 -->
-        <div class="button-container">
-            <a href="/board/writeboard" class="write-btn">글쓰기</a>
-            <button type="button" onclick="window.location.href = '/board/allboard'" class="reset-btn">초기화</button>
+            <!-- 거래 중 버튼 -->
+            <button th:if="${trade != null and trade.accept1 == true and trade.accept2 == true and trade.completed1 != null 
+                            and trade.completed2 != null and (trade.completed1 != true or trade.completed2 != true)}"
+                    type="button" class="small-btn progress">거래 중</button>
+
+            <!-- 거래 완료 버튼 -->
+            <button th:if="${trade != null and trade.completed1 != null and trade.completed2 != null 
+                            and (trade.completed1 == true and trade.completed2 == true)}"
+                    type="button" class="small-btn complete">거래완료</button>
         </div>
 
-        <!-- 게시판 테이블 -->
-        <table style="margin-bottom: 20px;">
-            <thead>
-                <tr>
-             			<th>번호</th>
-					<th>판매/구매</th>
-					<th>종류</th>
-					<th>제목</th>
-					<th>작성자</th>
-<!-- 					<th>상품명</th> -->
-					<th>가격</th>
-					<th>작성일</th>
-					<th>조회수</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- boards 데이터가 없을 경우 "검색 결과가 없습니다" 표시 -->
-                <tr th:if="${boards == null or boards.size == 0}">
-                    <td colspan="8">검색 결과가 없습니다</td>
-                </tr>
+        <!-- 게시글 제목 -->
+        <div th:text="${board.title}"
+             style="font-size: 16px; color: #000; font-weight: bold; margin-left: 10px;"></div>
+             <!--  <div th:text ="${board.address}"></div> -->
+    </a>
+</div>
 
-                <!-- 게시글 데이터 반복 -->
-                <tr th:each="board : ${boards}" th:if="${boards != null and boards.size > 0}">
-                    <td th:text="${board.id}"></td>
-                    <!-- 					팝니다,삽니다 -->
-						<td th:text="${board.buy_Sell}"></td>
-                    <td th:text="${board.category}"></td>
-                    <td><a th:href="@{/board/view/{id}(id=${board.id})}" th:text="${board.title}"></a></td>
-                    <td>
-                        <div style="display: flex; align-items: center;">
-                            <!-- 프로필 이미지 -->
-                            <div th:if="${board.memberEntity.profileImage != null}">
-                                <div id="imagePreview" style="margin-top: 10px;">
-                                    <img id="previewImage" th:src="@{{imagePath}(imagePath=${board.memberEntity.profileImage})}"
-                                         alt="Profile Image Preview" style="display: block; width: 50px; height: 50px; margin-right: 10px;">
-                                </div>
-                            </div>
+					</td>
+					<td>
+						<div class="enterChatRoom" style="cursor: pointer;"
+							th:onClick="@{/chat/Chatroom/{id}(id=${board.id})}">
+							<div style="display: flex; align-items: center;">
+								<div th:if="${board.memberEntity.profileImage != null}">
+									<img
+										th:src="@{{imagePath}(imagePath=${board.memberEntity.profileImage})}"
+										alt="Profile Image"
+										style="display: block; width: 50px; height: 50px; object-fit: cover; margin-right: 10px;">
+								</div>
+								<div th:if="${board.memberEntity.profileImage == null}">
+									<img src="/boardimage/nullimage.jpg" alt="no profile image"
+										style="display: block; width: 50px; height: 50px; object-fit: cover; margin-right: 10px;">
+								</div>
+								<span th:text="${board.memberEntity.name}"
+									style="font-size: 14px; color: #333;"></span>
+							</div>
+						</div>
+					</td>
+					<td th:text=|${board.price}원|
+						style="text-align: center; padding: 10px; color: #00bfae; font-weight: bold;"
+						th:id=|price-${board.id}|></td>
+					<td
+						th:text="${#dates.format(board.createTime, 'yyyy-MM-dd HH:mm')}"
+						style="text-align: center; padding: 10px;"></td>
+					<td th:text="${board.view}"
+						style="text-align: center; padding: 10px;"></td>
+					<!-- 수정/삭제 버튼 (작성자와 로그인 사용자가 동일할 경우) -->
+					<td th:if="${board.memberEntity.userid == principalDetails.name}"
+						style="text-align: center;">
+						<div style="display: flex; justify-content: center; gap: 10px;">
+							<button type="button" th:id="|updateBoard-${board.id}|"
+								th:onclick="'window.location.href=\'/board/updateboard/' + ${board.id} + '\';'"
+								style="background-color: #4caf50; color: white; padding: 5px 10px; border: none; border-radius: 5px;">수정</button>
+							<button type="button" th:id="|deleteBoard-${board.id}|"
+								th:data-deleteBoardId="${board.id}"
+								style="background-color: #f44336; color: white; padding: 5px 10px; border: none; border-radius: 5px;">삭제</button>
+						</div>
+					</td>
+					<!-- 작성자와 로그인 사용자가 다를 경우 대화하기 버튼 표시 -->
+					<td
+						th:unless="${board.memberEntity.userid == principalDetails.name}"
+						style="text-align: center;">
+						<div class="enterChatRoom" style="cursor: pointer;">
+							<button type="button" class="createRoom" th:data-id="${board.id}"
+								th:data-member2="${board.memberEntity.userid}"
+								style="background-color: #2196f3; color: white; padding: 5px 10px; border: none; border-radius: 5px;">대화하기</button>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
 
-                            <div th:if="${board.memberEntity.profileImage == null}">
-                                <div id="imagePreview" style="margin-top: 10px;">
-                                    <img id="previewImage" src="/boardimage/nullimage.jpg" alt="no profile image"
-                                         style="display: block; width: 50px; height: 50px; margin-right: 10px;">
-                                </div>
-                            </div>
-                            <!-- 이름 -->
-                            <span th:text="${board.memberEntity.name}"></span>
-                        </div>
-                    </td>
-                    	<td th:text="${board.price}"></td>
-                    <td th:text="${#dates.format(board.createTime, 'yyyy-MM-dd HH:mm')}"></td>
-                    <td th:text="${board.view}"></td>
-                </tr>
-            </tbody>
-        </table>
 
-        <!-- 검색창 -->
-        <div class="search-container" align="center">
-            <form action="/search/board/result" method="get">
-                <select name="category1">
-                    <option value="">모든 카테고리</option>
-                    <option value="예제A">예제A</option>
-                    <option value="예제B">예제B</option>
-                    <option value="예제C">예제C</option>
-                </select>
 
-                <select name="category2" required>
-                    <option value="">항목을 선택하세요</option>
-                    <option value="title">제목</option>
-                    <option value="userid">작성자 아이디</option>
-                    <option value="name">작성자 이름</option>
-                    <option value="contents">내용</option>
-                </select>
 
-                <input type="text" name="search" placeholder="검색어 입력" />
 
-                <button type="submit">검색</button>
-            </form>
-        </div>
 
-        <!-- 페이지네이션 -->
-        <div class="pagination">
-            <a th:href="@{/board/list(page=1)}" th:text="'1'" class="active"></a>
-            <a th:href="@{/board/list(page=2)}" th:text="'2'"></a>
-            <a th:href="@{/board/list(page=3)}" th:text="'3'"></a>
-        </div>
-    </div>
-        <div th:replace="~{footer.html}"></div>
-<!--     	 <th:block th:replace="/footer :: footerFragment"></th:block> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		<!-- 검색창 -->
+		<!--  
+		<div class="search-container" align="center">
+			<form action="/search/board/result" method="get">
+				<select name="buy_Sell">
+					<option value="">판매/구매</option>
+					<option value="팝니다">팝니다</option>
+					<option value="삽니다">삽니다</option>
+					<option value="거래완료">거래완료</option>
+				</select> <select name="category1">
+					<option value="">모든 카테고리</option>
+					<option value="예제A">예제A</option>
+					<option value="예제B">예제B</option>
+					<option value="예제C">예제C</option>
+				</select> <select name="category2" required>
+					<option value="">항목을 선택하세요</option>
+					<option value="title">제목</option>
+					<option value="userid">작성자 아이디</option>
+					<option value="name">작성자 이름</option>
+					<option value="contents">내용</option>
+				</select> <input type="text" name="search" placeholder="검색어 입력" />
+				<button type="submit">검색</button>
+			</form>
+		</div>
+		
+		
+		-->
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<!-- 페이지네이션 -->
+		<!--     <div class="pagination"> -->
+		<!--       <a th:href="@{/board/list(page=1)}" th:text="'1'" class="active"></a> -->
+		<!--       <a th:href="@{/board/list(page=2)}" th:text="'2'"></a> -->
+		<!--       <a th:href="@{/board/list(page=3)}" th:text="'3'"></a> -->
+		<!--     </div> -->
+
+
+
+
+		<!-- th:each="i : ${#numbers.sequence(1, totalPages)}": #numbers.sequence(1, totalPages)를 사용하여 1부터 totalPages까지 숫자를 생성하고, 이를 하나씩 순차적으로 i에 할당하여 반복합니다. -->
+		<!-- th:href="@{/board/list(page=${i})}": 페이지 번호를 링크로 생성하여 클릭 시 해당 페이지로 이동할 수 있도록 합니다. ${i}는 현재 순차적으로 반복되는 페이지 번호입니다. -->
+		<!-- th:text="${i}": 페이지 번호를 링크 텍스트로 표시합니다. -->
+		<!-- th:classappend="${i == currentPage} ? 'active' : ''": 현재 페이지와 i가 같으면 active 클래스를 추가하여 CSS로 강조 표시합니다. -->
+
+
+
+
+<div class="pagination">
+    <a th:each="i : ${#numbers.sequence(1, totalPages)}"
+       th:href="@{/board/searchBoardManager(page=${i}, 
+                                            title=${boardDTO.title != null ? boardDTO.title : ''}, 
+                                            contents=${boardDTO.contents != null ? boardDTO.contents : ''}, 
+                                            memberUserId=${boardDTO.memberUserId != null ? boardDTO.memberUserId : ''}, 
+                                            price=${boardDTO.price != null ? boardDTO.price : ''}, 
+                                            address=${boardDTO.address != null ? boardDTO.address : ''}, 
+                                            category=${boardDTO.category != null ? boardDTO.category : ''}, 
+                                            buy_Sell=${boardDTO.buy_Sell != null ? boardDTO.buy_Sell : ''}, 
+                                            product=${boardDTO.product != null ? boardDTO.product : ''})}"
+       th:text="${i}" 
+       th:classappend="${i == currentPage} ? 'active' : ''">
+    </a>
+</div>
+
+
+
+
+	</div>
+	<div th:replace="~{footer.html}"></div>
+
+
+
+
+	<!-- jQuery (AJAX 요청 등 사용 시) -->
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+	<!-- 대화하기 버튼 클릭 시 채팅방 생성 요청 스크립트 -->
+	<script type="module">
+  import { loadMessages, openChatRoom, loadChatRooms, setUpEnterRoomButton, setUpExitRoomButton, toggleChattingRoomList, showChattingRoomList, updateChatRoomOrder} from '/js/chatModule.js';
+  
+  document.addEventListener('DOMContentLoaded', async function() {
+    const loggedId = document.getElementById("loggedId")?.value;  // 로그인된 사용자 ID 가져오기
+    const isLoggedIn = document.getElementById("isLoggedIn").value;
+    const loggedUserId = document.getElementById("loggedUserId").value;
+    
+    if (!loggedId) {
+      console.error("로그인된 사용자 ID를 찾을 수 없습니다.");
+      return;
+    }
+
+    // "대화하기" 버튼 선택
+    const chatButtons = document.querySelectorAll('.createRoom');
+
+    chatButtons.forEach(button => {
+      button.addEventListener('click', async function() {
+        const boardId = this.getAttribute('data-id');
+        const member2UserId = this.getAttribute('data-member2');
+
+        if (!boardId || !member2UserId) {
+          alert('채팅방을 생성할 수 없습니다. (boardId 또는 member2UserId 누락)');
+          return;
+        }
+
+        const payload = {
+          boardId: boardId, // 추가 가능
+          member2UserId: member2UserId
+        };
+
+        try {
+          const response = await fetch(`/chat/Chatroom/${boardId}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`채팅방 생성 실패: ${errorText}`);
+          }
+
+          const data = await response.json();
+          console.log('채팅방 생성 성공:', data);
+
+          // 채팅방 목록 갱신 및 토글 (대화 목록을 보이도록)
+          if (isLoggedIn === "true" || isLoggedIn === true) {
+
+		// 채팅방 알람을 이용해서 로드할 것임
+            await loadChatRooms(loggedId);
+            setUpEnterRoomButton(loggedUserId);
+            setUpExitRoomButton();
+ 			updateChatRoomOrder(data.id);
+         showChattingRoomList(); // 또는 showChattingRoomList(); 를 호출하여 강제로 보이게 함.
+          }
+
+		
+
+
+          // 채팅방 열기 및 메시지 로드
+		if(loggedUserId !== data.member2UserId){	
+          openChatRoom(data.id, data.title, loggedUserId, data.member2UserId, "logged1");
+        }else{
+          openChatRoom(data.id, data.title, loggedUserId, data.member1UserId,"logged2");
+		}
+		
+
+        } catch (error) {
+          console.error('채팅방 생성 중 오류 발생:', error);
+          alert('채팅방을 생성하는 도중 오류가 발생했습니다.');
+        }
+      });
+    });
+  });
+</script>
+	<script type="module">
+ import { getBoardMainFile } from '/js/boardModule.js';
+
+ document.addEventListener("DOMContentLoaded", function () {
+    const boardIds = document.querySelectorAll("[data-board-id]");
+    
+    boardIds.forEach(async (board) => {
+        const boardId = board.getAttribute("data-board-id");
+        const imageUrl = await getBoardMainFile(boardId); // Await the result
+
+        const imageElement = document.getElementById(`mainImage-${boardId}`);
+        if (imageElement) {
+            imageElement.src = imageUrl || '/boardimage/nullimage.jpg'; // Fallback if no image URL
+        }
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const addressFilter = document.getElementById('addressFilter');
+
+// select 요소 값이 변경될 때마다 실행
+addressFilter.addEventListener('change', async () => {
+  const selectedValue = addressFilter.value;
+  const selectedText = addressFilter.options[addressFilter.selectedIndex].text;
+
+  console.log('선택된 값:', selectedValue);
+  console.log('선택된 텍스트:', selectedText);
+
+  // 사용자 집 주소 가져오기 (사용자 주소 input이 존재해야 함)
+  const loggedAddress = document.getElementById("loggedAddress").value;
+
+  console.log('사용자 집 주소:', loggedAddress);
+
+  // 현재 URL에서 기존 condition 파라미터 제거 후 새로운 condition 파라미터 추가
+  const currentUrl = new URL(window.location.href);
+  
+  // 기존 condition 파라미터가 있으면 제거
+  currentUrl.searchParams.delete('condition');
+
+  // 새로운 condition 파라미터 추가
+  currentUrl.searchParams.append('condition', selectedValue);
+
+  // 최종 URL로 이동
+  window.location.href = currentUrl.toString();
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ });
+</script>
+	<script src="/js/formatCurrency.js" type="module"></script>
+	<script src="/js/deleteBoard.js" type="module"></script>
+
+
 </body>
 </html>

@@ -55,6 +55,13 @@ public interface BoardRepository extends JpaRepository<BoardEntity, Long>{
 	
 	Page<BoardEntity> findAll(Pageable pageable); // 페이징된 데이터 조회
 	
+	@Query("SELECT b FROM BoardEntity b WHERE b.address LIKE CONCAT(:search, '%')")	
+	Page<BoardEntity> findAllByAddress(@Param("search") String search ,Pageable pageable); 
+	
+	
+	@Query("SELECT b FROM BoardEntity b WHERE b.address LIKE CONCAT(:search, '%')")	
+	List<BoardEntity> findAllByAddress2(@Param("search") String search); 
+	
 	
 	
 	
