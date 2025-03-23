@@ -380,9 +380,9 @@ public class BoardService {
 	public String getAddressByCondition(String fullAddress, Integer condition) {
 	    if (fullAddress == null || fullAddress.isEmpty()) return "";
 	    
-	    String[] addresses = fullAddress.split("/");
+//	    String[] addresses = fullAddress.split("/");
 	    
-	    String[] split = addresses[0].split(" ");
+	    String[] split =  fullAddress.split(" ");
 	    if (condition == null) return "";
 	    if (condition == 1 && split.length > 0) return split[0];
 	    if (condition == 2 && split.length > 1) return split[0] + " " + split[1];

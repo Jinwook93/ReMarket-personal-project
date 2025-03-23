@@ -10,6 +10,7 @@ import com.cos.project.dto.TradeDTO;
 import com.cos.project.entity.BoardEntity;
 import com.cos.project.entity.Buy_Sell;
 import com.cos.project.entity.Category;
+import com.cos.project.entity.ChattingRoomEntity;
 import com.cos.project.entity.CommentEntity;
 import com.cos.project.entity.MemberEntity;
 import com.cos.project.entity.TradeStatus;
@@ -18,8 +19,10 @@ import com.cos.project.repository.BoardRepository;
 import com.cos.project.repository.MemberRepository;
 import com.cos.project.service.AlarmService;
 import com.cos.project.service.BoardService;
+import com.cos.project.service.ChatService;
 import com.cos.project.service.CommentService;
 import com.cos.project.service.MemberService;
+import com.cos.project.service.TradeService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -72,6 +75,9 @@ public class BoardController {
 
 	@Autowired
 	private CommentService commentService;
+	
+	@Autowired
+	private TradeService tradeService;
 
 	@Autowired
 	private BoardLikeRepository boardLikeRepository;
@@ -542,6 +548,8 @@ public class BoardController {
 	@GetMapping("/list")
 	public String boardList(@RequestParam(name = "page", defaultValue = "1") Integer page,
 	                        @RequestParam(name = "condition", defaultValue = "0") Integer condition,
+	                        @RequestParam(name ="searched", required=false) Boolean searched, 
+	                        @RequestParam(name ="tradestatus", required=false) String tradestatus, 
 	                        @ModelAttribute BoardDTO boardDTO,
 	                        Model model) {
 
@@ -561,15 +569,35 @@ public class BoardController {
 	    List<BoardEntity> boards = boardService.allContents();
 
 	    // 주소 기본값 설정
-	    if (boardDTO.getAddress() == null || boardDTO.getAddress().isEmpty()) {
+	    if ((boardDTO.getAddress() == null || boardDTO.getAddress().isEmpty()) && searched == null) {
 	        boardDTO.setAddress(loggedAddress);
 	    }
 	    	
-	    // 필터링
+	 // 필터링
 	    List<BoardEntity> filteredBoards = boards.stream()
-	            .filter(board -> boardService.isBoardMatched(board, boardDTO, condition))
-	            .sorted(Comparator.comparing(BoardEntity::getCreateTime).reversed())
-	            .collect(Collectors.toList());
+	        .filter(board -> boardService.isBoardMatched(board, boardDTO, condition))
+	        .filter(board -> {
+	            if (tradestatus == null || tradestatus.isEmpty() || tradestatus.equals("")) {
+	                return true; // tradestatus 없으면 필터링 건너뜀
+	            }
+	            if ("팝니다".equals(tradestatus) || "삽니다".equals(tradestatus)) {
+	                return board.getBuy_Sell().name().equals(tradestatus);
+	            }   
+	            
+	            if ("미거래".equals(tradestatus) ) {
+	                return board.getTrades().size()==0;
+	            }  
+	            return board.getTrades().stream().anyMatch(trade -> trade != null && (
+	                ("거래중".equals(tradestatus) && trade.getAccept1() && trade.getAccept2() &&
+	                    (Boolean.FALSE.equals(trade.getCompleted1()) || Boolean.FALSE.equals(trade.getCompleted2()))) ||
+	                ("예약중".equals(tradestatus) && trade.getBooking1() && trade.getBooking2()) ||
+	                ("거래완료".equals(tradestatus) && trade.getCompleted1() && trade.getCompleted2())
+	            ));
+	        })
+	        .sorted(Comparator.comparing(BoardEntity::getCreateTime).reversed())
+	        .collect(Collectors.toList());
+
+
 
 	    // 페이징 처리
 	    int startIndex = pageNumber * pageSize;
@@ -583,7 +611,7 @@ public class BoardController {
 	    model.addAttribute("totalPages", totalPages);
 	    model.addAttribute("currentPage", page);
 	    model.addAttribute("boardDTO", boardDTO); // 검색 조건 유지
-
+	    model.addAttribute("tradestatus", tradestatus); 
 	    return "boardlist";
 	}
 

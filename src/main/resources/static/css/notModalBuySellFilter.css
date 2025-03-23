@@ -1,6 +1,6 @@
 /* select 요소 스타일 */
-#addressFilter {
-    width: 100%; /* 100% 폭으로 확장 */
+.notModalBuySellFilter {
+    width: 98%; /* 100% 폭으로 확장 */
     padding: 8px; /* 패딩을 주어 클릭 영역을 넓힘 */
     border: 1px solid #ccc; /* 테두리 색상 */
     border-radius: 4px; /* 테두리 둥글게 */
@@ -12,13 +12,13 @@
 }
 
 /* select 요소에 마우스를 올렸을 때 */
-#addressFilter:hover {
+.notModalBuySellFilter:hover {
     border-color: #4CAF50; /* 마우스 오버 시 테두리 색상 */
     cursor: pointer; /* 클릭 가능한 손 모양 커서 */
 }
 
 /* option 요소 스타일 */
-#addressFilter option {
+.notModalBuySellFilter option {
     padding: 8px; /* 각 옵션 항목의 패딩 */
     background-color: #f9f9f9; /* 옵션 배경색 */
     color: #333; /* 옵션 글자 색상 */
@@ -26,13 +26,13 @@
 }
 
 /* option 요소가 선택되었을 때의 스타일 */
-#addressFilter option:checked {
+.notModalBuySellFilter option:checked {
     background-color: gray;; /* 선택된 항목의 배경색 */
     color: white; /* 선택된 항목의 글자색 */
 }
 
 /* option 요소의 hover 스타일 */
-#addressFilter option:hover {
+.notModalBuySellFilter option:hover {
     background-color: #f1f1f1; /* 옵션에 마우스를 올렸을 때 배경색 */
 }
 

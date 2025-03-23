@@ -155,6 +155,7 @@ text-decoration: none;
 }
 </style>
       <link rel="stylesheet" href="/css/addressFilter.css">
+       <link rel="stylesheet" href="/css/notModalBuySellFilter.css">
 </head>
 <body>
 	<div th:replace="~{header.html}"></div>
@@ -172,6 +173,19 @@ text-decoration: none;
 				
 		</div>
 			<div  style="display: flex; align-items: center;">
+			
+			<div>
+			<select name="buySellFilter"  class = "notModalBuySellFilter"  id="buySellFilter">
+					<option value="">거래상태</option>
+						<option value="미거래">미거래</option>
+					<option value="팝니다">팝니다</option>
+					<option value="삽니다">삽니다</option>
+					<option value="나눔">나눔</option>
+						<option value="거래중">거래중</option>
+					<option value="예약중">예약중</option>
+					<option value="거래완료">거래완료</option>
+					</select>
+			</div>
 		<div>
 			<select id = "addressFilter" >
 				<option value = "0"> 지역 범위를 선택하세요</option>
@@ -385,7 +399,7 @@ text-decoration: none;
 <!-- param.searched 가 null일 경우 -->
 <div class="pagination" th:if="${param.searched == null}">
     <a th:each="i : ${#numbers.sequence(1, totalPages)}"
-       th:href="@{/board/list(condition=${param.condition}, page=${i})}"
+       th:href="@{/board/list(condition=${param.condition}, tradestatus=${param.tradestatus}, page=${i})}"
        th:text="${i}"
        th:classappend="${i == currentPage} ? 'active' : ''"> 
     </a>
@@ -402,6 +416,7 @@ text-decoration: none;
                                             price=${boardDTO.price != null ? boardDTO.price : ''}, 
                                             address=${boardDTO.address != null ? boardDTO.address : ''}, 
                                             category=${boardDTO.category != null ? boardDTO.category : ''}, 
+                                            tradestatus=${tradestatus != null or tradestatus != ''? tradestatus: ''}, 
                                             buy_Sell=${boardDTO.buy_Sell != null ? boardDTO.buy_Sell : ''}, 
                                             product=${boardDTO.product != null ? boardDTO.product : ''},
                                             condition=${param.condition != null ? param.condition : ''})}"
@@ -528,13 +543,74 @@ text-decoration: none;
 
 
 
+  const urlParams = new URLSearchParams(window.location.search);
+  
+  const buySellFilter = document.getElementById('buySellFilter');
+  const tradeStatusParam = urlParams.get('tradestatus');
+  if (tradeStatusParam) {
+    buySellFilter.value = tradeStatusParam;
+  }
+
+  const addressFilter = document.getElementById('addressFilter');
+  const conditionParam = urlParams.get('condition');
+  if (conditionParam) {
+    addressFilter.value = conditionParam;
+  }
 
 
 
 
 
 
-const addressFilter = document.getElementById('addressFilter');
+
+
+
+
+//const buySellFilter = document.getElementById('buySellFilter');
+
+// select 요소 값이 변경될 때마다 실행
+buySellFilter.addEventListener('change', async () => {
+  const selectedStatus = buySellFilter.value;
+  const selectedStatusText = buySellFilter.options[buySellFilter.selectedIndex].text;
+
+  console.log('선택된 값:',  selectedStatus);
+  console.log('선택된 텍스트:', selectedStatusText);
+
+
+  // 현재 URL에서 기존 condition 파라미터 제거 후 새로운 condition 파라미터 추가
+  const currentUrl = new URL(window.location.href);
+  
+  // 기존 condition 파라미터가 있으면 제거
+  currentUrl.searchParams.delete('tradestatus');
+
+  // 기존 page 파라미터가 있으면 제거
+  currentUrl.searchParams.delete('page');
+
+  // 새로운 condition 파라미터 추가
+  currentUrl.searchParams.append('tradestatus', selectedStatus);
+
+  // 새로운 page 파라미터 추가
+  currentUrl.searchParams.append('page', 1);
+
+  // 최종 URL로 이동
+  window.location.href = currentUrl.toString();
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//const addressFilter = document.getElementById('addressFilter');
 
 // select 요소 값이 변경될 때마다 실행
 addressFilter.addEventListener('change', async () => {
@@ -545,9 +621,9 @@ addressFilter.addEventListener('change', async () => {
  // console.log('선택된 텍스트:', selectedText);
 
   // 사용자 집 주소 가져오기 (사용자 주소 input이 존재해야 함)
-  const loggedAddress = document.getElementById("loggedAddress").value;
+  //const loggedAddress = document.getElementById("loggedAddress").value;
 
-  console.log('사용자 집 주소:', loggedAddress);
+ // console.log('사용자 집 주소:', loggedAddress);
 
   // 현재 URL에서 기존 condition 파라미터 제거 후 새로운 condition 파라미터 추가
   const currentUrl = new URL(window.location.href);
