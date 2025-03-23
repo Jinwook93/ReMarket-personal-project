@@ -37,7 +37,7 @@
             <!-- 이름 -->
             <label for="name">이름</label>
             <br>
-            <input type="text" id="name" name="name"><br><br>
+            <input type="text" id="name" name="name" required><br><br>
 
             <!-- 프로필 이미지 확인 -->
             <!-- 사용자가 프로필 이미지를 업로드할 수 있는 입력 필드입니다. -->
@@ -57,7 +57,7 @@
             <!-- 나이 -->
             <label for="age">나이</label>
             <br>
-            <input type="number" id="age" name="age"><br>
+            <input type="number" id="age" name="age" required><br>
 
             <!-- 성별 -->
             <label for="gender">성별</label>
@@ -71,14 +71,14 @@
             <!-- 연락처 -->
             <label for="phone">연락처</label>
             <br>
-            <input type="tel" id="phone" name="phone"><br>
+            <input type="tel" id="phone" name="phone" required><br>
 
             <!-- 주소 -->
             <div style ="display:inline-block;">
             <label for="address2">주소</label><button type ="button"  id="addressButton" >검색</button>
             </div>
             <br>
-           	<input type="text"  id="address"  name="address"  placeholder="주소를 검색하세요" readonly>
+           	<input type="text"  id="address"  name="address"  placeholder="주소를 검색하세요" required>
             
             
             
@@ -87,13 +87,13 @@
   <div class="modal-content">
     <span id="closeModal" class="close">&times;</span>
     <h2>주소 검색</h2>
-    <input type="text" id="addressKeywordModal" placeholder="검색할 주소">
+    <input type="text" id="addressKeywordModal" placeholder="검색할 주소" required>
     <button type="button" id="addressButtonModal">검색</button>
     <div id="addressResult"></div>
   </div>
 </div>
             
-            <input type ="text"  id="address2" name="address2" placeholder="세부 주소를 입력하세요"></textarea>
+            <input type ="text"  id="address2" name="address2" placeholder="세부 주소를 입력하세요"  required="required"></textarea>
             <br>
 
             <!-- 관리자 패스워드 -->

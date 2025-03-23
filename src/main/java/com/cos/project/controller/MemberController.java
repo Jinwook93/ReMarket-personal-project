@@ -192,7 +192,7 @@ public ResponseEntity<?>  joinUser(@RequestBody MemberDTO entity) {
 	        
 	        // Perform the update through the service layer
 	        try {
-	        	address += "/"+address2;
+	        	address += " "+address2;
 	        	
 	            String isUpdated = memberService.updateMember(id, userid, password, name, age, gender, phone, address, profileImagePath, principalDetails);
 	            if (isUpdated != null) {

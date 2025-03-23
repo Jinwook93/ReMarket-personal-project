@@ -1,7 +1,18 @@
 // 모달 열기
 document.getElementById("addressButton").addEventListener("click", function() {
   document.getElementById("addressModal").style.display = "block";
+//  setTimeout(() => {
+  document.getElementById("addressKeywordModal").focus();
+//}, 10);
 });
+
+document.getElementById("address").addEventListener("click", function() {
+  document.getElementById("addressModal").style.display = "block";
+//    setTimeout(() => {
+  document.getElementById("addressKeywordModal").focus();
+//}, 10);
+});
+
 
 // 모달 닫기
 document.getElementById("closeModal").addEventListener("click", function() {
@@ -91,46 +102,48 @@ document.getElementById("addressButtonModal").addEventListener("click", searchAd
 
 
 
-
-
-export async function updateAddress2() {
+export async function loadAddress() {
     // 입력받은 주소 (예: 사용자가 입력한 값)
     
-    if(!window.location.href.includes("/board")){
-    const address = document.getElementById("loggedAddress").value;
-    // '/'를 기준으로 주소를 분리
-    const addressParts = address.split("/");
+    let address = document.getElementById("loggedAddress").value;
+
+	if(window.location.href.includes("/board/updateboard")){
+		//거래지 주소
+		address = document.getElementById("boardAddress").value;
+	}
+
+
+    // 주소를 공백(" ") 기준으로 분리
+    const addressParts = address.split(" ");
 
     // 주소 분리된 배열을 로그로 출력
     console.log("주소 분리 결과: ", addressParts);
 
-    // 분리된 주소를 각각 input 필드에 반영 (예시로 3개의 input 필드 사용)
-    document.getElementById("address").value = addressParts[0] || ''; // 첫 번째 부분
-    document.getElementById("address2").value = addressParts[1] || ''; // 두 번째 부분
+    // 주소의 첫 번째, 두 번째 부분을 각각 input 필드에 반영
+    document.getElementById("address").value = addressParts[0] + " " + addressParts[1] + " " + addressParts[2] || ''; // 첫 번째 부분
+    // 나머지 주소는 address2에 넣기
+    document.getElementById("address2").value = addressParts.slice(3).join(" ") || ''; // 나머지 부분
 
     console.log("변경된 주소: ", addressParts); // 콘솔에 출력 (디버깅용)
-    
-    
-    
-    
-    
-    
-    }else if (window.location.href.includes("/board")){
- const address = document.getElementById("boardAddress").value;
-    // '/'를 기준으로 주소를 분리
-    const addressParts = address.split("/");
-
-    // 주소 분리된 배열을 로그로 출력
-    console.log("주소 분리 결과: ", addressParts);
-
-    // 분리된 주소를 각각 input 필드에 반영 (예시로 3개의 input 필드 사용)
-    document.getElementById("address").value = addressParts[0] || ''; // 첫 번째 부분
-    document.getElementById("address2").value = addressParts[1] || ''; // 두 번째 부분
-
-    console.log("변경된 주소: ", addressParts); // 콘솔에 출력 (디버깅용)
- 
- }
-    
 }
 
-document.addEventListener("DOMContentLoaded",updateAddress2);
+
+
+
+
+
+
+
+
+
+
+
+
+
+ if (window.location.href.includes("/updatemypage") || window.location.href.includes("/board/writeboard")|| window.location.href.includes("/board/updateboard") ){
+document.addEventListener("DOMContentLoaded",loadAddress);
+}
+
+// if (window.location.href.includes("/board/updateboard")){
+//document.addEventListener("DOMContentLoaded",updateAddress3);
+//}

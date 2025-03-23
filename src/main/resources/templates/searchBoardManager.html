@@ -13,10 +13,14 @@
 
     <!-- 검색 모달 -->
     <div id="searchModal" class="modal">
-        <div class="modal-content">
+        <div class="modal-content" id ="modal-content">
             <span class="close-btn" id="closeModalBtn">&times;</span>
             <h2>검색 조건 입력</h2>
-            <form id="searchForm"   action="/board/searchBoardManager?page=1" method="get">
+            <form id="searchForm"   action="/board/list" method="get">
+            
+                <!-- 검색 파라미터는 기본적으로 숨기고 있다가 버튼 클릭 시 설정 -->
+   				 <input type="hidden" id="searched" name="searched">
+    			 <input type="hidden" id="condition" name="condition">
                 <div class="form-group">
                     <label for="title">제목</label>
                     <input type="text" id="title" name="title">
@@ -37,7 +41,7 @@
                 
                 
                 	<!-- 주소 -->
-			<div style="display: inline-block;">
+			<div style="display: flex; margin-bottom:-20px;">
 				<label for="address2">주소</label>
 				<button type="button" id="addressButton">검색</button>
 			</div>
@@ -93,12 +97,18 @@
                     <label for="product">상품</label>
                     <input type="text" id="product" name="product">
                 </div>
-                <button type="submit">검색</button>
+                <button type="submit" onclick ="setSearchedValue()">검색</button>
             </form>
         </div>
     </div>
 </searchmodal>
     <script src="/js/searchModal.js"></script>
         <script  src="/js/kakaoAddressApi.js" type="module"></script>
+        <script>
+    function setSearchedValue() {
+        document.getElementById("searched").value = "true";  // 클릭 시 searched 값 설정
+        document.getElementById("condition").value = 3;  // 클릭 시 searched 값 설정
+    }
+</script>
 </body>
 </html>

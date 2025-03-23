@@ -131,7 +131,7 @@ public class HomeController {
 	            .name(name)
 	            .phone(phone)
 	            .age(age)
-	            .address(address+"/"+address2)
+	            .address(address+" "+address2)
 	            .gender(gender)
 	            .roles(role)
 	            .profileImage(profileImagePath) // 이미지 경로를 설정

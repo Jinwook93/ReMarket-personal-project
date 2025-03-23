@@ -28,7 +28,7 @@ document.getElementById('updateBoard').addEventListener('click', async () => {
 		price:document.getElementById("price").value,
 		product:document.getElementById("product").value,
 		boardFiles: JSON.stringify(formData.getAll(existingFiles)),  // 파일 URL 목록을 보냄,
-		address: document.getElementById("address").value + "/" + document.getElementById("address2").value
+		address: document.getElementById("address").value + " " + document.getElementById("address2").value
 	};
 	formData.append('boardData', JSON.stringify(boardData));
 

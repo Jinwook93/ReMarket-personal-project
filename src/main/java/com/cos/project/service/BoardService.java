@@ -356,7 +356,41 @@ public class BoardService {
 //	}
 
 
+	public boolean isBoardMatched(BoardEntity board, BoardDTO dto, Integer condition) {
+	    if (dto.getTitle() != null && !dto.getTitle().isEmpty() && !board.getTitle().contains(dto.getTitle())) return false;
+	    if (dto.getContents() != null && !dto.getContents().isEmpty() && !board.getContents().contains(dto.getContents())) return false;
+	    if (dto.getMemberUserId() != null && !dto.getMemberUserId().isEmpty() && !board.getMemberEntity().getUserid().contains(dto.getMemberUserId())) return false;
+	    if (dto.getPrice() != null && dto.getPrice() > 0 && !dto.getPrice().equals(board.getPrice())) return false;
+
+	    // 주소 필터링
+	    if (dto.getAddress() != null && !dto.getAddress().isEmpty()) {
+	        String conditionAddress = getAddressByCondition(dto.getAddress(), condition);
+	        System.out.println("conditionAdress : "+ conditionAddress);
+	        if (board.getAddress() == null || !board.getAddress().contains(conditionAddress)) return false;
+	    }
+
+	    if (dto.getCategory() != null && board.getCategory() != dto.getCategory()) return false;
+	    if (dto.getBuy_Sell() != null && board.getBuy_Sell() != dto.getBuy_Sell()) return false;
+	    if (dto.getProduct() != null && !dto.getProduct().isEmpty() && !board.getProduct().contains(dto.getProduct())) return false;
+
+	    return true;
+	}
 	
+	
+	public String getAddressByCondition(String fullAddress, Integer condition) {
+	    if (fullAddress == null || fullAddress.isEmpty()) return "";
+	    
+	    String[] addresses = fullAddress.split("/");
+	    
+	    String[] split = addresses[0].split(" ");
+	    if (condition == null) return "";
+	    if (condition == 1 && split.length > 0) return split[0];
+	    if (condition == 2 && split.length > 1) return split[0] + " " + split[1];
+	    if (condition == 3 && split.length > 2) return split[0] + " " + split[1] + " " +split[2];
+	    return "";
+	}
+
+
 	
 	
 	

@@ -191,12 +191,12 @@ text-decoration: none;
 				<tr style="background-color: #f8f8f8; text-align: center;">
 					<th style="padding: 10px;">번호</th>
 					<th style="padding: 10px;">판매/구매</th>
-					<th style="padding: 10px;">종류</th>
+			<!-- 	<th style="padding: 10px;">종류</th> -->
 					<th style="padding: 10px;">제목</th>
 					<th style="padding: 10px;">작성자</th>
 					<th style="padding: 10px;">가격</th>
 					<th style="padding: 10px;">작성일</th>
-					<th style="padding: 10px;">조회수</th>
+		<!-- 		<th style="padding: 10px;">조회수</th>  -->	
 					<th style="padding: 10px;">수정/삭제/대화</th>
 				</tr>
 			</thead>
@@ -208,8 +208,8 @@ text-decoration: none;
 						style="text-align: center; padding: 10px;"></td>
 					<td th:text="${board.buy_Sell}"
 						style="text-align: center; padding: 10px; color: #ff5722; font-weight: bold;"></td>
-					<td th:text="${board.category}"
-						style="text-align: center; padding: 10px;"></td>
+				<!--  <td th:text="${board.category}"
+						style="text-align: center; padding: 10px;"></td>-->	
 					<td th:data-board-id="${board.id}" style="padding: 10px;">
 <div style="display: flex; align-items: center; justify-content: flex-start;">
 <!-- a는 인라인 요소이므로 flex 적용이 안된다. 부모 뿐만 아니라 a에도 flex를 걸어주어야 함 -->
@@ -240,7 +240,7 @@ text-decoration: none;
         <!-- 게시글 제목 -->
         <div th:text="${board.title}"
              style="font-size: 16px; color: #000; font-weight: bold; margin-left: 10px;"></div>
-            <!--   <div th:text ="${board.address}"></div>-->
+               <div th:text ="${board.address}"></div>
     </a>
 </div>
 
@@ -270,8 +270,8 @@ text-decoration: none;
 					<td
 						th:text="${#dates.format(board.createTime, 'yyyy-MM-dd HH:mm')}"
 						style="text-align: center; padding: 10px;"></td>
-					<td th:text="${board.view}"
-						style="text-align: center; padding: 10px;"></td>
+					<!-- 		<td th:text="${board.view}"
+						style="text-align: center; padding: 10px;"></td> -->
 					<!-- 수정/삭제 버튼 (작성자와 로그인 사용자가 동일할 경우) -->
 					<td th:if="${board.memberEntity.userid == principalDetails.name}"
 						style="text-align: center;">
@@ -382,11 +382,45 @@ text-decoration: none;
 
 		<!--  url의 parameter 값 참조 : ${param.변수명} -->
 		
-		<div class="pagination">
-			<a th:each="i : ${#numbers.sequence(1, totalPages)}"
-				th:href="@{/board/list(condition= ${param.condition},page=${i})}" th:text="${i}"
-				th:classappend="${i == currentPage} ? 'active' : ''"> </a>
-		</div>
+<!-- param.searched 가 null일 경우 -->
+<div class="pagination" th:if="${param.searched == null}">
+    <a th:each="i : ${#numbers.sequence(1, totalPages)}"
+       th:href="@{/board/list(condition=${param.condition}, page=${i})}"
+       th:text="${i}"
+       th:classappend="${i == currentPage} ? 'active' : ''"> 
+    </a>
+</div>
+
+<!-- param.searched 가 null이 아닐 경우 -->
+<div class="pagination" th:if="${param.searched != null}">
+    <a th:each="i : ${#numbers.sequence(1, totalPages)}"
+       th:href="@{/board/list(page=${i}, 
+       										searched=${param.searched},
+                                            title=${boardDTO.title != null ? boardDTO.title : ''}, 
+                                            contents=${boardDTO.contents != null ? boardDTO.contents : ''}, 
+                                            memberUserId=${boardDTO.memberUserId != null ? boardDTO.memberUserId : ''}, 
+                                            price=${boardDTO.price != null ? boardDTO.price : ''}, 
+                                            address=${boardDTO.address != null ? boardDTO.address : ''}, 
+                                            category=${boardDTO.category != null ? boardDTO.category : ''}, 
+                                            buy_Sell=${boardDTO.buy_Sell != null ? boardDTO.buy_Sell : ''}, 
+                                            product=${boardDTO.product != null ? boardDTO.product : ''},
+                                            condition=${param.condition != null ? param.condition : ''})}"
+       th:text="${i}" 
+       th:classappend="${i == currentPage} ? 'active' : ''">
+    </a>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 	</div>
@@ -500,48 +534,60 @@ text-decoration: none;
 
 
 
-
-
-
-
 const addressFilter = document.getElementById('addressFilter');
 
 // select 요소 값이 변경될 때마다 실행
 addressFilter.addEventListener('change', async () => {
   const selectedValue = addressFilter.value;
-  const selectedText = addressFilter.options[addressFilter.selectedIndex].text;
+ // const selectedText = addressFilter.options[addressFilter.selectedIndex].text;
 
-  console.log('선택된 값:', selectedValue);
-  console.log('선택된 텍스트:', selectedText);
+ // console.log('선택된 값:', selectedValue);
+ // console.log('선택된 텍스트:', selectedText);
 
   // 사용자 집 주소 가져오기 (사용자 주소 input이 존재해야 함)
   const loggedAddress = document.getElementById("loggedAddress").value;
+
   console.log('사용자 집 주소:', loggedAddress);
-//window.location.href = `http://localhost:8081/board/list?condition=${selectedValue}&loggedAddress=${loggedAddress}`;
-window.location.href = `http://localhost:8081/board/list?condition=${selectedValue}`;
-/*
-  try {
-    // 서버로 선택된 값과 사용자 주소를 보냄 (주소 파라미터 추가도 가능)
-    const response = await fetch(`/board/addressfilter?address=${selectedValue}&loggedAddress=${encodeURIComponent(loggedAddress)}`);
 
-    if (!response.ok) {
-      throw new Error('서버 응답 실패');
-    }
+  // 현재 URL에서 기존 condition 파라미터 제거 후 새로운 condition 파라미터 추가
+  const currentUrl = new URL(window.location.href);
+  
+  // 기존 condition 파라미터가 있으면 제거
+  currentUrl.searchParams.delete('condition');
 
-    // 받아온 JSON 데이터
-    const filteredData = await response.json();
-    console.log('필터링된 데이터:', filteredData);
+  // 기존 page 파라미터가 있으면 제거
+  currentUrl.searchParams.delete('page');
 
-    // 여기서 받아온 데이터로 화면에 렌더링하거나 필요한 작업 수행
-    // 예시:
-    // renderFilteredData(filteredData);
+  // 새로운 condition 파라미터 추가
+  currentUrl.searchParams.append('condition', selectedValue);
 
-  } catch (error) {
-    console.error('에러 발생:', error);
-  }
+  // 새로운 page 파라미터 추가
+  currentUrl.searchParams.append('page', 1);
 
-*/
+  // 최종 URL로 이동
+  window.location.href = currentUrl.toString();
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
