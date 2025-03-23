@@ -4,6 +4,7 @@ import { getBoardMainFile } from "./boardModule.js";
 import { formatCurrency } from "./formatCurrency.js";
 import { formatDate } from "./formatDate.js";
 import { CancelTrade, CompleteTrade, bookTrade1, bookTrade2, changeBookTrade, denyBookTrade, denyCreateTrade, enrollTrade1, enrollTrade2 } from "./tradeModule.js";
+import { truncateText } from "./truncateText.js";
 
 
 
@@ -992,7 +993,7 @@ export async function loadChatRooms(loggedId) {
 						? `${recentRoomMessage.senderUserId ? ` 
                                             ${unReadMessageCount > 0 ? `<div id="unReadMessageCountButton2">  <b>${unReadMessageCount}</b></div>` : ""} 
                                             <img src="/icon/userIcon.png" width="20" height="20" alt="상대방"> ${recentRoomMessage.senderUserId} : </b>` : ""} 
-                                            ${recentRoomMessage.messageContent || ""}`
+                                            ${truncateText(recentRoomMessage.messageContent,20) || ""}`
 						: `최근 메시지 없음`}
                                 </div>
                                 <div style="margin-top: 5px; color:gray; font-weight: 300;">

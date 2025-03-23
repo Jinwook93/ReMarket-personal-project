@@ -234,7 +234,10 @@ text-decoration: none;
                  style="display: block; width: 80px; height: 80px; object-fit: cover; margin-right: 10px;">
         </div>
         
+        
         <!-- 거래 상태 표시 및 거래취소 버튼 -->
+        <div style="display:flex;flex-direction: column;">
+        <div style="display:flex;">
         <div th:each="trade : ${board.trades}">
             <!-- 예약 중 버튼 -->
             <button th:if="${trade != null and trade.booking1 == true and trade.booking2 == true and trade.tradeStatus != '완료'}"
@@ -252,9 +255,15 @@ text-decoration: none;
         </div>
 
         <!-- 게시글 제목 -->
-        <div th:text="${board.title}"
+        <div th:text="${board.title}" class="boardTitle"
              style="font-size: 16px; color: #000; font-weight: bold; margin-left: 10px;"></div>
-               <div th:text ="${board.address}"></div>
+             </div>
+      <div class="boardAddress" th:text="${board.address}"
+     style="font-size: 14px; color: #555; margin-top: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left;">
+</div>
+
+
+               </div>
     </a>
 </div>
 
@@ -662,28 +671,54 @@ addressFilter.addEventListener('change', async () => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
  });
 </script>
+    <script type="module">
+        import { truncateText } from '/js/truncateText.js'; // truncate.js 파일 경로
+		  import { formatCurrency} from '/js/formatCurrency.js'; 
+        window.onload = function() {
+
+
+
+        const titleElements = document.querySelectorAll('.boardTitle');
+    const addressElements = document.querySelectorAll('.boardAddress');
+    
+    // 모든 제목에 대해 처리
+    titleElements.forEach(titleElement => {
+        titleElement.innerText = truncateText(titleElement.innerText, 30);
+    });
+    
+    // 모든 주소에 대해 처리
+    addressElements.forEach(addressElement => {
+        let addressText = addressElement.innerText.trim();
+        let splitedAddress = addressText.split(" ");
+        
+        // 주소가 3개 이상의 부분을 갖는 경우, 첫 3부분만 사용
+        if (splitedAddress.length >= 3) {
+            addressElement.innerText = splitedAddress[0] + " " + splitedAddress[1] + " " + splitedAddress[2];
+        } else {
+            // 주소가 3개 미만인 경우, 전체 주소 그대로 표시
+            addressElement.innerText = splitedAddress.join(" ");
+        }
+    });
+
+
+    document.querySelectorAll('td[id^="price-"]').forEach(function(cell) {
+      const price = parseFloat(cell.innerText);
+      cell.innerText = formatCurrency(price) + '원';
+    });
+    
+     document.querySelectorAll('div[id^="price-"]').forEach(function(cell) {
+      const price = parseFloat(cell.innerText);
+      cell.innerText = formatCurrency(price) + '원';
+    });
+  };
+
+    
+    </script>
 	<script src="/js/formatCurrency.js" type="module"></script>
 	<script src="/js/deleteBoard.js" type="module"></script>
+ <!-- JavaScript 모듈을 import -->
 
 
 </body>

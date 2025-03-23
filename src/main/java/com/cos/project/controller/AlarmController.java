@@ -201,14 +201,22 @@ public class AlarmController {
                 .map(AlarmEntity::toDTO)
                 .collect(Collectors.toList());
 
+        List<AlarmDTO> filteredAlarms4 = filteredAlarms.stream()
+                .filter(alarm -> alarm.getMember1().getId().equals(loggedId)  || alarm.getMember2().getId().equals(loggedId)
+                        && alarm.getType().equals("BOARD")
+                        && alarm.getObject() != null) 
+                .map(AlarmEntity::toDTO)
+                .collect(Collectors.toList());
+        
+        
         // 두 리스트를 합치기
-        List<AlarmDTO> filteredAlarms4 = new ArrayList<>();
+        List<AlarmDTO> filteredAlarms5 = new ArrayList<>();
 
-      
-        filteredAlarms4.addAll(filteredAlarms3);
-        filteredAlarms4.addAll(filteredAlarms2);
-        filteredAlarms4.addAll(filteredAlarms1);
-        return ResponseEntity.ok(filteredAlarms4);
+        filteredAlarms5.addAll(filteredAlarms4);
+        filteredAlarms5.addAll(filteredAlarms3);
+        filteredAlarms5.addAll(filteredAlarms2);
+        filteredAlarms5.addAll(filteredAlarms1);
+        return ResponseEntity.ok(filteredAlarms5);
     }
 
     	//trade 알람 조회하기
