@@ -9,6 +9,11 @@
       const price = parseFloat(cell.innerText);
       cell.innerText = formatCurrency(price) + '원';
     });
+    
+     document.querySelectorAll('h2[id^="price-"]').forEach(function(cell) {
+      const price = parseFloat(cell.innerText);
+      cell.innerText = formatCurrency(price) + '원';
+    });
   };
 
 

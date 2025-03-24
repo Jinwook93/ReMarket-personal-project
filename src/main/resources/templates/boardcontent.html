@@ -14,7 +14,7 @@ body {
 }
 
 .container {
-	max-width: 600px;
+	max-width: 750px;
 	margin: 0 auto;
 	background: #fff;
 	padding: 20px;
@@ -53,17 +53,16 @@ body {
 	resize: none;
 }
 
-.container button {
-	margin-top: 20px;
-	padding: 10px;
-	font-size: 16px;
-	color: #fff;
-	background-color: #007bff;
-	border: none;
-	border-radius: 4px;
-	cursor: pointer;
-}
-
+/* .container button:not(.buttons-container button) { */
+/*   margin-top: 20px; */
+/*   padding: 10px; */
+/*   font-size: 16px; */
+/*   color: #fff; */
+/*   background-color: #007bff; */
+/*   border: none; */
+/*   border-radius: 4px; */
+/*   cursor: pointer; */
+/* } */
 .container button:hover {
 	background-color: #0056b3;
 }
@@ -123,151 +122,302 @@ input[type="checkbox"] {
 	height: 18px;
 	accent-color: blue;
 }
+
+.submitComment {
+	background-color: #a5592a;
+	color: white;
+	font-weight: bold; padding : 6px 12px;
+	font-size: 14px;
+	border: none;
+	cursor: pointer;
+	border-radius: 4px;
+	transition: background-color 0.2sease-in-out;
+	padding: 6px 12px;
+}
+
+.board-details span {
+	color: gray; /* 회색으로 설정 */
+	font-size: 13px; /* 기본 텍스트 크기 설정 */
+}
+
+.board-details p {
+	font-size: 13px; /* p 태그 텍스트 크기 설정 */
+	color: black; /* p 태그 텍스트는 기본 색상으로 설정 */
+}
+
+.board-details span:not(:last-child) {
+	margin-right: 2px; /* | 기호 전후에 여백을 추가 */
+}
 </style>
 <link rel="stylesheet" type="text/css" href="/css/commentData.css">
-
+<link rel="stylesheet" href="/css/profile_Board_Table.css">
 </head>
 <body>
 
 	<div th:replace="~{header.html}"></div>
 	<div class="container">
-		<h1>게시글 작성</h1>
-
+		<!-- 		<p th:text="|글 번호 : ${board.id}|"></p> -->
+		<p>
+			<span class="board-details"> <span th:text="${board.buy_Sell}"></span>
+				<span> | </span> <span th:text="${board.category}"></span>
+			</span>
+		</p>
 		<!--로그인 중인 유저 -->
 		<!--         <label for="title">로그인 유저</label> -->
 		<input type="hidden" th:value="${principalDetails.name}"
 			id="principalDetails" name="principalDetails" readonly>
 
 
-		<!-- 글 번호 -->
-		<label for="title">글 번호</label> <input type="text"
-			th:value="${board.id}" id="id" name="id" readonly> <label
-			for="buy_Sell">항목</label> <input type="text"
-			th:value="${board.buy_Sell}" id="buy_Sell" name="buy_Sell" readonly>
-
-		<label for="category">물품 종류</label> <input type="text"
-			th:value="${board.category}" id="category" name="category" readonly>
-
-		<label for="createTime">등록일</label> <input type="text"
-			th:value="${#dates.format(board.createTime, 'yyyy-MM-dd HH:mm')}"
-			id="createTime" name="createTime" readonly>
 
 
-		<!-- 제목 입력 -->
-		<label for="title">제목</label> <input type="text"
-			th:value="${board.title}" id="title" name="title"
-			placeholder="제목을 입력하세요" readonly> <label for="name">작성자</label>
-		<div style="display: flex; align-items: center;">
-			<!-- 프로필 이미지 -->
-			<div th:if="${board.memberEntity.profileImage != null}">
-				<div id="imagePreview" style="margin-top: 10px;">
-					<img id="previewImage"
-						th:src="@{{imagePath}(imagePath=${board.memberEntity.profileImage})}"
-						alt="Profile Image Preview"
-						style="display: block; width: 50px; height: 50px; margin-right: 10px;">
+
+
+		<div style="display: flex; justify-content: space-between;">
+
+
+
+
+			<!-- <div style="display: flex; flex-direction: column; justify-content: center;margin-top:45px; "> -->
+			<div>
+
+
+				<h2 class="boardTitle" th:text="${board.title}"></h2>
+
+
+
+				<h2 th:id="|price-${board.price}|" th:text=|${board.price}|></h2>
+
+				<div style="display: flex;">
+					<span class="board-details"> <span
+						th:text="${#dates.format(board.createTime, 'yyyy-MM-dd HH:mm')}"></span>
+						<span> | </span> <span>조회 </span> <span th:text="${board.view}"></span>
+						<span> | </span> <span> 찜 </span> <span
+						th:text="${board.totalLike - board.totalDislike < 0 ? 0 : board.totalLike - board.totalDislike}"></span>
 				</div>
-			</div>
+				<p>
+					<span class="board-details"> <span>거래희망지역</span>
+						<button type="button" class="small-btn" id="boardAddress"
+							th:text="${board.address}"></button>
+				</p>
 
-			<div th:if="${board.memberEntity.profileImage == null}">
-				<div id="imagePreview" style="margin-top: 10px;">
-					<img id="previewImage" src="/boardimage/nullimage.jpg"
-						alt="no profile image"
-						style="display: block; width: 50px; height: 50px; margin-right: 10px;">
+				</span>
+
+
+
+
+				<!-- 	<label for="boardFiles">첨부 파일</label> -->
+				<div
+					style="display: flex; flex-direction: row; flex-wrap: wrap; margin-top: 10px;">
+					<!--     boardFiles 배열이 비어 있지 않은 경우 -->
+					<div th:if="${boardFiles != null and boardFiles.length > 0}"
+						th:each="file : ${boardFiles}">
+						<div style="margin-right: 10px; margin-bottom: 10px;">
+							<a th:href="@{${file}}"> <img th:src="@{${file}}"
+								alt="첨부 파일 미리보기" loading="lazy"
+								style="display: block; width: 100px; height: 100px;">
+							</a>
+							<!-- 					 <a th:href="@{${file}}" download>다운로드</a> -->
+						</div>
+					</div>
+
+					<!--     boardFiles 배열이 비어 있는 경우 -->
+					<div th:if="${boardFiles == null or boardFiles.length == 0}">
+						<div style="margin-right: 10px; margin-bottom: 10px;">
+							<img src="/boardimage/nullimage.jpg" alt="첨부 파일 없음"
+								style="display: block; width: 100px; height: 100px;">
+							<!-- 							<p>첨부 파일이 없습니다.</p> -->
+						</div>
+					</div>
 				</div>
+
+
+				<!-- 글 번호 -->
+				<!-- 				<label for="title">글 번호 : <span th:text="${board.id}"></span></label> -->
+				<input type="hidden" th:value="${board.id}" id="id" name="id"
+					readonly> <br>
+				<!-- 					<label for="buy_Sell">항목 : <span -->
+				<!-- 					th:text="${board.buy_Sell}"></span></label>  -->
+
+
+				<input type="hidden" th:value="${board.buy_Sell}" id="buy_Sell"
+					name="buy_Sell" readonly><br>
+
+				<!-- 				<label for="category">물품 종류 : <span -->
+				<!-- 					th:text="${board.category}"></span></label> -->
+
+				<input type="hidden" th:value="${board.category}" id="category"
+					name="category" readonly><br>
+
+				<!-- 				<label for="createTime">등록일 : <span -->
+				<!-- 					th:text="${#dates.format(board.createTime, 'yyyy-MM-dd HH:mm')}"></span></label> -->
+				<input type="hidden"
+					th:value="${#dates.format(board.createTime, 'yyyy-MM-dd HH:mm')}"
+					id="createTime" name="createTime" readonly><br>
+
+
+				<!-- 제목 입력 -->
+				<!-- 				<label for="title">제목 : <span th:text="${board.title}"></span></label> -->
+				<input type="hidden" th:value="${board.title}" id="title"
+					name="title" placeholder="제목을 입력하세요" readonly>
+
+				<!-- 					<br> <label -->
+				<!-- 					for="name">작성자 </label> -->
+				<!-- 				<div style="display: flex; align-items: center;"> -->
+				<!-- 					프로필 이미지 -->
+				<!-- 					<div th:if="${board.memberEntity.profileImage != null}"> -->
+				<!-- 						<div id="imagePreview" style="margin-top: 10px;"> -->
+				<!-- 							<img id="previewImage" -->
+				<!-- 								th:src="@{{imagePath}(imagePath=${board.memberEntity.profileImage})}" -->
+				<!-- 								alt="Profile Image Preview" -->
+				<!-- 								style="display: block; width: 50px; height: 50px; margin-right: 10px;"> -->
+				<!-- 						</div> -->
+				<!-- 					</div> -->
+
+				<!-- 					<div th:if="${board.memberEntity.profileImage == null}"> -->
+				<!-- 						<div id="imagePreview" style="margin-top: 10px;"> -->
+				<!-- 							<img id="previewImage" src="/boardimage/nullimage.jpg" -->
+				<!-- 								alt="no profile image" -->
+				<!-- 								style="display: block; width: 50px; height: 50px; margin-right: 10px;"> -->
+				<!-- 						</div> -->
+				<!-- 					</div> -->
+
+
+				<!-- 					이름 -->
+				<!-- 					<span th:text="${board.memberEntity.name}"></span> -->
+				<!-- 				</div> -->
+
+
+
+
+
+
+
+
+
+				<!--       첨부 파일 -->
+				<!--             <label for="boardFile">첨부 파일</label> -->
+				<!--             <input type ="file"  id="boardFile" name="boardFile" placeholder="내용을 입력하세요"  th:result=""/> -->
+
+
+				<!-- 작성자 아이디 (hidden) -->
+				<input type="hidden" th:value="${board.memberEntity.userid}"
+					id="userid" name="userid"> <input type="hidden"
+					th:value="${board.memberEntity.id}" id="memberid" name="memberid">
+
+
+
+				<!-- 물품명 입력 -->
+				<!-- 				<label for="product">물품 : <span th:text="${board.product}"></span></label> -->
+				<input type="hidden" th:value="${board.product}" id="product"
+					name="product" placeholder="물건명을 입력하세요" readonly> <br>
+
+				<!-- 가격 입력 -->
+				<!-- 				<label for="price">가격 : <span th:text="${board.price}"></label> -->
+				<input type="hidden" th:value="${board.price}" id="price"
+					name="price" placeholder="가격을 입력하세요" readonly>
+
+			</div>
+
+			<div>
+				<!--     boardFiles 배열이 비어 있는 경우 -->
+				<div th:if="${boardFiles == null or boardFiles.length == 0}">
+					<div style="margin-right: 10px; margin-bottom: 10px;">
+						<img src="/boardimage/nullimage.jpg" alt="첨부 파일 없음"
+							style="display: block; width: 300px; height: 311px; margin-top: 20px;">
+						<!-- 					<p>첨부 파일이 없습니다.</p> -->
+					</div>
+				</div>
+
+
+				<!--     boardFiles 배열이 있는 경우 -->
+
+				<div th:if="${boardFiles != null and boardFiles.length > 0}">
+					<div style="margin-right: 10px; margin-bottom: 10px;">
+						<a th:href="@{${boardFiles[0]}}"> <img
+							th:src="@{${boardFiles[0]}}" alt="첨부 파일 미리보기" loading="lazy"
+							style="display: block; width: 300px; height: 311px; margin-top: 20px;">
+						</a>
+						<!--    <a th:href="@{${boardFiles[0]}}" download>다운로드</a> -->
+					</div>
+				</div>
+
+
+
+
+
+
+
 			</div>
 
 
-			<!-- 이름 -->
-			<span th:text="${board.memberEntity.name}"></span>
+
+
+
+
+
+
+
 		</div>
-
-		<!--       첨부 파일 -->
-		<!--             <label for="boardFile">첨부 파일</label> -->
-		<!--             <input type ="file"  id="boardFile" name="boardFile" placeholder="내용을 입력하세요"  th:result=""/> -->
-
-
-		<!-- 작성자 아이디 (hidden) -->
-		<input type="hidden" th:value="${board.memberEntity.userid}"
-			id="userid" name="userid"> <input type="hidden"
-			th:value="${board.memberEntity.id}" id="memberid" name="memberid">
-
-
-		<div th:if="${board.memberEntity.userid != principalDetails.name}">
-			<!-- If the logged-in user's `userid` is not the same as the board's owner, show Like and Dislike buttons -->
-			<div style="display: flex;">
-				<button type="button" id="like" name="like"
-					th:text="'❤️ ' + ${board.totalLike}">❤️ Like</button>
-				<button type="button" id="dislike" name="dislike"
-					th:text="'🖤 ' + ${board.totalDislike}">🖤 Dislike</button>
-			</div>
+		<!-- <hr>			 -->
+		<div style="margin-top: -50px; margin-bottom: 100px;">
+			<label>상품 정보</label>
+			<hr>
+			<div th:text="${board.contents}"></div>
 		</div>
+		<!-- 주소 -->
+		<!-- 		<label for="address">주소 : <span th:text="${board.address}"></label> -->
+		<input type="hidden" id="address" name="address"
+			th:value="${board.address}" required /> <br>
 
-		<div th:unless="${board.memberEntity.userid != principalDetails.name}">
-			<!-- If the logged-in user's `userid` is the same as the board's owner, show Like and Dislike count only -->
-			<div style="display: flex;">
-				<p th:text="'좋아요 : ' + ${board.totalLike}">좋아요</p>
-				<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-				<p th:text="'싫어요 : ' + ${board.totalDislike}">싫어요</p>
-			</div>
-		</div>
-		<!-- 물품명 입력 -->
-		<label for="product">물품</label> <input type="text"
-			th:value="${board.product}" id="product" name="product"
-			placeholder="물건명을 입력하세요" readonly>
 
-		<!-- 가격 입력 -->
-		<label for="price">가격</label> <input type="text"
-			th:value="${board.price}" id="price" name="price"
-			placeholder="가격을 입력하세요" readonly> <br>
-			
-			
-			
-			
-			     <!-- 주소 -->
-			     	<label for="address">주소</label> 
-               <input type="text" id="address" name="address" th:value="${board.address}" required /><br>
-            
-            
-            
-          
-			
-			
-			
-			
-			 <br>
+
+
+
+
+
+
 		<!-- 조회수 (disabled) -->
-		<label for="view">조회수</label> <input type="text"
-			th:value="${board.view}" id="view" name="view" disabled> <label
-			for="boardFiles">첨부 파일</label>
-		<div
-			style="display: flex; flex-direction: row; flex-wrap: wrap; margin-top: 10px;">
-			<!--     boardFiles 배열이 비어 있지 않은 경우 -->
-			<div th:if="${boardFiles != null and boardFiles.length > 0}"
-				th:each="file : ${boardFiles}">
-				<div style="margin-right: 10px; margin-bottom: 10px;">
-					<a th:href="@{${file}}"> <img th:src="@{${file}}"
-						alt="첨부 파일 미리보기" loading="lazy"
-						style="display: block; width: 100px; height: 100px;">
-					</a> <a th:href="@{${file}}" download>다운로드</a>
-				</div>
-			</div>
+		<!-- 		<label for="view">조회수 : <span th:text="${board.view}"></label> -->
+		<input type="hidden" th:value="${board.view}" id="view" name="view"
+			disabled> <br>
 
-			<!--     boardFiles 배열이 비어 있는 경우 -->
-			<div th:if="${boardFiles == null or boardFiles.length == 0}">
-				<div style="margin-right: 10px; margin-bottom: 10px;">
-					<img src="/boardimage/nullimage.jpg" alt="첨부 파일 없음"
-						style="display: block; width: 100px; height: 100px;">
-					<p>첨부 파일이 없습니다.</p>
-				</div>
-			</div>
-		</div>
+
+
+
+
+
+
+
+		<!-- 			<label for="boardFiles">첨부 파일</label> -->
+		<!-- 		<div -->
+		<!-- 			style="display: flex; flex-direction: row; flex-wrap: wrap; margin-top: 10px;"> -->
+		<!-- 			<!--     boardFiles 배열이 비어 있지 않은 경우 -->
+		<!-- 			<div th:if="${boardFiles != null and boardFiles.length > 0}" -->
+		<!-- 				th:each="file : ${boardFiles}"> -->
+		<!-- 				<div style="margin-right: 10px; margin-bottom: 10px;"> -->
+		<!-- 					<a th:href="@{${file}}"> <img th:src="@{${file}}" -->
+		<!-- 						alt="첨부 파일 미리보기" loading="lazy" -->
+		<!-- 						style="display: block; width: 100px; height: 100px;"> -->
+		<!-- 					</a> <a th:href="@{${file}}" download>다운로드</a> -->
+		<!-- 				</div> -->
+		<!-- 			</div> -->
+
+		<!-- 			<!--     boardFiles 배열이 비어 있는 경우 -->
+		<!-- 			<div th:if="${boardFiles == null or boardFiles.length == 0}"> -->
+		<!-- 				<div style="margin-right: 10px; margin-bottom: 10px;"> -->
+		<!-- 					<img src="/boardimage/nullimage.jpg" alt="첨부 파일 없음" -->
+		<!-- 						style="display: block; width: 100px; height: 100px;"> -->
+		<!-- 					<p>첨부 파일이 없습니다.</p> -->
+		<!-- 				</div> -->
+		<!-- 			</div> -->
+		<!-- 		</div> -->
 
 
 
 		<!-- 내용 입력 -->
-		<label for="contents">내용</label>
-		<textarea id="contents" th:text="${board.contents}" name="contents"
-			placeholder="내용을 입력하세요" required readonly></textarea>
+		<!-- 		<label for="contents">내용</label> -->
+		<!-- 		<textarea id="contents" th:text="${board.contents}" name="contents" -->
+		<!-- 			placeholder="내용을 입력하세요" required readonly></textarea> -->
 
 
 		<!-- boardFiles 배열을 반복하여 이미지를 출력 -->
@@ -309,152 +459,367 @@ input[type="checkbox"] {
 		<!-- </div> -->
 
 
-
-
-
-					<div
-			th:if="${board.memberEntity.userid != principalDetails.name && #lists.isEmpty(board.trades)}">
-			<button type="button" th:id="|enroll-Book1-${board.id}|"
-				th:data-TradeBook1BoardId="${board.id}">예약 신청</button>
-		</div>
-
-
+		<!-- 프로필 이미지 -->
 		<div
-			th:if="${board.memberEntity.userid != principalDetails.name && #lists.isEmpty(board.trades)}">
-			<button type="button" th:id="|enroll-Buy-${board.id}|"
-				th:data-TradeBuyBoardId="${board.id}">거래 신청</button>
-		</div>
+			style="display: flex; align-items: center; justify-content: space-between; padding: 0 30px; background-color: whitesmoke; border-radius: 5px; margin-top: 60px;">
 
-		<div th:each="trade : ${board.trades}">
-			<div style="display: flex;">
-			
-	  	<div th:if="${
+
+			<div
+				style="display: flex; align-content: flex-start; align-items: center;">
+				<div th:if="${board.memberEntity.profileImage != null}">
+					<div id="imagePreview" style="margin-top: 10px;">
+						<img id="previewImage"
+							th:src="@{{imagePath}(imagePath=${board.memberEntity.profileImage})}"
+							alt="Profile Image Preview"
+							style="display: block; width: 150px; height: 150px; padding: 30px; margin-right: 10px;">
+					</div>
+				</div>
+
+				<div th:if="${board.memberEntity.profileImage == null}">
+					<div id="imagePreview" style="margin-top: 10px;">
+						<img id="previewImage" src="/boardimage/nullimage.jpg"
+							alt="no profile image"
+							style="display: block; width: 150px; height: 150px; padding: 30px; margin-right: 10px;">
+					</div>
+				</div>
+
+
+				<!-- 이름 -->
+				<span style="font-weight:bold;font-size: 20px;" th:text="${board.memberEntity.name}"></span>
+
+
+			</div>
+
+			<div
+				style="display: flex; align-content: flex-end; align-items: center;"
+				class="buttons-container">
+				<div
+					th:if="${board.memberEntity.userid != principalDetails.name && #lists.isEmpty(board.trades)}">
+					<button type="button" th:id="|enroll-Book1-${board.id}|"
+						th:data-TradeBook1BoardId="${board.id}" class="bookTrade">예약
+						신청</button>
+				</div>
+
+
+				<div
+					th:if="${board.memberEntity.userid != principalDetails.name && #lists.isEmpty(board.trades)}">
+					<button type="button" th:id="|enroll-Buy-${board.id}|"
+						th:data-TradeBuyBoardId="${board.id}" class="applyTrade">거래
+						신청</button>
+				</div>
+
+
+
+
+				<div th:each="trade , iterStat :${board.trades}">
+					<div style="display: flex;" class="buttons-container">
+
+						<div
+							th:if="${
               board.id == trade.boardEntity.id  
              and trade.booking1 
               and trade.booking2
-             and trade?.tradeStatus?.name != '완료'}"> 
-      <button type="button" th:id="|enroll-Book2-${board.id}|" th:data-TradeBook2BoardId="${board.id}">
-        예약 중
-    </button>
-    
-      
-</div>    
-	
-		<div th:if="${
+             and trade?.tradeStatus?.name != '완료'}">
+							<!-- 						<button type="button" th:id="|enroll-Book2-${board.id}|" -->
+							<!-- 							th:data-TradeBook2BoardId="${board.id}">예약 중</button> -->
+							<button type="button" th:data-TradeBook2BoardId="${board.id}"
+								class="booking">예약 중</button>
+
+						</div>
+
+						<div
+							th:if="${
               board.id == trade.boardEntity.id  
              and trade.booking1 
               and trade.booking2
              and trade?.tradeStatus?.name != '완료'
-            and board.memberEntity.userid == principalDetails.name}"> 
-		<button type="button" th:id="|change-enroll-Book2-${board.id}|" th:data-TradeBook2BoardId="${board.id}">
-        거래 중으로 변환
-    </button>
+            and board.memberEntity.userid == principalDetails.name}">
+							<button type="button" th:id="|change-enroll-Book2-${board.id}|"
+								th:data-TradeBook2BoardId="${board.id}" class="changeTrading">거래
+								중으로 전환</button>
 
 
 
-</div>  
+						</div>
 
-			
-				<div
-					th:if="${board.id == trade.boardEntity.id 
+
+						<div
+							th:if="${board.id == trade.boardEntity.id 
              and trade.accept1  == true
              and trade.accept2  == true
              and trade?.tradeStatus?.name != '완료'}">
-					<button type="button" th:id="|enroll-Sell-${board.id}|"
-						th:data-TradeSellBoardId="${board.id}">거래 진행 중</button>
-				</div>
-				<div
-					th:if="${board.id == trade.boardEntity.id
+							<button type="button" th:id="|enroll-Sell-${board.id}|"
+								th:data-TradeSellBoardId="${board.id}" class="trading">거래
+								진행 중</button>
+						</div>
+						<div
+							th:if="${board.id == trade.boardEntity.id
              and trade.accept1  == true
              and trade.accept2  == true
              and board.memberEntity.userid == principalDetails.name 
              and trade?.tradeStatus?.name != '완료'}">
 
-					<button type="button" th:id="|complete2-Sell-${trade.id}|"
-						th:data-Complete2TradeSellBoardId="${board.id}">거래완료</button>
-				</div>
-			</div>
-			
-				<div
-					th:if="${
-					             (trade.booking1  == true
+							<button type="button" th:id="|complete2-Sell-${trade.id}|"
+								th:data-Complete2TradeSellBoardId="${board.id}"
+								class="completeTrade">거래완료</button>
+						</div>
+
+						<div
+							th:if="${
+					             ((tradeDTO[iterStat.index].member1Id == loggedId
+			or		              tradeDTO[iterStat.index].member2Id == loggedId)
+				and	             trade.booking1  == true
              and trade.booking2  == true) 
              or (trade.accept1  == true
              and trade.accept2  == true)
              and trade?.tradeStatus?.name != '완료'}">
-					<button type="button" th:id="|cancel-trade-${trade.id}|"
-						th:data-CancelTradeSellBoardId="${trade.id}">거래 취소</button>
+							<button type="button" th:id="|cancel-trade-${trade.id}|"
+								th:data-CancelTradeSellBoardId="${trade.id}" class="cancelTrade">거래
+								취소</button>
+						</div>
+
+						<div
+							th:if="${trade.tradeStatus != null and trade.tradeStatus.name == '완료'}">
+							<h3 style="color: red;">※ 거래가 완료된 게시글입니다</h3>
+						</div>
+					</div>
 				</div>
-			
-			<div
-				th:if="${trade.tradeStatus != null and trade.tradeStatus.name == '완료'}">
-				<p>거래가 완료된 게시글입니다</p>
+
 			</div>
+
+
+
+
 
 		</div>
 
+		<div style="display: flex;">
+			<!-- 			<div -->
+			<!-- 				th:if="${board.memberEntity.userid != principalDetails.name && #lists.isEmpty(board.trades)}"> -->
+			<!-- 				<button type="button" th:id="|enroll-Book1-${board.id}|" -->
+			<!-- 					th:data-TradeBook1BoardId="${board.id}">예약 신청</button> -->
+			<!-- 			</div> -->
 
+
+			<!-- 			<div -->
+			<!-- 				th:if="${board.memberEntity.userid != principalDetails.name && #lists.isEmpty(board.trades)}"> -->
+			<!-- 				<button type="button" th:id="|enroll-Buy-${board.id}|" -->
+			<!-- 					th:data-TradeBuyBoardId="${board.id}">거래 신청</button> -->
+			<!-- 			</div> -->
+
+
+			<!-- 			<div th:each="trade : ${board.trades}"> -->
+			<!-- 				<div style="display: flex;"> -->
+
+			<!-- 					<div -->
+			<!-- 						th:if="${ -->
+			<!--               board.id == trade.boardEntity.id   -->
+			<!--              and trade.booking1  -->
+			<!--               and trade.booking2 -->
+			<!--              and trade?.tradeStatus?.name != '완료'}"> -->
+			<!-- 						<button type="button" th:id="|enroll-Book2-${board.id}|" -->
+			<!-- 							th:data-TradeBook2BoardId="${board.id}">예약 중</button> -->
+
+
+			<!-- 					</div> -->
+
+			<!-- 					<div -->
+			<!-- 						th:if="${ -->
+			<!--               board.id == trade.boardEntity.id   -->
+			<!--              and trade.booking1  -->
+			<!--               and trade.booking2 -->
+			<!--              and trade?.tradeStatus?.name != '완료' -->
+			<!--             and board.memberEntity.userid == principalDetails.name}"> -->
+			<!-- 						<button type="button" th:id="|change-enroll-Book2-${board.id}|" -->
+			<!-- 							th:data-TradeBook2BoardId="${board.id}">거래 중으로 변환</button> -->
+
+
+
+			<!-- 					</div> -->
+
+
+			<!-- 					<div -->
+			<!-- 						th:if="${board.id == trade.boardEntity.id  -->
+			<!--              and trade.accept1  == true -->
+			<!--              and trade.accept2  == true -->
+			<!--              and trade?.tradeStatus?.name != '완료'}"> -->
+			<!-- 						<button type="button" th:id="|enroll-Sell-${board.id}|" -->
+			<!-- 							th:data-TradeSellBoardId="${board.id}">거래 진행 중</button> -->
+			<!-- 					</div> -->
+			<!-- 					<div -->
+			<!-- 						th:if="${board.id == trade.boardEntity.id -->
+			<!--              and trade.accept1  == true -->
+			<!--              and trade.accept2  == true -->
+			<!--              and board.memberEntity.userid == principalDetails.name  -->
+			<!--              and trade?.tradeStatus?.name != '완료'}"> -->
+
+			<!-- 						<button type="button" th:id="|complete2-Sell-${trade.id}|" -->
+			<!-- 							th:data-Complete2TradeSellBoardId="${board.id}">거래완료</button> -->
+			<!-- 					</div> -->
+			<!-- 				</div> -->
+
+			<!-- 				<div -->
+			<!-- 					th:if="${ -->
+			<!-- 					             (trade.booking1  == true -->
+			<!--              and trade.booking2  == true)  -->
+			<!--              or (trade.accept1  == true -->
+			<!--              and trade.accept2  == true) -->
+			<!--              and trade?.tradeStatus?.name != '완료'}"> -->
+			<!-- 					<button type="button" th:id="|cancel-trade-${trade.id}|" -->
+			<!-- 						th:data-CancelTradeSellBoardId="${trade.id}">거래 취소</button> -->
+			<!-- 				</div> -->
+
+			<!-- 				<div -->
+			<!-- 					th:if="${trade.tradeStatus != null and trade.tradeStatus.name == '완료'}"> -->
+			<!-- 					<p>거래가 완료된 게시글입니다</p> -->
+			<!-- 				</div> -->
+
+			<!-- 			</div> -->
+
+		</div>
 
 
 
 		<!-- 수정/삭제 버튼 (조건부 표시) -->
-		<div th:if="${board.memberEntity.userid == principalDetails.name}">
-			<!--             <button type="button" id="updateBoard"  onClick= "goUpdateForm()">수정하기</button>								전역스 코프로 처리하는 법 -->
-			<!-- 			<button type="button" id="updateBoard">수정</button> -->
-			<!-- 			<button type="button" id="deleteBoard">삭제</button> -->
+		<!-- 수정/삭제 버튼과 좋아요/싫어요 영역 (양쪽 정렬) -->
+		<div
+			style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
 
+			<!-- 왼쪽 : 수정/삭제 버튼 -->
+			<div>
+				<div th:if="${board.memberEntity.userid == principalDetails.name}">
+					<button type="button" th:id="|updateBoard-${board.id}|"
+						th:data-updateBoardId="${board.id}"
+						th:onclick="'window.location.href=\'/board/updateboard/' + ${board.id} + '\';'"
+						style="background-color: #4caf50; color: white; padding: 5px 10px; border-radius: 5px; border: none; cursor: pointer;">수정</button>
+					<button type="button" th:id="|deleteBoard-${board.id}|"
+						th:data-deleteBoardId="${board.id}"
+						style="background-color: red; color: white; padding: 5px 10px; border-radius: 5px; border: none; cursor: pointer;">삭제</button>
+				</div>
+			</div>
 
+			<!-- 오른쪽 : 좋아요/싫어요 -->
+			<div>
+				<div th:if="${board.memberEntity.userid != principalDetails.name}">
+					<button type="button" id="like" name="like" class="commentlike"
+						th:text="'❤️ ' + ${board.totalLike}" style="margin-right: 10px;">❤️
+						Like</button>
+					<button type="button" id="dislike" name="dislike"
+						class="commentdislike" th:text="'🖤 ' + ${board.totalDislike}">🖤
+						Dislike</button>
+				</div>
 
-			<button type="button" th:id="|updateBoard-${board.id}|"
-				th:data-updateBoardId="${board.id}"
-				th:onclick="'window.location.href=\'/board/updateboard/' + ${board.id} + '\';'">수정</button>
-			<button type="button" style="background-color: red"
-				;
-              th:id="|deleteBoard-${board.id}|"
-				th:data-deleteBoardId="${board.id}">삭제</button>
+				<!-- 작성자라면 숫자만 표시 -->
+				<div
+					th:unless="${board.memberEntity.userid != principalDetails.name}">
+					<span th:text="'❤️ ' + ${board.totalLike}"
+						style="margin-right: 20px;"></span> <span
+						th:text="'🖤 ' + ${board.totalDislike}"></span>
+				</div>
+			</div>
+
 		</div>
 
-		<!-- 댓글 작성 폼 -->
-		<div class="comment-section">
-			<!--             <form id="commentForm"> -->
-			<label for="commentText">댓글</label>
-			<textarea id="commentText" name="commentText" placeholder="댓글을 작성하세요"
-				required></textarea>
-			<div style="display: flex; gap: 10px; align-items: center;">
-				<label style="display: flex; align-items: center; gap: 5px;">
-					<input type="checkbox" id="isPrivate">게시자만 보기
-				</label>
-				<button type="button" id="submitComment" style="margin-top: 8px;">작성</button>
-			</div>
-			<br>
-			<!--             </form> -->
 
-			<!-- 댓글 목록 -->
-			<div id="commentsList">
-				<!--                 <div  class="comment"> -->
-				<!--                     <p class="comment-author">홍길동</p> -->
-				<!--                     <p class="comment-text">이것은 댓글 예시입니다.</p> -->
-				<!--                 </div> -->
-				<!-- 다른 댓글이 여기에 추가됩니다. -->
+		<div>
+
+			<!-- 댓글 작성 폼 -->
+			<div class="comment-section">
+				<!--             <form id="commentForm"> -->
+				<label for="commentText">댓글</label>
+				<textarea id="commentText" name="commentText"
+					placeholder="댓글을 작성하세요" required></textarea>
+				<div style="display: flex; gap: 10px; align-items: center;">
+					<label style="display: flex; align-items: center; gap: 5px;">
+						<input type="checkbox" id="isPrivate">게시자만 보기
+					</label>
+					<button type="button" id="submitComment" class="submitComment"
+						style="margin-top: 8px;">작성</button>
+				</div>
+				<br>
+				<!--             </form> -->
+
+				<!-- 댓글 목록 -->
+				<div id="commentsList">
+					<!--                 <div  class="comment"> -->
+					<!--                     <p class="comment-author">홍길동</p> -->
+					<!--                     <p class="comment-text">이것은 댓글 예시입니다.</p> -->
+					<!--                 </div> -->
+					<!-- 다른 댓글이 여기에 추가됩니다. -->
+				</div>
 			</div>
 		</div>
 	</div>
-		<div th:replace="~{footer.html}"></div>
+	<div th:replace="~{footer.html}"></div>
 
 	<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-
+	
 	<script src="/js/updateComment.js" type="module"></script>
 	<script src="/js/deleteComment.js" type="module"></script>
 	<script src="/js/deleteBoard.js" type="text/javascript"></script>
 
 
+<script type="module">
+        import { truncateText } from '/js/truncateText.js'; // truncate.js 파일 경로
+		  import { formatCurrency} from '/js/formatCurrency.js'; 
+        window.onload = function() {
+
+
+
+        const titleElements = document.querySelectorAll('.boardTitle');
+    const addressElement = document.querySelector('#boardAddress');
+    
+    // 모든 제목에 대해 처리
+   titleElements.forEach(titleElement => {
+        titleElement.innerText = truncateText(titleElement.innerText, 30);
+    });
+    
+    // 모든 주소에 대해 처리
+ 
+        let addressText = addressElement.innerText.trim();
+        let splitedAddress = addressText.split(" ");
+        
+        // 주소가 3개 이상의 부분을 갖는 경우, 첫 3부분만 사용
+        if (splitedAddress.length >= 3) {
+            addressElement.innerText = splitedAddress[0] + " " + splitedAddress[1] + " " + splitedAddress[2];
+        } else {
+            // 주소가 3개 미만인 경우, 전체 주소 그대로 표시
+            addressElement.innerText = splitedAddress.join(" ");
+        }
+
+
+
+    document.querySelectorAll('h2[id^="price-"]').forEach(function(cell) {
+      const price = parseFloat(cell.innerText);
+      cell.innerText = formatCurrency(price) + '원';
+    });
+    
+  };
+
+    
+    </script>
+
+
+
+
+
+
+
+
+
+<!-- 	<script src="/js/formatCurrency.js" type="module"></script> -->
 	<script src="/js/getComment.js" type="module"></script>
 	<script src="/js/addComment.js" type="module"></script>
 	<!-- 	<script type="module" src="/js/commentLike.js"></script> -->
 	<script src="/js/boardLike.js" type="module"></script>
 	<script src="/js/tradeModule.js" type="module"></script>
 	<script src="/js/chatModule.js" type="module"></script>
-
+	<script src="/js/kakaoAddressApi.js" type="module"></script>
 	<!-- 	 <th:block th:replace="/footer :: footerFragment"></th:block> -->
+
+
 </body>
+
+
+
 </html>

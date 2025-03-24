@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>마이페이지(수정)</title>
+    <title>나의 정보 수정</title>
          <link rel="stylesheet" href="/css/mypageForm.css">
                  <link rel="stylesheet" href="/css/addressModal.css">
 </head>
 <body>
     <div th:replace="~{header.html}"></div>
     <div class="mypageForm">
-    <h2>마이페이지 (수정)</h2>
+    <h2>나의 정보 수정</h2>
 
 
   <div class="formdata">
@@ -90,10 +90,11 @@
 <!--         <textarea id="address" name="address" cols="40" rows="3" th:text="${member.address}" required></textarea><br> -->
 
             <!-- 주소 -->
-            <div style ="display:flex; flex-direction: row;">
-            <label for="address2">주소</label><button type ="button"  id="addressButton" >검색</button>
-            </div>
-            <br>
+<!--             <div style ="display:flex; flex-direction: row;"> -->
+            <label for="address2">주소</label>
+<!--             <button type ="button"  id="addressButton" >검색</button> -->
+<!--             </div> -->
+<!--             <br> -->
            	<input type="text"  id="address"  name="address"  placeholder="주소를 검색하세요"  th:value="${member.address}" readonly>
             
             
@@ -134,7 +135,7 @@
              </div>
      </form> 
      </div>
-
+</div>
     <div th:replace="~{footer.html}"></div>
 <!-- 		 <th:block th:replace="/footer :: footerFragment"></th:block> -->
 

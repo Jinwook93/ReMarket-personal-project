@@ -57,13 +57,32 @@ export function loadComments(boardId, boardUserId, principalDetails) {
 			//			const parentCommentResponse = await fetch(`/comments/parent/${child.id}`);
 			//			const parentComment = await parentCommentResponse.json();
 			//			console.log("부모 호출 확인" + parentComment);
-			const childCommentElement = document.createElement('div');
-			childCommentElement.classList.add('comment');
-			childCommentElement.id = `comment-${child.id}`;
+const childCommentElement = document.createElement('div');
+childCommentElement.classList.add('comment');
+childCommentElement.id = `comment-${child.id}`;
 
-			const childMarginLeft = marginLeft + 20; // 개별 댓글마다 marginLeft 증가
-			childCommentElement.style.marginLeft = `${childMarginLeft}px`;
+const childMarginLeft = marginLeft + 20; // 개별 댓글마다 marginLeft 증가
+childCommentElement.style.marginLeft = `${childMarginLeft}px`;
 
+// 대댓글 입력창의 너비 조정 (marginLeft에 따른 길이 변경)
+const replyInputElement = document.getElementById(`reply-input-${child.id}`);
+if (replyInputElement) {
+    const replyInputWidth = replyInputElement.offsetWidth; // 실제 너비 구하기
+    const childReplyInputWidth = replyInputWidth - 20; // marginLeft에 따른 길이 조정
+    replyInputElement.style.width = `${childReplyInputWidth}px`; // width 수정
+}
+
+// 수정 입력창의 너비 조정 (marginLeft에 따른 길이 변경)
+const updateInputElement = document.getElementById(`updateInputField-${child.id}`);
+if (updateInputElement) {
+    const updateInputWidth = updateInputElement.offsetWidth; // 실제 너비 구하기
+    const childUpdateInputWidth = updateInputWidth - 20; // marginLeft에 따른 길이 조정
+    updateInputElement.style.width = `${childUpdateInputWidth}px`; // width 수정
+}
+
+
+							
+							
 			childCommentElement.innerHTML = `
 <div style="display: flex; justify-content: space-between; align-items: center;">
     <!-- 프로필 (왼쪽 정렬) -->
@@ -78,13 +97,13 @@ export function loadComments(boardId, boardUserId, principalDetails) {
 
     <!-- 댓글 버튼과 시간 (오른쪽 정렬) -->
     <div class="comment-right">
-       ${child.memberEntity.userid !== principalDetails 
-    ? `<div class="comment-actions">
+       ${child.memberEntity.userid !== principalDetails
+					? `<div class="comment-actions">
         <button type="button" class="commentlike" id="commentlike-${child.id}" name="commentlike">❤️ ${child.totalLike}</button>
         <button type="button" class="commentdislike" id="commentdislike-${child.id}" name="commentdislike">🖤 ${child.totalDislike}</button>
-    </div>` 
-    : `<div class="comment-actions"> ❤️ ${child.totalLike} / 🖤 ${child.totalDislike}</div>`
-}
+    </div>`
+					: `<div class="comment-actions"> ❤️ ${child.totalLike} / 🖤 ${child.totalDislike}</div>`
+				}
 
         <p class="comment-createTime">${formatDate(child.createTime)}</p>
     </div>
@@ -103,29 +122,22 @@ export function loadComments(boardId, boardUserId, principalDetails) {
 				}
 </p>
 
-
-
-
-
-
-
-
-
-
 		<!--<p>부모정보 : ${child.parentComment ? child.parentComment.memberEntity.userid : ""}</p>
 			
 			<p>비밀글 여부 :${child.private}</p>
 			<p>블라인드 : ${child.blind}</p>-->
             
+            
+            
         `;
 
 
-			if (child.parentComment !== null) {
-				console.log(child.parentComment);
-			}
+			//			if (child.parentComment !== null) {
+			//				console.log(child.parentComment);
+			//			}
 
-    const buttonContainer = document.createElement('div');
-    buttonContainer.classList.add('comment-buttons');
+			const buttonContainer = document.createElement('div');
+			buttonContainer.classList.add('comment-buttons');
 
 
 			// 🟢 대댓글 버튼 추가
@@ -133,85 +145,98 @@ export function loadComments(boardId, boardUserId, principalDetails) {
 			replyButton.textContent = '댓글';
 			replyButton.classList.add('reply-button');
 			replyButton.addEventListener('click', () => toggleReplyInput(child.id));
-			 buttonContainer.appendChild(replyButton); 
-			 
+			if (principalDetails && principalDetails !== 'anonymousUser') {
+				// 로그인한 상태 → 댓글 버튼 생성
+				buttonContainer.appendChild(replyButton);
+				childCommentElement.appendChild(buttonContainer);
+			}
 
 			//수정 및 삭제버튼 추가
 			if (child.memberEntity.userid === principalDetails) {
-//    const buttonContainer = document.createElement('div');
-//    buttonContainer.classList.add('comment-buttons');
 
-    const updateButton = document.createElement('button');
-    updateButton.textContent = '수정';
-    updateButton.classList.add('update-button');
-    updateButton.addEventListener('click', () => updateComment(child.id, child.content, child.blind));
+				const updateButton = document.createElement('button');
+				updateButton.textContent = '수정';
+				updateButton.classList.add('update-button');
+				updateButton.addEventListener('click', () => updateComment(child.id, child.content, child.blind));
 
-    if (child.blind) {
-        updateButton.style.display = "none";
-    }
+				if (child.blind) {
+					updateButton.style.display = "none";
+				}
 
-    const deleteButton = document.createElement('button');
-    deleteButton.textContent = '삭제';
-    deleteButton.classList.add('delete-button');
-    deleteButton.addEventListener('click', () => deleteComment(child.id));
+				const deleteButton = document.createElement('button');
+				deleteButton.textContent = '삭제';
+				deleteButton.classList.add('delete-button');
+				deleteButton.addEventListener('click', () => deleteComment(child.id));
 
-    buttonContainer.appendChild(updateButton);
-    buttonContainer.appendChild(deleteButton);
-    childCommentElement.appendChild(buttonContainer);
-} else if (child.memberEntity.userid !== principalDetails && boardUserId === principalDetails) {
-//    const buttonContainer = document.createElement('div');
-//    buttonContainer.classList.add('comment-buttons');
+				buttonContainer.appendChild(updateButton);
+				buttonContainer.appendChild(deleteButton);
+				childCommentElement.appendChild(buttonContainer);
+			} else if (child.memberEntity.userid !== principalDetails && boardUserId === principalDetails) {
+				//   const buttonContainer = document.createElement('div');
+				//    buttonContainer.classList.add('comment-buttons');
 
-    if (child.memberEntity.userid !== boardUserId && boardUserId === principalDetails) {
-        const blindButton = document.createElement('button');
-        blindButton.id = `blindButton-${child.id}`;
-        blindButton.textContent = child.blind === false ? '블라인드' : '블라인드 취소';
-          blindButton.style.backgroundColor = child.blind === false ? 'green' : 'orange';
-        blindButton.classList.add('blind-button');
-        blindButton.addEventListener('click', () => blindComment(child.id, child.blind));
+				if (child.memberEntity.userid !== boardUserId && boardUserId === principalDetails) {
+					const blindButton = document.createElement('button');
+					blindButton.id = `blindButton-${child.id}`;
+					blindButton.textContent = child.blind === false ? '블라인드' : '블라인드 취소';
+					blindButton.style.backgroundColor = child.blind === false ? 'green' : 'orange';
+					blindButton.classList.add('blind-button');
+					blindButton.addEventListener('click', () => blindComment(child.id, child.blind));
 
-        buttonContainer.appendChild(blindButton);
-    }
+					buttonContainer.appendChild(blindButton);
+				}
 
-    const deleteButton = document.createElement('button');
-    deleteButton.textContent = '삭제';
-    deleteButton.classList.add('delete-button');
-    deleteButton.addEventListener('click', () => deleteComment(child.id));
+				const deleteButton = document.createElement('button');
+				deleteButton.textContent = '삭제';
+				deleteButton.classList.add('delete-button');
+				deleteButton.addEventListener('click', () => deleteComment(child.id));
 
-    buttonContainer.appendChild(deleteButton);
-    childCommentElement.appendChild(buttonContainer);
-}
+				buttonContainer.appendChild(deleteButton);
+				childCommentElement.appendChild(buttonContainer);
+			}
 
 
-//			// 🟢 대댓글 버튼 추가
-//			const replyButton = document.createElement('button');
-//			replyButton.textContent = '댓글';
-//			replyButton.classList.add('reply-button');
-//			replyButton.addEventListener('click', () => toggleReplyInput(child.id));
-//			 buttonContainer.appendChild(replyButton); 
-//			childCommentElement.appendChild(replyButton);
+			//			// 🟢 대댓글 버튼 추가
+			//			const replyButton = document.createElement('button');
+			//			replyButton.textContent = '댓글';
+			//			replyButton.classList.add('reply-button');
+			//			replyButton.addEventListener('click', () => toggleReplyInput(child.id));
+			//			buttonContainer.appendChild(replyButton);
+			//			childCommentElement.appendChild(replyButton);
 
 			// 🟢 대댓글 입력창 추가 (초기에는 숨김)
-			const replyContainer = document.createElement('div');
-			replyContainer.id = `reply-container-${child.id}`;
-			replyContainer.style.display = 'none'; // 기본적으로 숨김
-			replyContainer.innerHTML = `
-        	    <label style="display: flex; align-items: center; gap: 5px;">
-   			    <input type="checkbox" id="isPrivate-${child.id}">게시자만 보기
-    			</label>
-            <input type="text" id="reply-input-${child.id}" placeholder="답글을 입력하세요" style="width: 80%;" />
-        `;
+const replyContainer = document.createElement('div');
+replyContainer.id = `reply-container-${child.id}`;
+replyContainer.style.display = 'none'; // 입력창과 버튼을 가로로 배치하기 위한 스타일
+replyContainer.style.alignItems = 'center'; // 세로 정렬을 맞추기 위한 스타일
+replyContainer.style.gap = '10px'; // 입력창과 버튼 사이에 간격 추가
+replyContainer.style.margin = '10px'; // 좌우 및 위/아래 공백 추가
 
-			const submitButton = document.createElement('button');
-			submitButton.id = `submit-${child.id}`;
-			submitButton.style.display = replyContainer.style.display;
-			submitButton.textContent = '등록';
-			submitButton.addEventListener('click', () => addComment(boardId, child.id, principalDetails));
+replyContainer.innerHTML = `
+    <label style="display: flex; align-items: center; gap: 5px;">
+        <input type="checkbox" id="isPrivate-${child.id}">비밀글
+    </label>
+    <input type="text" id="reply-input-${child.id}" placeholder="답글을 입력하세요" style="width: 65%; margin-right: 10px;" />
+`;
 
-			childCommentElement.appendChild(replyContainer);
-			childCommentElement.appendChild(submitButton);
+// 버튼 생성
+const submitButton = document.createElement('button');
+submitButton.id = `submit-${child.id}`;
+submitButton.textContent = '등록';
+submitButton.classList.add("submitComment");
+submitButton.addEventListener('click', () => addComment(boardId, child.id, principalDetails));
 
-			commentsList.appendChild(childCommentElement);
+// 입력창과 버튼을 같은 div에 추가
+replyContainer.appendChild(submitButton);
+
+// 댓글 요소에 replyContainer 추가
+childCommentElement.appendChild(replyContainer);
+
+// 댓글 리스트에 추가
+commentsList.appendChild(childCommentElement);
+
+
+
 
 			if (child.memberEntity.userid !== principalDetails) {
 				// 좋아요 및 싫어요 버튼 이벤트 리스너 등록 (동적으로 추가)
@@ -253,14 +278,16 @@ export function loadComments(boardId, boardUserId, principalDetails) {
 
 }
 
-// 🟢 대댓글 입력창 토글 함수
+
 function toggleReplyInput(commentId) {
 	const replyContainer = document.getElementById(`reply-container-${commentId}`);
+		const replyInput = document.getElementById(`reply-input-${commentId}`);
 	const submitVisible = document.getElementById(`submit-${commentId}`);
 
 	if (replyContainer.style.display === 'none') {
-		replyContainer.style.display = 'block';
-		submitVisible.style.display = 'block';
+		replyContainer.style.display = 'flex';
+		submitVisible.style.display = 'flex';
+		replyInput.value = '';
 	} else {
 		replyContainer.style.display = 'none';
 		submitVisible.style.display = 'none';

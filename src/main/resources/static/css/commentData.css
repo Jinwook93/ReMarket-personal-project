@@ -149,7 +149,7 @@
     gap: 8px; /* 버튼 간 간격 */
 }
 
-.comment-buttons button {
+.comment-buttons button, .comment-save-btn, .comment-cancel-btn{
     padding: 6px 12px;
     font-size: 14px;
     border: none;
@@ -158,12 +158,12 @@
     transition: background-color 0.2s ease-in-out;
 }
 
-.comment-buttons .update-button {
+.comment-buttons .update-button , .comment-save-btn {
     background-color: blue;
     color: white;
 }
 
-.comment-buttons .delete-button {
+.comment-buttons .delete-button,  .comment-cancel-btn {
     background-color: red;
     color: white;
 }
@@ -172,3 +172,5 @@
     background-color: green;
     color: white;
 }
+
+

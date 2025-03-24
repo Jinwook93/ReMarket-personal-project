@@ -356,16 +356,15 @@ public class BoardService {
 //	}
 
 
-	public boolean isBoardMatched(BoardEntity board, BoardDTO dto, Integer condition) {
+	public boolean isBoardMatched(BoardEntity board, BoardDTO dto, Integer condition, Integer min_price, Integer max_price) {
 	    if (dto.getTitle() != null && !dto.getTitle().isEmpty() && !board.getTitle().contains(dto.getTitle())) return false;
 	    if (dto.getContents() != null && !dto.getContents().isEmpty() && !board.getContents().contains(dto.getContents())) return false;
 	    if (dto.getMemberUserId() != null && !dto.getMemberUserId().isEmpty() && !board.getMemberEntity().getUserid().contains(dto.getMemberUserId())) return false;
-	    if (dto.getPrice() != null && dto.getPrice() > 0 && !dto.getPrice().equals(board.getPrice())) return false;
+//	    if (dto.getPrice() != null && dto.getPrice() > 0 && !dto.getPrice().equals(board.getPrice())) return false;
 
 	    // 주소 필터링
 	    if (dto.getAddress() != null && !dto.getAddress().isEmpty()) {
 	        String conditionAddress = getAddressByCondition(dto.getAddress(), condition);
-	        System.out.println("conditionAdress : "+ conditionAddress);
 	        if (board.getAddress() == null || !board.getAddress().contains(conditionAddress)) return false;
 	    }
 
@@ -373,8 +372,22 @@ public class BoardService {
 	    if (dto.getBuy_Sell() != null && board.getBuy_Sell() != dto.getBuy_Sell()) return false;
 	    if (dto.getProduct() != null && !dto.getProduct().isEmpty() && !board.getProduct().contains(dto.getProduct())) return false;
 
+	    // ✅ 가격 범위 필터링
+	    if (min_price != null && max_price != null) {
+	        // 둘 다 값이 있으면 min_price 이상, max_price 이하로 비교
+	        if (board.getPrice() < min_price || board.getPrice() > max_price) return false;
+	    } else if (min_price != null) {
+	        // min_price만 값이 있으면 min_price 이상으로 비교
+	        if (board.getPrice() < min_price) return false;
+	    } else if (max_price != null) {
+	        // max_price만 값이 있으면 max_price 이하로 비교
+	        if (board.getPrice() > max_price) return false;
+	    }
+
 	    return true;
 	}
+
+
 	
 	
 	public String getAddressByCondition(String fullAddress, Integer condition) {

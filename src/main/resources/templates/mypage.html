@@ -1,121 +1,199 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>마이페이지</title>
-     <link rel="stylesheet" href="/css/mypageForm.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>마이페이지</title>
+<link rel="stylesheet" href="/css/mypageForm.css">
+<link rel="stylesheet" href="/css/profile_Board_Table.css">
 </head>
 <body>
-    <div th:replace="~{header.html}"></div>
-    <div class="mypageForm">
-    <h2>마이페이지</h2>
-
-		<div class ="formdata">
-<!--         아이디(고유 식별번호) -->
-<!--         <label for="id">식별 번호</label> -->
-        <input type="hidden" id="id" name="id" th:value="${member.id}" required />
-
-
-
-
-<!--         아이디 -->
-        <label for="userid">아이디</label>
-        <input type="text" id="userid" name="userid" th:value="${member.userid}" required /><br>
-<!--         <button type="button" onclick="checkId()">중복확인</button> -->
-
-
-
-
-            <label for="name">작성자</label> 
-             <div style="display: flex; align-items: center;">
-             <div th:if="${member.profileImage!=null}">
-        <!-- 프로필 이미지 -->
-        <img th:src="@{{imagePath}(imagePath=${member.profileImage})}" loading="lazy" alt="Profile Image Preview" style="width: 50px; height: 50px; margin-right: 10px;">
-        	</div>
-         <div th:if="${member.profileImage==null}">
-        <!-- 프로필 이미지 -->
-        <img src="/boardimage/nullimage.jpg" alt="첨부 파일 없음" style="display: block; width: 50px; height: 50px;">
-<!--             <p>첨부 파일이 없습니다.</p> -->
-        	</div>
-        <!-- 이름 -->
-        <span th:text="${member.name}"></span>
-    </div>
+	<div th:replace="~{header.html}"></div>
+	<div class="mypageForm">
+		<h2>마이페이지</h2>
+		<br>
+		
+		
+		
+		<div style="text-align: center;">
+		 <a
+				th:href="@{/boardlist/{id}(id=${id})}">내가 쓴 게시글</a> <span>|</span> <a
+				th:href="@{/commentlist/{id}(id=${id})}">내가 쓴 댓글</a> <span>|</span>
+			<a th:href="@{/trade/mytrade/{id}(id=${id})}">거래목록</a> <span>|</span>
+			<a th:href="@{/trade/myfavorite/{id}(id=${id})}">관심목록</a>
+		</div>
+		<br>
+		<div class="formdata">
+			<!--         아이디(고유 식별번호) -->
+			<!--         <label for="id">식별 번호</label> -->
+			<input type="hidden" id="id" name="id" th:value="${member.id}"
+				required />
 
 
+<!-- 			<div style="display: flex; flex-direction: row;"> -->
+				<div>
 
+				<table class="profile_board_table" >
 
-
-
-
-
-
-
-
-
-
-
-<!-- <!--         이름 -->
-<!--         <label for="name">이름</label> -->
-<!--         <input type="text" id="name" name="name" th:value="${member.name}" required /><br> -->
-
-<!-- <!-- 이미지 미리보기 --> 
-<!--         <div id="imagePreview" style="margin-top: 10px;"> -->
-<!--             <img id="previewImage" th:src="@{{imagePath}(imagePath=${member.profileImage})}" loading="lazy" alt="Profile Image Preview" style="display: block; width: 100px; height: 100px;"> -->
-<!--         </div> -->
-<!-- <br><br> -->
-
-
-<!--         나이 -->
-        <label for="age">나이</label>
-        <input type="number" id="age" name="age" th:value="${member.age}" required /><br>
-
-<!--         성별 -->
-<!--         <label for="gender">성별</label> -->
-<!--         <select id="gender" name="gender" th:value="${member.gender}"> -->
-<!--             <option value="MALE">남자</option> -->
-<!--             <option value="FEMALE">여자</option> -->
-<!--         </select><br> -->
-
-        <label for="gender">성별</label>
-        <input type="text" id="gender" name="gender" th:value="${member.gender}" required /><br>
-
-<!--         연락처 -->
-        <label for="phone">연락처</label>
-        <input type="tel" id="phone" name="phone" th:value="${member.phone}" required /><br>
-
-<!--         주소 -->
-        <label for="address">주소</label>
-        <textarea id="address" name="address" cols="40" rows="3" th:text="${member.address}" required></textarea><br>
-
-<!--         역할 -->
-        <label for="roles">역할</label>
-        <input type="text" id="roles" name="roles" th:value="${member.roles}" readonly /><br>
-
-<!--         회원수정 버튼 -->
-        <button type="button" id ="updateMember">회원수정</button>
-        <br>     <br>     <br>
-        <a
-					th:href="@{/boardlist/{id}(id=${id})}">내가 쓴 게시글</a>
-					<span>|</span>
-					 <a
-					th:href="@{/commentlist/{id}(id=${id})}">내가 쓴 댓글</a>
-						<span>|</span>
-        						<a th:href="@{/trade/mytrade/{id}(id=${id})}">거래목록</a>
-        							<span>|</span>
-						<a th:href="@{/trade/myfavorite/{id}(id=${id})}">관심목록</a>
+						<tr>
+							<td><label for="userid">아이디</label></td>
+							<td><span th:text="${member.userid}"></span></td>
+							<td rowspan="5">	<div>
+					<div th:if="${member.profileImage!=null}">
+						<!-- 프로필 이미지 -->
+						<img th:src="@{{imagePath}(imagePath=${member.profileImage})}"
+							loading="lazy" alt="Profile Image Preview"
+							style="width: 245px; height: 240px; margin-top: 20px; margin-right: 0px;">
+					</div>
+					<div th:if="${member.profileImage==null}">
+						<!-- 프로필 이미지 -->
+						<img src="/boardimage/nullimage.jpg" alt="첨부 파일 없음"
+							style="display: block; width: 245px; height: 240px; margin-top: 20px; margin-right: 0px;">
+						<!--             <p>첨부 파일이 없습니다.</p> -->
+					</div>
+				</div></td>
+							
+						</tr>
+						<tr>
+							<td><label for="name">작성자 </label></td>
+							<td><span th:text="${member.name}"></span></td>
+						</tr>
+						<tr>
+							<td><label for="age">나이 </label></td>
+							<td><span th:text="${member.age}"></span></td>
+						</tr>
+						<tr>
+							<td><label for="gender">성별 </label></td>
+							<td><span th:text="${member.gender}"></span></td>
+						</tr>
+						<tr>
+							<td><label for="phone">연락처</label></td>
+							<td><span th:text="${member.phone}"></span></td>
+						</tr>
+						<tr>
+							<td><label for="address">주소</label></td>
+							<td colspan="2"><span th:text="${member.address}"></span></td>
 						
-						</div>
-<!--     </form> -->
-</div>
-    <div th:replace="~{footer.html}"></div>
-<!-- 	 <th:block th:replace="/footer :: footerFragment"></th:block> -->
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js" defer></script>
-<!--     <script src="/js/checkId.js" defer></script> -->
-<!--     <script src="/js/joinValidation.js" defer></script> -->
-<!-- 		<script src="/js/checkId.js" defer></script> -->
-	<script src="/js/goUpdateMemberForm.js" defer></script> 
+						</tr>
+					</table>
 
+
+
+
+					<!--         아이디 -->
+					<!-- 					<label for="userid">아이디 : <span th:text="${member.userid}"></span></label> -->
+					<input type="hidden" id="userid" name="userid"
+						th:value="${member.userid}" required /> <br>
+					<!--         <button type="button" onclick="checkId()">중복확인</button> -->
+
+
+
+
+					<!-- 					<label for="name">작성자 : <span th:text="${member.name}"></span></label><br> -->
+					<!-- 
+					<div style="display: flex; align-items: center;">
+						<div th:if="${member.profileImage!=null}">
+							<!-- 프로필 이미지 -->
+					<!-- 							<img th:src="@{{imagePath}(imagePath=${member.profileImage})}" -->
+					<!-- 								loading="lazy" alt="Profile Image Preview" -->
+					<!-- 								style="width: 50px; height: 50px; margin-right: 10px;"> -->
+					<!-- 						</div> -->
+					<!-- 						<div th:if="${member.profileImage==null}"> -->
+					<!-- 							프로필 이미지 -->
+					<!-- 							<img src="/boardimage/nullimage.jpg" alt="첨부 파일 없음" -->
+					<!-- 								style="display: block; width: 50px; height: 50px;"> -->
+					<!-- 							            <p>첨부 파일이 없습니다.</p> -->
+					<!-- 						</div> -->
+					<!-- 이름 
+						<span th:text="${member.name}"></span>
+					</div>
+				 -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+					<!-- <!--         이름 -->
+					<!--         <label for="name">이름</label> -->
+					<!--         <input type="text" id="name" name="name" th:value="${member.name}" required /><br> -->
+
+					<!-- <!-- 이미지 미리보기 -->
+					<!--         <div id="imagePreview" style="margin-top: 10px;"> -->
+					<!--             <img id="previewImage" th:src="@{{imagePath}(imagePath=${member.profileImage})}" loading="lazy" alt="Profile Image Preview" style="display: block; width: 100px; height: 100px;"> -->
+					<!--         </div> -->
+					<!-- <br><br> -->
+
+
+					<!--         나이 -->
+					<!-- 					<label for="age">나이 : <span th:text="${member.age}"></span></label> -->
+					<input type="hidden" id="age" name="age" th:value="${member.age}"
+						required /><br>
+
+					<!--         성별 -->
+					<!--         <label for="gender">성별</label> -->
+					<!--         <select id="gender" name="gender" th:value="${member.gender}"> -->
+					<!--             <option value="MALE">남자</option> -->
+					<!--             <option value="FEMALE">여자</option> -->
+					<!--         </select><br> -->
+
+					<!-- 					<label for="gender">성별 : <span th:text="${member.gender}"></span></label> -->
+					<input type="hidden" id="gender" name="gender"
+						th:value="${member.gender}" required /><br>
+
+					<!--         연락처 -->
+					<!-- 					<label for="phone">연락처 : <span th:text="${member.phone}"></span> -->
+					</label> <input type="hidden" id="phone" name="phone"
+						th:value="${member.phone}" required /><br>
+
+				</div>
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+<!-- 			</div> -->
+
+			<!-- 			<!--         주소 -->
 	
+			<!-- 			<label for="address">주소</label> -->
+			<!-- 			<textarea id="address" name="address" cols="40" rows="3" -->
+			<!-- 				th:text="${member.address}" required></textarea> -->
+			<!-- 			<br> -->
+
+			<!--         역할 -->
+			<!-- 			<label for="roles">역할</label> <input type="text" id="roles" -->
+			<!-- 				name="roles" th:value="${member.roles}" readonly /><br> -->
+
+			<!--         회원수정 버튼 -->
+			<button type="button" id="updateMember">회원수정</button>
+			<br> <br> <br>
+
+		</div>
+		<!--     </form> -->
+	</div>
+	<div th:replace="~{footer.html}"></div>
+	<!-- 	 <th:block th:replace="/footer :: footerFragment"></th:block> -->
+	<script src="https://code.jquery.com/jquery-3.6.4.min.js" defer></script>
+	<!--     <script src="/js/checkId.js" defer></script> -->
+	<!--     <script src="/js/joinValidation.js" defer></script> -->
+	<!-- 		<script src="/js/checkId.js" defer></script> -->
+	<script src="/js/goUpdateMemberForm.js" defer></script>
+
+
 </body>
 </html>

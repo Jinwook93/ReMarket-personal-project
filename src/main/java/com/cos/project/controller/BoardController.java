@@ -323,6 +323,12 @@ public class BoardController {
 //		List<CommentEntity> comments = commentService.getFilteredComments(id, principalDetails.getMemberEntity().getUserid());
 		ObjectMapper om = new ObjectMapper();
 		String[] boardFiles = om.readValue(boardEntity.getBoardFiles(), String[].class);
+		
+		
+	    List<TradeDTO> filteredBoardTrades = boardEntity.getTrades().stream()
+	                    .map(trade -> new TradeDTO().fromEntity(trade))
+	            .collect(Collectors.toList());
+		
 
 		model.addAttribute("board", boardEntity);
 //		model.addAttribute("comments", comments);
@@ -331,7 +337,11 @@ public class BoardController {
 //			boardFiles = new String[0];
 //		}
 		model.addAttribute("boardFiles", boardFiles);
-
+		model.addAttribute("tradeDTO",filteredBoardTrades);
+		
+		if(principalDetails != null) {
+		model.addAttribute("loggedId", principalDetails.getMemberEntity().getId());
+		}
 		// return ResponseEntity.status(200).body(result);
 		return "boardcontent";
 	}
@@ -550,10 +560,12 @@ public class BoardController {
 	                        @RequestParam(name = "condition", defaultValue = "0") Integer condition,
 	                        @RequestParam(name ="searched", required=false) Boolean searched, 
 	                        @RequestParam(name ="tradestatus", required=false) String tradestatus, 
+	                        @RequestParam(name ="min_price", required=false) Integer min_price, 
+	                        @RequestParam(name ="max_price", required=false) Integer max_price, 
 	                        @ModelAttribute BoardDTO boardDTO,
 	                        Model model) {
 
-	    int pageSize = 9;
+	    int pageSize = 4;
 	    int pageNumber = page - 1;
 
 	    // 로그인한 사용자 주소 가져오기
@@ -575,7 +587,7 @@ public class BoardController {
 	    	
 	 // 필터링
 	    List<BoardEntity> filteredBoards = boards.stream()
-	        .filter(board -> boardService.isBoardMatched(board, boardDTO, condition))
+	        .filter(board -> boardService.isBoardMatched(board, boardDTO, condition,min_price,max_price))
 	        .filter(board -> {
 	            if (tradestatus == null || tradestatus.isEmpty() || tradestatus.equals("")) {
 	                return true; // tradestatus 없으면 필터링 건너뜀

@@ -1,109 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search Modal</title>
-    <link rel="stylesheet" href="/css/searchBoardManager.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Search Modal</title>
+<link rel="stylesheet" href="/css/searchBoardManager.css">
 </head>
 <body>
-	<searchmodal th:fragment="searchmodal">
-    <!-- 버튼을 클릭하여 모달을 띄움 -->
-    <button id="openModalBtn">🔍</button>
+	<searchmodal th:fragment="searchmodal"> <!-- 버튼을 클릭하여 모달을 띄움 -->
+	<button id="openModalBtn">🔍</button>
 
-    <!-- 검색 모달 -->
-    <div id="searchModal" class="modal">
-        <div class="modal-content" id ="modal-content">
-            <span class="close-btn" id="closeModalBtn">&times;</span>
-            <h2>검색 조건 입력</h2>
-            <form id="searchForm"   action="/board/list" method="get">
-            
-                <!-- 검색 파라미터는 기본적으로 숨기고 있다가 버튼 클릭 시 설정 -->
-   				 <input type="hidden" id="searched" name="searched">
-    			 <input type="hidden" id="condition" name="condition">
-                <div class="form-group">
-                    <label for="title">제목</label>
-                    <input type="text" id="title" name="title">
-                </div>
-                <div class="form-group">
-                    <label for="contents">내용</label>
-                    <input type="text" id="contents" name="contents">
-                </div>
-                <div class="form-group">
-                    <label for="memberUserId">회원 아이디</label>
-                    <input type="text" id="memberUserId" name="memberUserId">
-                </div>
-                <div class="form-group">
-                    <label for="price">가격</label>
-                    <input type="number" id="price" name="price">
-                </div>
-                <div class="form-group">
-                
-                
-                	<!-- 주소 -->
-			<div style="display: flex; margin-bottom:-20px;">
-				<label for="address2">주소</label>
-				<button type="button" id="addressButton">검색</button>
-			</div>
-			<br> <input type="text" id="address" name="address"
-				placeholder="주소를 검색하세요" readonly>
+	<!-- 검색 모달 -->
+	<div id="searchModal" class="modal">
+		<div class="modal-content" id="modal-content">
+			<span class="close-btn" id="closeModalBtn">&times;</span>
+			<h2>검색 조건 입력</h2>
+			<form id="searchForm" action="/board/list" method="get">
 
-
-
-			<!-- 모달 창 -->
-			<div id="addressModal" class="modal">
-				<div class="modal-content">
-					<span id="closeModal" class="close">&times;</span>
-					<h2>주소 검색</h2>
-					<input type="text" id="addressKeywordModal" placeholder="검색할 주소">
-					<button type="button" id="addressButtonModal">검색</button>
-					<div id="addressResult"></div>
+				<!-- 검색 파라미터는 기본적으로 숨기고 있다가 버튼 클릭 시 설정 -->
+				<input type="hidden" id="searched" name="searched"> <input
+					type="hidden" id="condition" name="condition">
+				<div class="form-group">
+					<label for="title">제목</label> <input type="text" id="title"
+						name="title">
 				</div>
-			</div>
+				<div class="form-group">
+					<label for="contents">내용</label> <input type="text" id="contents"
+						name="contents">
+				</div>
+				<div class="form-group">
+					<label for="memberUserId">회원 아이디</label> <input type="text"
+						id="memberUserId" name="memberUserId">
+				</div>
+				<div class="form-group">
+					<label for="price1">가격</label>
+					<span style="margin-left: 10px; display: flex;">
+						<span>
+							최소 <input type="text" id="min_price" name="min_price">	&nbsp;원 
+							&nbsp;	-	&nbsp;
+							최대 <input type="text" id="max_price" name="max_price">	&nbsp;원
+						</span>
+					</span>
+					<input type="hidden" id="price" name="price">
+				</div>
+				<div class="form-group">
 
-			<input type="text" id="address2" name="address2"
-				placeholder="세부 주소를 입력하세요">
-			</textarea>
-			<br>
-                
-                
-                
-                <!--
+
+					<!-- 주소 -->
+					<div style="display: flex; margin-bottom: -20px;">
+						<label for="address2">주소</label>
+						<!-- 				<button type="button" id="addressButton">검색</button> -->
+					</div>
+					<br> <input type="text" id="address" name="address"
+						placeholder="주소를 검색하세요" readonly>
+
+
+
+					<!-- 모달 창 -->
+					<div id="addressModal" class="modal">
+						<div class="modal-content">
+							<span id="closeModal" class="close">&times;</span>
+							<h2>주소 검색</h2>
+							<input type="text" id="addressKeywordModal" placeholder="검색할 주소">
+							<button type="button" id="addressButtonModal">검색</button>
+							<div id="addressResult"></div>
+						</div>
+					</div>
+
+					<input type="text" id="address2" name="address2"
+						placeholder="세부 주소를 입력하세요">
+					</textarea>
+					<br>
+
+
+
+					<!--
                 <div style="display:flex;">
                     <label for="address">주소</label> <button>검색</button>
                     </div>
                     <input type="text" id="address" name="address">
                                 -->
-                </div>
-    
-                <div class="form-group">
-                    <label for="category">카테고리</label>
-                    <select id="category" name="category">
-                        <option value="">선택</option>
-                        <option value="예제A">카테고리 1</option>
-                        <option value="예제B">카테고리 2</option>
-                        <option value="예제C">카테고리 3</option>
-                    </select>
-                </div>
-                
-                
-                
-                <div class="form-group">
-                 <label for="buySellFilter">거래상태</label>
-			<select name="tradestatus" id="buySellFilter">
-					<option value="">거래상태</option>
-					<option value="">미거래</option>
-					<option value="팝니다">팝니다</option>
-					<option value="삽니다">삽니다</option>
-					<option value="나눔">나눔</option>
-						<option value="거래중">거래중</option>
-					<option value="예약중">예약중</option>
-					<option value="거래완료">거래완료</option>
+				</div>
+
+				<div class="form-group">
+					<label for="category">카테고리</label> <select id="category"
+						name="category">
+						<option value="">선택</option>
+						<option value="예제A">카테고리 1</option>
+						<option value="예제B">카테고리 2</option>
+						<option value="예제C">카테고리 3</option>
 					</select>
-			</div>
-                
-                
-               <!--  
+				</div>
+
+
+
+				<div class="form-group">
+					<label for="buySellFilter">거래상태</label> <select name="tradestatus"
+						id="buySellFilter">
+						<option value="">거래상태</option>
+						<option value="">미거래</option>
+						<option value="팝니다">팝니다</option>
+						<option value="삽니다">삽니다</option>
+						<option value="나눔">나눔</option>
+						<option value="거래중">거래중</option>
+						<option value="예약중">예약중</option>
+						<option value="거래완료">거래완료</option>
+					</select>
+				</div>
+
+
+				<!--  
                 <div class="form-group">
                     <label for="buy_Sell">매매 유형</label>
                     <select id="buy_Sell" name="buy_Sell">
@@ -113,22 +119,22 @@
                     </select>
                 </div>
                 -->
-                <div class="form-group">
-                    <label for="product">상품</label>
-                    <input type="text" id="product" name="product">
-                </div>
-                <button type="submit" onclick ="setSearchedValue()">검색</button>
-            </form>
-        </div>
-    </div>
-</searchmodal>
-    <script src="/js/searchModal.js"></script>
-        <script  src="/js/kakaoAddressApi.js" type="module"></script>
-        <script>
-    function setSearchedValue() {
-        document.getElementById("searched").value = "true";  // 클릭 시 searched 값 설정
-        document.getElementById("condition").value = 3;  // 클릭 시 searched 값 설정
-    }
-</script>
+				<div class="form-group">
+					<label for="product">상품</label> <input type="text" id="product"
+						name="product">
+				</div>
+				<button type="submit" onclick="setSearchedValue()">검색</button>
+			</form>
+		</div>
+	</div>
+	</searchmodal>
+	<script src="/js/searchModal.js"></script>
+	<script src="/js/kakaoAddressApi.js" type="module"></script>
+	<script>
+		function setSearchedValue() {
+			document.getElementById("searched").value = "true"; // 클릭 시 searched 값 설정
+			document.getElementById("condition").value = 3; // 클릭 시 searched 값 설정
+		}
+	</script>
 </body>
 </html>

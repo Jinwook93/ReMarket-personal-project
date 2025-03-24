@@ -20,9 +20,9 @@ body {
 /* 제목 스타일 */
 .mypageForm h2 {
     text-align: center;
-    font-size: 24px;
+    font-size: 35px;
     color: #333;
-    margin-bottom: 30px;
+    margin-bottom: 60px;
 }
 
 /* 라벨 스타일 */

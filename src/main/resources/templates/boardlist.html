@@ -14,7 +14,7 @@ body {
 }
 
 .container {
-	max-width: 95%;
+	max-width: 85%;
 	margin: 0 auto;
 	background: #fff;
 	padding: 20px;
@@ -29,9 +29,9 @@ h1 {
 }
 
 table {
-	width: 100%;
+	width: 80%;
 	border-collapse: collapse;
-	margin-top: 20px;
+	margin: 20px auto; /* 위 아래 20px, 좌우 자동으로 가운데 정렬 */
 }
 
 th, td {
@@ -150,71 +150,84 @@ tr:hover {
 	border: 1px solid #ccc;
 	border-radius: 5px;
 }
+
 table a {
-text-decoration: none;
+	text-decoration: none;
 }
 </style>
-      <link rel="stylesheet" href="/css/addressFilter.css">
-       <link rel="stylesheet" href="/css/notModalBuySellFilter.css">
+<link rel="stylesheet" href="/css/addressFilter.css">
+<link rel="stylesheet" href="/css/notModalBuySellFilter.css">
 </head>
 <body>
 	<div th:replace="~{header.html}"></div>
 	<div class="container">
 		<h1>게시판</h1>
-			<div style="display: flex; justify-content: space-between;" >
-		<!-- 글쓰기 버튼 -->
-		<div class="button-container" style="display: flex;">
-			<a href="/board/writeboard" class="write-btn">글쓰기</a>
-			<button type="button" onclick="window.location.href='/board/list'"
-				class="reset-btn"
-				style="color: white; background-color: green; margin-left: 30px;">초기화</button>
-				
-			
-				
-		</div>
-			<div  style="display: flex; align-items: center;">
-			
-			<div>
-			<select name="buySellFilter"  class = "notModalBuySellFilter"  id="buySellFilter">
-					<option value="">거래상태</option>
-						<option value="미거래">미거래</option>
-					<option value="팝니다">팝니다</option>
-					<option value="삽니다">삽니다</option>
-					<option value="나눔">나눔</option>
-						<option value="거래중">거래중</option>
-					<option value="예약중">예약중</option>
-					<option value="거래완료">거래완료</option>
-					</select>
+		<div
+			style="display: flex; width: 80%; margin: 20px auto; justify-content: space-between;">
+			<!-- 글쓰기 버튼 -->
+			<div class="button-container" style="display: flex;">
+				<a href="/board/writeboard" class="write-btn">글쓰기</a>
+				<button type="button" onclick="window.location.href='/board/list'"
+					class="reset-btn"
+					style="color: white; background-color: green; margin-left: 30px;">초기화</button>
+
+
+
 			</div>
-		<div th:if="${isLoggedIn}">
-			<select id = "addressFilter" >
-				<option value = "0"> 지역 범위를 선택하세요</option>
-				<option value = "3">매우 가까운 지역 </option>
-						<option value = "2"> 가까운 지역</option>
-				<option value = "1">먼 지역</option>			
-					<option value = "0">전체 지역</option>						
-				</select>
+			<div style="display: flex; align-items: center;">
+
+				<div>
+					<select name="buySellFilter" class="notModalBuySellFilter"
+						id="buySellFilter">
+						<option value="">거래상태</option>
+						<option value="미거래">미거래</option>
+						<option value="팝니다">팝니다</option>
+						<option value="삽니다">삽니다</option>
+						<option value="나눔">나눔</option>
+						<option value="거래중">거래중</option>
+						<option value="예약중">예약중</option>
+						<option value="거래완료">거래완료</option>
+					</select>
 				</div>
-				
-					<div style = "margin-left: 5px;" th:replace="~{searchBoardManager.html}"></div>
-					</div>
+				<div th:if="${isLoggedIn}">
+					<select id="addressFilter">
+						<option value="0">지역 범위를 선택하세요</option>
+						<option value="3">매우 가까운 지역</option>
+						<option value="2">가까운 지역</option>
+						<option value="1">먼 지역</option>
+						<option value="0">전체 지역</option>
+					</select>
 				</div>
+
+				<div style="margin-left: 5px;"
+					th:replace="~{searchBoardManager.html}"></div>
+			</div>
+		</div>
 		<table
-			style="width: 100%; margin-bottom: 20px; border-collapse: collapse;">
+			style="width: 80%; margin-bottom: 20px; border-collapse: collapse;">
 			<thead>
 				<tr style="background-color: #f8f8f8; text-align: center;">
-					<th style="padding: 10px;">번호</th>
-					<th style="padding: 10px;">판매/구매</th>
-			<!-- 	<th style="padding: 10px;">종류</th> -->
-					<th style="padding: 10px;">제목</th>
-					<th style="padding: 10px;">작성자</th>
-					<th style="padding: 10px;">가격</th>
-					<th style="padding: 10px;">작성일</th>
-		<!-- 		<th style="padding: 10px;">조회수</th>  -->	
-					<th style="padding: 10px;">수정/삭제/대화</th>
+					<th style="padding: 10px; width: 5%;">번호</th>
+					<th style="padding: 0px; width: 10%;">판매/구매</th>
+					<!-- 	<th style="padding: 10px;">종류</th> -->
+					<th style="padding: 10px; width: 40%;">제목</th>
+					<th style="padding: 10px; width: 15%;">작성자</th>
+					<!--  <th style="padding: 10px;">가격</th> -->
+					<!-- <th style="padding: 10px;">작성일</th>  -->
+					<!-- 		<th style="padding: 10px;">조회수</th>  -->
+					<th style="padding: 0px; width: 15%;">수정/삭제/대화</th>
 				</tr>
 			</thead>
 			<tbody>
+
+				<!-- boards 데이터가 없을 경우 "검색 결과가 없습니다" 표시 -->
+				<tr th:if="${allBoards == null or #lists.isEmpty(allBoards)}">
+					<td colspan="5"><p>
+							<b>검색 결과가 없습니다</b>
+						</p></td>
+				</tr>
+
+
 				<!-- 게시글 데이터 반복 -->
 				<tr th:each="board : ${allBoards}"
 					style="border-bottom: 1px solid #ddd;">
@@ -222,53 +235,63 @@ text-decoration: none;
 						style="text-align: center; padding: 10px;"></td>
 					<td th:text="${board.buy_Sell}"
 						style="text-align: center; padding: 10px; color: #ff5722; font-weight: bold;"></td>
-				<!--  <td th:text="${board.category}"
-						style="text-align: center; padding: 10px;"></td>-->	
+					<!--  <td th:text="${board.category}"
+						style="text-align: center; padding: 10px;"></td>-->
 					<td th:data-board-id="${board.id}" style="padding: 10px;">
-<div style="display: flex; align-items: center; justify-content: flex-start;">
-<!-- a는 인라인 요소이므로 flex 적용이 안된다. 부모 뿐만 아니라 a에도 flex를 걸어주어야 함 -->
-    <a th:href="@{/board/view/{id}(id=${board.id})}" style="display: flex; align-items: center; text-decoration: none;">
-        <div>
-            <img th:id="|mainImage-${board.id}|"
-                 src="/boardimage/nullimage.jpg" alt="no profile image"
-                 style="display: block; width: 80px; height: 80px; object-fit: cover; margin-right: 10px;">
-        </div>
-        
-        
-        <!-- 거래 상태 표시 및 거래취소 버튼 -->
-        <div style="display:flex;flex-direction: column;">
-        <div style="display:flex;">
-        <div th:each="trade : ${board.trades}">
-            <!-- 예약 중 버튼 -->
-            <button th:if="${trade != null and trade.booking1 == true and trade.booking2 == true and trade.tradeStatus != '완료'}"
-                    type="button" class="small-btn reserve">예약 중</button>
+						<div
+							style="display: flex; align-items: center; justify-content: flex-start;">
+							<!-- a는 인라인 요소이므로 flex 적용이 안된다. 부모 뿐만 아니라 a에도 flex를 걸어주어야 함 -->
+							<a th:href="@{/board/view/{id}(id=${board.id})}"
+								style="display: flex; align-items: center; text-decoration: none;">
+								<div>
+									<img th:id="|mainImage-${board.id}|"
+										src="/boardimage/nullimage.jpg" alt="no profile image"
+										style="display: block; width: 80px; height: 80px; object-fit: cover; margin-right: 10px;">
+								</div> <!-- 거래 상태 표시 및 거래취소 버튼 -->
+								<div style="display: flex; flex-direction: column;">
+									<div style="display: flex; margin-bottom: 5px;">
+										<div th:each="trade : ${board.trades}">
+											<!-- 예약 중 버튼 -->
+											<button
+												th:if="${trade != null and trade.booking1 == true and trade.booking2 == true and trade.tradeStatus != '완료'}"
+												type="button" class="small-btn reserve">예약 중</button>
 
-            <!-- 거래 중 버튼 -->
-            <button th:if="${trade != null and trade.accept1 == true and trade.accept2 == true and trade.completed1 != null 
+											<!-- 거래 중 버튼 -->
+											<button
+												th:if="${trade != null and trade.accept1 == true and trade.accept2 == true and trade.completed1 != null 
                             and trade.completed2 != null and (trade.completed1 != true or trade.completed2 != true)}"
-                    type="button" class="small-btn progress">거래 중</button>
+												type="button" class="small-btn progress">거래 중</button>
 
-            <!-- 거래 완료 버튼 -->
-            <button th:if="${trade != null and trade.completed1 != null and trade.completed2 != null 
+											<!-- 거래 완료 버튼 -->
+											<button
+												th:if="${trade != null and trade.completed1 != null and trade.completed2 != null 
                             and (trade.completed1 == true and trade.completed2 == true)}"
-                    type="button" class="small-btn complete">거래완료</button>
-        </div>
+												type="button" class="small-btn complete">거래완료</button>
+										</div>
 
-        <!-- 게시글 제목 -->
-        <div th:text="${board.title}" class="boardTitle"
-             style="font-size: 16px; color: #000; font-weight: bold; margin-left: 10px;"></div>
-             </div>
-      <div class="boardAddress" th:text="${board.address}"
-     style="font-size: 14px; color: #555; margin-top: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left;">
-</div>
-
-
-               </div>
-    </a>
-</div>
+										<!-- 게시글 제목 -->
+										<div th:text="${board.title}" class="boardTitle"
+											style="font-size: 16px; color: #000; font-weight: bold; margin-left: 0px;"></div>
+									</div>
+									<div th:text=|${board.price}원|
+										style="text-align: left; padding: 5px; color: #00bfae; font-weight: bold; margin-bottom: 0px;"
+										th:id=|price-${board.id}|></div>
+									<div style="display: flex; margin-top: 5px;">
+										<div class="boardAddress" th:text="${board.address}"
+											style="font-size: 14px; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left;">
+										</div>
+										<span
+											style="margin-top: -1px; margin-left: 10px; margin-right: 10px; font-size: 14px; color: #555;">
+											| </span> <span
+											th:text="${#dates.format(board.createTime, 'yyyy-MM-dd HH:mm')}"
+											style="font-size: 14px; color: #555;"></span>
+									</div>
+								</div>
+							</a>
+						</div>
 
 					</td>
-					<td>
+					<td style="justify-items: center;">
 						<div class="enterChatRoom" style="cursor: pointer;"
 							th:onClick="@{/chat/Chatroom/{id}(id=${board.id})}">
 							<div style="display: flex; align-items: center;">
@@ -287,12 +310,12 @@ text-decoration: none;
 							</div>
 						</div>
 					</td>
-					<td th:text=|${board.price}원|
-						style="text-align: center; padding: 10px; color: #00bfae; font-weight: bold;"
-						th:id=|price-${board.id}|></td>
-					<td
+					<!-- 					<td th:text=|${board.price}원| -->
+					<!-- 						style="text-align: center; padding: 10px; color: #00bfae; font-weight: bold;" -->
+					<!-- 						th:id=|price-${board.id}|></td> -->
+					<!-- <td
 						th:text="${#dates.format(board.createTime, 'yyyy-MM-dd HH:mm')}"
-						style="text-align: center; padding: 10px;"></td>
+						style="text-align: center; padding: 10px;"></td> -->
 					<!-- 		<td th:text="${board.view}"
 						style="text-align: center; padding: 10px;"></td> -->
 					<!-- 수정/삭제 버튼 (작성자와 로그인 사용자가 동일할 경우) -->
@@ -371,22 +394,22 @@ text-decoration: none;
 		
 		
 		-->
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		<!-- 페이지네이션 -->
 		<!--     <div class="pagination"> -->
 		<!--       <a th:href="@{/board/list(page=1)}" th:text="'1'" class="active"></a> -->
@@ -404,35 +427,34 @@ text-decoration: none;
 
 
 		<!--  url의 parameter 값 참조 : ${param.변수명} -->
-		
-<!-- param.searched 가 null일 경우 -->
-<div class="pagination" th:if="${param.searched == null}">
-    <a th:each="i : ${#numbers.sequence(1, totalPages)}"
-       th:href="@{/board/list(condition=${param.condition}, tradestatus=${param.tradestatus}, page=${i})}"
-       th:text="${i}"
-       th:classappend="${i == currentPage} ? 'active' : ''"> 
-    </a>
-</div>
 
-<!-- param.searched 가 null이 아닐 경우 -->
-<div class="pagination" th:if="${param.searched != null}">
-    <a th:each="i : ${#numbers.sequence(1, totalPages)}"
-       th:href="@{/board/list(page=${i}, 
+		<!-- param.searched 가 null일 경우 -->
+		<div class="pagination" th:if="${param.searched == null}">
+			<a th:each="i : ${#numbers.sequence(1, totalPages)}"
+				th:href="@{/board/list(condition=${param.condition}, tradestatus=${param.tradestatus}, page=${i})}"
+				th:text="${i}" th:classappend="${i == currentPage} ? 'active' : ''">
+			</a>
+		</div>
+		<!--    price=${boardDTO.price != null ? boardDTO.price : ''},  -->
+		<!-- param.searched 가 null이 아닐 경우 -->
+		<div class="pagination" th:if="${param.searched != null}">
+			<a th:each="i : ${#numbers.sequence(1, totalPages)}"
+				th:href="@{/board/list(page=${i}, 
        										searched=${param.searched},
                                             title=${boardDTO.title != null ? boardDTO.title : ''}, 
                                             contents=${boardDTO.contents != null ? boardDTO.contents : ''}, 
                                             memberUserId=${boardDTO.memberUserId != null ? boardDTO.memberUserId : ''}, 
-                                            price=${boardDTO.price != null ? boardDTO.price : ''}, 
+                                         	min_price=${param.min_price},
+                                         	max_price=${param.max_price},
                                             address=${boardDTO.address != null ? boardDTO.address : ''}, 
                                             category=${boardDTO.category != null ? boardDTO.category : ''}, 
                                             tradestatus=${tradestatus != null or tradestatus != ''? tradestatus: ''}, 
                                             buy_Sell=${boardDTO.buy_Sell != null ? boardDTO.buy_Sell : ''}, 
                                             product=${boardDTO.product != null ? boardDTO.product : ''},
                                             condition=${param.condition != null ? param.condition : ''})}"
-       th:text="${i}" 
-       th:classappend="${i == currentPage} ? 'active' : ''">
-    </a>
-</div>
+				th:text="${i}" th:classappend="${i == currentPage} ? 'active' : ''">
+			</a>
+		</div>
 
 
 
@@ -673,7 +695,7 @@ addressFilter.addEventListener('change', async () => {
 
  });
 </script>
-    <script type="module">
+	<script type="module">
         import { truncateText } from '/js/truncateText.js'; // truncate.js 파일 경로
 		  import { formatCurrency} from '/js/formatCurrency.js'; 
         window.onload = function() {
@@ -718,7 +740,7 @@ addressFilter.addEventListener('change', async () => {
     </script>
 	<script src="/js/formatCurrency.js" type="module"></script>
 	<script src="/js/deleteBoard.js" type="module"></script>
- <!-- JavaScript 모듈을 import -->
+	<!-- JavaScript 모듈을 import -->
 
 
 </body>

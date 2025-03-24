@@ -24,7 +24,9 @@ export function updateComment(id, currentContent, blind) {
     inputField.value = blind ? "" : currentContent; // 블라인드 댓글이면 빈칸
     inputField.classList.add("comment-edit-input");
     inputField.style.marginRight = "5px";
-
+    inputField.style.width= "450px";
+       inputField.id= `updateInputField-${id}`;
+	 inputField.placeholder="수정할 댓글 내용을 입력하세요";
     // 비공개 체크박스 추가
     const privateLabel = document.createElement("label");
     privateLabel.style.display = "flex";
@@ -37,11 +39,11 @@ export function updateComment(id, currentContent, blind) {
     privateCheckbox.checked?true:false; // 기존 상태 반영
 
     privateLabel.appendChild(privateCheckbox);
-    privateLabel.appendChild(document.createTextNode("게시자만 보기"));
+    privateLabel.appendChild(document.createTextNode("비밀글"));
 
     // 수정 완료 버튼 추가
     const saveButton = document.createElement("button");
-    saveButton.textContent = "수정 완료";
+    saveButton.textContent = "완료";
     saveButton.classList.add("comment-save-btn");
     saveButton.style.marginLeft = "5px";
 
@@ -51,11 +53,25 @@ export function updateComment(id, currentContent, blind) {
     cancelButton.classList.add("comment-cancel-btn");
     cancelButton.style.marginLeft = "5px";
 
+
+
+// 컨테이너 추가
+			const updateInputcontainer = document.createElement("div");
+			updateInputcontainer.style.diplay="none";
+			updateInputcontainer.style.alignItems="center";
+		updateInputcontainer.style.gap = '10px'; // 입력창과 버튼 사이에 간격 추가
+			updateInputcontainer.style.margin = '10px'; // 좌우 및 위/아래 공백 추가
+
+
     // 버튼 클릭 이벤트 처리
     saveButton.addEventListener("click", () => {
         const newContent = inputField.value.trim();
         const isPrivate = privateCheckbox.checked; // 비공개 여부 가져오기
 
+
+
+			
+			
         if (!newContent) {
             alert("내용을 입력해야 합니다.");
             return;
@@ -100,11 +116,23 @@ export function updateComment(id, currentContent, blind) {
         privateLabel.remove();
         saveButton.remove();
         cancelButton.remove();
+       updateInputcontainer.style.display ="none";
     });
 
     // 기존 요소 아래에 추가
-    commentElement.appendChild(inputField);
-    commentElement.appendChild(privateLabel);
-    commentElement.appendChild(saveButton);
-    commentElement.appendChild(cancelButton);
+    updateInputcontainer.style.display ="flex";
+        updateInputcontainer.appendChild(privateLabel);
+   updateInputcontainer.appendChild(inputField);
+    updateInputcontainer.appendChild(saveButton);
+    updateInputcontainer.appendChild(cancelButton);
+        commentElement.appendChild(updateInputcontainer);
+         
 }
+
+
+
+
+
+
+
+

@@ -14,37 +14,39 @@
 <body>
 	<header th:fragment="header">
 		<div id="header-content" style="display: flex; position: relative;">
+				<div>
+			<a href="/" ><img src="/logo/logo.jpg" width=50px, height=50px style="gap:10px;" ></a>
+			</div>
 			<!-- 로그인 상태인 경우 -->
 			<div th:if="${isLoggedIn}" class="logged-in">
 				<input type="hidden" th:value="${isLoggedIn}" id="isLoggedIn">
 				<input type="hidden" th:value="${id}" id="loggedId"> <input
 					type="hidden" th:value="${loggedUserId}" id="loggedUserId">
-		<input type="hidden" th:value="${address}" id="loggedAddress"> 
+				<input type="hidden" th:value="${address}" id="loggedAddress">
 
 				<div
 					style="display: flex; justify-content: space-between; width: 100%;">
 					<!-- 게시판 링크 (왼쪽 정렬) -->
 
 					<div style="display: flex; justify-content: flex-start; gap: 10px;">
-						<a href="/" style="flex-grow: 0;">홈</a> <a href="/board/list" th:href="@{|/board/list?condition=3|}"
-   style="flex-grow: 0;">게시판</a>
+						<a href="/" style="flex-grow: 0;">홈</a> <a href="/board/list"
+							th:href="@{|/board/list?condition=3|}" style="flex-grow: 0;">게시판</a>
 						<!-- 					th:id="|mainImage-${board.id}|" -->
-						<a	 href="/board/writeboard">글쓰기</a>
+						<a href="/board/writeboard">글쓰기</a>
 					</div>
 					<!-- 나머지 링크들 (오른쪽 정렬) -->
 					<div style="display: flex; justify-content: flex-end; gap: 10px;">
-
-						<img
+						<a th:href="@{/mypage/{id}(id=${id})}" style="display: flex;">
+							<img
 							th:src="${profileImage != null ? profileImage:'/boardimage/nullimage.jpg'}"
 							alt="profile image"
-							style="display: block; width: 30px; height: 30px; object-fit: cover; margin-right: 5px;">
-						<p style="margin-right: 20px;">
-							<span th:text="${name}"></span>
-						</p>
-						<a th:href="@{/logout}" style="margin-left: 10px;">로그아웃</a>
-						 <a th:href="@{/mypage/{id}(id=${id})}">마이페이지</a> 
-						<a th:href="@{/trade/mytrade/{id}(id=${id})}">거래목록</a>
-						<a th:href="@{/trade/myfavorite/{id}(id=${id})}">관심목록</a>
+							style="display: block; width: 30px; height: 30px; object-fit: cover; margin-right: 5px; margin-top: -3px;">
+							<span> <span th:text="${name}"></span>
+						</span>
+						</a> <a th:href="@{/logout}" style="margin-left: 10px;">로그아웃</a> <a
+							th:href="@{/mypage/{id}(id=${id})}">마이페이지</a>
+						<!-- 						<a th:href="@{/trade/mytrade/{id}(id=${id})}">거래목록</a> -->
+						<!-- 						<a th:href="@{/trade/myfavorite/{id}(id=${id})}">관심목록</a> -->
 						<!-- 나의 채팅방 버튼 -->
 						<a href="#" id="myChattingRoomList"
 							style="position: relative; display: inline-block;"> <img
@@ -105,21 +107,32 @@
 
 			</div>
 			<!-- 기본 제목 표시 -->
-			<h1 th:text="${title}">기본 제목</h1>
+<!-- 			<h1 th:text="${title}">기본 제목</h1> -->
+
 
 			<!-- 비로그인 상태인 경우 -->
-			<div th:if="${!isLoggedIn}">
-				<a href="/" style="flex-grow: 0;">홈</a> <a th:href="@{/formlogin}">로그인</a>
-					<a th:href="@{/join}">회원가입</a>
-<!-- 			 <a th:href="@{/findid}">아이디 찾기</a> <a -->
-<!-- 					th:href="@{/findpassword}">비밀번호 찾기</a> -->
-<a href="/board/list">게시판</a> 
-<!-- 				<a href="/board/writeboard">글쓰기</a> -->
+			<div th:if="${!isLoggedIn}" class="logged-in">
+				<div
+					style="display: flex; justify-content: space-between; width: 100%;margin-top:-10px;">
+					<div style="display: flex; justify-content: flex-start; gap: 10px;">
 
+						<a href="/" style="flex-grow: 0;">홈</a>
+						<!-- 			 <a th:href="@{/findid}">아이디 찾기</a> <a -->
+						<!-- 					th:href="@{/findpassword}">비밀번호 찾기</a> -->
+						<a href="/board/list">게시판</a>
+						<!-- 				<a href="/board/writeboard">글쓰기</a> -->
+					</div>
+					<div style="display: flex; justify-content: flex-end; gap: 10px;">
+						<a th:href="@{/formlogin}">로그인</a> <a th:href="@{/join}">회원가입</a>
+					</div>
+				</div>
 			</div>
-
-		</div>
+			</div>
 	</header>
+
+
+
+
 	<script src="/js/state.js" type="module"></script>
 	<script src="/js/headerUI.js" type="module"></script>
 
