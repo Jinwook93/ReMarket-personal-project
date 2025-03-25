@@ -2,6 +2,39 @@
 
 document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('updateMember').addEventListener('click', function () {
+		
+		
+		
+		
+			if(document.getElementById('password').value !==  document.getElementById('password_check').value){
+			    alert("비밀번호, 비밀번호 확인 값이 같지 않습니다!");
+			    			document.getElementById('password_check').focus();
+			return;
+		} 
+		
+		
+			if(document.getElementById('prev_password').value ===  "" || document.getElementById('prev_password_check').value === ""){
+			    alert("비밀번호를 입력하세요!");
+			 
+			    if(document.getElementById('prev_password_check').value == ""){
+				document.getElementById('prev_password_check').focus();
+			   }
+			     if(document.getElementById('prev_password').value == ""){
+				document.getElementById('prev_password').focus();
+			   }
+			    
+			return;
+		}
+			if(document.getElementById('prev_password').value !==  document.getElementById('prev_password_check').value){
+			    alert("비밀번호, 비밀번호 확인 값이 같지 않습니다!");
+				document.getElementById('prev_password_check').focus();
+			return;
+		} 
+		
+	
+		
+		
+		
         // Create a FormData object to handle form data including file uploads
         const formData = new FormData();
         let id = document.getElementById('id').value;
@@ -15,56 +48,48 @@ document.addEventListener('DOMContentLoaded', function () {
         formData.append('phone', document.getElementById('phone').value);
         formData.append('address', document.getElementById('address').value);
 		 formData.append('address2', document.getElementById('address2').value);
+		 	 formData.append('prev_password', document.getElementById('prev_password').value);
         // If there is a profile image, append it to the form data
         const profileImage = document.getElementById('profileImage').files[0];
         if (profileImage) {
             formData.append('profileImage', profileImage);
         }
-		if(document.getElementById('password').value ===  "" || document.getElementById('password_check').value === ""){
-			    alert("비밀번호를 입력하세요!");
-			 
-			    if(document.getElementById('password_check').value == ""){
-				document.getElementById('password_check').focus();
-			   }
-			     if(document.getElementById('password').value == ""){
-				document.getElementById('password').focus();
-			   }
-			    
-			return;
-		}
-			if(document.getElementById('password').value !==  document.getElementById('password_check').value){
-			    alert("비밀번호, 비밀번호 확인 값이 같지 않습니다!");
-			return;
-		} 
+	
+		
+		
+		
+		
 		
 		
 		
         // Use fetch to send the data to the backend
-        fetch(`/updateMember/${id}`, {
-            method: 'PUT',
-            body: formData,
-        })
-        .then(response => {
-			if(!response.ok){
-				alert ("회원 업데이트 실패!!");
-				return;
-			}
-			
-   			alert("회원 정보가 성공적으로 업데이트 되었습니다");
-			window.location.href="/";
-//        return response.json();  // Parse the response as JSON
-        })
-//        .then(data => {
-//            if (data.success) {
-//                alert('회원 정보가 성공적으로 업데이트되었습니다.');
-//                location.reload(); // Reload the page or redirect as needed
-//            } else {
-//                alert('회원 정보 업데이트 실패');
-//            }
-//        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('서버 오류가 발생했습니다.');
-        });
+      fetch(`/updateMember/${id}`, {
+    method: 'PUT',
+    body: formData,
+})
+.then(response => {
+    if (!response.ok) {
+        alert("회원 업데이트 실패!!");
+        return;
+    }
+
+        return response.text();
+})
+.then(data => {
+    if (data === "회원 정보 업데이트 성공") {
+        alert("회원 정보가 성공적으로 업데이트 되었습니다");
+        window.location.href = "/";
+    } else if (data === "기존 비밀번호 입력값이 일치하지 않습니다") {
+        alert(data);
+document.getElementById('prev_password').focus();
+    } else {
+        alert('회원 정보 업데이트 실패');
+    }
+})
+.catch(error => {
+    console.error('Error:', error);
+    alert('서버 오류가 발생했습니다.');
+});
+
     });
 });

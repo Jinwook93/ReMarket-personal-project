@@ -36,6 +36,7 @@ import org.springframework.security.config.authentication.UserServiceBeanDefinit
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -67,6 +68,9 @@ public class MemberController {
     
     @Autowired
     private AlarmService alarmService;
+    
+    @Autowired
+    public BCryptPasswordEncoder passwordEncoder;
 //	@GetMapping("/")
 //	public String  home() {
 //		return "메인 페이지";
@@ -156,15 +160,25 @@ public ResponseEntity<?>  joinUser(@RequestBody MemberDTO entity) {
 	        @RequestParam(name = "phone") String phone,
 	        @RequestParam(name = "address") String address,
 	        @RequestParam(name = "address2") String address2,
+	        @RequestParam(name = "prev_password") String prev_password, 	//기존 패스워드
 	        @RequestParam(value = "profileImage", required = false) MultipartFile profileImage,
+	        
 	        @AuthenticationPrincipal PrincipalDetails principalDetails) throws IOException {
 
 	        // Password validation logic (make sure passwords match)
 	        if (!password.equals(passwordCheck)) {
 	            return ResponseEntity.badRequest().body("패스워드가 일치하지 않습니다");
 	        }
-
-	        
+	        	
+	        try {
+				if( !passwordEncoder.matches(prev_password,memberService.findById(id).getPassword())){
+					System.out.println(prev_password);
+					
+					return ResponseEntity.ok( "기존 비밀번호 입력값이 일치하지 않습니다");
+				}
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
 	        
 	        
 	        // 프로필 이미지 파일 저장 경로 생성 (예: /image 폴더에 저장)

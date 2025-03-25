@@ -30,7 +30,7 @@
         
         
    <!-- 비밀번호 -->
-        <label for="password">비밀번호</label>
+        <label for="password">변경할 비밀번호</label>
         <input type="password" id="password" name="password" required><br>
         
         <!-- 비밀번호 확인 -->
@@ -118,10 +118,16 @@
 
 
 
+   <!-- 비밀번호 -->
+        <label for="prev_password">기존 비밀번호</label>
+        <input type="prev_password" id="prev_password" name="prev_password" required><br>
+        
+        <!-- 비밀번호 확인 -->
+        <label for="prev_password_check">기존 비밀번호 확인</label>
+        <input type="prev_password_check" id="prev_password_check" name="prev_password_check"  required><br>
 
 
-
-
+  <input type="hidden" id="member_password" name="member_password"  th:value="${member.password}">
 
 
 

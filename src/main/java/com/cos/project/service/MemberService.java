@@ -209,7 +209,9 @@ public class MemberService {
         
         memberEntity.setUserid(userid);
         memberEntity.setName(name);
+        if(!password.equals("")) {
         memberEntity.setPassword(passwordEncoder.encode(password)); // 비밀번호 암호화
+        }
         memberEntity.setAddress(address);
         memberEntity.setAge(age);
         memberEntity.setGender(gender);
