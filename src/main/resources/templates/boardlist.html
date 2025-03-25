@@ -166,12 +166,20 @@ table a {
 			style="display: flex; width: 80%; margin: 20px auto; justify-content: space-between;">
 			<!-- 글쓰기 버튼 -->
 			<div class="button-container" style="display: flex;">
-				<a href="/board/writeboard" class="write-btn">글쓰기</a>
+<div th:if="${principalDetails.name != 'anonymousUser'}">
+    <a href="/board/writeboard" class="write-btn"  style="width: 75%;
+    padding: 8px 20px;">글쓰기</a>
+</div>
+			<div th:if="${principalDetails.name == 'anonymousUser'}">
+				<button type="button" onclick="window.location.href='/board/list'"
+					class="reset-btn"
+					style="color: white; background-color: green; ">초기화</button>
+				</div>
+<div th:if="${principalDetails.name != 'anonymousUser'}">
 				<button type="button" onclick="window.location.href='/board/list'"
 					class="reset-btn"
 					style="color: white; background-color: green; margin-left: 30px;">초기화</button>
-
-
+				</div>
 
 			</div>
 			<div style="display: flex; align-items: center;">
@@ -332,7 +340,7 @@ table a {
 					</td>
 					<!-- 작성자와 로그인 사용자가 다를 경우 대화하기 버튼 표시 -->
 					<td
-						th:unless="${board.memberEntity.userid == principalDetails.name}"
+						th:unless="${board.memberEntity.userid == principalDetails.name || principalDetails.name == 'anonymousUser'}"
 						style="text-align: center;">
 						<div class="enterChatRoom" style="cursor: pointer;">
 							<button type="button" class="createRoom" th:data-id="${board.id}"
@@ -340,6 +348,19 @@ table a {
 								style="background-color: #2196f3; color: white; padding: 5px 10px; border: none; border-radius: 5px;">대화하기</button>
 						</div>
 					</td>
+					<!-- 비로그인 상태일 경우 -->
+					<td th:unless="${principalDetails.name != 'anonymousUser'}"
+						style="text-align: center;">
+						<div class="enterChatRoom" style="cursor: pointer;">
+							<a th:href="@{/formlogin}" class="createRoom"
+								th:data-id="${board.id}"
+								th:data-member2="${board.memberEntity.userid}"
+								style="background-color: orange; color: white; padding: 5px 10px; border: none; border-radius: 5px; text-decoration: none;">
+								로그인 </a>
+
+						</div>
+					</td>
+
 				</tr>
 			</tbody>
 		</table>

@@ -239,8 +239,9 @@ public class HomeController {
 	}
 	@PostMapping("/findid")
 	@ResponseBody
-	public ResponseEntity<?> findId(@RequestBody String name, @RequestBody String phone) throws IllegalAccessException {
-	    MemberEntity memberEntity = memberService.userInfoByNameAndPhone(name,phone);
+	public ResponseEntity<?> findId(@RequestBody MemberDTO memberDTO) throws IllegalAccessException { //이름,전화번호로 아이디 검색
+	    MemberEntity memberEntity = memberService.userInfoByNameAndPhone(memberDTO.getName(),memberDTO.getPhone());
+	   
 	    return ResponseEntity.ok(memberEntity.getUserid());
 	}
 
@@ -252,13 +253,65 @@ public class HomeController {
 	    return "findpassword";
 	}
 
+	
+//	//비밀번호 직접 추출 => 권장 사항이 아님
+//	@PostMapping("/findpassword")
+//	@ResponseBody
+//	public ResponseEntity<?> findpassword(@RequestBody MemberDTO memberDTO) throws IllegalAccessException {
+//	    MemberEntity memberEntity = memberService.userInfoByUseridAndNameAndPhone(memberDTO.getUserid(), memberDTO.getName(),memberDTO.getPhone());
+//	    System.out.println(memberEntity.getPassword());
+//	    return ResponseEntity.ok(memberEntity.getPassword());
+//	}
+
+	
+	//비밀번호 변경 페이지를 이동 1
 	@PostMapping("/findpassword")
 	@ResponseBody
-	public ResponseEntity<?> findpassword(@RequestBody String userid) throws IllegalAccessException {
-	    MemberEntity memberEntity = memberService.userInfoByUserid(userid);
-	    return ResponseEntity.ok(memberEntity.getPassword());
+	public ResponseEntity<?> findpassword(@RequestBody MemberDTO memberDTO) throws IllegalAccessException {
+	    Boolean result = memberService.userInfoByUseridAndNameAndPhone(memberDTO.getUserid(), memberDTO.getName(), memberDTO.getPhone());
+	    return ResponseEntity.ok(result);
 	}
-
+	
+	//비밀번호 변경 페이지를 이동 2
+//	@PostMapping("/findpassword")
+//	@ResponseBody
+//	public String findpassword(@RequestBody MemberDTO memberDTO, Model model) throws IllegalAccessException {
+//	    MemberEntity memberEntity = memberService.userInfoByUseridAndNameAndPhone(memberDTO.getUserid(), memberDTO.getName(), memberDTO.getPhone());
+//	  if(memberEntity != null) {
+//		  model.addAttribute("member", memberEntity);
+//		  return "updatepassword";
+//	  }
+//	
+//	 return "실패";
+//	}
+	
+	
+	
+	
+	//비밀번호 변경 페이지를 이동 
+	@GetMapping("/updatepassword")
+	public String goupdatepassword() {
+	    return "updatepassword";
+	}
+	
+	//비밀번호 변경 페이지  (비로그인 상태)
+	@PostMapping("/updatepassword")
+	@ResponseBody
+	public ResponseEntity<?> updatepassword(@RequestBody MemberDTO memberDTO) throws IllegalAccessException {
+		System.out.println(memberDTO.toString());
+		MemberEntity member = memberService.findByUserId(memberDTO.getUserid());
+		
+	    String result = "회원수정 실패";
+		result = memberService.updateMember(member.getId(), member.getUserid() ,memberDTO.getPassword() ,member.getName(), member.getAge(), member.getGender(), member.getPhone(),member.getAddress(),member.getProfileImage() , null);
+		return ResponseEntity.ok(result);
+	}
+	
+	
+//	@PostMapping("/updatepassword")
+//	@ResponseBody
+//	public String updatepassword(@RequestBody MemberDTO memberDTO) throws IllegalAccessException {
+//	    return "updatepassword";
+//	}
 	
 	
 	

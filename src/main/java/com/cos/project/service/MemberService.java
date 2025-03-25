@@ -141,9 +141,11 @@ public class MemberService {
     	
     	memberDTO.setPassword(passwordEncoder.encode(memberDTO.getPassword()));
     	
+    	String reconstructPhone= ReconstructPhone(memberDTO.getPhone());
+    	memberDTO.setPhone(reconstructPhone);
         MemberEntity memberEntity = DTOtoEntity(memberDTO);
         
-        System.out.println("파일패스2"+memberEntity.getProfileImage());
+//        System.out.println("파일패스2"+memberEntity.getProfileImage());
 
         // 중복 ID 체크
         memberRepository.findByUserid(memberEntity.getUserid())
@@ -156,6 +158,22 @@ public class MemberService {
         return "회원가입 완료";
     }
     
+    
+    
+    public String ReconstructPhone(String phone) {
+    	
+    	  if (phone.length() == 13 && phone.charAt(3) == '-' && phone.charAt(8) == '-') {
+    	        return phone;
+    	    }
+    		
+    	
+    	String splitedPhone1 = phone.substring(0,3);
+      	String splitedPhone2 =  phone.substring(3,7);
+      	String splitedPhone3 =  phone.substring(7,11);
+      	
+      	return splitedPhone1+"-"+splitedPhone2+"-"+splitedPhone3;
+    	
+    }
     
     
     
@@ -195,7 +213,7 @@ public class MemberService {
         memberEntity.setAddress(address);
         memberEntity.setAge(age);
         memberEntity.setGender(gender);
-        memberEntity.setPhone(phone);
+        memberEntity.setPhone(ReconstructPhone(phone));
         memberEntity.setProfileImage(profileImage);
         
 
@@ -205,6 +223,8 @@ public class MemberService {
         // PrincipalDetails를 갱신된 MemberEntity로 업데이트		//시큐리티에서의 PrincipalDetails는 읽기 전용 , 캡슐화가 되어 있는 객체 이므로 이를 직접 수정하는 것은 규칙에 위배
         // 따라서 Authentication을 새로 만들어서 하는 것을 권장
         // getAuthorities 인자를 안 받아도 잘 됨
+        
+        if(principalDetails != null) {
         PrincipalDetails updatedPrincipalDetails = new PrincipalDetails(memberEntity, principalDetails.getAuthorities());
 
         // 새로운 인증 객체 생성		       // getAuthorities 인자를 안 받아도 잘 됨
@@ -213,7 +233,7 @@ public class MemberService {
 
         // SecurityContextHolder에 새로 생성된 인증 객체 설정
         SecurityContextHolder.getContext().setAuthentication(newAuthentication);
-
+        }
         return "회원수정 완료";
     }
     
@@ -343,9 +363,9 @@ public class MemberService {
     
     
     @Transactional(readOnly = true)			//회원 정보 조회
-    public MemberEntity userInfoByNameAndPhone(String name, String password) throws IllegalAccessException {
-        
-        return memberRepository.findByNameAndPhone(name, password)
+    public MemberEntity userInfoByNameAndPhone(String name, String phone) throws IllegalAccessException {
+    				phone = ReconstructPhone(phone);
+        return memberRepository.findByNameAndPhone(name, phone)
                       .orElseThrow(() -> new IllegalAccessException("회원 정보를 조회할 수 없습니다"));
     }
     
@@ -507,5 +527,19 @@ public MemberEntity findByUserId(String userid) {
         }
         return null; // Return null if no image data exists
     }
+//비밀번호찾기
+    @Transactional
+	public Boolean userInfoByUseridAndNameAndPhone(String userid, String name, String phone) throws IllegalAccessException {
+		phone = ReconstructPhone(phone);
+		MemberEntity memberEntity =  memberRepository.findByUseridAndNameAndPhone(userid,name, phone)
+          .orElse(null);
+    	
+//		return memberEntity;
+		if(memberEntity != null) {
+			return true;
+		}else {
+			return false;
+		}
+	}
     
 }

@@ -20,7 +20,25 @@ document.addEventListener('DOMContentLoaded', function () {
         if (profileImage) {
             formData.append('profileImage', profileImage);
         }
-
+		if(document.getElementById('password').value ===  "" || document.getElementById('password_check').value === ""){
+			    alert("비밀번호를 입력하세요!");
+			 
+			    if(document.getElementById('password_check').value == ""){
+				document.getElementById('password_check').focus();
+			   }
+			     if(document.getElementById('password').value == ""){
+				document.getElementById('password').focus();
+			   }
+			    
+			return;
+		}
+			if(document.getElementById('password').value !==  document.getElementById('password_check').value){
+			    alert("비밀번호, 비밀번호 확인 값이 같지 않습니다!");
+			return;
+		} 
+		
+		
+		
         // Use fetch to send the data to the backend
         fetch(`/updateMember/${id}`, {
             method: 'PUT',

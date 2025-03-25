@@ -42,16 +42,78 @@
 </head>
 <body>
     <div th:replace="~{header.html}"></div>
-    <form action="/goFindUserId" method="POST">
+<!--     <form action="/goFindUserId" method="POST"> -->
+<div>
         <h2>아이디 찾기</h2>
         <label for="name">이름</label>
         <input type="text" id="name" name="name" placeholder="이름을 입력하세요" required>
 
-        <label for="email">이메일</label>
-        <input type="email" id="email" name="email" placeholder="이메일을 입력하세요" required>
+		  <label for="phone">휴대폰 번호</label>
+        <input type="text" id="phone" name="phone" placeholder="휴대폰 번호를 입력하세요 (-제외)" required>
 
-        <button type="submit">아이디 찾기</button>
-    </form>
+
+<!--         <label for="email">이메일</label> -->
+<!--         <input type="email" id="email" name="email" placeholder="이메일을 입력하세요" required> -->
+
+        <button type="button" id="findIdButton">아이디 찾기</button>
+        </div>
+        	<div id="findIdModal" style="display:none; position:fixed; top:50%; left:50%; 
+    transform:translate(-50%, -50%); background:white; border:1px solid #ccc; 
+    border-radius:10px; padding:20px; box-shadow:0 0 10px rgba(0,0,0,0.3); z-index:1000;">
+    <p id="modalText">아이디 검색 결과가 없습니다.</p>
+    <button onclick="closeModal()">닫기</button>
+</div>
+
+        
+<!--     </form> -->
         <div th:replace="~{footer.html}"></div>
+        
+        
+        <script>
+        const findIdModal = document.getElementById("findIdModal");
+        const modalText = document.getElementById("modalText");
+
+        // 모달 닫기
+        function closeModal() {
+        	
+            findIdModal.style.display = "none";
+        }
+
+        document.getElementById("findIdButton").addEventListener("click", () => {
+            const name = document.getElementById("name").value.trim();
+            const phone = document.getElementById("phone").value.trim();
+
+            if (!name || !phone) {
+                alert("이름과 휴대폰 번호를 모두 입력해 주세요.");
+                return;
+            }
+
+            fetch("/findid", {
+                method: "POST",
+                headers: { 'Content-Type': "application/json;charset=utf-8" },
+                body: JSON.stringify({ name: name, phone: phone })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    // 실패 처리 (아이디 없음)
+                    throw new Error("아이디 검색 결과가 없습니다.");
+                }
+                return response.text();
+            })
+            .then(userId => {
+                // 아이디 성공적으로 찾았을 때
+                modalText.innerText = `조회된 아이디: ${userId}`;
+                findIdModal.style.display = "block";
+            })
+            .catch(error => {
+                // 실패했을 때
+                modalText.innerText = error.message;
+                findIdModal.style.display = "block";
+            });
+        });
+    </script>
+
+        		
+        
 </body>
 </html>
