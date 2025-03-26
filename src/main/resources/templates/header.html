@@ -139,7 +139,7 @@
 	<script>
     function bringToFront(element) {
         // 모든 요소의 z-index를 1로 리셋
-        const allElements = document.querySelectorAll('.chattingRoomList, .alarmList');
+        const allElements = document.querySelectorAll('.chattingRoomList, .alarmList, .modal-content');
         allElements.forEach(el => {
             if (el.style.display !== "none") {  // display가 "none"이 아닐 때만 z-index 변경
                 el.style.zIndex = '1';

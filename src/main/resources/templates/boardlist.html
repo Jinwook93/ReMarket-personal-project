@@ -210,6 +210,12 @@ table a {
 
 				<div style="margin-left: 5px;"
 					th:replace="~{searchBoardManager.html}"></div>
+					
+					
+					
+							<div style="margin-left: 5px;"
+					th:replace="~{boarderPageModal.html}"></div>
+					
 			</div>
 		</div>
 		<table
@@ -303,7 +309,7 @@ table a {
 					<td style="justify-items: center;">
 						<div class="enterChatRoom" style="cursor: pointer;"
 							th:onClick="@{/chat/Chatroom/{id}(id=${board.id})}">
-							<div style="display: flex; align-items: center;">
+							<div th:id="'authorDiv-' + ${board.id}" style="display: flex; align-items: center;">
 								<div th:if="${board.memberEntity.profileImage != null}">
 									<img
 										th:src="@{{imagePath}(imagePath=${board.memberEntity.profileImage})}"
@@ -762,6 +768,7 @@ addressFilter.addEventListener('change', async () => {
     </script>
 	<script src="/js/formatCurrency.js" type="module"></script>
 	<script src="/js/deleteBoard.js" type="module"></script>
+	<script src ="/js/boarderpage.js" type="text/javascript"></script>
 	<!-- JavaScript 모듈을 import -->
 
 

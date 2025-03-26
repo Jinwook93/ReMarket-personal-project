@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Search Modal</title>
+<link rel="stylesheet" href="/css/searchBoardManager.css">
+<style>
+    /* 모달 배경 */
+    #boarderpage {
+        display: none;
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: none;
+        justify-content: center;
+        align-items: flex-start;
+    }
+
+    /* 모달 박스 */
+    #boarderpage .modal-content {
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        width: 320px;
+        margin-top: 120px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    /* 제목 & 닫기 버튼 */
+    #boarderpage .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    /* 닫기 버튼 (X) */
+    #boarderpage #closeBoarderPage {
+        border: none;
+        background: none;
+        font-size: 20px;
+        cursor: pointer;
+        color: #666;
+        transition: color 0.3s;
+    }
+
+    #boarderpage #closeBoarderPage:hover {
+        color: #000;
+    }
+
+    /* 내용 레이아웃 */
+    #boarderpage .modal-body {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    /* 사용자 정보 컨테이너 */
+    #boarderpage .user-info {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    /* 프로필 이미지 정렬 */
+    #boarderpage .profile-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 170px;
+    }
+
+    /* 이미지 스타일 */
+    #boarderpage #memberProfileImage {
+        width: 150px;
+        height: 150px;
+        border-radius: 20%;
+        object-fit: cover;
+    }
+
+    /* 텍스트 간격 조정 */
+    #boarderpage .user-details p {
+        margin: 25px 0;
+    }
+</style>
+</head>
+<body>
+
+<!-- 모달 배경 -->
+<div id="boarderpage" >
+    <div class="modal-content">
+        <!-- 제목 & 닫기 버튼 -->
+        <div class="modal-header">
+            <h3>게시자 정보</h3>
+            <button id="closeBoarderPage">X</button>
+        </div>
+
+        <!-- 사용자 정보 -->
+        <div class="modal-body">
+            <div class="user-info">
+                <div class="user-details">
+                    <p><strong>아이디</strong> <span id="memberBoardUserId"></span></p>
+                    <p><strong>이름</strong> <span id="memberName"></span></p>
+                    <p><strong>나이</strong> <span id="memberAge"></span></p>
+                    <p><strong>성별</strong> <span id="memberGender"></span></p>
+                </div>
+                <div class="profile-container">
+                    <img id="memberProfileImage" alt="Profile" />
+                </div>
+            </div>
+            <p><strong>주소</strong> <span id="memberAddress"></span></p>
+            <p><strong>전화번호</strong> <span id="memberPhone"></span></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

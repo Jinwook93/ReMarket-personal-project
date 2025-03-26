@@ -7,6 +7,7 @@ const searchForm = document.getElementById('searchForm');
 // 모달 열기
 openModalBtn.onclick = function() {
     modal.style.display = "block";
+      bringToFront(modal);  // 모달을 최상위로 올리기
 }
 
 // 모달 닫기

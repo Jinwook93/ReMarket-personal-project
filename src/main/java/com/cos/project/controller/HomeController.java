@@ -331,6 +331,30 @@ public class HomeController {
 //		return "mypage";
 //	}
 	
+@ResponseBody	//게시자 마이페이지 
+@PostMapping("/boarderpage/{boardId}")
+	public ResponseEntity<?> boarderpage(@PathVariable("boardId")Long boardId){
+		BoardEntity boardEntity = boardService.findByBoardId(boardId);
+		MemberEntity memberEntity = boardEntity.getMemberEntity();
+		
+		String[] splitedAddress = memberEntity.getAddress().split(" ");
+		
+				
+		
+		
+		MemberDTO memberDTO = MemberDTO.builder()
+				.id(memberEntity.getId())
+				.userid(memberEntity.getUserid())
+				.name(memberEntity.getName())
+				.age(memberEntity.getAge())
+				.gender(memberEntity.getGender())
+				.address(splitedAddress[0] + " "+	splitedAddress[1]+" "+	splitedAddress[2])
+				.phone(memberEntity.getPhone())
+				.profileImage(memberEntity.getProfileImage())		
+				.build();
+					
+				return ResponseEntity.ok(memberDTO);
+			}
 
 
 	
