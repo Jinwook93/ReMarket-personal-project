@@ -44,7 +44,7 @@ function insertLineBreaks(text, maxLength) {
 export function findTradeByBoardId(trades) {
 	let result = null;
 	for (let trade of trades) {
-		console.log(trade);
+//		console.log(trade);
 		//		if (trade.boardEntity?.id === boardId && trade.accept1 && trade.accept2) {
 		if ((trade.accept1 && trade.accept2) || (trade.booking1 && trade.booking2)) {
 			result = trade;
@@ -64,7 +64,7 @@ export function findTradeByBoardId(trades) {
 // 특정 채팅방(roomId) 메시지를 불러오는 함수
 export async function loadMessages(roomId, messageIndex, recentExitedmemberId, searchedMessageId) {
 
-	console.log("✅ loadMessages 실행됨", { roomId, messageIndex, recentExitedmemberId });
+//	console.log("✅ loadMessages 실행됨", { roomId, messageIndex, recentExitedmemberId });
 
 	const loggedUserId = document.getElementById("loggedUserId").value;
 	const loggedId = document.getElementById("loggedId").value;
@@ -601,7 +601,7 @@ export async function openChatRoom(roomId, title, loggedUserId, userid, loggedFl
 
 		const alarmResponse = await fetch(`/alarm/findTradeAlarm/${Number(roomId)}`);
 		const alarm = await alarmResponse.json();
-		console.log(alarm);
+//		console.log(alarm);
 		chatWindow.innerHTML = `
     <div class="chat-container" id="chat-container-${roomId}">
         <div style="display: flex; justify-content: space-between; align-items: center; 
@@ -835,10 +835,10 @@ export async function boardTitleButtonClickHandler(event, board) {
 
 	// 클릭된 요소가 <button> 태그인지 확인
 	if (event.target.tagName.toLowerCase() === 'button') {
-		console.log("버튼 클릭은 제외됩니다.");
+//		console.log("버튼 클릭은 제외됩니다.");
 		if (event.target.id === `chat-enroll-Book1-${board.id}`) {			//예약신청
 			const boardId = event.target.id.replace("chat-enroll-Book1-", "");
-			console.log("상대 아이디" + board.memberEntity.id);
+//			console.log("상대 아이디" + board.memberEntity.id);
 
 			bookTrade1(Number(boardId), Number(loggedId), Number(board.memberEntity.id), loggedUserId);
 		} else if (event.target.id === `chat-enroll-Book2-${alarm.id}`) {	//예약승인
@@ -890,7 +890,7 @@ export async function boardTitleButtonClickHandler(event, board) {
 		await loadChatRooms(loggedId);
 		setUpEnterRoomButton(loggedUserId);
 		setUpExitRoomButton();
-		console.log("여기 실행 1");
+//		console.log("여기 실행 1");
 		//        document.getElementById(`BoardTitleButton-${board.id}`).innerHTML =``;
 		//			 loadMessages(roomId, messageIndex, room.recentExitedmemberId);
 		return; // 이벤트 중단 (페이지 이동 X)
@@ -1131,7 +1131,7 @@ export async function searchMessage(searchcontent) {
 			throw new Error(`메시지를 가져올 수 없습니다: ${response.status}`);
 		}
 		const datas = await response.json();
-		console.log("📌 검색된 메시지 데이터:", datas); // ✅ 데이터 출력 확인
+//		console.log("📌 검색된 메시지 데이터:", datas); // ✅ 데이터 출력 확인
 		return datas;
 	} catch (error) {
 		console.error('Error:', error);
@@ -1193,7 +1193,7 @@ export function setUpExitRoomButton() {
 				});
 
 				if (response.ok) {
-					console.log(`채팅방 ${deleteRoomId} 나가기 성공`);
+//					console.log(`채팅방 ${deleteRoomId} 나가기 성공`);
 
 					// ✅ 특정 `roomId`에 해당하는 `tr`만 삭제
 					const targetRow = document.querySelector(`tr[data-room-id="${deleteRoomId}"]`);

@@ -22,7 +22,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,13 +123,15 @@ public class MemberController {
     }
 	
     @PostMapping("/checkId")
-   public String checkId(@RequestBody String userid) throws JsonMappingException, JsonProcessingException {
+   public Map<String,Boolean> checkId(@RequestBody String userid) throws JsonMappingException, JsonProcessingException {
     	System.out.println(userid);
     	ObjectMapper om = new ObjectMapper();
     	MemberDTO userid_change = om.readValue(userid, MemberDTO.class);		//DTO 클래스로 변환
        System.out.println("중복ID 컨트롤러");
-       return memberService.checkId(userid_change.getUserid());
-   }
+       Map<String, Boolean> checkedId = new HashMap<>();
+       checkedId.put("available", memberService.checkId(userid_change.getUserid()));
+       return checkedId;
+    }
    
     
     
@@ -147,7 +151,7 @@ public ResponseEntity<?>  joinUser(@RequestBody MemberDTO entity) {
 	
 
 	
-	
+//	
 	 @PutMapping("/updateMember/{id}")
 	    public ResponseEntity<?> updateMember(
 	       @PathVariable(name ="id") Long id,
@@ -162,7 +166,7 @@ public ResponseEntity<?>  joinUser(@RequestBody MemberDTO entity) {
 	        @RequestParam(name = "address2") String address2,
 	        @RequestParam(name = "prev_password") String prev_password, 	//기존 패스워드
 	        @RequestParam(value = "profileImage", required = false) MultipartFile profileImage,
-	        
+	        @RequestParam(name = "nullimageButton", required = false) Boolean nullimageButton,
 	        @AuthenticationPrincipal PrincipalDetails principalDetails) throws IOException {
 
 	        // Password validation logic (make sure passwords match)
@@ -208,7 +212,7 @@ public ResponseEntity<?>  joinUser(@RequestBody MemberDTO entity) {
 	        try {
 	        	address += " "+address2;
 	        	
-	            String isUpdated = memberService.updateMember(id, userid, password, name, age, gender, phone, address, profileImagePath, principalDetails);
+	            String isUpdated = memberService.updateMember(id, userid, password, name, age, gender, phone, address, profileImagePath, principalDetails,nullimageButton);
 	            if (isUpdated != null) {
 	                return ResponseEntity.ok( "회원 정보 업데이트 성공");
 	            } else {

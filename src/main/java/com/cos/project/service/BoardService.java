@@ -83,7 +83,7 @@ public class BoardService {
 	}
 
 	@Transactional
-	public String updateContents(Long id, BoardDTO boardDTO, String boardFiles) throws IllegalArgumentException { // 수정하기
+	public String updateContents(Long id, BoardDTO boardDTO, String boardFiles, Boolean nullimageButton) throws IllegalArgumentException { // 수정하기
 
 		if (boardDTO.getTitle() == null || boardDTO.getContents() == null) {
 			throw new IllegalArgumentException("제목이나 내용이 비어있습니다");
@@ -92,9 +92,18 @@ public class BoardService {
 		BoardEntity boardEntity = boardRepository.findById(id)
 				.orElseThrow(() -> new IllegalStateException("수정할 게시글을 찾을 수 없습니다"));
 
+		
+		System.out.println("BoardFiles :" +boardFiles);
+		System.out.println("nullimageButton :" + nullimageButton);
+		
 		boardEntity.setTitle(boardDTO.getTitle());
 		boardEntity.setContents(boardDTO.getContents());
+		if(nullimageButton.equals(Boolean.TRUE)) {
+			boardEntity.setBoardFiles("[]");
+		}else if(!boardFiles.equals("[]") && nullimageButton.equals(Boolean.FALSE)) {
 		boardEntity.setBoardFiles(boardFiles);
+		}
+		
 		boardEntity.setBuy_Sell(boardDTO.getBuy_Sell());
 		boardEntity.setPrice(boardDTO.getPrice());
 		boardEntity.setCategory(boardDTO.getCategory());
@@ -157,7 +166,6 @@ public class BoardService {
 	public List<BoardEntity> searchBoard(String buy_Sell, String category1, String category2, String search) {
 	    List<BoardEntity> searchresult = new ArrayList<>();
 
-	    System.out.println("검색창도착2");
 
 	    
 	    
@@ -198,7 +206,6 @@ public class BoardService {
 	        }
 	    }
 
-	    System.out.println("검색창도착3");
 
 	    return searchresult;
 	}

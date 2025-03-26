@@ -360,7 +360,7 @@ public class ChatService {
 	@Transactional
 	public boolean deleteMessage(Long id) {
 		try {
-			System.out.println("삭제되는 ID: " + id);
+//			System.out.println("삭제되는 ID: " + id);
 			if (messageRepository.existsById(id)) {
 				MessageEntity message = messageRepository.findById(id).get(); // 삭제 시 메시지 List index가 밀리므로, 삭제 대신 대체
 																				// 내용으로 수정함
@@ -369,11 +369,11 @@ public class ChatService {
 				// messageRepository.deleteById(id); //삭제 메시지
 				return true;
 			} else {
-				System.out.println("삭제할 메시지가 없습니다.");
+//				System.out.println("삭제할 메시지가 없습니다.");
 				return false;
 			}
 		} catch (Exception e) {
-			System.out.println("메시지 삭제 실패: " + e.getMessage());
+//			System.out.println("메시지 삭제 실패: " + e.getMessage());
 			return false;
 		}
 	}
@@ -486,7 +486,7 @@ public class ChatService {
 		Optional<ChattingRoomEntity> room = chattingRoomRepository.findById(roomId);
 		List<MessageEntity> messages = (List<MessageEntity>) room.get().getMessages();
 		// memberEntity.getId()
-		System.out.println("메시지 갯수" + messages.size());
+//		System.out.println("메시지 갯수" + messages.size());
 		return (long) (messages.isEmpty() ? 0 : messages.size());
 	}
 
@@ -533,7 +533,6 @@ public class ChatService {
 			roomId = chattingRoomDTO.getId();
 		}
 
-		System.out.println("roomId + " + roomId);
 		return roomId;
 	}
 

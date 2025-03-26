@@ -120,7 +120,6 @@ public class TradeService {
 			tradeEntity.setTradeStatus(TradeStatus.완료);
 		}
 		TradeDTO tradeDTO = new TradeDTO();
-		System.out.println("다 되었나"+ isCompleted1+ isCompleted2);
 	TradeDTO responseDTO = 	tradeDTO.fromEntity(tradeEntity);
 			return responseDTO;
 	}

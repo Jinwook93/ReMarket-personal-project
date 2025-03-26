@@ -448,7 +448,7 @@ public class TradeController {
 		}
 		
 		
-		System.out.println(tradeDTO.toString());
+//		System.out.println(tradeDTO.toString());
 		AlarmEntity alarmEntity = alarmService.postAlarm(loggedId, tradeDTO.getMember1Id(), tradeDTO.getMember2Id(),
 				"TRADE", "거래", String.valueOf(boardId), "예약", null);
 		AlarmDTO responseDTO = alarmEntity.toDTO();
@@ -800,7 +800,7 @@ public class TradeController {
 			
 			
 //		TradeDTO responseDTO = tradeService.find
-		System.out.println(tradeDTO.toString());
+//		System.out.println(tradeDTO.toString());
 		return ResponseEntity.ok(tradeDTO);		
 	
 	}

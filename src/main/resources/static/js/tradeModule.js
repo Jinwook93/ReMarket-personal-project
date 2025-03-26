@@ -85,7 +85,7 @@ export function enrollTrade2(alarmId, loggedUserId) {  // 로그인유저 : memb
 					return;
 				}
 				if (typeof data === 'object') {
-					console.log(data);
+//					console.log(data);
 					alert(data.member2Content);  // 응답 데이터 처리
 					return data;
 				}
@@ -149,12 +149,12 @@ export function denyCreateTrade(alarmId, loggedUserId) {  // 로그인유저 : m
 
 				
 				if (typeof data !== 'object' && data === "만료된 정보입니다") {
-					console.log(data);
+//					console.log(data);
 					alert(data);
 					return;
 				}
 				if (typeof data === 'object') {
-					console.log(data);
+//					console.log(data);
 					alert(data.member2Content);  // 응답 데이터 처리
 					return data;
 				}
@@ -171,7 +171,7 @@ export function denyCreateTrade(alarmId, loggedUserId) {  // 로그인유저 : m
 			//			})
 			.catch(error => {  // 오류 처리
 				alert("거래 신청을 실패하였습니다");
-				console.log(error);
+//				console.log(error);
 			});
 	}
 
@@ -225,7 +225,7 @@ export function CompleteTrade(tradeId, isMember) {  // 로그인유저 : member1
 					return;
 				}
 				if (typeof data === 'object') {
-					console.log(data);
+//					console.log(data);
 					if (data.isCompleted1 !== null && data.isCompleted2 !== null &&data.isCompleted1 === true && data.isCompleted2 === true) {
 						alert("거래상태가 최종완료되었습니다");
 					} else {
@@ -250,7 +250,7 @@ export function CompleteTrade(tradeId, isMember) {  // 로그인유저 : member1
 			})
 			.catch(error => {  // 오류 처리
 				alert("데이터 조회를 실패하였습니다");
-				console.log(error);
+//				console.log(error);
 			});
 	}
 
@@ -292,7 +292,7 @@ export function CancelTrade(tradeId, loggedId) {  // 로그인유저 : member1, 
 				return response.text();  //text 응답으로 변환
 			})
 			.then(data => {
-				console.log(data);
+//				console.log(data);
 				alert(data);  // 응답 데이터 처리
 				return data;
 				//				return loadChatRooms(loggedId);
@@ -303,7 +303,7 @@ export function CancelTrade(tradeId, loggedId) {  // 로그인유저 : member1, 
 			//			})
 			.catch(error => {  // 오류 처리
 				alert("거래 취소를 실패하였습니다");
-				console.log(error);
+//				console.log(error);
 			});
 	}
 
@@ -389,7 +389,7 @@ export function bookTrade1(boardId, loggedId, member2Id, loggedUserId) {
 			return response.json();
 		})
 		.then(data => {
-			console.log(data);
+//			console.log(data);
 			alert(data.member1Content);
 
 			// ✅ loadChatRooms가 끝난 후 버튼 설정 실행
@@ -449,12 +449,12 @@ export function bookTrade2(alarmId, loggedUserId) {  // 로그인유저 : member
 				
 				
 				if (typeof data !== 'object' && data === "만료된 정보입니다") {
-					console.log(data);
+//					console.log(data);
 					alert(data);
 					return;
 				}
 				if (typeof data === 'object') {
-					console.log(data);
+//					console.log(data);
 					alert(data.member1Content);  // 응답 데이터 처리
 //					return data;
 				}
@@ -476,7 +476,7 @@ export function bookTrade2(alarmId, loggedUserId) {  // 로그인유저 : member
 			//			})
 			.catch(error => {  // 오류 처리
 				alert("거래 신청을 실패하였습니다");
-				console.log(error);
+//				console.log(error);
 			});
 	}
 
@@ -523,12 +523,12 @@ export function denyBookTrade(alarmId, loggedUserId) {  // 로그인유저 : mem
 				
 						
 				if (typeof data !== 'object' && data === "만료된 정보입니다") {
-					console.log(data);
+//					console.log(data);
 					alert(data);
 					return;
 				}
 				if (typeof data === 'object') {
-					console.log(data);
+//					console.log(data);
 					alert(data.member2Content);  // 응답 데이터 처리
 //					return data;
 				}
@@ -556,7 +556,7 @@ export function denyBookTrade(alarmId, loggedUserId) {  // 로그인유저 : mem
 			//			})
 			.catch(error => {  // 오류 처리
 				alert("거래 신청을 실패하였습니다");
-				console.log(error);
+//				console.log(error);
 			});
 	}
 
@@ -605,12 +605,12 @@ export function changeBookTrade(roomId, loggedUserId) {  // 로그인유저 : me
 				
 				
 				if (typeof data !== 'object' && data === "만료된 정보입니다") {
-					console.log(data);
+//					console.log(data);
 					alert(data);
 					return;
 				}
 				if (typeof data === 'object') {
-					console.log(data);
+//					console.log(data);
 					alert(data.member1Content);  // 응답 데이터 처리
 //					return data;
 				}
@@ -641,7 +641,7 @@ export function changeBookTrade(roomId, loggedUserId) {  // 로그인유저 : me
 			//			})
 			.catch(error => {  // 오류 처리
 				alert("거래 신청을 실패하였습니다");
-				console.log(error);
+//				console.log(error);
 			});
 	}
 
@@ -667,7 +667,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			const boardId = Number(button.getAttribute('data-TradeBuyBoardId'));  // data-updateBoardId 속성에서 boardId 추출
 			const loggedId = Number(document.getElementById("loggedId").value);  // 로그된 사용자의 ID
 			const member2Id = Number(document.getElementById("memberid").value);  // 다른 멤버의 ID
-			console.log("거래 테스트 ", boardId, loggedId, member2Id);
+//			console.log("거래 테스트 ", boardId, loggedId, member2Id);
 			// enrollTrade1 함수 호출
 			enrollTrade1(boardId, loggedId, member2Id, loggedUserId)
 			//			  loadChatRooms(loggedId);
@@ -695,23 +695,23 @@ document.addEventListener('DOMContentLoaded', function() {
 			const loggedId = document.getElementById("loggedId").value;
 			const member2Id = Number(document.getElementById("memberid").value);  // 다른 멤버의 ID
 			const boardId = event.target.id.replace("enroll-Book1-", "");
-			console.log("예약 신청 테스트 ", boardId);
-			console.log("상대방 아이디 :  " + member2Id);
-			console.log("내 아이디 :  " + loggedId);
-			console.log("내 아이디 :  " + loggedUserId);
+//			console.log("예약 신청 테스트 ", boardId);
+//			console.log("상대방 아이디 :  " + member2Id);
+//			console.log("내 아이디 :  " + loggedId);
+//			console.log("내 아이디 :  " + loggedUserId);
 			bookTrade1(Number(boardId), loggedId, member2Id, loggedUserId);
 			//        loadChatRooms(loggedId);
 		}
 		if (event.target && (event.target.id.startsWith("enroll-Book2-"))) { //예약 확인 및 추가
 			const alarmId = event.target.id.replace("enroll-Book2-", "");
-			console.log("예약 승인 테스트 ", alarmId);
+//			console.log("예약 승인 테스트 ", alarmId);
 			bookTrade2(Number(alarmId), loggedUserId);
 			//        loadChatRooms(loggedId);
 		}
 
 		if (event.target && (event.target.id.startsWith("deny-enroll-Book2-"))) { 	//예약 거절
 			const alarmId = event.target.id.replace("deny-enroll-Book2-", "");
-			console.log("예약 거절 테스트 ", alarmId);
+//			console.log("예약 거절 테스트 ", alarmId);
 			denyBookTrade(Number(alarmId), loggedUserId);
 			//        loadChatRooms(loggedId);
 		}
@@ -719,8 +719,8 @@ document.addEventListener('DOMContentLoaded', function() {
 			const boardId = event.target.id.replace("change-enroll-Book2-", "");
 			const roomResponse = await fetch(`/chat/findRoomByBoardId/${boardId}`);
 			const room = await roomResponse.json();
-			console.log("예약 -> 거래 중 변경 테스트 ", boardId);
-			console.log("예약 -> 거래 중 변경 테스트2 " + room.id);
+//			console.log("예약 -> 거래 중 변경 테스트 ", boardId);
+//			console.log("예약 -> 거래 중 변경 테스트2 " + room.id);
 			changeBookTrade(Number(room.id), loggedUserId);
 			//        loadChatRooms(loggedId);
 		}
@@ -728,21 +728,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
 		if (event.target && (event.target.id.startsWith("agreeMember2-"))) {
 			const alarmId = event.target.id.replace("agreeMember2-", "");
-			console.log("거래승인 테스트 ", alarmId);
+//			console.log("거래승인 테스트 ", alarmId);
 			enrollTrade2(Number(alarmId), loggedUserId);
 			//        loadChatRooms(loggedId);
 		}
 
 		if (event.target && (event.target.id.startsWith("denyMember2-"))) {
 			const alarmId = event.target.id.replace("denyMember2-", "");
-			console.log("거래거절 테스트 ", alarmId);
+//			console.log("거래거절 테스트 ", alarmId);
 			denyCreateTrade(Number(alarmId), loggedUserId);
 			//         loadChatRooms(loggedId);
 		}
 
 		if (event.target && (event.target.id.startsWith("complete2-Sell-"))) {
 			const tradeId = event.target.id.replace("complete2-Sell-", "");
-			console.log("거래완료 테스트2 ", tradeId);
+//			console.log("거래완료 테스트2 ", tradeId);
 
 			CompleteTrade(tradeId, "isMember2");
 			//      loadChatRooms(loggedId);
@@ -751,7 +751,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 		if (event.target && (event.target.id.startsWith("complete1-Sell-"))) {
 			const tradeId = event.target.id.replace("complete1-Sell-", "");
-			console.log("거래완료 테스트1 ", tradeId);
+//			console.log("거래완료 테스트1 ", tradeId);
 
 			CompleteTrade(tradeId, "isMember1");
 			//      loadChatRooms(loggedId);
@@ -759,7 +759,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 		if (event.target && (event.target.id.startsWith("cancel-trade-"))) {
 			const tradeId = event.target.id.replace("cancel-trade-", "");
-			console.log("거래취소 테스트1 ", tradeId);
+//			console.log("거래취소 테스트1 ", tradeId);
 
 			CancelTrade(tradeId, loggedId);
 			//      loadChatRooms(loggedId);

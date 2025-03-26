@@ -60,18 +60,18 @@ public class MemberService {
 
 	@Transactional(readOnly = true)
 	// 아이디 중복 확인
-	public String checkId(String userid) {
+	public Boolean checkId(String userid) {
 	    // 아이디가 이미 존재하는지 확인
 	    boolean isExist = memberRepository.existsByUserid(userid);
 	    
 	    if (isExist) {
 	        // 아이디가 이미 존재하면 중복 아이디 메시지 반환
-	    	System.out.println("이미 등록된 아이디입니다");
-	        return "이미 등록된 아이디입니다";
+//	    	System.out.println("이미 등록된 아이디입니다");
+	        return false;
 	    } else {
 	        // 아이디가 사용 가능하면 사용 가능 아이디 메시지 반환
-	    	System.out.println("사용 가능한 아이디입니다");
-	        return "사용 가능한 아이디입니다";
+//	    	System.out.println("사용 가능한 아이디입니다");
+	        return true;
 	    }
 	}
 
@@ -153,7 +153,7 @@ public class MemberService {
                     throw new IllegalArgumentException("이미 존재하는 회원입니다!");
                 });
 
-        System.out.println("이미지 확인:"+memberEntity.getProfileImage());
+//        System.out.println("이미지 확인:"+memberEntity.getProfileImage());
         memberRepository.save(memberEntity);
         return "회원가입 완료";
     }
@@ -182,7 +182,7 @@ public class MemberService {
     
     @Transactional
     public String updateMember
-    (Long id, String userid, String password, String name, int age, Gender gender, String phone, String address, String profileImage, PrincipalDetails principalDetails) {
+    (Long id, String userid, String password, String name, int age, Gender gender, String phone, String address, String profileImage, PrincipalDetails principalDetails, Boolean nullimageButton) {
         // 회원 정보 수정
         MemberEntity memberEntity = memberRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("회원 조회를 할 수 없습니다"));
@@ -204,21 +204,37 @@ public class MemberService {
 //	        System.out.println("저장된 경로" + profileImagePath);
 //	    }
         
-        
-        
-        
+//        System.out.println("nullimageButton " +nullimageButton);
+//        System.out.println("profileimage " +profileImage);
+        if(!userid.equals("")) {
         memberEntity.setUserid(userid);
+        }
+        if(!name.equals("")) {
         memberEntity.setName(name);
+        }
         if(!password.equals("")) {
         memberEntity.setPassword(passwordEncoder.encode(password)); // 비밀번호 암호화
         }
+        if(!address.equals(" ")) {
         memberEntity.setAddress(address);
+        }
+//        if(age!=0) {
         memberEntity.setAge(age);
+//        }
         memberEntity.setGender(gender);
-        memberEntity.setPhone(ReconstructPhone(phone));
-        memberEntity.setProfileImage(profileImage);
         
-
+        if(!phone.equals("")) {
+        memberEntity.setPhone(ReconstructPhone(phone));
+       }
+        
+        
+        if(nullimageButton.equals(Boolean.TRUE)) {
+        	 memberEntity.setProfileImage(null);
+        }else if(profileImage !=null  &&nullimageButton.equals(Boolean.FALSE)) {
+            memberEntity.setProfileImage(profileImage);
+            }
+        
+        
         // 업데이트된 회원 정보 저장
         memberRepository.save(memberEntity);
 

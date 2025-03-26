@@ -194,7 +194,6 @@ public class HomeController {
 		
 		if(memberEntity.getProfileImage() != null) {
 		memberEntity.setProfileImage(memberEntity.getProfileImage().replace("\\", "/"));
-		System.out.println("수정된 이미지 : "+memberEntity.getProfileImage());
 		}
 		
 		
@@ -206,7 +205,6 @@ public class HomeController {
 //			String updateAddress = memberEntity.getAddress().replace("/", " ");
 //			memberEntity.setAddress(updateAddress);
 			model.addAttribute("member", memberEntity);
-			System.out.println("이미지는 null이다");
 		}
 	
 		
@@ -302,7 +300,7 @@ public class HomeController {
 		MemberEntity member = memberService.findByUserId(memberDTO.getUserid());
 		
 	    String result = "회원수정 실패";
-		result = memberService.updateMember(member.getId(), member.getUserid() ,memberDTO.getPassword() ,member.getName(), member.getAge(), member.getGender(), member.getPhone(),member.getAddress(),member.getProfileImage() , null);
+		result = memberService.updateMember(member.getId(), member.getUserid() ,memberDTO.getPassword() ,member.getName(), member.getAge(), member.getGender(), member.getPhone(),member.getAddress(),member.getProfileImage() , null,Boolean.FALSE);
 		return ResponseEntity.ok(result);
 	}
 	

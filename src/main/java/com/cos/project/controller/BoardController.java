@@ -256,16 +256,36 @@ public class BoardController {
 
 	@PostMapping("/updateboard/{id}")
 	@ResponseBody
-	public String updateBoard(@PathVariable(name = "id") Long id, @RequestPart(name = "boardData") String boardDataJson,
+	public ResponseEntity<?> updateBoard(@PathVariable(name = "id") Long id, @RequestPart(name = "boardData") String boardDataJson,
 			@RequestPart(value = "boardFiles", required = false) MultipartFile[] boardFiles,
+//			@RequestPart(value = "existingFiles", required = false) String existingFiles,  // 문자열로 처리
+			 @RequestParam(value = "existingFiles", required = false) String[] existingFiles, // 배열로 받기
+			@RequestParam(name = "nullimageButton") Boolean nullimageButton,
 			RedirectAttributes redirectAttributes,
 			@AuthenticationPrincipal PrincipalDetails principalDetails) throws IOException {
 
 		ObjectMapper objectMapper = new ObjectMapper();
 		BoardDTO boardDTO = objectMapper.readValue(boardDataJson, BoardDTO.class);
 
+		
+		
+		//기존파일 정보
+
+//		for(int i =0; i<existingFiles.length;i++) {
+//		 System.out.println("Existing Files: " + existingFiles[i]);  // 예시로 출력해봄
+//		}
+		
+		
+		if(existingFiles == null) {
+			existingFiles = new String [0];
+		}
+		
+		
+		
+		
 		// 기존 파일 목록 처리
-		String[] existingFileList = objectMapper.readValue(boardDTO.getBoardFiles(), String[].class);
+//		String[] existingFileList = objectMapper.readValue(boardDTO.getBoardFiles(), String[].class);
+		String[] existingFileList = existingFiles;
 		for (int i = 0; i < existingFileList.length; i++) {
 			existingFileList[i] = existingFileList[i].replace("http://localhost:8081", "");
 		}
@@ -289,8 +309,10 @@ public class BoardController {
 		// 파일 경로를 JSON으로 변환
 		String boardFileJson = objectMapper.writeValueAsString(allFilePath);
 
+		
+		
 		// 게시글 업데이트
-		boardService.updateContents(id, boardDTO, boardFileJson);
+		boardService.updateContents(id, boardDTO, boardFileJson,nullimageButton);
 
 		// 리다이렉트 처리
 		// redirectAttributes.addAttribute("id", id);
@@ -298,7 +320,9 @@ public class BoardController {
 		String id_String = String.valueOf(id);
 		Long loggedId = principalDetails.getMemberEntity().getId();
 		alarmService.postAlarm(loggedId,null, null, "BOARD", "게시판", id_String, "수정", null);	
-		return "/board/view/" + id;
+//		return "/board/view/" + id;
+		
+		return ResponseEntity.ok(true);
 	}
 
 

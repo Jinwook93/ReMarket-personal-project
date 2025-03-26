@@ -54,7 +54,7 @@ export function addComment(boardId, parentCommentId, principalDetails) {
 
 		})
 		.then(data => {			//게시글 작성 UserID
-			console.log(data);			
+//			console.log(data);			
 			alert("답글이 등록되었습니다.");
 
 			// 댓글 입력 후 텍스트 초기화

@@ -6,7 +6,7 @@
 ////}, 10);
 //});
 
-document.getElementById("address").addEventListener("click", function() {
+document.getElementById("address").addEventListener("focus", function() {
   document.getElementById("addressModal").style.display = "block";
 //    setTimeout(() => {
   document.getElementById("addressKeywordModal").focus();
@@ -35,7 +35,7 @@ export function searchAddress() {
   })
   .then(response => response.json())
   .then(data => {
-    console.log(data);
+//    console.log(data);
     const addressResult = document.getElementById("addressResult");
     addressResult.innerHTML = ""; // 기존 결과 초기화 (중복 방지)
 
@@ -114,14 +114,14 @@ export async function loadAddress() {
     if (window.location.href.includes("/board/view")) {
         // 거래지 주소
         address = document.getElementById("boardAddress").innerText;
-        console.log(address);
+//        console.log(address);
     }
 
     // 주소를 공백(" ") 기준으로 분리
     const addressParts = address.split(" ");
 
     // 주소 분리된 배열을 로그로 출력
-    console.log("주소 분리 결과: ", addressParts);
+//    console.log("주소 분리 결과: ", addressParts);
 
     // 주소의 첫 번째, 두 번째, 세 번째 부분을 각각 input 필드에 반영
     // 배열 길이가 3 이상일 때만 그 값을 반영하도록 처리
@@ -142,7 +142,7 @@ export async function loadAddress() {
         document.getElementById("address2").innerText = addressParts.slice(3).join(" ") || ''; // 나머지 부분
     }
 
-    console.log("변경된 주소: ", addressParts); // 콘솔에 출력 (디버깅용)
+//    console.log("변경된 주소: ", addressParts); // 콘솔에 출력 (디버깅용)
 }
 
 

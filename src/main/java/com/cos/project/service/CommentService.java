@@ -139,7 +139,7 @@ public class CommentService {
 	@Transactional
 	public CommentEntity addComment(CommentDTO commentDTO, MemberEntity memberEntity) {
 		
-		System.out.println("게시자 개인 댓글 테스트 : "+ commentDTO.getIsPrivate());
+//		System.out.println("게시자 개인 댓글 테스트 : "+ commentDTO.getIsPrivate());
 		BoardEntity boardEntity = boardRepository.findById(commentDTO.getBoardId())
 				.orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다"));
 
@@ -155,7 +155,7 @@ public class CommentService {
 //		commentDTO.setBoardEntity(boardEntity);
 //		commentDTO.setMemberEntity(managedMemberEntity);
 		commentRepository.save(commentEntity);
-		System.out.println("저장 완료...");
+//		System.out.println("저장 완료...");
 
 		return commentEntity;
 	}

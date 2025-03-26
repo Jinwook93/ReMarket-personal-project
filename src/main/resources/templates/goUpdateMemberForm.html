@@ -26,6 +26,7 @@
         <label for="userid">아이디</label>  <button type="button" onclick="checkId()" id = "isExistId">중복확인</button>
         </div>
         <input type="text" id="userid" name="userid" th:value="${member.userid}" required />
+            <input type ="hidden" id="isCheckedId" value=false>
       <br>
         
         
@@ -49,7 +50,7 @@
         <input type="text" id="name" name="name" th:value="${member.name}" required /><br>
 
 <!-- 프로필 이미지 확인 -->
-<label for="profileImage">프로필 이미지</label>
+<label for="profileImage" style="display:flex; gap:5px;">프로필 이미지 <input type="checkbox"  name="nullimageButton"   id="nullimageButton" >초기화</input> </label>
 <input type="file" id="profileImage" name="profileImage" required>
 
 <!-- 이미지 미리보기 -->
@@ -119,15 +120,14 @@
 
 
    <!-- 비밀번호 -->
-        <label for="prev_password">기존 비밀번호</label>
-        <input type="prev_password" id="prev_password" name="prev_password" required><br>
+        <label for="prev_password" style="color:red;">※ 기존 비밀번호</label>
+        <input type="password" id="prev_password" name="prev_password" required><br>
         
         <!-- 비밀번호 확인 -->
-        <label for="prev_password_check">기존 비밀번호 확인</label>
-        <input type="prev_password_check" id="prev_password_check" name="prev_password_check"  required><br>
+        <label for="prev_password_check" style="color:red;">※기존 비밀번호 확인</label>
+        <input type="password" id="prev_password_check" name="prev_password_check"  required><br>
 
 
-  <input type="hidden" id="member_password" name="member_password"  th:value="${member.password}">
 
 
 
@@ -146,12 +146,10 @@
 <!-- 		 <th:block th:replace="/footer :: footerFragment"></th:block> -->
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js" defer></script>
-<!--     <script src="/js/joinValidation.js" defer></script> -->
 		<script src="/js/checkId.js" defer></script>
-	    <script src="/js/updateMember.js" defer></script>
+	    <script src="/js/updateMember.js"></script>
 	            <script  src="/js/kakaoAddressApi.js" type="module"></script>
-	            
-	            
+	             <script  src="/js/joinValidation.js" type="text/javascript"></script> 
 	            
 	            
 	            
@@ -175,6 +173,9 @@
             }
         });
     </script>
+    
+        <script src="/js/formatPhoneNumber.js" type="text/javascript" ></script>
+
 
 </body>
 </html>

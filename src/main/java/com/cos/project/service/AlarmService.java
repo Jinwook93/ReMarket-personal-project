@@ -105,10 +105,8 @@ public class AlarmService {
 	public AlarmEntity postAlarm(Long loggedId, Long member1Id, Long member2Id, String type, String childType, String object, String action, String priority) {
 	    AlarmDTO alarmDTO = null;
 	    AlarmEntity alarmEntity = null;
-        System.out.println("여기까지는 가냐1");
 	    // Case 1: When both member1Id and member2Id are null, it's a login alarm
 	    if (member1Id == null && member2Id == null) {
-	        System.out.println("여기까지는 가냐2");
 	        member1Id = loggedId;
 	        alarmDTO = alarmConstructor(loggedId, member1Id, member2Id, type, childType, object, action, priority);
 	        MemberEntity member1 = memberRepository.findById(member1Id).orElseThrow(() -> new IllegalAccessError("사용자를 조회할 수 없습니다"));
@@ -116,7 +114,6 @@ public class AlarmService {
 	        alarmEntity = alarmDTO.toEntity(member1, member2);
 	  
 	    } else {
-	        System.out.println("여기까지는 가냐3");
 	        // Case 2: Both member1Id and member2Id are provided
 	        MemberEntity member1 = memberRepository.findById(member1Id)
 	                .orElseThrow(() -> new IllegalAccessError("사용자를 조회할 수 없습니다"));
@@ -127,7 +124,6 @@ public class AlarmService {
 //            alarmEntity = alarmDTO.toEntity(member1, member2);
 	        
 	        if (loggedId.equals(member1Id)) {
-	        	  System.out.println("여기까지는 가냐4");
 	            alarmDTO = alarmConstructor(loggedId, member1Id, member2Id, type, childType, object, action, priority);
 	            alarmEntity = alarmDTO.toEntity(member1, member2);
 	        } else if (loggedId.equals(member2Id)) {

@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (response.ok) {
 //                alert("버튼 활성화 확인 성공");
                 const result = await response.text();
-                console.log(result);
+//                console.log(result);
                 
                 if(result === "ENABLE_LIKE"){
 					likeButton.classList.add("active");
@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
 //                alert("버튼 활성화 실패");
             }
         } catch (error) {
-            console.error("싫어요 요청 중 오류 발생:", error);
+//            console.error("싫어요 요청 중 오류 발생:", error);
         }
     };
 
@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (response.ok) {
 //                alert("좋아요 요청 성공");
                 const result = await response.json();
-                console.log(result);
+//                console.log(result);
                 updateLikeDislikeUI(result[0], result[1]);
             } else {
 //                alert("좋아요 요청 실패");
@@ -87,13 +87,13 @@ document.addEventListener("DOMContentLoaded", () => {
             if (response.ok) {
 //                alert("좋아요 취소 성공");
                 const result = await response.json();
-                console.log(result);
+//                console.log(result);
                 updateLikeDislikeUI(result[0], result[1]);
             } else {
 //                alert("좋아요 취소 요청 실패");
             }
         } catch (error) {
-            console.error("좋아요 취소 요청 중 오류 발생:", error);
+//            console.error("좋아요 취소 요청 중 오류 발생:", error);
         }
     };
 
@@ -110,13 +110,13 @@ document.addEventListener("DOMContentLoaded", () => {
             if (response.ok) {
 //                alert("싫어요 요청 성공");
                 const result = await response.json();
-                console.log(result);
+//                console.log(result);
                 updateLikeDislikeUI(result[0], result[1]);
             } else {
 //                alert("싫어요 요청 실패");
             }
         } catch (error) {
-            console.error("싫어요 요청 중 오류 발생:", error);
+//            console.error("싫어요 요청 중 오류 발생:", error);
         }
     };
 
@@ -133,13 +133,13 @@ document.addEventListener("DOMContentLoaded", () => {
             if (response.ok) {
 //                alert("싫어요 취소 성공");
                 const result = await response.json();
-                console.log(result);
+//                console.log(result);
                 updateLikeDislikeUI(result[0], result[1]);
             } else {
 //                alert("싫어요 취소 요청 실패");
             }
         } catch (error) {
-            console.error("싫어요 취소 요청 중 오류 발생:", error);
+//            console.error("싫어요 취소 요청 중 오류 발생:", error);
         }
     };
 

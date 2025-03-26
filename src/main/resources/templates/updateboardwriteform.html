@@ -38,7 +38,7 @@ label {
 	font-weight: bold;
 }
 
-input, textarea, select {
+input:not([type="checkbox"]), textarea, select {
 	margin-top: 5px;
 	padding: 10px;
 	font-size: 16px;
@@ -190,15 +190,19 @@ button:hover {
 
 
 
-		<label for="boardFile">첨부 파일</label> <input type="file"
+		<label for="boardFile"  style="display:flex; gap:5px;">첨부 파일		<input type ="checkbox"  name="nullimageButton"  id = "nullimageButton"> 사진 첨부 안함</input>
+ 		</label>
+ 		
+
+ 		 <input type="file"
 			id="boardFiles" name="boardFiles" multiple />
 		<!--         boardFiles 배열을 반복하여 이미지를 출력 -->
 
 
 
 		<div
-			style="display: flex; flex-direction: row; flex-wrap: wrap; margin-top: 10px;">
-			<div th:each="file : ${boardFiles}" id="existingFiles">
+			style="display: flex; flex-direction: row; flex-wrap: wrap; margin-top: 10px;" id="existingFiles">
+			<div th:each="file : ${boardFiles}" >
 				<div id="imagePreview"
 					style="margin-right: 10px; margin-bottom: 10px;">
 					<!--       이미지 경로가 제대로 매핑되었는지 확인 -->
@@ -234,7 +238,7 @@ button:hover {
 	<script>
 		// Listen for clicks on "X" buttons dynamically
 		document.addEventListener('click', function(event) {
-			console.log(board.category);
+// 			console.log(board.category);
 			if (event.target && event.target.id === 'displayButton') {
 				// Get the parent image preview div and remove it from the DOM
 				const imagePreview = event.target.closest('#imagePreview');

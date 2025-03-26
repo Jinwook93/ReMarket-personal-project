@@ -433,7 +433,7 @@ export async function fetchCompleted2Trade(alarm) {
 		const tradeData = await response.json();
 
 		if (tradeData) {
-			console.log("가져온 Trade 데이터:", tradeData);
+//			console.log("가져온 Trade 데이터:", tradeData);
 
 			// `complete-class-${alarm.id}` id를 가진 div를 찾음
 			const targetElement = document.getElementById(`complete-class-${alarm.id}`);
@@ -450,7 +450,7 @@ export async function fetchCompleted2Trade(alarm) {
 
 			return tradeData;  // 필요한 경우 tradeData를 반환
 		} else {
-			console.log("조건에 맞는 Trade 데이터가 없습니다.");
+//			console.log("조건에 맞는 Trade 데이터가 없습니다.");
 		}
 
 	} catch (error) {
