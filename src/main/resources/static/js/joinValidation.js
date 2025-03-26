@@ -162,6 +162,13 @@ async function joinValidation(e) {
         return false;
     }
 
+          // 연락처 양식이 맞지 않는 경우 체크
+    if (document.getElementById("phone").value.substring(0,3) !== "010" && document.getElementById("phone").value.substring(0,3) !== "011" ) {
+         alert("연락처 입력 양식이 아닙니다 (시작 번호 : 010,011)");
+        document.getElementById("phone").focus();
+        return;
+    }
+		console.log(phone.value.substring(0,3) );
     // 연락처 양식이 맞지 않는 경우 체크
     if (phone.value.length > 0 && phone.value.length < 13) {
         alert("연락처 입력 양식이 아닙니다.");

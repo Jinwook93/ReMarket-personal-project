@@ -197,7 +197,9 @@ export async function loadMessages(roomId, messageIndex, recentExitedmemberId, s
                        <br>
     <span class="send-time">${msg.sendTime}</span>
 												${String(msg.senderUserId) === String(loggedUserId) ? `
-							<span class="read-status">${msg.read ? "읽음" : "읽지않음"}</span> ` : ""}
+						<span class="read-status ${!msg.read ? 'unread' : ''}">
+    ${msg.read ? "읽음" : "읽지않음"}
+</span> ` : ""}
 `;
 				} else {
 					messageElement.innerHTML = `
@@ -205,7 +207,9 @@ export async function loadMessages(roomId, messageIndex, recentExitedmemberId, s
 		       <br><br>
     <span class="send-time">${msg.sendTime}</span>
 						${String(msg.senderUserId) === String(loggedUserId) ? `
-							<span class="read-status">${msg.read ? "읽음" : "읽지않음"}</span> ` : ""}
+							<span class="read-status ${!msg.read ? 'unread' : ''}">
+    ${msg.read ? "읽음" : "읽지않음"}
+</span> ` : ""}
 `;
 				}
 			}

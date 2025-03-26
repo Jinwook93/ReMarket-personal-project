@@ -9,7 +9,7 @@ export function boardValidation() {
 
     const maxLength = {
         title: 30,
-        product: 20,
+        product: 30,
         price: 15,
         address: 30,
         address2: 30,

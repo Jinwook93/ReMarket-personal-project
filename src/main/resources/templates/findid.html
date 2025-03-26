@@ -1,81 +1,135 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>아이디 찾기</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            text-align: center;
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f9f9f9;
             margin: 0;
             padding: 0;
         }
-        form {
+
+        .container {
+            margin-top: 100px;
             max-width: 400px;
-            margin: 50px auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 80px auto;
+            padding: 30px 20px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
         }
-        input[type="text"], input[type="email"] {
+
+        h2 {
+            margin-bottom: 30px;
+            color: #333333;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            text-align: left;
+            font-weight: bold;
+            color: #333333;
+        }
+
+        input[type="text"],
+        input[type="email"] {
             width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #cccccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 14px;
         }
+
         button {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             background-color: #007bff;
-            color: white;
+            color: #ffffff;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
+            font-size: 16px;
             cursor: pointer;
+            transition: background-color 0.3s;
         }
+
         button:hover {
             background-color: #0056b3;
         }
+
+        /* 모달 */
+        #findIdModal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #ffffff;
+            border: 1px solid #ccc;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            width: 90%;
+            max-width: 350px;
+            text-align: center;
+        }
+
+        #findIdModal p {
+            margin-bottom: 20px;
+            font-size: 16px;
+            color: #333;
+        }
+
+        #findIdModal button {
+            width: auto;
+            padding: 10px 20px;
+            background-color: #ff5555;
+        }
+
+        #findIdModal button:hover {
+            background-color: #cc4444;
+        }
     </style>
 </head>
+
 <body>
     <div th:replace="~{header.html}"></div>
-<!--     <form action="/goFindUserId" method="POST"> -->
-<div>
+
+   <div class="container" style="margin-top: 100px;">
         <h2>아이디 찾기</h2>
+
         <label for="name">이름</label>
         <input type="text" id="name" name="name" placeholder="이름을 입력하세요" required>
 
-		  <label for="phone">휴대폰 번호</label>
-        <input type="text" id="phone" name="phone" placeholder="휴대폰 번호를 입력하세요 (-제외)" required>
-
-
-<!--         <label for="email">이메일</label> -->
-<!--         <input type="email" id="email" name="email" placeholder="이메일을 입력하세요" required> -->
+        <label for="phone">휴대폰 번호</label>
+        <input type="text" id="phone" name="phone" placeholder="휴대폰 번호를 입력하세요 (-제외)" required style="margin-bottom:30px;">
 
         <button type="button" id="findIdButton">아이디 찾기</button>
-        </div>
-        	<div id="findIdModal" style="display:none; position:fixed; top:50%; left:50%; 
-    transform:translate(-50%, -50%); background:white; border:1px solid #ccc; 
-    border-radius:10px; padding:20px; box-shadow:0 0 10px rgba(0,0,0,0.3); z-index:1000;">
-    <p id="modalText">아이디 검색 결과가 없습니다.</p>
-    <button onclick="closeModal()">닫기</button>
-</div>
+             <br>
+    </div>
 
-        
-<!--     </form> -->
-        <div th:replace="~{footer.html}"></div>
-        
-        
-        <script>
+    <!-- 모달 -->
+    <div id="findIdModal">
+        <p id="modalText">아이디 검색 결과가 없습니다.</p>
+        <button onclick="closeModal()">닫기</button>
+    </div>
+
+    <div th:replace="~{footer.html}"></div>
+
+    <script>
         const findIdModal = document.getElementById("findIdModal");
         const modalText = document.getElementById("modalText");
 
         // 모달 닫기
         function closeModal() {
-        	
             findIdModal.style.display = "none";
         }
 
@@ -93,27 +147,23 @@
                 headers: { 'Content-Type': "application/json;charset=utf-8" },
                 body: JSON.stringify({ name: name, phone: phone })
             })
-            .then(response => {
-                if (!response.ok) {
-                    // 실패 처리 (아이디 없음)
-                    throw new Error("아이디 검색 결과가 없습니다.");
-                }
-                return response.text();
-            })
-            .then(userId => {
-                // 아이디 성공적으로 찾았을 때
-                modalText.innerText = `조회된 아이디: ${userId}`;
-                findIdModal.style.display = "block";
-            })
-            .catch(error => {
-                // 실패했을 때
-                modalText.innerText = error.message;
-                findIdModal.style.display = "block";
-            });
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("아이디 검색 결과가 없습니다.");
+                    }
+                    return response.text();
+                })
+                .then(userId => {
+                    modalText.innerText = `조회된 아이디: ${userId}`;
+                    findIdModal.style.display = "block";
+                })
+                .catch(error => {
+                    modalText.innerText = error.message;
+                    findIdModal.style.display = "block";
+                });
         });
     </script>
-
-        		
-        
+      <script src="js/formatPhoneNumber.js" type="text/javascript"></script>
 </body>
+
 </html>

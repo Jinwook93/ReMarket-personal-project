@@ -89,7 +89,11 @@ public class SecurityConfig {
 		        .authorizeHttpRequests(auth ->													
 		            auth.requestMatchers("/findall").hasRole("ADMIN")
 		                .requestMatchers("/board/writeboard").authenticated()
-		                .requestMatchers("/login").permitAll()				
+		                .requestMatchers("/login").permitAll()
+		                .requestMatchers("/profileimage/**").permitAll()  // '/profileimage' 경로 하위 모든 이미지에 대해 접근 허용
+		                .requestMatchers("/profileimage/**").permitAll()  // '/profileimage' 경로 하위 모든 이미지에 대해 접근 허용
+		                // 이미지 파일 경로에 대한 접근을 허용
+		       
 		                .anyRequest().permitAll()
 		        )
 		        														//formLogin().disable 할 시 requestMatchers를 인증할 방법이 없으므로, 'permitAll' 만 접근이 가능하다
@@ -107,6 +111,7 @@ public class SecurityConfig {
 //	                .failureForwardUrl("/login?error")			//	실패시 url (AuthenticateUserFilter 필터 테스트)
 		                .usernameParameter("userid") // 로그인 폼에서 userid 파라미터 사용
 		                .passwordParameter("password") // 로그인 폼에서 password 파라미터 사용
+		                
 		                .permitAll()
 		        )
 		        .sessionManagement(session ->

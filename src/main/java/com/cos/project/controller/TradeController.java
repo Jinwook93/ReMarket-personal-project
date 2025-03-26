@@ -76,7 +76,7 @@ public class TradeController {
 		AlarmEntity alarmEntity = alarmService.postAlarm(loggedId, tradeDTO.getMember1Id(), tradeDTO.getMember2Id(),
 				"TRADE", "거래", String.valueOf(boardId), "상대방 동의 확인", null);
 		AlarmDTO responseDTO = alarmEntity.toDTO();
-		System.out.println(responseDTO.toString());
+//		System.out.println(responseDTO.toString());
 
 		// 알람메시지를 채팅방으로도 전송 (상대방에게 responseDTO의 member2Content 전송)
 		//// 먼저 채팅방 ID를 조회
@@ -415,7 +415,7 @@ public class TradeController {
 			@AuthenticationPrincipal PrincipalDetails principalDetails) {
 			Long loggedId = principalDetails.getMemberEntity().getId();
 		TradeDTO responseDTO = tradeService.findTradeByRoomId(roomId, loggedId);
-		System.out.println(responseDTO.toString());
+//		System.out.println(responseDTO.toString());
 		return ResponseEntity.ok(responseDTO);
 	
 	}
@@ -452,7 +452,7 @@ public class TradeController {
 		AlarmEntity alarmEntity = alarmService.postAlarm(loggedId, tradeDTO.getMember1Id(), tradeDTO.getMember2Id(),
 				"TRADE", "거래", String.valueOf(boardId), "예약", null);
 		AlarmDTO responseDTO = alarmEntity.toDTO();
-		System.out.println(responseDTO.toString());
+//		System.out.println(responseDTO.toString());
 
 		// 알람메시지를 채팅방으로도 전송 (상대방에게 responseDTO의 member2Content 전송)
 		//// 먼저 채팅방 ID를 조회

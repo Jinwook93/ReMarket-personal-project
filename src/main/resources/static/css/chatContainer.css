@@ -195,7 +195,7 @@
     color: green; /* 읽음은 초록색, 읽지않음은 빨간색으로 표시하려면 아래와 같이 스타일을 추가 */
 }
 
-.read-status:empty {
+.read-status.unread {
     color: red; /* 읽지않음에 빨간색 적용 */
 }
 

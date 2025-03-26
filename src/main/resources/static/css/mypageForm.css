@@ -76,7 +76,7 @@ input[type="password"],
 /* 버튼 스타일 */
 .mypageForm #updateMember {
     padding: 12px 25px;
-    background-color: blue;
+    background-color:#4caf50;
     color: white;
     border: none;
     border-radius: 5px;

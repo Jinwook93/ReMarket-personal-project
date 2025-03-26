@@ -53,7 +53,7 @@ textarea {
 	resize: none;
 }
 
-button {
+button[type="submit"] {
 	margin-top: 20px;
 	padding: 10px;
 	font-size: 16px;
@@ -67,10 +67,8 @@ button {
 button:hover {
 	background-color: #0056b3;
 }
-
-     
 </style>
-   <link rel="stylesheet" href="/css/addressModal.css">
+<link rel="stylesheet" href="/css/addressModal.css">
 </head>
 <body>
 	<div th:replace="~{header.html}"></div>
@@ -126,10 +124,18 @@ button:hover {
 				name="category" required>
 				<option value="">물품 종류을 선택하세요</option>
 				<!--                 서버에서 작성자 목록을 동적으로 채워야 함 -->
-				<option value="예제A">예제A</option>
-				<option value="예제B">예제B</option>
-				<option value="예제C">예제C</option>
-			</select> <label for="price">물풍명</label> <input type="text" id="product"
+				<option value="식품">식품</option>
+				<option value="티켓"> 티켓</option>
+				<option value="가구">가구</option>
+				<option value="유아동">유아동</option>
+				<option value="의류">의류</option>
+				<option value="가전">가전</option>
+				<option value="생활">생활</option>
+				<option value="취미">취미</option>
+			<option value="도서">도서</option>
+			<option value="뷰티">뷰티</option>
+				<option value="기타">기타</option>
+			</select> <label for="price">상품명</label> <input type="text" id="product"
 				name="product" placeholder="물품명을 입력하세요" required /> <label
 				for="price">가격</label> <input type="text" id="price" name="price"
 				placeholder="가격을 입력하세요" required />
@@ -139,9 +145,9 @@ button:hover {
 			<!-- 주소 -->
 			<div style="display: inline-block;">
 				<label for="address2">주소</label>
-			<!-- 	<button type="button" id="addressButton">검색</button>  -->
+				<!-- 	<button type="button" id="addressButton">검색</button>  -->
 			</div>
-		 <input type="text" id="address" name="address"
+			<input type="text" id="address" name="address"
 				placeholder="주소를 검색하세요" readonly>
 
 
@@ -151,8 +157,11 @@ button:hover {
 				<div class="modal-content">
 					<span id="closeModal" class="close">&times;</span>
 					<h2>주소 검색</h2>
-					<input type="text" id="addressKeywordModal" placeholder="검색할 주소">
-					<button type="button" id="addressButtonModal">검색</button>
+					<div style="display: flex;">
+						<input type="text" id="addressKeywordModal" placeholder="검색할 주소"
+							style="width: 80%; margin-right: 20px;">
+						<button type="button" id="addressButtonModal" class="small-btn">검색</button>
+					</div>
 					<div id="addressResult"></div>
 				</div>
 			</div>
@@ -178,12 +187,14 @@ button:hover {
 				required></textarea>
 
 			<!-- 작성 버튼 -->
-			<button type="submit">작성</button>
+			<button type="submit">
+				<b>작성</b>
+			</button>
 		</form>
 	</div>
 	<div th:replace="~{footer.html}"></div>
 
-<script type="module">
+	<script type="module">
     import { boardValidation } from '/js/boardValidation.js'; 
 
     document.getElementById("boardForm").addEventListener("submit", (e) => {
@@ -198,7 +209,7 @@ button:hover {
         e.target.submit();  // 폼을 실제로 제출
     });
 </script>
-    <script  src="/js/kakaoAddressApi.js" type="module"></script>
+	<script src="/js/kakaoAddressApi.js" type="module"></script>
 
 </body>
 </html>
