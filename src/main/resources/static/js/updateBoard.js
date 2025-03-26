@@ -1,58 +1,72 @@
+import { boardValidation } from '/js/boardValidation.js';  
+
 document.getElementById('updateBoard').addEventListener('click', async () => {
 	
 	
 	
-	
-	
-	
-	//validation
-        const title = document.getElementById('title');
-        const product = document.getElementById('product');
-        const price = document.getElementById('price');
-        const address = document.getElementById('address');
-        const address2 = document.getElementById('address2');
-//        const contents = document.getElementById('contents');
-		const files = document.getElementById('boardFiles').files;
-		
-		
-        // 필드별 최대 글자 수 (원하는 기준으로 조절)
-        const maxLength = {
-            title: 30,
-            product: 20,
-            price: 15,
-            address: 30,
-            address2: 30,
-//            contents: 1000
-        };
-
-        // 공백, null, 길이 검사 함수
-        function validateField(field, fieldName, maxLen) {
-            const value = field.value.trim();
-            if (value === "" || value.length === 0) {
-                alert(`${fieldName}을(를) 입력하세요.`);
-                field.focus();
-                return false;
-            }
-            if (value.length > maxLen) {
-                alert(`${fieldName}은(는) 최대 ${maxLen}자까지 입력 가능합니다.`);
-                field.focus();
-                return false;
-            }
-            return true;
+	      // 유효성 검사
+        if (!boardValidation()) {
+            return;  // 유효성 검사 실패 시 폼 제출을 막음
         }
+	
 
-        // 순서대로 검사
-        if (!validateField(title, "제목", maxLength.title)) return;
-        if (!validateField(product, "물품명", maxLength.product)) return;
-        if (!validateField(price, "가격", maxLength.price)) return;
-        if (!validateField(address, "주소", maxLength.address)) return;
-        if (!validateField(address2, "세부 주소", maxLength.address2)) return;
-//        if (!validateField(contents, "내용", maxLength.contents)) return;
+//	//validation
+//        const title = document.getElementById('title');
+//        const product = document.getElementById('product');
+//        const price = document.getElementById('price');
+//        const address = document.getElementById('address');
+//        const address2 = document.getElementById('address2');
+////        const contents = document.getElementById('contents');
+//		const files = document.getElementById('boardFiles').files;
+//		
+//		
+//        // 필드별 최대 글자 수 (원하는 기준으로 조절)
+//        const maxLength = {
+//            title: 30,
+//            product: 20,
+//            price: 15,
+//            address: 30,
+//            address2: 30,
+////            contents: 1000
+//        };
+//
+//        // 공백, null, 길이 검사 함수
+//        function validateField(field, fieldName, maxLen) {
+//            const value = field.value.trim();
+//            if (value === "" || value.length === 0) {
+//                alert(`${fieldName}을(를) 입력하세요.`);
+//                field.focus();
+//                return false;
+//            }
+//            if (value.length > maxLen) {
+//                alert(`${fieldName}은(는) 최대 ${maxLen}자까지 입력 가능합니다.`);
+//                field.focus();
+//                return false;
+//            }
+//            return true;
+//        }
+//
+//        // 순서대로 검사
+//        if (!validateField(title, "제목", maxLength.title)) return;
+//        if (!validateField(product, "물품명", maxLength.product)) return;
+//        if (!validateField(price, "가격", maxLength.price)) return;
+//        if (!validateField(address, "주소", maxLength.address)) return;
+//        if (!validateField(address2, "세부 주소", maxLength.address2)) return;
+////        if (!validateField(contents, "내용", maxLength.contents)) return;
+//
+//		if(files.length >3){
+//			alert("파일 첨부는 3개까지 가능합니다");
+//			return;
+//		}
 
-		if(files.length >3){
-			alert("파일 첨부는 3개까지 가능합니다");
-			return;
-		}
+
+
+
+
+
+
+
+
 
 
         // 모든 검사 통과 시 AJAX 또는 form 전송 실행 (예시)
@@ -77,8 +91,8 @@ document.getElementById('updateBoard').addEventListener('click', async () => {
 	
 	
 	
-	
-	
+	//첨부파일
+		    const files = document.getElementById('boardFiles').files;
 	
 	
 	

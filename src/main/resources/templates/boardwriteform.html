@@ -182,17 +182,22 @@ button:hover {
 		</form>
 	</div>
 	<div th:replace="~{footer.html}"></div>
-	<script>
-		document.getElementById("boardForm").addEventListener("submit", (e) => {
-		    e.preventDefault();  // 기본 동작을 막음
-		    
-		    alert("게시글이 등록되었습니다");
-		    e.target.submit();  // 폼을 실제로 제출
-		});
 
-		
-		</script>
+<script type="module">
+    import { boardValidation } from '/js/boardValidation.js'; 
 
+    document.getElementById("boardForm").addEventListener("submit", (e) => {
+        e.preventDefault();  // 기본 동작을 막음
+        
+        // 유효성 검사
+        if (!boardValidation()) {
+            return;  // 유효성 검사 실패 시 폼 제출을 막음
+        }
+
+        alert("게시글이 등록되었습니다");
+        e.target.submit();  // 폼을 실제로 제출
+    });
+</script>
     <script  src="/js/kakaoAddressApi.js" type="module"></script>
 
 </body>
