@@ -122,6 +122,7 @@ public class MemberController {
        return ResponseEntity.ok(memberService.checkLogin(loginRequest));
     }
 	
+    //중복 ID 확인
     @PostMapping("/checkId")
    public Map<String,Boolean> checkId(@RequestBody String userid) throws JsonMappingException, JsonProcessingException {
     	System.out.println(userid);
@@ -133,6 +134,26 @@ public class MemberController {
        return checkedId;
     }
    
+    
+    
+    //중복 닉네임 확인
+    @PostMapping("/checkNickname")
+   public Map<String,Boolean> checkNickname(@RequestBody String nickname) throws JsonMappingException, JsonProcessingException {
+    	System.out.println(nickname);
+    	ObjectMapper om = new ObjectMapper();
+    	MemberDTO usernickname_change = om.readValue(nickname, MemberDTO.class);		//DTO 클래스로 변환
+       System.out.println("중복 닉네임 컨트롤러");
+       Map<String, Boolean> checkedNickname = new HashMap<>();
+       checkedNickname.put("available", memberService.checkNickname(usernickname_change.getNickname()));
+       return checkedNickname;
+    }
+    
+    
+    
+    
+    
+    
+    
     
     
 	@GetMapping("/findall")
@@ -158,6 +179,7 @@ public ResponseEntity<?>  joinUser(@RequestBody MemberDTO entity) {
 	        @RequestParam(name = "userid") String userid,
 	        @RequestParam(name = "password") String password,
 	        @RequestParam(name = "password_check") String passwordCheck,
+	        @RequestParam(name = "nickname") String nickname,
 	        @RequestParam(name = "name") String name,
 	        @RequestParam(name = "age") int age,
 	        @RequestParam(name = "gender") Gender gender,
@@ -212,7 +234,7 @@ public ResponseEntity<?>  joinUser(@RequestBody MemberDTO entity) {
 	        try {
 	        	address += " "+address2;
 	        	
-	            String isUpdated = memberService.updateMember(id, userid, password, name, age, gender, phone, address, profileImagePath, principalDetails,nullimageButton);
+	            String isUpdated = memberService.updateMember(id, userid, nickname,password, name, age, gender, phone, address, profileImagePath, principalDetails,nullimageButton);
 	            if (isUpdated != null) {
 	                return ResponseEntity.ok( "회원 정보 업데이트 성공");
 	            } else {
@@ -292,5 +314,11 @@ public ResponseEntity<?> getProfileImage(@RequestBody String userid) throws Json
     return ResponseEntity.ok(profileImage);
 }
 
+	@GetMapping("/findNickname/{userid}")		//채팅방 닉네임 찾기
+	public String getRoomNickname(@PathVariable(name = "userid") String userid) {
+		MemberEntity memberEntity = memberService.findByUserId(userid);
+			System.out.println("아이ㄷ; " + memberEntity.getNickname());
+			return memberEntity.getNickname();
 	
+	}
 }

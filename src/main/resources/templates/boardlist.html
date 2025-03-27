@@ -320,7 +320,7 @@ table a {
 									<img src="/boardimage/nullimage.jpg" alt="no profile image"
 										style="display: block; width: 50px; height: 50px; object-fit: cover; margin-right: 10px;">
 								</div>
-								<span th:text="${board.memberEntity.name}"
+								<span th:text="${board.memberEntity.nickname}"
 									style="font-size: 14px; color: #333;"></span>
 							</div>
 						</div>
@@ -337,23 +337,90 @@ table a {
 					<td th:if="${board.memberEntity.userid == principalDetails.name}"
 						style="text-align: center;">
 						<div style="display: flex; justify-content: center; gap: 10px;">
+					<!--  	 <div th:if="${board.trades == null || #lists.isEmpty(board.trades)}">
 							<button type="button" th:id="|updateBoard-${board.id}|"
 								th:onclick="'window.location.href=\'/board/updateboard/' + ${board.id} + '\';'"
 								style="background-color: #4caf50; color: white; padding: 5px 10px; border: none; border-radius: 5px;	cursor: pointer;">수정</button>
+								</div>
 							<button type="button" th:id="|deleteBoard-${board.id}|"
 								th:data-deleteBoardId="${board.id}"
 								style="background-color: #f44336; color: white; padding: 5px 10px; border: none; border-radius: 5px;	cursor: pointer;">삭제</button>
-						</div>
+						</div>  -->
+						
+						
+						
+						    <!-- 수정 버튼 (거래가 없을 경우 게시글만 올릴 경우)-->
+    <div th:if="${board.trades == null || #lists.isEmpty(board.trades)}">
+    <!-- 거래 목록이 없을 때 보이는 수정 버튼 -->
+    <button type="button" th:id="|updateBoard-${board.id}|"
+            th:data-updateBoardId="${board.id}"
+            th:onclick="'window.location.href=\'/board/updateboard/' + ${board.id} + '\';'"
+            style="background-color: #4caf50; color: white; padding: 5px 10px; border-radius: 5px; border: none; cursor: pointer;">
+        수정
+    </button>
+        <!-- 삭제 버튼 -->
+    <button type="button" th:id="|deleteBoard-${board.id}|"
+            th:data-deleteBoardId="${board.id}"
+            style="background-color: red; color: white; padding: 5px 10px; border-radius: 5px; border: none; cursor: pointer;">
+        삭제
+    </button>
+</div>
+    
+
+<!--     <div th:if="${board.trades == null || !#lists.isEmpty(board.trades)}"> -->
+    
+<!--     </div> -->
+    
+    
+    
+    
+     <div th:each="trade, iterStat : ${board.trades}">
+        <div th:if="${trade?.tradeStatus?.name == '완료'}">
+            <!-- 삭제 버튼 -->
+           <button type="button" th:id="|deleteBoard-${board.id}|"
+            th:data-deleteBoardId="${board.id}"
+            style="background-color: red; color: white; padding: 5px 10px; border-radius: 5px; border: none; cursor: pointer;">
+        삭제
+    </button>
+
+        </div>
+    </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    </div>
 					</td>
 					<!-- 작성자와 로그인 사용자가 다를 경우 대화하기 버튼 표시 -->
 					<td
 						th:unless="${board.memberEntity.userid == principalDetails.name || principalDetails.name == 'anonymousUser'}"
 						style="text-align: center;">
-						<div class="enterChatRoom" style="cursor: pointer;">
+<!-- 						th:if="#lists.isEmpty(board.trades)" -->
+									<div th:if="${board.trades == null or #lists.isEmpty(board.trades)}" class="enterChatRoom" style="cursor: pointer;">
 							<button type="button" class="createRoom" th:data-id="${board.id}"
 								th:data-member2="${board.memberEntity.userid}"
 								style="background-color: #2196f3; color: white; padding: 5px 10px; border: none; border-radius: 5px;	cursor: pointer;">대화하기</button>
 						</div>
+						
+						
+						
+						
+						
+						
+						<div th:each= "trade : ${board.trades}">
+						<div class="enterChatRoom" style="cursor: pointer;" th:if="${trade != null && trade?.tradeStatus?.name != '완료'}">
+							<button type="button" class="createRoom" th:data-id="${board.id}"
+								th:data-member2="${board.memberEntity.userid}"
+								style="background-color: #2196f3; color: white; padding: 5px 10px; border: none; border-radius: 5px;	cursor: pointer;">대화하기</button>
+						</div>
+						</div>
+				
+			
+						
 					</td>
 					<!-- 비로그인 상태일 경우 -->
 					<td th:unless="${principalDetails.name != 'anonymousUser'}"
@@ -511,7 +578,7 @@ table a {
     const loggedId = document.getElementById("loggedId")?.value;  // 로그인된 사용자 ID 가져오기
     const isLoggedIn = document.getElementById("isLoggedIn").value;
     const loggedUserId = document.getElementById("loggedUserId").value;
-    
+
     if (!loggedId) {
       console.error("로그인된 사용자 ID를 찾을 수 없습니다.");
       return;
@@ -519,7 +586,7 @@ table a {
 
     // "대화하기" 버튼 선택
     const chatButtons = document.querySelectorAll('.createRoom');
-
+		
     chatButtons.forEach(button => {
       button.addEventListener('click', async function() {
         const boardId = this.getAttribute('data-id');
@@ -582,6 +649,8 @@ table a {
     });
   });
 </script>
+
+
 	<script type="module">
  import { getBoardMainFile } from '/js/boardModule.js';
 

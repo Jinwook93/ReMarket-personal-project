@@ -299,7 +299,7 @@ public class TradeController {
 //				    responseAlarmDTO.getMember2Content()
 //				);
 			messageDTO.setMessageContent(
-					member2.getUserid()+ " 님이 거래완료를 희망합니다. 거래를 마치시겠습니까? <div class='messageButtonSelect'><button id='complete1-Sell-" + responseDTO.getId() + "'>거래완료</button></div>"		
+					member2.getNickname()+ " 님이 거래완료를 희망합니다. 거래를 마치시겠습니까? <div class='messageButtonSelect'><button id='complete1-Sell-" + responseDTO.getId() + "'>거래완료</button></div>"		
 			);
 			
 			
@@ -416,6 +416,10 @@ public class TradeController {
 			Long loggedId = principalDetails.getMemberEntity().getId();
 		TradeDTO responseDTO = tradeService.findTradeByRoomId(roomId, loggedId);
 //		System.out.println(responseDTO.toString());
+		if(responseDTO ==null) {
+			responseDTO = new TradeDTO();
+		}
+		
 		return ResponseEntity.ok(responseDTO);
 	
 	}
@@ -728,7 +732,6 @@ public class TradeController {
 				
 				
 				
-				System.out.println("여기까지 가나?" + responseDTO.toString());
 				
 				
 				
@@ -796,11 +799,14 @@ public class TradeController {
 				    .filter(trade -> Boolean.FALSE.equals(trade.getCompleted1()) && Boolean.TRUE.equals(trade.getCompleted2()))
 				    .findFirst()
 				    .map(trade -> new TradeDTO().fromEntity(trade))			//   ==    .map(TradeDTO::fromEntity)	      파라미터가 하나일 경우에 :: 사용 가능 . 그 외에는 -> 사용
-				    .orElse(null);
+				    .orElse(new TradeDTO());
 			
 			
 //		TradeDTO responseDTO = tradeService.find
 //		System.out.println(tradeDTO.toString());
+			
+			
+			
 		return ResponseEntity.ok(tradeDTO);		
 	
 	}

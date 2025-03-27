@@ -38,7 +38,7 @@
 						<tr>
 							<td><label for="userid">아이디</label></td>
 							<td><span th:text="${member.userid}"></span></td>
-							<td rowspan="5">	<div>
+							<td rowspan="6">	<div>
 					<div th:if="${member.profileImage!=null}">
 						<!-- 프로필 이미지 -->
 						<img th:src="@{{imagePath}(imagePath=${member.profileImage})}"
@@ -54,6 +54,12 @@
 				</div></td>
 							
 						</tr>
+						
+						<tr>
+							<td><label for="nickname">닉네임 </label></td>
+							<td><span th:text="${member.nickname}"></span></td>
+						</tr>
+						
 						<tr>
 							<td><label for="name">이름 </label></td>
 							<td><span th:text="${member.name}"></span></td>

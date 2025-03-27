@@ -93,8 +93,14 @@ button:hover {
 						style="width: 50px; height: 50px; margin-right: 10px;">
 				</div>
 				<!-- 이름 -->
-				<span th:text="${name}"></span> <input type="hidden" name="name"
-					, id="name" th:value="${name}" /> <input type="hidden"
+				<span th:text="${nickname}"></span> <input type="hidden" name="name"
+					, id="name" th:value="${name}" /> 
+					<input type="hidden" name="nickname"
+					, id="nickname" th:value="${nickname}" /> 
+					
+					
+					
+					<input type="hidden"
 					name="userid" , id="userid" th:value="${userid}" />
 
 

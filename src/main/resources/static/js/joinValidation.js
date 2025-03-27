@@ -30,10 +30,51 @@ function checkDuplicateId(userid) {
 }
 
 
+function checkDuplicateNickname(nickname) {
+    // 새로운 Promise 객체를 생성하여 반환
+    // Promise는 비동기 작업을 처리하기 위한 객체로, 성공(resolve) 또는 실패(reject) 상태로 결과를 반환
+    return new Promise((resolve, reject) => {
+
+        // $.ajax()를 이용해 서버로 아이디 중복 확인 요청
+        $.ajax({
+            url: "http://localhost:8081/checkNickname",  // 서버로 보낼 요청의 URL
+            type: "POST",  // HTTP 메소드 (POST 방식 사용)
+            contentType: "application/json",  // 요청 데이터의 형식 (JSON으로 보냄)
+            data: JSON.stringify({ "nickname": nickname }),  // 아이디 데이터를 JSON 형식으로 서버에 전달
+
+            // 서버 응답이 성공적일 경우 실행될 함수
+            success: function(response) {
+                // resolve(): 서버 응답이 정상적으로 왔을 때 Promise를 '성공' 상태로 처리
+                // resolve는 Promise가 '성공' 상태일 때 반환값을 지정하는 역할
+                resolve(response.available);  // 서버 응답에서 'available' 값을 반환 (true 또는 false)
+            },
+
+            // 서버 요청이 실패했을 경우 실행될 함수
+            error: function(xhr, status, error) {
+                console.error("Error: " + error);
+                // reject(): 서버 요청이 실패했을 때 Promise를 '실패' 상태로 처리
+                // reject는 Promise가 '실패' 상태일 때 오류 객체를 넘겨주는 역할
+                reject(error);  // 실패 시 error 정보를 반환
+            }
+        });
+    });
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 async function joinValidation(e) {
     let userid = document.getElementById("userid");
+        let nickname = document.getElementById("nickname");
     let password = document.getElementById("password");
     let password_check = document.getElementById("password_check");
     let name = document.getElementById("name");
@@ -44,9 +85,12 @@ async function joinValidation(e) {
     let address2 = document.getElementById("address2");
     let password_admin = document.getElementById("password_admin");
     let isCheckedIdElement = document.getElementById("isCheckedId");
-
+	  let isCheckedNicknameElement = document.getElementById("isCheckedNickname");
+	  
+	  
     // isCheckedId를 element에서 직접 가져옴
     let isCheckedId = isCheckedIdElement.value;
+     let isCheckedNickname = isCheckedNicknameElement.value;
    	let isChangedId = document.getElementById("isChangedId");
    	
    	
@@ -66,6 +110,11 @@ async function joinValidation(e) {
         return false;
     }
     
+        		if (userid.value.includes(" ")) {
+			alert("아이디는 공백을 허용하지 않습니다!");
+			return;
+		}
+    
 
     // 중복 확인을 하지 않으면 폼 제출을 막음
     if (isCheckedId === "false") {
@@ -73,6 +122,47 @@ async function joinValidation(e) {
         userid.focus();
         return false;
     }
+    
+    
+  
+    
+    
+    
+        // 닉네임이 비어있는지 체크
+    if (nickname.value === "") {
+        alert("닉네임을 입력해 주세요.");
+       nickname.focus();
+        return false;
+    }
+    
+     // 닉네임 길이 체크 (최소 2자 이상, 최대 8자 이하)
+    if (nickname.value.length < 2 || userid.value.length > 8) {
+        alert("닉네임은 2자 이상 8자 이하로 입력해 주세요.");
+        nickname.focus();
+        return false;
+    }
+    
+		if (nickname.value.includes(" ")) {
+			alert("닉네임은 공백을 허용하지 않습니다!");
+			return false;
+		}
+    // 중복 확인을 하지 않으면 폼 제출을 막음
+    if (isCheckedId === "false") {
+        alert("닉네임 중복을 확인해주세요");
+        nickname.focus();
+        return false;
+    }
+    
+    
+  
+
+
+    
+    
+    
+    
+    
+    
     
 
     // 아이디 값이 변경되면 중복 확인을 다시 해야 하므로
@@ -215,7 +305,8 @@ async function joinValidation(e) {
         } else {
 //            alert("사용 가능한 아이디입니다");
             isCheckedIdElement.value = "true";
-             userid.focus();
+//             userid.focus();
+
 //            isChangedId.value = "false";
         }
     } catch (error) {
@@ -225,9 +316,26 @@ async function joinValidation(e) {
 
 
 
+//닉네임 중복 확인
 
-
-
+ try {
+        const isAvailable = await checkDuplicateNickname(nickname.value);
+        if (!isAvailable) {
+            alert("이미 등록된 닉네임입니다");
+            isCheckedNicknameElement.value = "false";
+            nickname.focus();
+//            isChangedId.value = "false";
+            return false;  // 회원가입 중단
+        } else {
+//            alert("사용 가능한 닉네임입니다");
+           isCheckedNicknameElement.value = "true";
+//             nickname.focus();
+//            isChangedId.value = "false";
+        }
+    } catch (error) {
+        alert("닉네임 확인 중 오류가 발생했습니다.");
+        return false;
+    }
 
 
 

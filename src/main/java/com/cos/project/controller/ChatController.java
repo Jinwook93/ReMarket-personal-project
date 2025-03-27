@@ -35,6 +35,7 @@ import com.cos.project.entity.ChattingRoomEntity;
 import com.cos.project.entity.MemberEntity;
 import com.cos.project.entity.MessageEntity;
 import com.cos.project.repository.ChattingRoomRepository;
+import com.cos.project.repository.MemberRepository;
 import com.cos.project.service.AlarmService;
 import com.cos.project.service.BoardService;
 import com.cos.project.service.ChatService;
@@ -146,6 +147,8 @@ public class ChatController {
 
 			Long loggedId = principalDetails.getMemberEntity().getId();
 			Long member2Id =	memberService.findByUserId( messageDTO.getReceiverUserId()).getId();	//상대방 ID
+//			String member2Nickname = memberService.findByUserId( messageDTO.getReceiverUserId()).getNickname();
+//			messageDTO.setMember2Nickname(member2Nickname);
 			
 			boolean flag = chatService.addMessage(roomId,principalDetails ,messageDTO);		//roomId의 id를 조회
 			if(flag) {
@@ -238,7 +241,6 @@ public class ChatController {
 //		System.out.println(responseDTO.toString());
 		
 		
-		System.out.println("responseDTO의 ID : " + responseDTO.getId());
 		return ResponseEntity.ok(responseDTO);
 		
 	}
@@ -418,6 +420,11 @@ public class ChatController {
     		return ResponseEntity.ok(chattingRoomDTO);
 			
 	}
+    
+    
+
+    
+    
     
     
 }

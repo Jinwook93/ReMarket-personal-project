@@ -485,7 +485,7 @@ input[type="checkbox"] {
 
 
 				<!-- 이름 -->
-				<span style="font-weight:bold;font-size: 20px;" th:text="${board.memberEntity.name}"></span>
+				<span style="font-weight:bold; font-size: 20px;" th:text="${board.memberEntity.nickname}"></span>
 
 
 			</div>
@@ -688,25 +688,107 @@ input[type="checkbox"] {
 			<!-- 왼쪽 : 수정/삭제 버튼 -->
 			<div>
 			<div th:if="${board.memberEntity.userid == principalDetails.name}">
+			
+			
+	<!--  
     <div th:each="trade, iterStat : ${board.trades}">
         <div th:if="${trade?.tradeStatus?.name != '완료'}">
             <!-- 수정 버튼 -->
-            <button type="button" th:id="|updateBoard-${board.id}|"
-                    th:data-updateBoardId="${board.id}"
-                    th:onclick="'window.location.href=\'/board/updateboard/' + ${board.id} + '\';'"
-                    style="background-color: #4caf50; color: white; padding: 5px 10px; border-radius: 5px; border: none; cursor: pointer;">
-                수정
-            </button>
-        </div>
-    </div>
-    
-    <!-- 삭제 버튼 -->
+<!--             <button type="button" th:id="|updateBoard-${board.id}|" -->
+<!--                     th:data-updateBoardId="${board.id}" -->
+<!--                     th:onclick="'window.location.href=\'/board/updateboard/' + ${board.id} + '\';'" -->
+<!--                     style="background-color: #4caf50; color: white; padding: 5px 10px; border-radius: 5px; border: none; cursor: pointer;"> -->
+<!--                 수정 -->
+<!--             </button> -->
+<!--         </div> -->
+<!--     </div> -->
+  
+    <div style="display:flex; gap:5px;">
+    <!-- 수정 버튼 (거래가 없을 경우 게시글만 올릴 경우)-->
+    <div th:if="${board.trades == null || #lists.isEmpty(board.trades)}">
+    <!-- 거래 목록이 없을 때 보이는 수정 버튼 -->
+    <button type="button" th:id="|updateBoard-${board.id}|"
+            th:data-updateBoardId="${board.id}"
+            th:onclick="'window.location.href=\'/board/updateboard/' + ${board.id} + '\';'"
+            style="background-color: #4caf50; color: white; padding: 5px 10px; border-radius: 5px; border: none; cursor: pointer;">
+        수정
+    </button>
+        <!-- 삭제 버튼 -->
     <button type="button" th:id="|deleteBoard-${board.id}|"
             th:data-deleteBoardId="${board.id}"
             style="background-color: red; color: white; padding: 5px 10px; border-radius: 5px; border: none; cursor: pointer;">
         삭제
     </button>
 </div>
+    
+
+<!--     <div th:if="${board.trades == null || !#lists.isEmpty(board.trades)}"> -->
+    
+<!--     </div> -->
+    
+    
+    
+    
+     <div th:each="trade, iterStat : ${board.trades}">
+        <div th:if="${trade?.tradeStatus?.name == '완료'}">
+            <!-- 삭제 버튼 -->
+           <button type="button" th:id="|deleteBoard-${board.id}|"
+            th:data-deleteBoardId="${board.id}"
+            style="background-color: red; color: white; padding: 5px 10px; border-radius: 5px; border: none; cursor: pointer;">
+        삭제
+    </button>
+
+        </div>
+    </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    </div>
+</div>
+
+
+
+
+					<!-- 작성자와 로그인 사용자가 다를 경우 대화하기 버튼 표시 -->
+					<div
+						th:unless="${board.memberEntity.userid == principalDetails.name || principalDetails.name == 'anonymousUser'}"
+						style="text-align: center;">
+<!-- 						th:if="#lists.isEmpty(board.trades)" -->
+									<div th:if="${board.trades == null or #lists.isEmpty(board.trades)}" class="enterChatRoom" style="cursor: pointer;">
+							<button type="button" class="createRoom" th:data-id="${board.id}"
+								th:data-member2="${board.memberEntity.userid}"
+								style="background-color: #2196f3; color: white; padding: 5px 10px; border: none; border-radius: 5px;	cursor: pointer;">대화하기</button>
+						</div>
+						
+						
+						
+						
+						
+						
+						<div th:each= "trade : ${board.trades}">
+						<div class="enterChatRoom" style="cursor: pointer;" th:if="${trade != null && trade?.tradeStatus?.name != '완료'}">
+							<button type="button" class="createRoom" th:data-id="${board.id}"
+								th:data-member2="${board.memberEntity.userid}"
+								style="background-color: #2196f3; color: white; padding: 5px 10px; border: none; border-radius: 5px;	cursor: pointer;">대화하기</button>
+						</div>
+						</div>
+				
+			
+						
+					</div>
+
+
+
+
+
+
+
+
 
 			</div>
 
@@ -769,7 +851,84 @@ input[type="checkbox"] {
 	<script src="/js/updateComment.js" type="module"></script>
 	<script src="/js/deleteComment.js" type="module"></script>
 	<script src="/js/deleteBoard.js" type="text/javascript"></script>
+	<script type="module">
+  import { loadMessages, openChatRoom, loadChatRooms, setUpEnterRoomButton, setUpExitRoomButton, toggleChattingRoomList, showChattingRoomList, updateChatRoomOrder} from '/js/chatModule.js';
+  
+  document.addEventListener('DOMContentLoaded', async function() {
+    const loggedId = document.getElementById("loggedId")?.value;  // 로그인된 사용자 ID 가져오기
+    const isLoggedIn = document.getElementById("isLoggedIn").value;
+    const loggedUserId = document.getElementById("loggedUserId").value;
 
+    if (!loggedId) {
+      console.error("로그인된 사용자 ID를 찾을 수 없습니다.");
+      return;
+    }
+
+    // "대화하기" 버튼 선택
+    const chatButtons = document.querySelectorAll('.createRoom');
+		
+    chatButtons.forEach(button => {
+      button.addEventListener('click', async function() {
+        const boardId = this.getAttribute('data-id');
+        const member2UserId = this.getAttribute('data-member2');
+
+        if (!boardId || !member2UserId) {
+          alert('채팅방을 생성할 수 없습니다. (boardId 또는 member2UserId 누락)');
+          return;
+        }
+
+        const payload = {
+          boardId: boardId, // 추가 가능
+          member2UserId: member2UserId
+        };
+
+        try {
+          const response = await fetch(`/chat/Chatroom/${boardId}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`채팅방 생성 실패: ${errorText}`);
+          }
+
+          const data = await response.json();
+          console.log('채팅방 생성 성공:', data);
+
+          // 채팅방 목록 갱신 및 토글 (대화 목록을 보이도록)
+          if (isLoggedIn === "true" || isLoggedIn === true) {
+
+		// 채팅방 알람을 이용해서 로드할 것임
+            await loadChatRooms(loggedId);
+            setUpEnterRoomButton(loggedUserId);
+            setUpExitRoomButton();
+ 			updateChatRoomOrder(data.id);
+         showChattingRoomList(); // 또는 showChattingRoomList(); 를 호출하여 강제로 보이게 함.
+          }
+
+		
+
+
+          // 채팅방 열기 및 메시지 로드
+		if(loggedUserId !== data.member2UserId){	
+          openChatRoom(data.id, data.title, loggedUserId, data.member2UserId, "logged1");
+        }else{
+          openChatRoom(data.id, data.title, loggedUserId, data.member1UserId,"logged2");
+		}
+		
+
+        } catch (error) {
+          console.error('채팅방 생성 중 오류 발생:', error);
+          alert('채팅방을 생성하는 도중 오류가 발생했습니다.');
+        }
+      });
+    });
+  });
+</script>
 
 <script type="module">
         import { truncateText } from '/js/truncateText.js'; // truncate.js 파일 경로

@@ -221,7 +221,7 @@ async function searchChat() {
                             <div class="message" id="msg-${msg.id}" style ="display:flex;">
                             		<div>
                             		<img src = ${msg.profileImageUrl1} width="50", height="50">
-                            	 ${msg.senderUserId}
+                            	 ${msg.member1Nickname}
                             	 </div>
                                 	<div  style="width:60%;">
                                  <p> ${msg.messageContent}   </p>
@@ -419,7 +419,7 @@ async function checkUserAlarmData(loggedId) {
 export async function fetchCompleted2Trade(alarm) {
 	const boardId = Number(alarm.id);
 	try {
-		const response = await fetch(`/trade/findCompleted2TradeByBoardId/${boardId}`, {
+		const response = await fetch(`/trade/findCompleted2TradeByBoardId/${boardId}`, {			//상대방이 거래완료 요청을 보낸 거래알람을 찾음
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json'
@@ -432,7 +432,7 @@ export async function fetchCompleted2Trade(alarm) {
 
 		const tradeData = await response.json();
 
-		if (tradeData) {
+		if (tradeData.id != null) {
 //			console.log("가져온 Trade 데이터:", tradeData);
 
 			// `complete-class-${alarm.id}` id를 가진 div를 찾음

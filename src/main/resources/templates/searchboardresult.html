@@ -381,22 +381,22 @@ text-decoration: none;
 
 
 
-<div class="pagination">
-    <a th:each="i : ${#numbers.sequence(1, totalPages)}"
-       th:href="@{/board/searchBoardManager(page=${i}, 
-                                            title=${boardDTO.title != null ? boardDTO.title : ''}, 
-                                            contents=${boardDTO.contents != null ? boardDTO.contents : ''}, 
-                                            memberUserId=${boardDTO.memberUserId != null ? boardDTO.memberUserId : ''}, 
-                                            price=${boardDTO.price != null ? boardDTO.price : ''}, 
-                                            address=${boardDTO.address != null ? boardDTO.address : ''}, 
-                                            category=${boardDTO.category != null ? boardDTO.category : ''}, 
-                                            buy_Sell=${boardDTO.buy_Sell != null ? boardDTO.buy_Sell : ''}, 
-                                            product=${boardDTO.product != null ? boardDTO.product : ''},
-                                          condition= ${param.condition != null? param.condition : ''})}"
-       th:text="${i}" 
-       th:classappend="${i == currentPage} ? 'active' : ''">
-    </a>
-</div>
+<!-- <div class="pagination"> -->
+<!--     <a th:each="i : ${#numbers.sequence(1, totalPages)}" -->
+<!--        th:href="@{/board/searchBoardManager(page=${i},  -->
+<!--                                             title=${boardDTO.title != null ? boardDTO.title : ''},  -->
+<!--                                             contents=${boardDTO.contents != null ? boardDTO.contents : ''},  -->
+<!--                                             memberUserId=${boardDTO.memberUserId != null ? boardDTO.memberUserId : ''},  -->
+<!--                                             price=${boardDTO.price != null ? boardDTO.price : ''},  -->
+<!--                                             address=${boardDTO.address != null ? boardDTO.address : ''},  -->
+<!--                                             category=${boardDTO.category != null ? boardDTO.category : ''},  -->
+<!--                                             buy_Sell=${boardDTO.buy_Sell != null ? boardDTO.buy_Sell : ''},  -->
+<!--                                             product=${boardDTO.product != null ? boardDTO.product : ''}, -->
+<!--                                           condition= ${param.condition != null? param.condition : ''})}" -->
+<!--        th:text="${i}"  -->
+<!--        th:classappend="${i == currentPage} ? 'active' : ''"> -->
+<!--     </a> -->
+<!-- </div> -->
 
 
 

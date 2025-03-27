@@ -91,7 +91,6 @@ public class SecurityConfig {
 		                .requestMatchers("/board/writeboard").authenticated()
 		                .requestMatchers("/login").permitAll()
 		                .requestMatchers("/profileimage/**").permitAll()  // '/profileimage' 경로 하위 모든 이미지에 대해 접근 허용
-		                .requestMatchers("/profileimage/**").permitAll()  // '/profileimage' 경로 하위 모든 이미지에 대해 접근 허용
 		                // 이미지 파일 경로에 대한 접근을 허용
 		       
 		                .anyRequest().permitAll()

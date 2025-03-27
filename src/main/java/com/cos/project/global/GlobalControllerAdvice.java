@@ -19,6 +19,7 @@ public class GlobalControllerAdvice {
             model.addAttribute("id", principal.getMemberEntity().getId());
             model.addAttribute("profileImage", principal.getMemberEntity().getProfileImage());
             model.addAttribute("address", principal.getMemberEntity().getAddress());
+            model.addAttribute("loggedNickname", principal.getMemberEntity().getNickname());
         } else {
             model.addAttribute("isLoggedIn", false);
         }

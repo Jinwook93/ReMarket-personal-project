@@ -17,8 +17,8 @@
                 // 모달에 데이터 표시
                 
                 document.getElementById("memberBoardUserId").textContent = data.userid;
-                document.getElementById("memberName").textContent = data.name;
-                document.getElementById("memberAge").textContent = data.age;
+//                document.getElementById("memberName").textContent = data.name;
+//                document.getElementById("memberAge").textContent = data.age;
                 document.getElementById("memberGender").textContent = data.gender;
                 document.getElementById("memberAddress").textContent = data.address;
                 document.getElementById("memberPhone").textContent = data.phone;

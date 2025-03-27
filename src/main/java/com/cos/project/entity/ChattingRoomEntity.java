@@ -34,12 +34,12 @@ public class ChattingRoomEntity {
 
     @ManyToOne
     @JoinColumn(name = "member1_id")
-    @JsonIncludeProperties({"id","userid", "profileImage","name"})
+    @JsonIncludeProperties({"id","userid", "profileImage","name","nickname"})
     private MemberEntity member1;
 
     @ManyToOne
     @JoinColumn(name = "member2_id")
-    @JsonIncludeProperties({"id","userid", "profileImage","name"})
+    @JsonIncludeProperties({"id","userid", "profileImage","name","nickname"})
     private MemberEntity member2;
 
   private Long exitedmemberId;		// 채팅방에 들어갈 시 null로 설정 됨

@@ -29,6 +29,8 @@ public class ChattingRoomDTO {
     
     private String member1UserId;
     private String member2UserId;
+    private String member1Nickname;
+    private String member2Nickname;
     private String boardId;
     private Long exitedmemberId;
     private Long messageIndex1;		//채팅방 재접속시 렌더링 할지에 대한 유무		

@@ -184,7 +184,7 @@ export function denyCreateTrade(alarmId, loggedUserId) {  // 로그인유저 : m
 // ('상대편(거래완료를 후수신 받을 쪽) =  로그인 유저' 기준, member1를 기준으로 하므로 isCompleted1를 기준으로 하였다 )
 export function CompleteTrade(tradeId, isMember) {  // 로그인유저 : member1, 타겟 유저 : member2
 
-	if (confirm("거래를 완료하시겠습니까? ( ※ 상대방도 거래를 완료해야 거래가 완료됩니다)")) {			//수락시
+	if (confirm("상대방에게 거래완료를 요청하시겠습니까? ( ※ 상대방도 거래를 완료해야 거래가 완료됩니다)")) {			//수락시
 		fetch(`/trade/completeTrade/${tradeId}`, {  // 신청 알람을 만든다
 			method: "POST",
 			headers: { 'Content-Type': 'application/json;charset=utf-8' },

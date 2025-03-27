@@ -1,6 +1,6 @@
 
 //import { checkUserAlarmCount } from "./alarmModule.js";
-import { getBoardMainFile } from "./boardModule.js";
+import { getBoardMainFile, getRoomNickname } from "./boardModule.js";
 import { formatCurrency } from "./formatCurrency.js";
 import { formatDate } from "./formatDate.js";
 import { CancelTrade, CompleteTrade, bookTrade1, bookTrade2, changeBookTrade, denyBookTrade, denyCreateTrade, enrollTrade1, enrollTrade2 } from "./tradeModule.js";
@@ -172,7 +172,7 @@ export async function loadMessages(roomId, messageIndex, recentExitedmemberId, s
 			profileImage.classList.add("profile-image", "message-Left");
 			const userid = document.createElement("p");
 			//			userid.textContent =  msg.exited ? '(나간 사용자)' : msg.senderUserId;
-			userid.textContent = msg.senderUserId;
+			userid.textContent = msg.member1Nickname;
 			profileContainer.appendChild(profileImage);
 			profileContainer.appendChild(userid);
 
@@ -189,7 +189,7 @@ export async function loadMessages(roomId, messageIndex, recentExitedmemberId, s
 				const parentMessageObject = findContentByParentMessageId(messages, msg.parentMessageId);
 				if (parentMessageObject) {
 					messageElement.innerHTML = `
-                <b>${parentMessageObject.senderUserId}</b>: <b>${parentMessageObject.messageContent.length > 20 ? insertLineBreaks(parentMessageObject.messageContent, 20) : parentMessageObject.messageContent}</b>에 대한 답글
+                <b>${parentMessageObject.member1Nickname}</b>: <b>${parentMessageObject.messageContent.length > 20 ? insertLineBreaks(parentMessageObject.messageContent, 20) : parentMessageObject.messageContent}</b>에 대한 답글
                 <hr>
                
                	 	${msg.alarmType == false || msg.alarmType == null ? (msg.messageContent.length > 20 ? insertLineBreaks(msg.messageContent, 20) : msg.messageContent) : msg.messageContent}
@@ -438,7 +438,7 @@ export async function loadMessages(roomId, messageIndex, recentExitedmemberId, s
 			messageElement.addEventListener("click", function(e) {
 				//				console.log("클릭된 메시지:", msg.messageContent, "보낸 사람:", msg.senderUserId, "로그인된 유저:", loggedUserId);
 				const messageInput = document.getElementById(`message-input-${msg.roomId}`);
-				const replyText = `${msg.senderUserId} : ${msg.messageContent}에 대한 답글 >`;
+				const replyText = `${msg.member1Nickname} : ${msg.messageContent}에 대한 답글 >`;
 				const parentMessageId = document.getElementById("parentMessageId");
 				const parentMessageButton = document.getElementById("parentMessageButton");
 				const clickedMsgId = msg.id; // 현재 클릭된 메시지 ID
@@ -603,8 +603,30 @@ export async function openChatRoom(roomId, title, loggedUserId, userid, loggedFl
 		const boardMainFile = await getBoardMainFile(board.id);
 		const trade = findTradeByBoardId(board.trades);
 
-		const alarmResponse = await fetch(`/alarm/findTradeAlarm/${Number(roomId)}`);
-		const alarm = await alarmResponse.json();
+
+		const userNickname = await getRoomNickname(userid);
+
+
+
+
+
+
+
+//		const alarmResponse = await fetch(`/alarm/findTradeAlarm/${Number(roomId)}`);
+//		const alarm = await alarmResponse.json();
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 //		console.log(alarm);
 		chatWindow.innerHTML = `
     <div class="chat-container" id="chat-container-${roomId}">
@@ -612,7 +634,7 @@ export async function openChatRoom(roomId, title, loggedUserId, userid, loggedFl
                     background-color: lightgray; padding: 10px; border-radius: 5px; 
                     margin-top: 10px; margin-bottom: 10px;">
             <div>
-                <h2 style="margin: 0;">${userid}</h2>
+                <h2 style="margin: 0;">${userNickname}</h2>
             </div>
                	   
             <div style="display: flex;">
@@ -649,7 +671,7 @@ export async function openChatRoom(roomId, title, loggedUserId, userid, loggedFl
                     <h3 style = "margin-bottom:5px;"> ${board.title}</h3>
                     <h3>가격: ${formatCurrency(board.price)}원</h3>
                     <div class="buttons-container" style="display: flex;flex-direction: row;">
-
+						<!-- 거래 상태 버튼 들어갈 예정 -->
 				
                       </div>
                 </div>
@@ -962,6 +984,7 @@ export async function loadChatRooms(loggedId) {
 				const unReadMessageCount = await checkUnReadMessageCount2(data.id);
 				const tradeResponse = await fetch(`/trade/findTrade/${data.id}`);			//거래 상태
 				const trade = await tradeResponse.json();
+		
 //				console.log("트레이드");
 //				console.log(trade);
 				// 기존 DOM에서 같은 roomId가 있는지 확인
@@ -996,7 +1019,7 @@ export async function loadChatRooms(loggedId) {
                                     ${recentRoomMessage
 						? `${recentRoomMessage.senderUserId ? ` 
                                             ${unReadMessageCount > 0 ? `<div id="unReadMessageCountButton2">  <b>${unReadMessageCount}</b></div>` : ""} 
-                                            <img src="/icon/userIcon.png" width="20" height="20" alt="상대방"> ${recentRoomMessage.senderUserId} : </b>` : ""} 
+                                            <img src="/icon/userIcon.png" width="20" height="20" alt="상대방"> ${recentRoomMessage.member1Nickname} : </b>` : ""} 
                                             ${truncateText(recentRoomMessage.messageContent,20) || ""}`
 						: `최근 메시지 없음`}
                                 </div>
@@ -1019,7 +1042,8 @@ export async function loadChatRooms(loggedId) {
                                 </div>
                                 <div class="date-text" style="font-size:15px;">
                                     <img src="/icon/userIcon.png" width="20" height="20" alt="상대방">
-                                    ${loggedUserId === data.member2UserId ? data.member1UserId : data.member2UserId}
+            <!--                  ${loggedUserId === data.member2UserId ? data.member1UserId : data.member2UserId} -->
+            						   ${loggedUserId === data.member2UserId ? data.member1Nickname : data.member2Nickname}
                                 </div>
                             </div>
                         </div>

@@ -23,6 +23,9 @@
 				<input type="hidden" th:value="${id}" id="loggedId"> <input
 					type="hidden" th:value="${loggedUserId}" id="loggedUserId">
 				<input type="hidden" th:value="${address}" id="loggedAddress">
+							<input type="hidden" th:value="${loggedNickname}" id="loggedNickname">
+			
+					
 
 				<div
 					style="display: flex; justify-content: space-between; width: 100%;">
@@ -41,7 +44,7 @@
 							th:src="${profileImage != null ? profileImage:'/boardimage/nullimage.jpg'}"
 							alt="profile image"
 							style="display: block; width: 30px; height: 30px; object-fit: cover; margin-right: 5px; margin-top: -3px;">
-							<span> <span style="margin-top:5px;" th:text="${name}"></span>
+							<span> <span style="margin-top:5px;" th:text="${loggedNickname}"></span>
 						</span>
 						</a> <a th:href="@{/logout}" style="margin-left: 10px;">로그아웃</a> <a
 							th:href="@{/mypage/{id}(id=${id})}">마이페이지</a>

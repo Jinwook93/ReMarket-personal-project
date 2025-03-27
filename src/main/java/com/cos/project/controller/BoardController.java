@@ -174,6 +174,7 @@ public class BoardController {
 		model.addAttribute("name", principal.getMemberEntity().getName());
 		model.addAttribute("userid", principal.getMemberEntity().getUserid());
 		model.addAttribute("profileImage", principal.getMemberEntity().getProfileImage());
+		model.addAttribute("nickname", principal.getMemberEntity().getNickname());
 		
 		return "boardwriteform";
 	}

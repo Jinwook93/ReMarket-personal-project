@@ -19,6 +19,8 @@ public class MessageDTO {
     private Long roomId;           // 채팅방 ID (ChattingRoomEntity 참조 대신)
     private String senderUserId;   // 보낸 사람 ID
     private String receiverUserId; // 받은 사람 ID
+    private String member1Nickname;   // 보낸 사람 닉네임
+    private String member2Nickname; // 받은 사람 닉네임
     private String messageContent; // 메시지 내용
     private boolean liked;	// 메시지 좋아요 활성화 상태
     private boolean isRead;			//읽음 표시
@@ -37,12 +39,13 @@ public class MessageDTO {
 	
     private Boolean expired;
     
-    public MessageDTO(Long id, String profileImageUrl1,String senderUserId, String messageContent, Long roomId,Boolean statusBar,Timestamp sendTime
+    public MessageDTO(Long id, String profileImageUrl1,String senderUserId, String member1Nickname, String messageContent, Long roomId,Boolean statusBar,Timestamp sendTime
     		,Boolean expired) {
 		super();
 		this.id = id;
 		this.profileImageUrl1 = profileImageUrl1;
 		this.senderUserId = senderUserId;
+		this.member1Nickname = member1Nickname;
 		this.messageContent = messageContent;
 		this.roomId = roomId;
 		this.statusBar = statusBar;

@@ -24,6 +24,15 @@ async function checkId() {
 		return;
 	}
 	
+	
+			if (userid.value.includes(" ")) {
+			alert("아이디는 공백을 허용하지 않습니다!");
+			return;
+		}
+
+
+	
+	
      // 아이디 길이 체크 (최소 5자 이상, 최대 20자 이하)
     if (userid.value.length < 5 || userid.value.length > 20) {
         alert("아이디는 5자 이상 20자 이하로 입력해 주세요.");

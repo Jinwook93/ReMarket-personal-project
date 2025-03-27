@@ -105,7 +105,7 @@ color : black;
 								</div>
 							</div>   
                                 <!-- 이름 -->
-                                <span th:text="${comment.memberEntity.name}">작성자 이름</span>
+                                <span th:text="${comment.memberEntity.nickname}">작성자 이름</span>
                             </div>
                         <p class="comment-time" 
                         th:text="${#dates.format(comment.createTime, 'yyyy-MM-dd HH:mm')}"

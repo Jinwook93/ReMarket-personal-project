@@ -228,7 +228,9 @@ public class AlarmController {
     	AlarmDTO responseDTO = alarmService.findTradeAlarmService(roomId, loggedId);	
     	
     	
-//System.out.println(responseDTO.toString());
+    		if(responseDTO == null) {
+    			responseDTO = new AlarmDTO();
+    		}
     	
 		return ResponseEntity.ok(responseDTO);
     }

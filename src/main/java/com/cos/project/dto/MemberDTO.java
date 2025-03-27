@@ -31,10 +31,14 @@ public class MemberDTO {
 //	@GeneratedValue(strategy =GenerationType.IDENTITY )
 	Long id;
 	
+	
+	
 //	@Column(unique = true)
 	String userid;
 	
 	String password;
+	
+	String nickname; 
 	
 	String name;
 	

@@ -34,12 +34,17 @@ public class MemberEntity {
 	@GeneratedValue(strategy =GenerationType.IDENTITY )
 	Long id;
 	
+	
+	
     @Column(unique = true, nullable = false)
-    private String userid;					//시큐리티에 로그인 할 ID
+    private String userid;					//시큐리티에 로그인 할 로그인 
 
     @Column(nullable = false)
     private String password;			//시큐리티에 로그인 할 패스워드
 	
+    
+	String nickname;  //홈페이지에서 사용할 닉네임
+    
 	String name;
 	
 	

@@ -31,7 +31,7 @@ public class MessageEntity {
 
     @ManyToOne
     @JoinColumn(name = "sender_id")
-    @JsonIncludeProperties({"id","userid", "profileImage","name"})
+    @JsonIncludeProperties({"id","userid", "profileImage","name","nickname"})
     private MemberEntity sender;  // 메시지를 보낸 사람
 
     @ManyToOne
@@ -81,6 +81,7 @@ public class MessageEntity {
             message.getId(),
             message.getSender().getProfileImage(),
             message.getSender().getUserid(),
+            message.getSender().getNickname(),
             message.getMessageContent(),
             message.getChattingRoomEntity().getId(),
             message.getStatusBar(),

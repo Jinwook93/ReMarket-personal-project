@@ -27,3 +27,29 @@ export async function getBoardMainFile(boardId) {
 			console.error("Error fetching message count:", error);  // Print any error that occurs
 		});
 }
+
+
+
+//채팅방 닉네임 찾기
+export async function getRoomNickname(userid) {
+	return fetch(`/findNickname/${userid}`, {
+		method: "GET",
+	})
+		.then(response => {
+			return response.text();
+		})
+		.then(data => {
+			//        console.log(data);  // Print the received data
+			return data;  // Return the data
+		})
+		.catch(error => {
+			console.error("닉네임을 찾을 수 없습니다", error);  // Print any error that occurs
+		});
+}
+
+
+
+
+
+
+

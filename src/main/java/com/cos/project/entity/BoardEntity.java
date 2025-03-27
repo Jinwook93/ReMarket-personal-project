@@ -64,11 +64,13 @@ public class BoardEntity {
     @Column(nullable = true)
     private String address;			//거래 장소
     
+    @Column(nullable = true)			//삭제 아닌 숨김 처리
+    private Boolean deleted =false;
     
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "member_id")
 //    @JsonBackReference("member-boards")
-    @JsonIncludeProperties({"id", "userid","name","profileImage"})
+    @JsonIncludeProperties({"id", "userid","name","profileImage","nickname"})
     private MemberEntity memberEntity; 
     
     @OneToMany(mappedBy = "boardEntity", cascade =  CascadeType.REMOVE, orphanRemoval = true)

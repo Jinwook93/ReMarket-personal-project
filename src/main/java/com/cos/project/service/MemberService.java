@@ -76,6 +76,30 @@ public class MemberService {
 	}
 
     
+	
+	
+	@Transactional(readOnly = true)
+	// 닉네임 중복 확인
+	public Boolean checkNickname(String nickname) {
+	    // 닉네임이 이미 존재하는지 확인
+	    boolean isExist = memberRepository.existsByNickname(nickname);
+	    
+	    if (isExist) {
+	        // 닉네임이 이미 존재하면 중복 닉네임 메시지 반환
+//	    	System.out.println("이미 등록된 닉네임입니다");
+	        return false;
+	    } else {
+	        // 아이디가 사용 가능하면 사용 가능 닉네임 메시지 반환
+//	    	System.out.println("사용 가능한 닉네임입니다");
+	        return true;
+	    }
+	}
+	
+	
+	
+	
+	
+	
     
     
     @Transactional
@@ -182,7 +206,7 @@ public class MemberService {
     
     @Transactional
     public String updateMember
-    (Long id, String userid, String password, String name, int age, Gender gender, String phone, String address, String profileImage, PrincipalDetails principalDetails, Boolean nullimageButton) {
+    (Long id, String userid, String nickname, String password, String name, int age, Gender gender, String phone, String address, String profileImage, PrincipalDetails principalDetails, Boolean nullimageButton) {
         // 회원 정보 수정
         MemberEntity memberEntity = memberRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("회원 조회를 할 수 없습니다"));
@@ -209,6 +233,10 @@ public class MemberService {
         if(!userid.equals("")) {
         memberEntity.setUserid(userid);
         }
+        if(!nickname.equals("")) {
+            memberEntity.setNickname(nickname);
+            }
+        
         if(!name.equals("")) {
         memberEntity.setName(name);
         }
@@ -427,6 +455,7 @@ public class MemberService {
         //      .id(memberDTO.getId())			
               .userid(memberDTO.getUserid())
               .password(memberDTO.getPassword())
+              .nickname(memberDTO.getNickname())
               .address(memberDTO.getAddress())
               .age(memberDTO.getAge())
               .phone(memberDTO.getPhone())

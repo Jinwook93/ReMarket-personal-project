@@ -91,6 +91,7 @@ public class HomeController {
 	public String serverJoin(
 	        @RequestParam(name = "userid") String userid,
 	        @RequestParam(name = "password") String password,
+	        @RequestParam(name = "nickname") String nickname,
 	        @RequestParam(name = "name") String name,
 	        @RequestParam(name = "phone") String phone,
 	        @RequestParam(name = "age") int age,
@@ -128,6 +129,7 @@ public class HomeController {
 	    MemberDTO memberDTO = MemberDTO.builder()
 	            .userid(userid)
 	            .password(password)
+	            .nickname(nickname)
 	            .name(name)
 	            .phone(phone)
 	            .age(age)
@@ -300,7 +302,7 @@ public class HomeController {
 		MemberEntity member = memberService.findByUserId(memberDTO.getUserid());
 		
 	    String result = "회원수정 실패";
-		result = memberService.updateMember(member.getId(), member.getUserid() ,memberDTO.getPassword() ,member.getName(), member.getAge(), member.getGender(), member.getPhone(),member.getAddress(),member.getProfileImage() , null,Boolean.FALSE);
+		result = memberService.updateMember(member.getId(), member.getUserid() ,memberDTO.getNickname(),memberDTO.getPassword() ,member.getName(), member.getAge(), member.getGender(), member.getPhone(),member.getAddress(),member.getProfileImage() , null,Boolean.FALSE);
 		return ResponseEntity.ok(result);
 	}
 	

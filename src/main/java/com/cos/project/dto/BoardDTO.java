@@ -33,4 +33,6 @@ public class BoardDTO {
     private Category category;
     private Buy_Sell buy_Sell;
     private String product;
+    
+    private Boolean deleted;   //삭제 및 숨김처리
 }

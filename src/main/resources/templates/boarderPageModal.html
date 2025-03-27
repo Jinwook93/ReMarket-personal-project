@@ -18,15 +18,18 @@
         align-items: flex-start;
     }
 
-    /* 모달 박스 */
-    #boarderpage .modal-content {
-        background-color: white;
-        padding: 20px;
-        border-radius: 10px;
-        width: 320px;
-        margin-top: 120px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
+/* 모달 박스 */
+#boarderpage .modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 320px;
+    margin-top: 128px;
+    position: absolute;
+    left: 50%; /* 화면 가로 중앙에 맞추기 */
+    transform: translateX(-50%); /* 모달의 너비의 절반만큼 왼쪽으로 이동 */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
 
     /* 제목 & 닫기 버튼 */
     #boarderpage .modal-header {
@@ -100,9 +103,7 @@
         <div class="modal-body">
             <div class="user-info">
                 <div class="user-details">
-                    <p><strong>아이디</strong> <span id="memberBoardUserId"></span></p>
-                    <p><strong>이름</strong> <span id="memberName"></span></p>
-                    <p><strong>나이</strong> <span id="memberAge"></span></p>
+                    <p><strong>닉네임</strong> <span id="memberBoardNickname"></span></p>
                     <p><strong>성별</strong> <span id="memberGender"></span></p>
                 </div>
                 <div class="profile-container">

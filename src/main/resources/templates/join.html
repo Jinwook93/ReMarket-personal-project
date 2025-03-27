@@ -24,7 +24,17 @@
     <input type ="hidden" id="isCheckedId" value=false>
      <input type ="hidden" id="isChangedId" value=false>
             <br>
-
+            
+            
+                    <!-- 닉네임 -->
+               <div style="display :inline-block; align-items: center; margin-bottom: 10px;">
+                <label for="nickname" style="margin-right: 10px;">닉네임</label>
+                <button type="button" onClick="checkNickname()"  id ="checkedNicknameButton">중복확인</button><br>
+            </div>
+                 <input type="text" id="nickname" name="nickname" required>
+                     <input type ="hidden" id="isCheckedNickname" value=false>
+            	<br>
+			
             <!-- 비밀번호 -->
             <label for="password">비밀번호</label>
             <br>
@@ -113,6 +123,7 @@
 <!--     	 <th:block th:replace="/footer :: footerFragment"></th:block> -->
          <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
        <script src="/js/checkId.js" type="text/javascript"></script>       
+             <script src="/js/checkNickname.js" type="text/javascript"></script>      
     <script  src="/js/joinValidation.js" type="text/javascript"></script>
     <!-- 모듈은 윈도우 전역 scope로 올라가지 않는다 . 따라서 onClick 같은 인라인 방식보다 모듈에서 이벤트리스너로 등록해야한다 -->
         <script  src="/js/kakaoAddressApi.js" type="module"></script>
