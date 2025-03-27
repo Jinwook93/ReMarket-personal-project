@@ -92,7 +92,7 @@ if (updateInputElement) {
 					? `<img src="${child.memberEntity.profileImage}" loading="lazy" alt="Profile Image Preview" class="profile-img">`
 					: `<img src="/boardimage/nullimage.jpg" loading="lazy" alt="Profile Image Preview" class="profile-img">`
 				}
-        <span>${child.memberEntity.userid}</span>
+        <span>${child.memberEntity.nickname}</span>
     </div>
 
     <!-- 댓글 버튼과 시간 (오른쪽 정렬) -->

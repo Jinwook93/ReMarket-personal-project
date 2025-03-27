@@ -66,7 +66,7 @@ public class CommentEntity {
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "parent_comment_id", nullable = true)
-	@JsonIncludeProperties({"id","memberEntity"}) // parentComment의 id와 memberEntity를 포함
+	@JsonIncludeProperties({"id","memberEntity","content"}) // parentComment의 id와 memberEntity를 포함
 	private CommentEntity parentComment;
 	
 	

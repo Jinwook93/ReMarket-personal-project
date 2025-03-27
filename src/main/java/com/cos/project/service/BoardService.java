@@ -59,13 +59,29 @@ public class BoardService {
 	@Autowired
 	HttpSession session;
 
+	@Transactional
 	public List<BoardEntity> allContents() { // 글 목록 조회
 
 		List<BoardEntity> boards = boardRepository.findAll();
-
-		return boards;
+		
+		//return boards;
+		 return boards.stream()
+                 .filter(board -> Boolean.FALSE.equals(board.getDeleted())) 
+                 .collect(Collectors.toList());
 
 	}
+	
+	
+	@Transactional
+	public List<BoardEntity> allContentsIncludeDeleted() { // 글 목록 조회
+
+		List<BoardEntity> boards = boardRepository.findAll();
+		
+		return boards;
+		 
+
+	}
+	
 
 	@Transactional
 	public void writeContents(BoardEntity boardEntity) throws IllegalArgumentException { // 글쓰기
@@ -116,7 +132,7 @@ public class BoardService {
 	}
 
 	@Transactional
-	public String deleteContents(Long id) throws IllegalArgumentException { // 삭제하기
+	public String deleteContents(Long id) throws IllegalArgumentException { // 삭제하기	(안쓸거임)
 
 	
 		
@@ -130,6 +146,29 @@ public class BoardService {
 
 		return "게시글 삭제가 완료되었습니다";
 	}
+	
+	
+	
+	
+	
+	@Transactional		
+	public String hideBoard(Long id) {
+			BoardEntity board = boardRepository.findById(id)
+					.orElseThrow(() -> new IllegalStateException("삭제할 게시글을 찾을 수 없습니다"));
+			
+				board.setDeleted(true);
+			
+			
+
+			return "게시글 삭제가 완료되었습니다";
+	}
+	
+	
+	
+	
+	
+	
+	
 
 	@Transactional
 	public List<BoardEntity> searchContents(String searchindex) { // 검색하기
@@ -366,7 +405,7 @@ public class BoardService {
 	public boolean isBoardMatched(BoardEntity board, BoardDTO dto, Integer condition, Integer min_price, Integer max_price) {
 	    if (dto.getTitle() != null && !dto.getTitle().isEmpty() && !board.getTitle().contains(dto.getTitle())) return false;
 	    if (dto.getContents() != null && !dto.getContents().isEmpty() && !board.getContents().contains(dto.getContents())) return false;
-	    if (dto.getMemberUserId() != null && !dto.getMemberUserId().isEmpty() && !board.getMemberEntity().getUserid().contains(dto.getMemberUserId())) return false;
+	    if (dto.getMemberNickname() != null && !dto.getMemberNickname().isEmpty() && !board.getMemberEntity().getNickname().contains(dto.getMemberNickname())) return false;
 //	    if (dto.getPrice() != null && dto.getPrice() > 0 && !dto.getPrice().equals(board.getPrice())) return false;
 
 	    // 주소 필터링
@@ -409,6 +448,9 @@ public class BoardService {
 	    if (condition == 3 && split.length > 2) return split[0] + " " + split[1] + " " +split[2];
 	    return "";
 	}
+
+	
+
 
 
 	

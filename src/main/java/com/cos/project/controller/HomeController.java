@@ -10,6 +10,7 @@ import java.util.Base64;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -165,10 +166,16 @@ public class HomeController {
 	public String myComment(@PathVariable("id") Long id, Model model) throws IllegalAccessException {
 		MemberEntity member = memberService.findById(id);
 		List<CommentEntity> comments = member.getComments();
+		
+		List<CommentEntity> filteredComments = comments.stream()														//삭제된 게시글에 대한 댓글은 제외
+		.filter(comment-> comment.getBoardEntity().getDeleted().equals(Boolean.FALSE))
+		.sorted(Comparator.comparing(CommentEntity::getCreateTime).reversed())
+		.collect(Collectors.toList());
+		
 		//sort는 반환 값이 void
 		comments.sort(Comparator.comparing(CommentEntity::getCreateTime).reversed());
 
-		model.addAttribute("mycomments", comments);
+		model.addAttribute("mycomments", filteredComments);
 		
 		return "mycommentlist";
 	}
@@ -178,13 +185,19 @@ public class HomeController {
 	//내가 쓴 게시글 리스트 확인
 	@GetMapping("/boardlist/{id}")
 	public String myBoard(@PathVariable("id") Long id, Model model) {
-		List<BoardEntity> myboards = boardService.findMyBoards(id);
-		
-	    myboards.sort(Comparator.comparing(BoardEntity::getCreateTime).reversed());
-		model.addAttribute("myboards", myboards);
-		
-		return "myboardlist";
+	    List<BoardEntity> myboards = boardService.findMyBoards(id);
+
+	    // 삭제되지 않은 게시글 필터링 후 정렬
+	    myboards = myboards.stream()
+	        .filter(board -> board.getDeleted().equals(Boolean.FALSE)) // 삭제되지 않은 게시글만 필터링
+	        .sorted(Comparator.comparing(BoardEntity::getCreateTime).reversed()) // 최신 글 순으로 정렬
+	        .collect(Collectors.toList()); // 결과를 리스트로 수집
+
+	    model.addAttribute("myboards", myboards);
+	    
+	    return "myboardlist";
 	}
+
 	
 	
 	//마이페이지 확인
@@ -352,7 +365,8 @@ public class HomeController {
 				.gender(memberEntity.getGender())
 				.address(splitedAddress[0] + " "+	splitedAddress[1]+" "+	splitedAddress[2])
 				.phone(memberEntity.getPhone())
-				.profileImage(memberEntity.getProfileImage())		
+				.profileImage(memberEntity.getProfileImage())
+				.nickname(memberEntity.getNickname())
 				.build();
 					
 				return ResponseEntity.ok(memberDTO);

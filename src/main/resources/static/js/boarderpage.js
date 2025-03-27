@@ -15,8 +15,8 @@
             .then(response => response.json())
             .then(data => {
                 // 모달에 데이터 표시
-                
-                document.getElementById("memberBoardUserId").textContent = data.userid;
+                console.log(data);
+                document.getElementById("memberBoardNickname").textContent = data.nickname;
 //                document.getElementById("memberName").textContent = data.name;
 //                document.getElementById("memberAge").textContent = data.age;
                 document.getElementById("memberGender").textContent = data.gender;

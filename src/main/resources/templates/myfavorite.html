@@ -115,6 +115,7 @@ h1 {
 			<select class="select-box" id="tradeStatusSelect"
 				onchange="filterBoards()">
 				<option value="">전체</option>
+				<option value="notrade">거래가능</option>
 				<option value="complete">거래완료</option>
 				<option value="progress">거래 중</option>
 				<option value="reserve">예약 중</option>
@@ -125,7 +126,6 @@ h1 {
 			 <div th:if="${likedBoards.size() == 0 }">
 				<p> 작성한 게시글이 없습니다 </p>
 			</div>  
-
 		<div class="board-list">
 			<!-- 게시글 목록 반복 -->
 			<div th:each="board, iterStat : ${likedBoards}">
@@ -183,7 +183,7 @@ h1 {
 								<!-- 거래 가능 버튼 -->
 								<button
 									th:if="${(board.trades.size() == 0) and (board.buy_Sell.name == '팝니다' or board.buy_Sell.name == '삽니다')}"
-									type="button" class="small-btn">거래가능</button>
+									type="button" class="small-btn notrade">거래가능</button>
 
 
 
@@ -192,10 +192,10 @@ h1 {
 									<!-- 									 <div th:with="trade=${trades[iterStat.index]}">           지역변수-->
 									<!-- 예약 중 버튼 -->
 
-									<button
+							<button
 										th:if="${trade != null 
 		and (trades[iterStat.index].member1Id != loggedId and trades[iterStat.index].member2Id != loggedId)}" 
-     				   type="button" class="small-btn">거래불가</button>
+     				   type="button" class="small-btn" style="color: white;background-color: red;">거래불가</button>
 
 									<button
 										th:if="${trade != null 
@@ -273,6 +273,7 @@ h1 {
 
 	<script type="module">
  import { getBoardMainFile } from '/js/boardModule.js';
+
 
  document.addEventListener("DOMContentLoaded", function () {
       let boards = document.querySelectorAll(".board-item");

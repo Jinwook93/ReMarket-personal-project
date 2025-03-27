@@ -1,126 +1,149 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>내 댓글 목록</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 20px;
-            background-color: #f9f9f9;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            margin-top: 65px;
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-        .comment-list {
-            margin-top: 30px;
-        }
-        .comment {
-            margin-bottom: 20px;
-            padding: 15px;
-            background-color: #f1f1f1;
-            border-radius: 8px;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-        }
-        .comment-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .comment-author {
-            font-weight: bold;
-            font-size: 16px;
-        }
-        .comment-text {
-            margin-top: 10px;
-            font-size: 14px;
-        }
-        .comment-time {
-            margin-top: 10px;
-            font-size: 12px;
-            color: #888;
-        }
-        .back-button {
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #007bff;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-        .back-button:hover {
-            background-color: #0056b3;
-        }
-        
-        .comment-list  a {
-text-decoration: none;
-color : black;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>내 댓글 목록</title>
+<style>
+body {
+	font-family: Arial, sans-serif;
+	line-height: 1.6;
+	margin: 0;
+	padding: 20px;
+	background-color: #f9f9f9;
 }
-    </style>
+
+.container {
+	max-width: 800px;
+	margin: 0 auto;
+	background: #fff;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+	margin-top: 65px;
+}
+
+h1 {
+	text-align: center;
+	color: #333;
+}
+
+.comment-list {
+	margin-top: 30px;
+}
+
+.comment {
+	margin-bottom: 20px;
+	padding: 15px;
+	background-color: #f1f1f1;
+	border-radius: 8px;
+	box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.comment-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.comment-author {
+	font-weight: bold;
+	font-size: 16px;
+}
+
+.comment-text {
+	margin-top: 10px;
+	font-size: 14px;
+}
+
+.comment-time {
+	margin-top: 10px;
+	font-size: 12px;
+	color: #888;
+}
+
+.back-button {
+	margin-top: 20px;
+	padding: 10px;
+	background-color: #007bff;
+	color: white;
+	text-decoration: none;
+	border-radius: 5px;
+}
+
+.back-button:hover {
+	background-color: #0056b3;
+}
+
+.comment-list  a {
+	text-decoration: none;
+	color: black;
+}
+</style>
 </head>
 <body>
-    <div th:replace="~{header.html}"></div>
-    <div class="container">
-        <h1>내 댓글 목록</h1>
+	<div th:replace="~{header.html}"></div>
+	<div class="container">
+		<h1>내 댓글 목록</h1>
 
-        <div class="comment-list">
-        	 <div th:if="${mycomments.size() == 0 }">
-				<p> 작성한 댓글이 없습니다 </p>
-			</div>        
-            <!-- 댓글 목록 반복 -->
-            <div th:each="comment : ${mycomments}">
-            	<a th:href="@{/board/view/{id}(id=${comment.boardEntity.id})}">
-                <div class="comment">
-                    <div class="comment-header">
-<!--                         <p class="comment-author" th:text="${comment.memberEntity.name}">작성자 이름</p> -->
-    <div style="display: flex; align-items: center;">
-                                <!-- 프로필 이미지 -->
-                              	<div th:if="${comment.memberEntity.profileImage != null}">
-								<div id="imagePreview" style="margin-top: 10px;">
-									<img id="previewImage"
-										th:src="@{{imagePath}(imagePath=${comment.memberEntity.profileImage})}"
-										alt="Profile Image Preview"
-										style="display: block; width: 50px; height: 50px; margin-right: 10px;">
+		<div class="comment-list">
+			<div th:if="${mycomments.size() == 0 }">
+				<p>작성한 댓글이 없습니다</p>
+			</div>
+			<!-- 댓글 목록 반복 -->
+			<div th:each="comment : ${mycomments}">
+				<a th:href="@{/board/view/{id}(id=${comment.boardEntity.id})}">
+					<div class="comment">
+						<div class="comment-header">
+							<!--                         <p class="comment-author" th:text="${comment.memberEntity.name}">작성자 이름</p> -->
+							<div style="display: flex; align-items: center;">
+								<!-- 프로필 이미지 -->
+								<div th:if="${comment.memberEntity.profileImage != null}">
+									<div id="imagePreview" style="margin-top: 10px;">
+										<img id="previewImage"
+											th:src="@{{imagePath}(imagePath=${comment.memberEntity.profileImage})}"
+											alt="Profile Image Preview"
+											style="display: block; width: 50px; height: 50px; margin-right: 10px;">
+									</div>
 								</div>
+
+								<div th:if="${comment.memberEntity.profileImage == null}">
+									<div id="imagePreview" style="margin-top: 10px;">
+										<img id="previewImage" src="/boardimage/nullimage.jpg"
+											alt="no profile image"
+											style="display: block; width: 50px; height: 50px; margin-right: 10px;">
+									</div>
+								</div>
+								<!-- 이름 -->
+								<span th:text="${comment.memberEntity.nickname}">작성자 이름</span>
 							</div>
+							<div style="text-align: right;">
+								<p th:if="${comment.parentComment !=null}" class="comment-time">
+									<span style="font-weight: bold;"
+										th:text="${comment.parentComment.content}"></span>에 대한 대댓글
+								</p>
+								
+							
+								<p th:if="${comment.parentComment ==null}"  class="comment-time">
+									<span style="font-weight: bold;"
+										th:text="${comment.boardEntity.title}"></span>에 대한 댓글
+								</p>
 
-							<div th:if="${comment.memberEntity.profileImage == null}">
-								<div id="imagePreview" style="margin-top: 10px;">
-									<img id="previewImage" src="/boardimage/nullimage.jpg"
-										alt="no profile image"
-										style="display: block; width: 50px; height: 50px; margin-right: 10px;">
-								</div>
-							</div>   
-                                <!-- 이름 -->
-                                <span th:text="${comment.memberEntity.nickname}">작성자 이름</span>
-                            </div>
-                        <p class="comment-time" 
-                        th:text="${#dates.format(comment.createTime, 'yyyy-MM-dd HH:mm')}"
-                        >작성 시간</p>
-                    </div>
-                    <p class="comment-text" th:text="${comment.content}">댓글 내용</p>
-                </div>
-                </a>
-            </div>
-        </div>
+								<p class="comment-time"
+									th:text="${#dates.format(comment.createTime, 'yyyy-MM-dd HH:mm')}">작성
+									시간</p>
+							</div>
+						</div>
+						<p class="comment-text" th:text="${comment.content}">댓글 내용</p>
+					</div>
+				</a>
+			</div>
+		</div>
 
-        <!-- 뒤로 가기 버튼 -->
-        <a href="javascript:history.back()" class="back-button">뒤로 가기</a>
-    </div>
-        <div th:replace="~{footer.html}"></div>
-<!--     	 <th:block th:replace="/footer :: footerFragment"></th:block> -->
+		<!-- 뒤로 가기 버튼 -->
+		<a href="javascript:history.back()" class="back-button">뒤로 가기</a>
+	</div>
+	<div th:replace="~{footer.html}"></div>
+	<!--     	 <th:block th:replace="/footer :: footerFragment"></th:block> -->
 </body>
 </html>

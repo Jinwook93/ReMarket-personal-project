@@ -223,7 +223,7 @@ public class BoardController {
 		// BoardEntity 생성 및 저장
 		BoardEntity boardEntity = BoardEntity.builder().title(title).price(price).category(category_enum)
 				.product(product).buy_Sell(buy_Sell_enum).contents(contents).boardFiles(boardFileJson)
-				.address(address+" "+address2)
+				.address(address+" "+address2).deleted(false)
 				.build();
 
 		boardService.writeContents(boardEntity);
@@ -326,20 +326,45 @@ public class BoardController {
 		return ResponseEntity.ok(true);
 	}
 
+					//실제 삭제
+//	@DeleteMapping("/deleteboard/{id}")
+//	public ResponseEntity<?> deleteBoard(@PathVariable(name = "id") Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+//		commentService.deleteAllCommentAboutBoard(id);
+////		System.out.println("삭제되는중?" + id);
+//		String result = boardService.deleteContents(id);
+////		System.out.println("삭제되는중2?" + id);
+//		
+//		String id_String = String.valueOf(id);
+//		Long loggedId = principalDetails.getMemberEntity().getId();
+//		alarmService.postAlarm(loggedId,null, null, "BOARD", "게시판", id_String, "삭제", null);	
+//		return ResponseEntity.status(200).body(result);
+//	}
 
+	
+	
+	//참조 무결성 이슈로 삭제 대신 숨김 처리를 사용
 	@DeleteMapping("/deleteboard/{id}")
 	public ResponseEntity<?> deleteBoard(@PathVariable(name = "id") Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
-		commentService.deleteAllCommentAboutBoard(id);
-//		System.out.println("삭제되는중?" + id);
-		String result = boardService.deleteContents(id);
-//		System.out.println("삭제되는중2?" + id);
+		
+		
+		String result = boardService.hideBoard(id);
+		
 		
 		String id_String = String.valueOf(id);
 		Long loggedId = principalDetails.getMemberEntity().getId();
 		alarmService.postAlarm(loggedId,null, null, "BOARD", "게시판", id_String, "삭제", null);	
 		return ResponseEntity.status(200).body(result);
 	}
-
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	@GetMapping("/view/{id}")
 	public String viewContent(@PathVariable(name = "id") Long id, Model model, @AuthenticationPrincipal PrincipalDetails principalDetails)
 			throws JsonMappingException, JsonProcessingException {
@@ -602,7 +627,7 @@ public class BoardController {
 	        loggedAddress = memberEntity.getAddress();
 	    }
 
-	    // 전체 게시글 가져오기
+	    // 전체 게시글 가져오기	(deleted TRUE 인 게시글 제외)
 	    List<BoardEntity> boards = boardService.allContents();
 
 	    // 주소 기본값 설정

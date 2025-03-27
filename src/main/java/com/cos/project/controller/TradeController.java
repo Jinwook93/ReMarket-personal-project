@@ -852,7 +852,7 @@ public class TradeController {
 	                      Model model) throws IllegalAccessException {
 
 		MemberEntity loggedMember = memberService.findById(loggedId);
-	    List<BoardEntity> boards = boardService.allContents();
+	    List<BoardEntity> boards = boardService.allContentsIncludeDeleted();
 
 	    
 	    

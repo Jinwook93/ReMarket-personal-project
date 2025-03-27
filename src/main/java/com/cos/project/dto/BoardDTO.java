@@ -25,8 +25,8 @@ public class BoardDTO {
     private long view;                // 조회수
     private Timestamp createTime;     // 생성 시간
     private String boardFiles;        // 첨부 파일 URL
-
     private String  memberUserId;         // 작성자 정보
+    private String memberNickname;
     private List<CommentDTO> comments; // 댓글 리스트
     private Integer price;
     private String address;				//거래 장소
