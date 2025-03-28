@@ -182,9 +182,10 @@ export function denyCreateTrade(alarmId, loggedUserId) {  // 로그인유저 : m
 // 거래 완료 여부 상태
 // ('보드 관리자 ('거래완료를 선수신 받을 쪽'') =  로그인 유저' 기준, member2를 기준으로 하므로 isCompleted2를 기준으로 하였다 )
 // ('상대편(거래완료를 후수신 받을 쪽) =  로그인 유저' 기준, member1를 기준으로 하므로 isCompleted1를 기준으로 하였다 )
-export function CompleteTrade(tradeId, isMember) {  // 로그인유저 : member1, 타겟 유저 : member2
+export function CompleteTrade(tradeId, isMember, confirmQuestion) {  // 로그인유저 : member1, 타겟 유저 : member2
 
-	if (confirm("상대방에게 거래완료를 요청하시겠습니까? ( ※ 상대방도 거래를 완료해야 거래가 완료됩니다)")) {			//수락시
+
+	if (confirm(confirmQuestion)) {			//수락시
 		fetch(`/trade/completeTrade/${tradeId}`, {  // 신청 알람을 만든다
 			method: "POST",
 			headers: { 'Content-Type': 'application/json;charset=utf-8' },
@@ -219,18 +220,20 @@ export function CompleteTrade(tradeId, isMember) {  // 로그인유저 : member1
 			.then(data => {
 
 
-
 				if (typeof data !== 'object' && data === "만료된 정보입니다") {
 					alert(data);
 					return;
 				}
 				if (typeof data === 'object') {
 //					console.log(data);
-					if (data.isCompleted1 !== null && data.isCompleted2 !== null &&data.isCompleted1 === true && data.isCompleted2 === true) {
-						alert("거래상태가 최종완료되었습니다");
-					} else {
-						alert("거래가 완료되었습니다");  // 응답 데이터 처리
-					}
+					
+					alert(data.member1Content);
+//					if (data.isCompleted1 !== null && data.isCompleted2 !== null &&data.isCompleted1 === true && data.isCompleted2 === true) {
+//				if(confirmQuestion === "거래완료를 수락하시겠습니까?"){
+//						alert(data.member1Content);
+//					} else {
+//						alert(data.member1Content);  // 응답 데이터 처리
+//					}
 				}
 
 
@@ -744,7 +747,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			const tradeId = event.target.id.replace("complete2-Sell-", "");
 //			console.log("거래완료 테스트2 ", tradeId);
 
-			CompleteTrade(tradeId, "isMember2");
+			CompleteTrade(tradeId, "isMember2", "거래완료 요청을 보내시겠습니까? (※ 상대방도 수락해야 거래완료 상태가 됩니다");
 			//      loadChatRooms(loggedId);
 		}
 
@@ -753,7 +756,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			const tradeId = event.target.id.replace("complete1-Sell-", "");
 //			console.log("거래완료 테스트1 ", tradeId);
 
-			CompleteTrade(tradeId, "isMember1");
+			CompleteTrade(tradeId, "isMember1","거래완료를 수락하시겠습니까?");
 			//      loadChatRooms(loggedId);
 		}
 

@@ -891,10 +891,10 @@ export async function boardTitleButtonClickHandler(event, board) {
 			denyCreateTrade(Number(alarmId), loggedUserId);
 		} else if (trade != null && event.target.id === `chat-complete2-Sell-${trade.id}`) {	//거래 완료2 (보드 관리자가 먼저 승인)
 			const tradeId = event.target.id.replace("chat-complete2-Sell-", "");
-			CompleteTrade(tradeId, "isMember2");
+				CompleteTrade(tradeId, "isMember2", "거래완료 요청을 보내시겠습니까? (※ 상대방도 수락해야 거래완료 상태가 됩니다");
 		} else if (trade != null && event.target.id === `chat-complete1-Sell-${trade.id}`) {	//거래 완료1 (거래 희망자가 승인)
 			const tradeId = event.target.id.replace("chat-complete1-Sell-", "");
-			CompleteTrade(tradeId, "isMember1");
+				CompleteTrade(tradeId, "isMember1","거래완료를 수락하시겠습니까?");
 		}
 		else if (trade != null && event.target.id === `chat-cancel-trade-${trade.id}`) {			//거래취소
 			const tradeId = event.target.id.replace("chat-cancel-trade-", "");

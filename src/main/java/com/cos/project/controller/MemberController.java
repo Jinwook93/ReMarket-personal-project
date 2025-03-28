@@ -320,4 +320,12 @@ public ResponseEntity<?> getProfileImage(@RequestBody String userid) throws Json
 			return memberEntity.getNickname();
 	
 	}
+	
+	
+	@GetMapping("/findNicknameById/{id}")		//id로 닉네임 찾기
+	public String getRoomNicknameById(@PathVariable(name = "id") Long id) throws IllegalAccessException {
+		MemberEntity memberEntity = memberService.findById(id);
+			return memberEntity.getNickname();
+	
+	}
 }

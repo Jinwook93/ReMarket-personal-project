@@ -584,7 +584,7 @@ public class TradeController {
 			chatService.addMessage(roomId, principalDetails, messageDTO);
 			
 			
-			 System.out.println(IsExistTradeEntity.toString());
+//			 System.out.println(IsExistTradeEntity.toString());
 			
 			return ResponseEntity.ok(responseAlarmDTO);
 		}
