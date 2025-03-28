@@ -315,7 +315,7 @@ public class HomeController {
 		MemberEntity member = memberService.findByUserId(memberDTO.getUserid());
 		
 	    String result = "회원수정 실패";
-		result = memberService.updateMember(member.getId(), member.getUserid() ,memberDTO.getNickname(),memberDTO.getPassword() ,member.getName(), member.getAge(), member.getGender(), member.getPhone(),member.getAddress(),member.getProfileImage() , null,Boolean.FALSE);
+		result = memberService.updateMember(member.getId(), member.getUserid() ,member.getNickname(),memberDTO.getPassword() ,member.getName(), member.getAge(), member.getGender(), member.getPhone(),member.getAddress(),member.getProfileImage() , null,Boolean.FALSE);
 		return ResponseEntity.ok(result);
 	}
 	
