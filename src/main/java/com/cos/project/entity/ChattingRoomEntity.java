@@ -56,6 +56,7 @@ public class ChattingRoomEntity {
     private BoardEntity boardEntity;  // 게시판과 연결
 
     @CreationTimestamp
+    @Column(updatable = false)
     private Timestamp createTime;  // 채팅방 생성 시간
     
     @UpdateTimestamp

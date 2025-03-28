@@ -268,8 +268,20 @@ public class CommentService {
 
 		comment.setContent(commentDTO.getContent());
 		comment.setPrivate(commentDTO.getIsPrivate());
-		
-		commentRepository.save(comment);
+		if(comment.getUpdated().equals(Boolean.FALSE)) {
+		comment.setUpdated(Boolean.TRUE);
+		}
+		  // 댓글 저장
+	    commentRepository.save(comment);
+
+	    // 즉시 DB에 반영
+	    commentRepository.flush();  // 변경사항을 DB에 즉시 반영
+
+	    // 저장된 후에 updateTime을 기반으로 reCreateTime 설정
+	    comment.setReCreateTime(comment.getUpdateTime());  // updateTime을 reCreateTime에 설정
+
+	    // 변경 사항을 DB에 즉시 반영
+	    commentRepository.flush();
 
 		return true;
 	}

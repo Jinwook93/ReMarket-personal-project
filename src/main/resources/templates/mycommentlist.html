@@ -118,20 +118,30 @@ h1 {
 								<span th:text="${comment.memberEntity.nickname}">작성자 이름</span>
 							</div>
 							<div style="text-align: right;">
-								<p th:if="${comment.parentComment !=null}" class="comment-time">
+								<p th:if="${comment.parentComment != null}" class="comment-time">
 									<span style="font-weight: bold;"
-										th:text="${comment.parentComment.content}"></span>에 대한 대댓글
+										th:text="'댓글 : ' + ${comment.parentComment.content}"></span>에
+									대한 댓글
 								</p>
-								
-							
-								<p th:if="${comment.parentComment ==null}"  class="comment-time">
+
+
+
+								<p th:if="${comment.parentComment ==null}" class="comment-time">
 									<span style="font-weight: bold;"
 										th:text="${comment.boardEntity.title}"></span>에 대한 댓글
 								</p>
 
+
+								<p th:if="${comment.updated ==true}" class="comment-time"
+									th:text="${#dates.format(comment.reCreateTime, 'yyyy-MM-dd HH:mm')} + ' (수정)'">
+									수정 시간</p>
+									
 								<p class="comment-time"
-									th:text="${#dates.format(comment.createTime, 'yyyy-MM-dd HH:mm')}">작성
+									th:text="${#dates.format(comment.createTime, 'yyyy-MM-dd HH:mm')} + ' (등록)'">작성
 									시간</p>
+
+
+
 							</div>
 						</div>
 						<p class="comment-text" th:text="${comment.content}">댓글 내용</p>

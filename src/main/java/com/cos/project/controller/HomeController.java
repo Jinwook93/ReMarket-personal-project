@@ -169,11 +169,11 @@ public class HomeController {
 		
 		List<CommentEntity> filteredComments = comments.stream()														//삭제된 게시글에 대한 댓글은 제외
 		.filter(comment-> comment.getBoardEntity().getDeleted().equals(Boolean.FALSE))
-		.sorted(Comparator.comparing(CommentEntity::getCreateTime).reversed())
+		.sorted(Comparator.comparing((CommentEntity comment)-> comment.getReCreateTime() != null? comment.getReCreateTime():comment.getCreateTime() ).reversed())
 		.collect(Collectors.toList());
 		
 		//sort는 반환 값이 void
-		comments.sort(Comparator.comparing(CommentEntity::getCreateTime).reversed());
+//		comments.sort(Comparator.comparing(CommentEntity::getCreateTime).reversed());
 
 		model.addAttribute("mycomments", filteredComments);
 		
@@ -190,7 +190,7 @@ public class HomeController {
 	    // 삭제되지 않은 게시글 필터링 후 정렬
 	    myboards = myboards.stream()
 	        .filter(board -> board.getDeleted().equals(Boolean.FALSE)) // 삭제되지 않은 게시글만 필터링
-	        .sorted(Comparator.comparing(BoardEntity::getCreateTime).reversed()) // 최신 글 순으로 정렬
+	        .sorted(Comparator.comparing((BoardEntity board) -> board.getReCreateTime() != null? board.getReCreateTime() : board.getCreateTime()).reversed()) // 최신 글 순으로 정렬
 	        .collect(Collectors.toList()); // 결과를 리스트로 수집
 
 	    model.addAttribute("myboards", myboards);

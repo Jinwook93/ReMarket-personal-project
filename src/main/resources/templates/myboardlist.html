@@ -160,9 +160,16 @@ color : black;
 							
 							<p class="board-text" th:text="${board.title}">게시글 제목</p>
 							</span>
-							<p class="board-time"
-								th:text="${#dates.format(board.createTime, 'yyyy-MM-dd HH:mm')}">작성
+							
+							<p class="board-time" th:if="${board.reCreateTime != null}"
+								th:text="${#dates.format(board.createTime, 'yyyy-MM-dd HH:mm')} + ' (수정)'">작성
 								시간</p>
+							<p class="board-time" th:if="${board.reCreateTime == null}"
+								th:text="${#dates.format(board.createTime, 'yyyy-MM-dd HH:mm')} + ' (등록)'">작성
+								시간</p>
+								
+								
+								
 						</div>
 						<!--                         <p class="board-text" th:text="${board.contents}">게시글 내용</p> -->
 					</div>

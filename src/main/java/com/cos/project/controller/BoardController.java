@@ -37,6 +37,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -228,7 +229,7 @@ public class BoardController {
 		// BoardEntity 생성 및 저장
 		BoardEntity boardEntity = BoardEntity.builder().title(title).price(price).category(category_enum)
 				.product(product).buy_Sell(buy_Sell_enum).contents(contents).boardFiles(boardFileJson)
-				.address(address+" "+address2).deleted(false)
+				.address(address+" "+address2).deleted(false).updated(false)
 				.build();
 
 		boardService.writeContents(boardEntity);
@@ -662,6 +663,11 @@ public class BoardController {
 	        boardDTO.setAddress(loggedAddress);
 	    }
 	    	
+	    
+
+	    
+	    
+	    
 	 // 필터링
 	    List<BoardEntity> filteredBoards = boards.stream()
 	        .filter(board -> boardService.isBoardMatched(board, boardDTO, condition,min_price,max_price))
@@ -683,7 +689,9 @@ public class BoardController {
 	                ("거래완료".equals(tradestatus) && trade.getCompleted1() && trade.getCompleted2())
 	            ));
 	        })
-	        .sorted(Comparator.comparing(BoardEntity::getCreateTime).reversed())
+	        .sorted(Comparator.comparing(
+	        	    (BoardEntity board) -> board.getReCreateTime() != null ? board.getReCreateTime() : board.getCreateTime()
+	        	).reversed())
 	        .collect(Collectors.toList());
 
 
@@ -704,4 +712,11 @@ public class BoardController {
 	    return "boardlist";
 	}
 
+
+	
+	
+	
+	
+	
+	
 }

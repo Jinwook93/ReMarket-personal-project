@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -64,6 +65,9 @@ public class CommentEntity {
 	
 	private boolean blind;			//비공개댓글
 	
+	@Column(nullable = true)
+	private Boolean updated=false;
+	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "parent_comment_id", nullable = true)
 	@JsonIncludeProperties({"id","memberEntity","content"}) // parentComment의 id와 memberEntity를 포함
@@ -84,4 +88,9 @@ public class CommentEntity {
 	
 	@CreationTimestamp
 	Timestamp createTime;
+	
+	@UpdateTimestamp
+	Timestamp updateTime;
+	
+    Timestamp reCreateTime; // 채팅방 수정 시간 (updateTime이 의도치 않게 시간이 바뀌어서, 수정 시의 updateTime을 적용하는 용도)
 }

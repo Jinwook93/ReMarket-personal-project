@@ -30,7 +30,9 @@ public class CommentDTO {
     private Boolean isPrivate;
     private Boolean isBlind;
     private Timestamp createTime;
-
+    private Boolean updated;
+    private Timestamp updateTime; // 채팅방 수정 시간 
+    private Timestamp reCreateTime; // 채팅방 수정 시간 (updateTime이 의도치 않게 시간이 바뀌어서, 수정 시의 updateTime을 적용하는 용도)
     // Entity → DTO 변환 메서드
     public static CommentDTO fromEntity(CommentEntity entity) {
         return CommentDTO.builder()
@@ -47,6 +49,7 @@ public class CommentDTO {
                 .isPrivate(entity.isPrivate())
                 .isBlind(entity.isBlind())
                 .createTime(entity.getCreateTime())
+                .updated(entity.getUpdated())
                 .build();
     }
     
@@ -63,6 +66,7 @@ public class CommentDTO {
                 .Private(this.isPrivate)
                 .blind(this.isBlind)
                 .createTime(this.createTime != null ? this.createTime : new Timestamp(System.currentTimeMillis()))
+                .updated(false)
                 .build();
     }
 }

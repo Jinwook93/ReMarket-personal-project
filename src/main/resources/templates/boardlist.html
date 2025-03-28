@@ -297,9 +297,13 @@ table a {
 										</div>
 										<span
 											style="margin-top: -1px; margin-left: 10px; margin-right: 10px; font-size: 14px; color: #555;">
-											| </span> <span
+											| </span> <span th:if="${board.reCreateTime == null}"
 											th:text="${#dates.format(board.createTime, 'yyyy-MM-dd HH:mm')}"
-											style="font-size: 14px; color: #555;"></span>
+											style="font-size: 14px; color: #555;"></span> 
+											 <span th:if="${board.reCreateTime != null}"
+											th:text="${#dates.format(board.reCreateTime, 'yyyy-MM-dd HH:mm')}"
+											style="font-size: 14px; color: #555;"></span> 
+											<span th:if="${board.updated}" style="font-size: 12px; color: #555;margin-top:2px;margin-left: 3px;">&nbsp;(수정)</span>
 									</div>
 								</div>
 							</a>

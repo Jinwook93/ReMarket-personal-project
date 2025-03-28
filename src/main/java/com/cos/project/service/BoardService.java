@@ -46,6 +46,7 @@ public class BoardService {
 	private final BoardRepository boardRepository;
 
 	private final BoardLikeRepository boardLikeRepository;
+	
 	@Autowired
 	private AuthenticationManager authenticationManager;
 	
@@ -127,7 +128,23 @@ public class BoardService {
 		boardEntity.setAddress(boardDTO.getAddress());
 		
 		boardRepository.save(boardEntity);
-		System.out.println("게시글 수정이 완료되었습니다");
+
+		if(boardEntity.getUpdated().equals(Boolean.FALSE)) {
+			boardEntity.setUpdated(Boolean.TRUE);
+		}
+		boardEntity = boardRepository.findById(id).get();
+		
+		boardRepository.save(boardEntity);
+		
+	    // 즉시 DB에 반영
+		boardRepository.flush();  // 변경사항을 DB에 즉시 반영
+		boardEntity.setReCreateTime(boardEntity.getUpdateTime());
+		
+	    // 즉시 DB에 반영
+		boardRepository.flush();  // 변경사항을 DB에 즉시 반영
+		
+
+		
 		return "게시글 수정이 완료되었습니다";
 	}
 

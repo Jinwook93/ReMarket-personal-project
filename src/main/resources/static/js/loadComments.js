@@ -105,7 +105,8 @@ if (updateInputElement) {
 					: `<div class="comment-actions"> ❤️ ${child.totalLike} / 🖤 ${child.totalDislike}</div>`
 				}
 
-        <p class="comment-createTime">${formatDate(child.createTime)}</p>
+        <p class="comment-createTime">${formatDate(child.createTime)}&nbsp;(등록)</p>
+        	${child.updated?`<span class="comment-createTime">${formatDate(child.reCreateTime)}&nbsp;(수정)</span>`:''}
     </div>
 </div>
 

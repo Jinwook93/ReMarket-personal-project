@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import com.cos.project.repository.BoardLikeRepository;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -42,6 +43,12 @@ public class BoardEntity {
     @Column(updatable = false)
     private Timestamp createTime;
 
+    @UpdateTimestamp
+    private Timestamp updateTime;  // 채팅방 수정 시간
+    
+    @Column(nullable = true)
+    private Timestamp reCreateTime; // 채팅방 수정 시간 (updateTime이 의도치 않게 시간이 바뀌어서, 수정 시의 updateTime을 적용하는 용도)
+    
     
     @Enumerated(EnumType.STRING)
     private Category category;
@@ -66,6 +73,9 @@ public class BoardEntity {
     
     @Column(nullable = true)			//삭제 아닌 숨김 처리
     private Boolean deleted =false;
+    
+    @Column(nullable = true)			// 게시글 수정 상태
+    private Boolean updated =false;
     
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "member_id")

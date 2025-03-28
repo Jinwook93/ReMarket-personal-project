@@ -3,11 +3,14 @@ package com.cos.project.dto;
 import java.sql.Timestamp;
 import java.util.List;
 
+import org.hibernate.annotations.UpdateTimestamp;
+
 import com.cos.project.entity.Buy_Sell;
 import com.cos.project.entity.Category;
 import com.cos.project.entity.CommentEntity;
 import com.cos.project.entity.MemberEntity;
 
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -34,5 +37,11 @@ public class BoardDTO {
     private Buy_Sell buy_Sell;
     private String product;
     
+    private Timestamp updateTime;  // 채팅방 수정 시간
+    private Timestamp reCreateTime; // 채팅방 수정 시간 (updateTime이 의도치 않게 시간이 바뀌어서, 수정 시의 updateTime을 적용하는 용도)
+    
     private Boolean deleted;   //삭제 및 숨김처리
+    private Boolean updated;   //수정 상태
+    
+    
 }

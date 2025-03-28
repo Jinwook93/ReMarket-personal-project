@@ -125,9 +125,9 @@ public class CommentController {
         @RequestBody CommentDTO commentDTO,
         @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
-       	System.out.println("수정된 댓글 ID:"+id);
-    	System.out.println("수정된 댓글 내용:"+commentDTO.getContent());
-    	System.out.println("수정된 댓글 : 비밀? "+commentDTO.getIsPrivate());
+//       	System.out.println("수정된 댓글 ID:"+id);
+//    	System.out.println("수정된 댓글 내용:"+commentDTO.getContent());
+//    	System.out.println("수정된 댓글 : 비밀? "+commentDTO.getIsPrivate());
         Boolean result = commentService.updateComment(id, commentDTO);
         BoardEntity boardEntity = commentRepository.findById(id).orElse(null).getBoardEntity();
        Long member2Id = boardEntity.getMemberEntity().getId(); //보드 관리자
