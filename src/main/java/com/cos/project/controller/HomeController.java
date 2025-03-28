@@ -253,7 +253,7 @@ public class HomeController {
 	@PostMapping("/findid")
 	@ResponseBody
 	public ResponseEntity<?> findId(@RequestBody MemberDTO memberDTO) throws IllegalAccessException { //이름,전화번호로 아이디 검색
-	    MemberEntity memberEntity = memberService.userInfoByNameAndPhone(memberDTO.getName(),memberDTO.getPhone());
+	    MemberEntity memberEntity = memberService.userInfoByNicknameAndNameAndPhone(memberDTO.getNickname(), memberDTO.getName(),memberDTO.getPhone());
 	   
 	    return ResponseEntity.ok(memberEntity.getUserid());
 	}
@@ -281,7 +281,7 @@ public class HomeController {
 	@PostMapping("/findpassword")
 	@ResponseBody
 	public ResponseEntity<?> findpassword(@RequestBody MemberDTO memberDTO) throws IllegalAccessException {
-	    Boolean result = memberService.userInfoByUseridAndNameAndPhone(memberDTO.getUserid(), memberDTO.getName(), memberDTO.getPhone());
+	    Boolean result = memberService.userInfoByUseridAndNicknameAndNameAndPhone(memberDTO.getUserid(),memberDTO.getNickname() ,memberDTO.getName(), memberDTO.getPhone());
 	    return ResponseEntity.ok(result);
 	}
 	

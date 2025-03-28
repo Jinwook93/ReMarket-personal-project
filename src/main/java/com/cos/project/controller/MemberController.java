@@ -317,7 +317,6 @@ public ResponseEntity<?> getProfileImage(@RequestBody String userid) throws Json
 	@GetMapping("/findNickname/{userid}")		//채팅방 닉네임 찾기
 	public String getRoomNickname(@PathVariable(name = "userid") String userid) {
 		MemberEntity memberEntity = memberService.findByUserId(userid);
-			System.out.println("아이ㄷ; " + memberEntity.getNickname());
 			return memberEntity.getNickname();
 	
 	}

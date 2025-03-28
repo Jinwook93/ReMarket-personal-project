@@ -140,7 +140,7 @@ if(existingFiles.length + files.length >3){
 
 	formData.append('nullimageButton', document.getElementById("nullimageButton").checked);
 	
-		console.log(formData.get('nullimageButton'));
+//		console.log(formData.get('nullimageButton'));
 
 //		document.getElementById("nullimageButton").checked
 

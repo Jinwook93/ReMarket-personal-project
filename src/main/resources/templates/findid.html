@@ -106,6 +106,10 @@
    <div class="container" style="margin-top: 100px;">
         <h2>아이디 찾기</h2>
 
+
+		        <label for="name">닉네임</label>
+        <input type="text" id="nickname" name="nickname" placeholder="닉네임을 입력하세요" required>
+
         <label for="name">이름</label>
         <input type="text" id="name" name="name" placeholder="이름을 입력하세요" required>
 
@@ -134,18 +138,19 @@
         }
 
         document.getElementById("findIdButton").addEventListener("click", () => {
+        	const nickname = document.getElementById("nickname").value.trim();
             const name = document.getElementById("name").value.trim();
             const phone = document.getElementById("phone").value.trim();
 
-            if (!name || !phone) {
-                alert("이름과 휴대폰 번호를 모두 입력해 주세요.");
+            if (!nickname ||  !name || !phone) {
+                alert("닉네임과 이름, 휴대폰 번호를 모두 입력해 주세요.");
                 return;
             }
 
             fetch("/findid", {
                 method: "POST",
                 headers: { 'Content-Type': "application/json;charset=utf-8" },
-                body: JSON.stringify({ name: name, phone: phone })
+                body: JSON.stringify({ nickname: nickname, name: name, phone: phone })
             })
                 .then(response => {
                     if (!response.ok) {

@@ -409,9 +409,9 @@ public class MemberService {
     
     
     @Transactional(readOnly = true)			//회원 정보 조회
-    public MemberEntity userInfoByNameAndPhone(String name, String phone) throws IllegalAccessException {
+    public MemberEntity userInfoByNicknameAndNameAndPhone(String nickname,String name, String phone) throws IllegalAccessException {
     				phone = ReconstructPhone(phone);
-        return memberRepository.findByNameAndPhone(name, phone)
+        return memberRepository.findByNicknameAndNameAndPhone(nickname,name, phone)
                       .orElseThrow(() -> new IllegalAccessException("회원 정보를 조회할 수 없습니다"));
     }
     
@@ -576,9 +576,9 @@ public MemberEntity findByUserId(String userid) {
     }
 //비밀번호찾기
     @Transactional
-	public Boolean userInfoByUseridAndNameAndPhone(String userid, String name, String phone) throws IllegalAccessException {
+	public Boolean userInfoByUseridAndNicknameAndNameAndPhone(String userid, String nickname,String name, String phone) throws IllegalAccessException {
 		phone = ReconstructPhone(phone);
-		MemberEntity memberEntity =  memberRepository.findByUseridAndNameAndPhone(userid,name, phone)
+		MemberEntity memberEntity =  memberRepository.findByUseridAndNicknameAndNameAndPhone(userid,nickname,name, phone)
           .orElse(null);
     	
 //		return memberEntity;
