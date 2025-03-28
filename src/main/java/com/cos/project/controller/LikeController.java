@@ -16,16 +16,21 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cos.project.details.PrincipalDetails;
 import com.cos.project.entity.BoardEntity;
+import com.cos.project.entity.ChattingRoomEntity;
 import com.cos.project.entity.CommentEntity;
+import com.cos.project.entity.MessageEntity;
 import com.cos.project.repository.BoardRepository;
 import com.cos.project.repository.CommentRepository;
 import com.cos.project.repository.MemberRepository;
+import com.cos.project.repository.MessageRepository;
 import com.cos.project.service.AlarmService;
 import com.cos.project.service.BoardService;
+import com.cos.project.service.ChatService;
 import com.cos.project.service.CommentService;
 import com.cos.project.service.LikeService;
 import com.cos.project.service.LikeService;
 import com.cos.project.service.MemberService;
+import com.cos.project.service.MessageService;
 
 @RestController
 public class LikeController {
@@ -56,6 +61,12 @@ public class LikeController {
     
     @Autowired
     private CommentRepository commentRepository;
+    
+    @Autowired
+    private ChatService chatService;
+    
+    @Autowired
+    MessageRepository messageRepository;
     
     @PostMapping("/board/{boardId}/like")
     public ResponseEntity<List<Integer>> likePost(
@@ -236,14 +247,34 @@ String result = 	 likeService.comment_findMemberLike_Dislike(commentId, principa
             @PathVariable(name = "messageId") Long messageId,
             @AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody boolean flag) {
 //        likeService.addLike(commentId, principalDetails.getMemberEntity().getId());
-    	boolean result = likeService.chatToggleLike(messageId, principalDetails.getMemberEntity().getId(), flag);
+    	
+    	Long loggedId = principalDetails.getMemberEntity().getId();
+    	boolean result = likeService.chatToggleLike(messageId, loggedId , flag);
+    	
+    	MessageEntity message = messageRepository.findById(messageId).get();
+    	
+    	ChattingRoomEntity room = message.getChattingRoomEntity();
     	
 //    	if(result == true) {
-//    		alarmService.postAlarm(loggedId,loggedId, member2Id, "BOARD", "댓글", "싫어요", "활성화", null);	
+//    		alarmService.postAlarm(loggedId,room.getMember1().getId(), room.getMember2().getId(), "MESSAGE", "댓글", "좋아요", "활성화", null);	
 //    	}else {
-//    		alarmService.postAlarm(loggedId,loggedId, member2Id, "BOARD", "댓글", "싫어요", "활성화", null);	
+//    		alarmService.postAlarm(loggedId,room.getMember1().getId(), room.getMember2().getId(), "MESSAGE", "댓글", "좋아요", "취소", null);	
 //    	}
     	
+    	String statusText ="";
+    	
+    	if(result == true) {
+    		statusText = "활성화";
+    	}else {
+    		statusText = "취소";
+    	}
+    	
+    	
+    	alarmService.postAlarm(loggedId,room.getMember1().getId(), room.getMember2().getId(), "MESSAGE", "좋아요",String.valueOf(room.getId()),statusText,null);	
+    	
+    	
+    	
+//    	alarmService.postAlarm(member1.getId(),member1.getId(), member2.getId(), "MESSAGE", "게시판", String.valueOf(roomId), "삭제", null);
         return ResponseEntity.ok(result );
     }
  

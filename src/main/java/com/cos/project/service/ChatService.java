@@ -371,6 +371,16 @@ public class ChatService {
 																				// 내용으로 수정함
 				message.setMessageContent("⚠️삭제된 메시지입니다");
 				message.setDeleted(true);
+				
+				ChattingRoomEntity chattingRoomEntity = message.getChattingRoomEntity();
+				MemberEntity member1 = chattingRoomEntity.getMember1();			// 메시지를 보낸 사람이 주체가 되고, 메시지를 보낸 사람만이 삭제가 가능하므로 로그인 유저를 알 필요가 없다
+																																	//메시지를 보낸 사람 == 로그인을 한 사람
+				MemberEntity member2 = chattingRoomEntity.getMember2();
+				
+				Long roomId = message.getChattingRoomEntity().getId();
+				
+				alarmService.postAlarm(member1.getId(),member1.getId(), member2.getId(), "MESSAGE", "메시지", String.valueOf(roomId), "삭제", null);	
+				
 				// messageRepository.deleteById(id); //삭제 메시지
 				return true;
 			} else {

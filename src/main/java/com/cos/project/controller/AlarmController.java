@@ -189,7 +189,9 @@ public class AlarmController {
         List<AlarmDTO> filteredAlarms2 = filteredAlarms.stream()
                 .filter(alarm -> alarm.getMember1().getId().equals(loggedId)  || alarm.getMember2().getId().equals(loggedId)
                         && alarm.getType().equals("MESSAGE") 
-                        && (alarm.getAction().equals("송수신") || alarm.getAction().equals("나가기") || alarm.getAction().equals("재입장")) )
+                        && (alarm.getAction().equals("송수신") || alarm.getAction().equals("나가기") || alarm.getAction().equals("재입장")
+                        		|| alarm.getAction().equals("삭제") || (alarm.getChildType().equals("좋아요")  &&( alarm.getAction().equals("활성화") || alarm.getAction().equals("취소"))) 
+                        		) )
                 .map(AlarmEntity::toDTO)
                 .collect(Collectors.toList());
         
@@ -234,5 +236,19 @@ public class AlarmController {
     	
 		return ResponseEntity.ok(responseDTO);
     }
+    
+    //숨김 알람 읽기
+    //알람을 숨기면 읽을 수 없으므로 조회된 숨김 알람을 읽음 처리 한다
+    
+    @GetMapping("/readHiddenAlarm/{alarmId}")
+    public ResponseEntity<?> readHiddenAlarm (@PathVariable(name = "alarmId") Long alarmId, @AuthenticationPrincipal PrincipalDetails principalDetails){
+    	
+    	Long loggedId = principalDetails.getMemberEntity().getId();
+    	Boolean result = alarmService.readHiddenAlarm(alarmId,loggedId);	
+    	
+    	
+		return ResponseEntity.ok(result);
+    }
+    
     
 }

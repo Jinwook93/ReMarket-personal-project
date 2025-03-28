@@ -553,7 +553,7 @@ export async function sendMessage(roomId, userid, messageIndex, recentExitedmemb
 		parentMessageId.value = "";
 		//		loadMessages(roomId); // 전송 후 메시지 갱신
 		//=====
-		//	updateChatRoomOrder(roomId);
+			updateChatRoomOrder(roomId);
 		//				await loadChatRooms(loggedId);
 		//				setUpEnterRoomButton(loggedUserId);
 		//				setUpExitRoomButton();
@@ -603,11 +603,11 @@ export async function openChatRoom(roomId, title, loggedUserId, userid, loggedFl
 		const boardMainFile = await getBoardMainFile(board.id);
 		const trade = findTradeByBoardId(board.trades);
 
-
+//		console.log(trade);
 		const userNickname = await getRoomNickname(userid);
 
 
-
+	
 
 
 
@@ -668,9 +668,9 @@ export async function openChatRoom(roomId, title, loggedUserId, userid, loggedFl
                     <img src=${boardMainFile} width="100" height="100" style="margin-left:5px;margin-right:5px;">
                 </div>
             <div style="display: flex; justify-content: center; flex-direction: column;">
-                    <h3 style = "margin-bottom:5px;"> ${board.title}</h3>
+                    <h3 id ="boardtitle-${board.id}" style = "margin-bottom:5px;"> ${board.deleted===true?'<span style="color:red;">(삭제됨)&nbsp;</span>':''}${board.title}</h3>
                     <h3>가격: ${formatCurrency(board.price)}원</h3>
-                    <div class="buttons-container" style="display: flex;flex-direction: row;">
+                    <div class="buttons-container" style="display:  ${board.deleted===true&&trade.tradeStatus !== "완료"?'none;':'flex;'}flex-direction: row;">
 						<!-- 거래 상태 버튼 들어갈 예정 -->
 				
                       </div>
@@ -924,9 +924,13 @@ export async function boardTitleButtonClickHandler(event, board) {
 
 	// board.id를 문자열로 받아서 페이지 이동
 	const boardId = `${board.id}`;
+	if(board.deleted === true){
+		alert("삭제된 페이지입니다");
+	}
+	else{
 	window.location.href = `/board/view/${boardId}`;
+	}
 }
-
 
 
 
@@ -942,7 +946,7 @@ export async function loadChatRooms(loggedId) {
 		return;
 	}
 
-	const loggedUserId = document.getElementById("loggedUserId").value;
+const loggedUserId = document.getElementById("loggedUserId").value;
 	const chattingRoomListBody = document.getElementById("chattingRoomListBody");
 	const chattingRoomScroll = document.getElementById("chattingRoomScroll");
 
@@ -1095,10 +1099,12 @@ export async function loadChatRooms(loggedId) {
 export async function updateChatRoomOrder(roomId) {
 	const chattingRoomListBody = document.getElementById("chattingRoomListBody");
 	const roomElement = document.querySelector(`[data-room-id="${roomId}"]`);
-
+	const chattingRoomScroll = document.getElementById("chattingRoomScroll");
 	if (roomElement) {
 		// 🔹 해당 채팅방을 목록의 최상단으로 이동
 		chattingRoomListBody.prepend(roomElement);
+// 🔹 스크롤을 최상단으로 이동
+		chattingRoomScroll.scrollTop = 0;
 	}
 }
 
@@ -1367,8 +1373,11 @@ export async function checkUnReadMessageCount2(roomId) {
 
 
 
-
-
+//export async function reloadBoardTitle(roomId, loggedUserId) {
+//	const boardresponse = await fetch(`/chat/findBoard/${Number(roomId)}`);
+//	const board = await boardresponse.json();
+//	
+//}
 
 //이벤트 중복 실행 방지 변수 
 const boardButtonHandlers = new Map();
@@ -1391,6 +1400,17 @@ export async function reloadDetails(roomId, loggedUserId) {
 		console.error(`details-${roomId} 요소를 찾을 수 없습니다.`);
 		return;
 	}
+
+
+		// 보드 타이틀도 업데이트
+		const boardTitleBoardId = detailsElement.querySelector(`#boardtitle-${board.id}`);
+
+		if(board.deleted === true && boardTitleBoardId){
+				boardTitleBoardId.innerHTML = ``;		
+						boardTitleBoardId.innerHTML = `  <h3 id ="boardtitle-${board.id}" style = "margin-bottom:5px;"> ${board.deleted===true?'<span style="color:red;">(삭제됨)&nbsp;</span>':''}${board.title}</h3>
+		`;
+		}
+
 
 	// 버튼 부분만 업데이트 (기존 내용을 유지하면서 버튼 상태만 변경)
 	const buttonsContainer = detailsElement.querySelector(".buttons-container");

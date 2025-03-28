@@ -6,6 +6,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cos.project.details.PrincipalDetails;
 import com.cos.project.dto.BoardDTO;
+import com.cos.project.dto.ChattingRoomDTO;
 import com.cos.project.dto.TradeDTO;
 import com.cos.project.entity.BoardEntity;
 import com.cos.project.entity.Buy_Sell;
@@ -13,6 +14,7 @@ import com.cos.project.entity.Category;
 import com.cos.project.entity.ChattingRoomEntity;
 import com.cos.project.entity.CommentEntity;
 import com.cos.project.entity.MemberEntity;
+import com.cos.project.entity.TradeEntity;
 import com.cos.project.entity.TradeStatus;
 import com.cos.project.repository.BoardLikeRepository;
 import com.cos.project.repository.BoardRepository;
@@ -67,6 +69,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 @RequestMapping("/board")
 public class BoardController {
 
+	@Autowired
+	private ChatService chatService;
+	
 	private BoardService boardService;
 
 	public BoardController(BoardService boardService) {
@@ -346,13 +351,35 @@ public class BoardController {
 	@DeleteMapping("/deleteboard/{id}")
 	public ResponseEntity<?> deleteBoard(@PathVariable(name = "id") Long id, @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		
-		
+		Long loggedId = principalDetails.getMemberEntity().getId();
 		String result = boardService.hideBoard(id);
 		
+		BoardEntity boardEntity = boardService.findByBoardId(id);
+		
+		List<TradeEntity> trades = boardEntity.getTrades();
+		TradeEntity tradeEntity =null;
+		MemberEntity member1  = null;
+		MemberEntity member2  = null;
+		ChattingRoomDTO room =null;
+		
+		if(!trades.isEmpty()) {
+			tradeEntity = trades.stream().filter(trade ->  (trade.getTradeStatus().name().equals("완료"))
+				).findFirst().orElse(null);
+		
+		 member1 = tradeEntity.getMember1();
+		member2 = tradeEntity.getMember2();	
+		
+		room = chatService.findRoomByBoardIdAndMemberId(id, member1.getId(), member2.getId(), loggedId);
+		}
 		
 		String id_String = String.valueOf(id);
-		Long loggedId = principalDetails.getMemberEntity().getId();
-		alarmService.postAlarm(loggedId,null, null, "BOARD", "게시판", id_String, "삭제", null);	
+		
+		if(tradeEntity != null) {
+			alarmService.postAlarm(loggedId,member1.getId(), member2.getId(), "BOARD", "게시판", String.valueOf(room.getId()), "삭제", null);	
+		}else {
+			alarmService.postAlarm(loggedId,null, null, "BOARD", "게시판", id_String, "삭제", null);	
+		}
+		
 		return ResponseEntity.status(200).body(result);
 	}
 	

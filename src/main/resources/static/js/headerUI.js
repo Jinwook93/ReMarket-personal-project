@@ -404,6 +404,14 @@ async function checkUserAlarmData(loggedId) {
 				}
 				loadedRooms.add(roomId);
 			}
+			if (
+				(data.member1Read === "UNREAD" && data.member1Content.includes('숨김')  && Number(data.member1Id) === Number(loggedId)) ||
+				(data.member2Read === "UNREAD" && data.member2Content.includes('숨김') &&Number(data.member2Id) === Number(loggedId))
+			) {
+				await fetch(`/alarm/readHiddenAlarm/${data.id}`);
+			}
+
+
 
 
 		}
@@ -433,7 +441,7 @@ export async function fetchCompleted2Trade(alarm) {
 		const tradeData = await response.json();
 
 		if (tradeData.id != null) {
-//			console.log("가져온 Trade 데이터:", tradeData);
+			//			console.log("가져온 Trade 데이터:", tradeData);
 
 			// `complete-class-${alarm.id}` id를 가진 div를 찾음
 			const targetElement = document.getElementById(`complete-class-${alarm.id}`);
@@ -450,7 +458,7 @@ export async function fetchCompleted2Trade(alarm) {
 
 			return tradeData;  // 필요한 경우 tradeData를 반환
 		} else {
-//			console.log("조건에 맞는 Trade 데이터가 없습니다.");
+			//			console.log("조건에 맞는 Trade 데이터가 없습니다.");
 		}
 
 	} catch (error) {
@@ -500,6 +508,13 @@ export async function findAlarm(loggedId, alarmResult, alarmList, alarmListBody,
 		alarmList.sort((a, b) => Number(b.id) - Number(a.id));
 
 		alarmList.forEach(alarm => {
+			if (alarm.member1Content.includes('숨김') && Number(alarm.member1Id) === Number(loggedId)) {
+				return;
+			}
+			if (alarm.member2Content.includes('숨김') && Number(alarm.member2Id) === Number(loggedId)) {
+				return;
+			}
+
 			const row = document.createElement("tr");
 			fetchCompleted2Trade(alarm);
 			//			console.log(trade);
@@ -513,6 +528,8 @@ export async function findAlarm(loggedId, alarmResult, alarmList, alarmListBody,
 </td>
 
                 ` : ""}
+                
+                
                     ${alarm.member2Visible && Number(alarm.member2Id) === Number(loggedId) ? `
                         <td  id = alarm-${alarm.id}>${alarm.member2Content}
                             ${alarm.action === "상대방 동의 확인" ? `
@@ -520,16 +537,28 @@ export async function findAlarm(loggedId, alarmResult, alarmList, alarmListBody,
                                 <button id="denyMember2-${alarm.id}" >거절하기</button>
                           		` : ""}
                           		
+                          		
+                          		
+                          		
+                          		
+                          		
                           		 ${alarm.action === "예약" ? `
                                 <button id="enroll-Book2-${alarm.id}" >예약하기</button>
                                 <button id="deny-enroll-Book2-${alarm.id}" >거절하기</button>
                           		` : ""}
+                          		
+                          		
+                          		
+                          		
+                          		
 
                            <!-- ${alarm.action === "거래 완료 확인" ? `
                             <div id = "complete-class-${alarm.id}">
                                <button id="complete1-Sell-${alarm.object}">거래완료</button> 
                                </div>
              							 ` : ""} -->
+             							 
+             							 
                                     <div class="date-container" style="display: flex; gap: 10px;"> 
                               <p class="date-text">${formatDate(alarm.createTime)}</p>
                                        <p class="read-status">${alarm.member2Read === "READ" ? "읽음" : "읽지 않음"}</p></div>
@@ -784,7 +813,7 @@ async function toggleMarkAllAsRead() {
 	}
 }
 
-export async function unReadMessageCount(loggedId) {
+export async function unReadMessageCount(loggedId) { // 읽지 않은 전체 메시지 수
 	try {
 		const unReadMessageCountButton = document.getElementById("unReadMessageCountButton");
 		const unReadMessageCount = await checkUnReadMessageCount(loggedId);
@@ -805,7 +834,7 @@ export async function unReadMessageCount(loggedId) {
 
 
 
-export async function unReadMessageCount2(roomId) {
+export async function unReadMessageCount2(roomId) {			//채팅방 내 읽지 않은 메시지
 	try {
 		const unReadMessageCountButton2 = document.getElementById("unReadMessageCountButton2");
 

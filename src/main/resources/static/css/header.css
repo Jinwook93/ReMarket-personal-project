@@ -260,6 +260,7 @@ header {
 #alarmListBody td {
     padding: 10px;
     text-align: center;
+    cursor: pointer;
 }
 
 /* 버튼 스타일 */

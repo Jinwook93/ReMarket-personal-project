@@ -134,7 +134,10 @@ font-family: 'Noto Sans KR', Arial, sans-serif;
 		<div class="board-list">
 			<!-- 게시글 목록 반복 -->
 			<div th:each="board : ${boards}">
-				<a th:href="@{/board/view/{id}(id=${board.id})}">
+				<a th:href="@{/board/view/{id}(id=${board.id})}"
+				th:data-deleted="${board.deleted}"
+  				 onclick="return checkDeleted(this)"
+				>
 					<div class="board board-item" th:data-board-id='${board.id}'>
 						<div class="board-header" >
 								<div
@@ -268,7 +271,17 @@ font-family: 'Noto Sans KR', Arial, sans-serif;
  });
 </script>
 
+<script>
+    function checkDeleted(link) {
+        const isDeleted = link.getAttribute("data-deleted") === "true";
 
+        if (isDeleted) {
+            alert("이 게시글은 삭제되었습니다.");
+            return false; // 링크 이동을 막음
+        }
+        return true; // 정상 이동
+    }
+</script>
 
 
 	<!-- 		 <th:block th:replace="/footer :: footerFragment"></th:block> -->
