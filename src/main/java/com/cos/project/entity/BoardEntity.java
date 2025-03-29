@@ -99,8 +99,8 @@ public class BoardEntity {
     
     
     
-    @OneToMany(mappedBy = "boardEntity", cascade =  CascadeType.REMOVE, orphanRemoval = true)
-    @JsonIncludeProperties({"id", "booking1","booking2", "accept1","accept2","completed1", "completed2", "tradeStatus"})
+    @OneToMany(mappedBy = "boardEntity", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @JsonIncludeProperties({"id", "booking1", "booking2", "accept1", "accept2", "completed1", "completed2", "tradeStatus", "member1", "member2"})
     private List<TradeEntity> trades = new ArrayList<>();
     
     

@@ -43,6 +43,7 @@ import com.cos.project.service.MemberService;
 import com.cos.project.service.MessageService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -422,6 +423,18 @@ public class ChatController {
 	}
     
     
+
+
+
+
+
+
+
+
+
+
+
+
 
     
     

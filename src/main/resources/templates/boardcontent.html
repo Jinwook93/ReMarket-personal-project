@@ -570,12 +570,11 @@ input[type="checkbox"] {
 
 						<div
 							th:if="${
-					             ((tradeDTO[iterStat.index].member1Id == loggedId
-			or		              tradeDTO[iterStat.index].member2Id == loggedId)
-				and	             trade.booking1  == true
+				(trade.member1.userid == loggedUserId or trade.member2.userid == loggedUserId)
+				and	             ((trade.booking1  == true
              and trade.booking2  == true) 
              or (trade.accept1  == true
-             and trade.accept2  == true)
+             and trade.accept2  == true))
              and trade?.tradeStatus?.name != '완료'}">
 							<button type="button" th:id="|cancel-trade-${trade.id}|"
 								th:data-CancelTradeSellBoardId="${trade.id}" class="cancelTrade">거래

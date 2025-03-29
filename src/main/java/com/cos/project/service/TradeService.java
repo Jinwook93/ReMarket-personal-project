@@ -334,5 +334,19 @@ public class TradeService {
 	            .orElse(null); // Return the first trade that matches, or null if none match
 	}
 
+@Transactional
+	public boolean comparingTradeIdAndRoomId(Long trade1Id, Long trade2Id, String room1UserId, String room2UserId) {
+		Long room1Id = memberRepository.findByUserid(room1UserId).get().getId();
+		Long room2Id = memberRepository.findByUserid(room2UserId).get().getId();
+		
+			
+	
+		return ( (room1Id.equals(trade1Id) &&room2Id.equals(trade2Id) ) 
+				|| (room1Id.equals(trade2Id) &&room2Id.equals(trade1Id) ) 
+				);
+	}
+
+	
+	
 	
 }

@@ -86,7 +86,7 @@ export function enrollTrade2(alarmId, loggedUserId) {  // 로그인유저 : memb
 				}
 				if (typeof data === 'object') {
 //					console.log(data);
-					alert(data.member2Content);  // 응답 데이터 처리
+					alert(data.member1Content);  // 응답 데이터 처리
 					return data;
 				}
 

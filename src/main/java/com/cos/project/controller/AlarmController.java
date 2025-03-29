@@ -251,4 +251,19 @@ public class AlarmController {
     }
     
     
+ // action: 예약,상대방 동의 확인, 예약거절 , 거래거절, 거래취소, 
+ 		// 상대방 동의 확인, 예약 action을 가질 경우 이 알람과 동일한 알람들을 expired 할것
+ 		
+// 		거래,예약을 취소, 거절할 경우  지난 "알람" 목록들 중 거래요청을 수락을 하면 수락이 되는 버그가 있음
+    
+//    @GetMapping("/setExpireAlarms/{alarmId}")
+//public ResponseEntity<?> setExpiredAlarms (@PathVariable(name = "alarmId") Long alarmId, @AuthenticationPrincipal PrincipalDetails principalDetails){
+//    	
+//    	 alarmService.setExpiredAlarm(alarmId);	
+//    	
+//    	
+//		return ResponseEntity.ok(true);
+//    }
+    
+    
 }

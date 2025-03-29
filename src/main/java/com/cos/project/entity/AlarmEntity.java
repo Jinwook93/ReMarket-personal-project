@@ -78,6 +78,8 @@ public class AlarmEntity {
 
     // You can add additional fields for member1Id and member2Id if you need them to be separately stored
 
+    @Column(nullable = true)
+    Boolean expired =false;
 
 
 
@@ -98,7 +100,8 @@ public class AlarmEntity {
                 this.getMember1Read(),
                 this.getMember2Read(),
                 this.getPriority(),
-                null
+                null,
+                this.getExpired()
 
 //                ,this.getTargetId()
         );

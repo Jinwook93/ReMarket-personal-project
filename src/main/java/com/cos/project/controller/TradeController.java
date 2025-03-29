@@ -35,6 +35,9 @@ import com.cos.project.service.LikeService;
 import com.cos.project.service.MemberService;
 import com.cos.project.service.MessageService;
 import com.cos.project.service.TradeService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 
@@ -169,7 +172,6 @@ public class TradeController {
 			return null;
 		}
 		chatService.setMessageExpired(chattingRoomEntity2);	//메시지 내부 버튼 기능 만료
-			
 			
 			chatService.addMessage(roomId, principalDetails, messageDTO);
 			
@@ -793,6 +795,11 @@ public class TradeController {
 			Long loggedId = principalDetails.getMemberEntity().getId();
 			
 			BoardEntity boardEntity = boardService.findByBoardId(boardId);
+			
+			if(boardEntity == null) {
+				return ResponseEntity.ok(new TradeDTO());		
+			}
+			
 			List<TradeEntity> trades = boardEntity.getTrades();
 		
 			TradeDTO tradeDTO = trades.stream()
@@ -974,7 +981,33 @@ public class TradeController {
 	}
 	
 	
-	
+    @PostMapping("/comparingTradeAndRoom")
+    @ResponseBody
+    public ResponseEntity<?> comparingTradeAndRoom(@RequestBody String object)
+            throws JsonMappingException, JsonProcessingException {
+        // ObjectMapper를 사용하여 JSON 문자열을 Map으로 변환
+        ObjectMapper om = new ObjectMapper();
+        Map<String, Object> comparingObject = om.readValue(object, Map.class); // Map<String, Object>로 변환
+        
+        // 각 필드를 추출
+        Long trade1Id = ((Number) comparingObject.get("trade1Id")).longValue();
+        Long trade2Id = ((Number) comparingObject.get("trade2Id")).longValue();
+
+        String room1UserId = (String) comparingObject.get("room1Id");
+        String room2UserId = (String) comparingObject.get("room2Id");
+
+        	
+       	boolean result = tradeService.comparingTradeIdAndRoomId(trade1Id,trade2Id,room1UserId, room2UserId);
+        
+//        	boolean result =
+//			(room1UserId.equals(trade1Id)  && room2UserId.equals(trade2Id))
+//    		||		(room1UserId.equals(trade1Id)  && room2UserId.equals(trade2Id));
+   		 
+        
+        
+        // 필요한 로직 처리 후 응답
+        return ResponseEntity.ok(result);
+    }
 	
 	
 	

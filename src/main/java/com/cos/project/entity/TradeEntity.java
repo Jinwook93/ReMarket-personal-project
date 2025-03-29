@@ -5,6 +5,8 @@ import java.sql.Timestamp;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -32,10 +34,12 @@ public class TradeEntity {
 	
 	@ManyToOne
 	@JoinColumn(name = "member1_id", nullable = true)
+	@JsonIncludeProperties({"id", "userid"})  // member1의 id만 포함
 	private MemberEntity member1;
 	
 	@ManyToOne
 	@JoinColumn(name = "member2_id", nullable = true)
+	@JsonIncludeProperties({"id","userid"})  // member1의 id만 포함
 	private MemberEntity member2;
 	
 	

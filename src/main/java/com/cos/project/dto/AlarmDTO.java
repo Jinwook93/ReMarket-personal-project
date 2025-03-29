@@ -32,8 +32,8 @@ public class AlarmDTO {
 	    private String member2Read; // 알람 상태 (READ, UNREAD 등)
 	    private String priority; // 우선순위 (LOW, MEDIUM, HIGH)
 	    private String targetId; // 알람 대상 ID (로그인 유저, 관리자 등)
-
-
+	    private Boolean expired;
+	    
 
 
 	 // DTO -> Entity 변환 메서드
@@ -54,6 +54,7 @@ public class AlarmDTO {
 //	                .targetId(this.targetId)
 	                .member1(member1)
 	                .member2(member2)
+	                .expired(this.expired)
 	                .build();
 	    }
 	    

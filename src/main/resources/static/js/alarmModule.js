@@ -5,11 +5,15 @@
 export function toggleAlarmList() {
 	const alarmButton = document.getElementById("alarmButton");
 	const alarmList = document.querySelector(".alarmList");
+	const markAllAsReadCheckbox = document.getElementById("markAllAsReadCheckbox");	//체크박스
 
 	if (alarmButton && alarmList) {
 		alarmButton.addEventListener("click", (event) => {
 			event.preventDefault();
 			alarmList.style.display = alarmList.style.display === "none" ? "block" : "none";
+			if(alarmList.style.display === "none"){
+				markAllAsReadCheckbox.checked = false;  // 체크 해제
+			}
 		});
 	}
 }

@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.cos.project.entity.AlarmEntity;
+import com.cos.project.entity.MemberEntity;
 
 @Repository
 public interface AlarmRepository extends JpaRepository<AlarmEntity, Long> {
@@ -27,5 +28,9 @@ public interface AlarmRepository extends JpaRepository<AlarmEntity, Long> {
 	    @Query("SELECT a FROM AlarmEntity a WHERE a.member1.id = :loggedId OR a.member2.id = :loggedId")
 	    Page<AlarmEntity> findByLoggedId(@Param("loggedId") Long loggedId, Pageable pageable);
 
+	    @Query("SELECT a FROM AlarmEntity a WHERE ((a.member1 = :member1 AND a.member2 = :member2) OR (a.member1 = :member2 AND a.member2 = :member1))  AND a.object = :object")
+	    	List<AlarmEntity> findByMembersAndObject(@Param("member1") MemberEntity member1, 
+	    	                                         @Param("member2") MemberEntity member2, 
+	    	                                         @Param("object") String object);
 
 }

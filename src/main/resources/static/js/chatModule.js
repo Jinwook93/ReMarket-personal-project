@@ -44,14 +44,14 @@ function insertLineBreaks(text, maxLength) {
 export function findTradeByBoardId(trades) {
 	let result = null;
 	for (let trade of trades) {
-//		console.log(trade);
+		//		console.log(trade);
 		//		if (trade.boardEntity?.id === boardId && trade.accept1 && trade.accept2) {
 		if ((trade.accept1 && trade.accept2) || (trade.booking1 && trade.booking2)) {
 			result = trade;
 			break;  // 원하는 메시지를 찾으면 루프를 종료
 		}
 	}
-	//	console.log("결과" + result);
+//	console.log(result);
 	return result;
 }
 
@@ -64,7 +64,7 @@ export function findTradeByBoardId(trades) {
 // 특정 채팅방(roomId) 메시지를 불러오는 함수
 export async function loadMessages(roomId, messageIndex, recentExitedmemberId, searchedMessageId) {
 
-//	console.log("✅ loadMessages 실행됨", { roomId, messageIndex, recentExitedmemberId });
+	//	console.log("✅ loadMessages 실행됨", { roomId, messageIndex, recentExitedmemberId });
 
 	const loggedUserId = document.getElementById("loggedUserId").value;
 	const loggedId = document.getElementById("loggedId").value;
@@ -553,7 +553,7 @@ export async function sendMessage(roomId, userid, messageIndex, recentExitedmemb
 		parentMessageId.value = "";
 		//		loadMessages(roomId); // 전송 후 메시지 갱신
 		//=====
-			updateChatRoomOrder(roomId);
+		updateChatRoomOrder(roomId);
 		//				await loadChatRooms(loggedId);
 		//				setUpEnterRoomButton(loggedUserId);
 		//				setUpExitRoomButton();
@@ -603,31 +603,31 @@ export async function openChatRoom(roomId, title, loggedUserId, userid, loggedFl
 		const boardMainFile = await getBoardMainFile(board.id);
 		const trade = findTradeByBoardId(board.trades);
 
-//		console.log(trade);
+		//		console.log(trade);
 		const userNickname = await getRoomNickname(userid);
 
 
-	
 
 
 
 
-//		const alarmResponse = await fetch(`/alarm/findTradeAlarm/${Number(roomId)}`);
-//		const alarm = await alarmResponse.json();
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-//		console.log(alarm);
+
+		//		const alarmResponse = await fetch(`/alarm/findTradeAlarm/${Number(roomId)}`);
+		//		const alarm = await alarmResponse.json();
+
+
+
+
+
+
+
+
+
+
+
+
+
+		//		console.log(alarm);
 		chatWindow.innerHTML = `
     <div class="chat-container" id="chat-container-${roomId}">
         <div style="display: flex; justify-content: space-between; align-items: center; 
@@ -668,9 +668,9 @@ export async function openChatRoom(roomId, title, loggedUserId, userid, loggedFl
                     <img src=${boardMainFile} width="100" height="100" style="margin-left:5px;margin-right:5px;">
                 </div>
             <div style="display: flex; justify-content: center; flex-direction: column;">
-                    <h3 id ="boardtitle-${board.id}" style = "margin-bottom:5px;"> ${board.deleted===true?'<span style="color:red;">(삭제됨)&nbsp;</span>':''}${board.title}</h3>
+                    <h3 id ="boardtitle-${board.id}" style = "margin-bottom:5px;"> ${board.deleted === true ? '<span style="color:red;">(삭제됨)&nbsp;</span>' : ''}${board.title}</h3>
                     <h3>가격: ${formatCurrency(board.price)}원</h3>
-                    <div class="buttons-container" style="display:  ${board.deleted===true&&trade.tradeStatus !== "완료"?'none;':'flex;'}flex-direction: row;">
+                    <div class="buttons-container" style="display:  ${board.deleted === true && trade.tradeStatus !== "완료" ? 'none;' : 'flex;'}flex-direction: row;">
 						<!-- 거래 상태 버튼 들어갈 예정 -->
 				
                       </div>
@@ -861,10 +861,10 @@ export async function boardTitleButtonClickHandler(event, board) {
 
 	// 클릭된 요소가 <button> 태그인지 확인
 	if (event.target.tagName.toLowerCase() === 'button') {
-//		console.log("버튼 클릭은 제외됩니다.");
+		//		console.log("버튼 클릭은 제외됩니다.");
 		if (event.target.id === `chat-enroll-Book1-${board.id}`) {			//예약신청
 			const boardId = event.target.id.replace("chat-enroll-Book1-", "");
-//			console.log("상대 아이디" + board.memberEntity.id);
+			//			console.log("상대 아이디" + board.memberEntity.id);
 
 			bookTrade1(Number(boardId), Number(loggedId), Number(board.memberEntity.id), loggedUserId);
 		} else if (event.target.id === `chat-enroll-Book2-${alarm.id}`) {	//예약승인
@@ -891,10 +891,10 @@ export async function boardTitleButtonClickHandler(event, board) {
 			denyCreateTrade(Number(alarmId), loggedUserId);
 		} else if (trade != null && event.target.id === `chat-complete2-Sell-${trade.id}`) {	//거래 완료2 (보드 관리자가 먼저 승인)
 			const tradeId = event.target.id.replace("chat-complete2-Sell-", "");
-				CompleteTrade(tradeId, "isMember2", "거래완료 요청을 보내시겠습니까? (※ 상대방도 수락해야 거래완료 상태가 됩니다");
+			CompleteTrade(tradeId, "isMember2", "거래완료 요청을 보내시겠습니까? (※ 상대방도 수락해야 거래완료 상태가 됩니다");
 		} else if (trade != null && event.target.id === `chat-complete1-Sell-${trade.id}`) {	//거래 완료1 (거래 희망자가 승인)
 			const tradeId = event.target.id.replace("chat-complete1-Sell-", "");
-				CompleteTrade(tradeId, "isMember1","거래완료를 수락하시겠습니까?");
+			CompleteTrade(tradeId, "isMember1", "거래완료를 수락하시겠습니까?");
 		}
 		else if (trade != null && event.target.id === `chat-cancel-trade-${trade.id}`) {			//거래취소
 			const tradeId = event.target.id.replace("chat-cancel-trade-", "");
@@ -916,7 +916,7 @@ export async function boardTitleButtonClickHandler(event, board) {
 		await loadChatRooms(loggedId);
 		setUpEnterRoomButton(loggedUserId);
 		setUpExitRoomButton();
-//		console.log("여기 실행 1");
+		//		console.log("여기 실행 1");
 		//        document.getElementById(`BoardTitleButton-${board.id}`).innerHTML =``;
 		//			 loadMessages(roomId, messageIndex, room.recentExitedmemberId);
 		return; // 이벤트 중단 (페이지 이동 X)
@@ -924,11 +924,11 @@ export async function boardTitleButtonClickHandler(event, board) {
 
 	// board.id를 문자열로 받아서 페이지 이동
 	const boardId = `${board.id}`;
-	if(board.deleted === true){
+	if (board.deleted === true) {
 		alert("삭제된 페이지입니다");
 	}
-	else{
-	window.location.href = `/board/view/${boardId}`;
+	else {
+		window.location.href = `/board/view/${boardId}`;
 	}
 }
 
@@ -946,7 +946,7 @@ export async function loadChatRooms(loggedId) {
 		return;
 	}
 
-const loggedUserId = document.getElementById("loggedUserId").value;
+	const loggedUserId = document.getElementById("loggedUserId").value;
 	const chattingRoomListBody = document.getElementById("chattingRoomListBody");
 	const chattingRoomScroll = document.getElementById("chattingRoomScroll");
 
@@ -982,15 +982,109 @@ const loggedUserId = document.getElementById("loggedUserId").value;
             `;
 		} else {
 			for (const data of visibleDatas) {
+				
+				
+				//병렬 Promise.all 로 실행 (직렬로 순차적으로 실행시 속도 저하 확인)
+				
+//				const roomId = data.id.toString();
+
+// 여러 비동기 요청을 병렬 실행
+//const [
+//    recentRoomMessage, 
+//    mainFile, 
+//    unReadMessageCount, 
+//    tradeResponse
+//] = await Promise.all([
+//    findRecentRoomMessage(Number(data.id)), // 최근 메시지
+//    getBoardMainFileByRoomId(data.id),     // 게시글의 메인 파일
+//    checkUnReadMessageCount2(data.id),     // 안 읽은 메시지 개수
+//    fetch(`/trade/findTrade/${data.id}`)   // 거래 상태 가져오기
+//]);
+//
+//const trade = await tradeResponse.json(); // 거래 데이터 변환
+//
+//// 비교 요청 실행
+//const comparingTradeAndRoom = await fetch("/trade/comparingTradeAndRoom", {
+//    method: "POST",
+//    headers: { "Content-Type": "application/json;charset=utf-8" },
+//    body: JSON.stringify({
+//        room1Id: data.member1UserId,
+//        room2Id: data.member2UserId,
+//        trade1Id: Number(trade.member1Id),
+//        trade2Id: Number(trade.member2Id)
+//    })
+//})
+//    .then((response) => response.text())
+//    .catch((error) => {
+//        console.error(error);
+//    });
+
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				//직렬로 실행
+				
 				const recentRoomMessage = await findRecentRoomMessage(Number(data.id)); // 메시지 객체 데이터임
 				const mainFile = await getBoardMainFileByRoomId(data.id);
-				const roomId = data.id.toString();
+				const roomId = data.id.toString()
 				const unReadMessageCount = await checkUnReadMessageCount2(data.id);
 				const tradeResponse = await fetch(`/trade/findTrade/${data.id}`);			//거래 상태
 				const trade = await tradeResponse.json();
-		
-//				console.log("트레이드");
-//				console.log(trade);
+				//				console.log(trade);
+				const comparingTradeAndRoom = await fetch("/trade/comparingTradeAndRoom", {
+					method: "POST",
+					headers: { "Content-Type": "application/json;charset=utf-8" },
+					body: JSON.stringify({
+						room1Id: data.member1UserId,
+						room2Id: data.member2UserId,
+						trade1Id: Number(trade.member1Id),
+						trade2Id: Number(trade.member2Id)
+					})
+				})
+					.then((response) => {
+						//        if (!response.ok) {
+						//            throw new Error("통신에 실패하였습니다");
+						//        }
+						return response.text(); // 응답을 JSON으로 변환
+					})
+					.catch((error) => {
+						//        console.error(error);
+					});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//				console.log(comparingTradeAndRoom); // 응답 데이터 확인
+
+				//				const comparingTradeAndRoomResult = await  comparingTradeAndRoom.text();
+
+				//				console.log("트레이드");
+				//				console.log(trade);
 				// 기존 DOM에서 같은 roomId가 있는지 확인
 				const existingRow = existingRows.find(row => row.dataset.roomId === roomId);
 				const newContent = `
@@ -999,9 +1093,15 @@ const loggedUserId = document.getElementById("loggedUserId").value;
                                     background-color: lightgray; padding: 10px; border-radius: 0px;
                                     margin-top: 10px; margin-bottom: 10px;">
                             <span>
-                      ${trade !== null && (trade.booking1 !== null || trade.booking2 !== null) && trade.booking1 === true && trade.booking2 === true && trade.tradeStatus !== '완료' ? `<button class ="small-btn reserve">예약 중</button>` : ""}      
-                      ${trade !== null && (trade.accept1 !== null || trade.accept2 !== null) && (trade.accept1 === true && trade.accept2 === true) && trade.tradeStatus !== '완료' ? `<button  class ="small-btn progress">거래 중</button>` : ""}      
-                       ${trade !== null && trade.tradeStatus === '완료' ? `<button class="small-btn complete">거래완료</button>` : ""}
+                      ${trade !== null && comparingTradeAndRoom === "true" && (trade.booking1 !== null || trade.booking2 !== null) && trade.booking1 === true && trade.booking2 === true && trade.tradeStatus !== '완료' ? `<button class ="small-btn reserve">예약 중</button>` : ""}      
+                      ${trade !== null && comparingTradeAndRoom === "true" && (trade.accept1 !== null || trade.accept2 !== null) && (trade.accept1 === true && trade.accept2 === true) && trade.tradeStatus !== '완료' ? `<button  class ="small-btn progress">거래 중</button>` : ""}      
+                       ${trade !== null && comparingTradeAndRoom === "true" && trade.tradeStatus === '완료' ? `<button class="small-btn complete">거래완료</button>` : ""}
+                    ${trade !== null && comparingTradeAndRoom === "false" &&
+						((trade.accept1 === true && trade.accept2 === true || trade.booking1 === true && trade.booking2 === true) ||
+						trade.tradeStatus === '완료') ?
+						`<button class="small-btn" style="background-color:red;color:white;">거래불가</button>` : ''}
+
+                     
                        <b>${data.title}</b> 
                             </span>
                             <button style="background-color: red; color: white; border: none;
@@ -1024,7 +1124,7 @@ const loggedUserId = document.getElementById("loggedUserId").value;
 						? `${recentRoomMessage.senderUserId ? ` 
                                             ${unReadMessageCount > 0 ? `<div id="unReadMessageCountButton2">  <b>${unReadMessageCount}</b></div>` : ""} 
                                             <img src="/icon/userIcon.png" width="20" height="20" alt="상대방"> ${recentRoomMessage.member1Nickname} : </b>` : ""} 
-                                            ${truncateText(recentRoomMessage.messageContent,20) || ""}`
+                                            ${truncateText(recentRoomMessage.messageContent, 20) || ""}`
 						: `최근 메시지 없음`}
                                 </div>
                                 <div style="margin-top: 5px; color:gray; font-weight: 300;">
@@ -1103,7 +1203,7 @@ export async function updateChatRoomOrder(roomId) {
 	if (roomElement) {
 		// 🔹 해당 채팅방을 목록의 최상단으로 이동
 		chattingRoomListBody.prepend(roomElement);
-// 🔹 스크롤을 최상단으로 이동
+		// 🔹 스크롤을 최상단으로 이동
 		chattingRoomScroll.scrollTop = 0;
 	}
 }
@@ -1165,7 +1265,7 @@ export async function searchMessage(searchcontent) {
 			throw new Error(`메시지를 가져올 수 없습니다: ${response.status}`);
 		}
 		const datas = await response.json();
-//		console.log("📌 검색된 메시지 데이터:", datas); // ✅ 데이터 출력 확인
+		//		console.log("📌 검색된 메시지 데이터:", datas); // ✅ 데이터 출력 확인
 		return datas;
 	} catch (error) {
 		console.error('Error:', error);
@@ -1227,7 +1327,7 @@ export function setUpExitRoomButton() {
 				});
 
 				if (response.ok) {
-//					console.log(`채팅방 ${deleteRoomId} 나가기 성공`);
+					//					console.log(`채팅방 ${deleteRoomId} 나가기 성공`);
 
 					// ✅ 특정 `roomId`에 해당하는 `tr`만 삭제
 					const targetRow = document.querySelector(`tr[data-room-id="${deleteRoomId}"]`);
@@ -1393,23 +1493,28 @@ export async function reloadDetails(roomId, loggedUserId) {
 	const boardMainFile = await getBoardMainFile(board.id);
 	const trade = findTradeByBoardId(board.trades);
 
+	const roomResponse = await fetch(`/chat/findRoom/${roomId}`);
+	const room = await roomResponse.json();
+
+
 	const alarmResponse = await fetch(`/alarm/findTradeAlarm/${Number(roomId)}`);
 	const alarm = await alarmResponse.json();
 	const detailsElement = document.querySelector(`#details-${roomId}`);
 	if (!detailsElement) {
-		console.error(`details-${roomId} 요소를 찾을 수 없습니다.`);
+//		console.error(`details-${roomId} 요소를 찾을 수 없습니다.`);
 		return;
 	}
+	
 
+					
+	// 보드 타이틀도 업데이트
+	const boardTitleBoardId = detailsElement.querySelector(`#boardtitle-${board.id}`);
 
-		// 보드 타이틀도 업데이트
-		const boardTitleBoardId = detailsElement.querySelector(`#boardtitle-${board.id}`);
-
-		if(board.deleted === true && boardTitleBoardId){
-				boardTitleBoardId.innerHTML = ``;		
-						boardTitleBoardId.innerHTML = `  <h3 id ="boardtitle-${board.id}" style = "margin-bottom:5px;"> ${board.deleted===true?'<span style="color:red;">(삭제됨)&nbsp;</span>':''}${board.title}</h3>
+	if (board.deleted === true && boardTitleBoardId) {
+		boardTitleBoardId.innerHTML = ``;
+		boardTitleBoardId.innerHTML = `  <h3 id ="boardtitle-${board.id}" style = "margin-bottom:5px;"> ${board.deleted === true ? '<span style="color:red;">(삭제됨)&nbsp;</span>' : ''}${board.title}</h3>
 		`;
-		}
+	}
 
 
 	// 버튼 부분만 업데이트 (기존 내용을 유지하면서 버튼 상태만 변경)
@@ -1435,33 +1540,81 @@ export async function reloadDetails(roomId, loggedUserId) {
              <button id="chat-deny-enroll-Book2-${alarm.id}">예약 거절</button>` : ""} -->
 
         ${trade !== null
+        		&&	trade.member1 &&trade.member2&& trade.member1.userid && trade.member2.userid
+				&& (trade.member1.userid === loggedUserId || trade.member2.userid === loggedUserId)
+				&& (
+					(room.member1UserId === trade.member1.userid && room.member2UserId === trade.member2.userid)
+					|| (room.member1UserId === trade.member2.userid && room.member2UserId === trade.member1.userid)
+				)
 				&& trade.booking1 === true && trade.booking2 === true
 				&& trade.accept1 !== true && trade.accept2 !== true ?
 				`<button class = "booking">예약 중</button>` : ""}
 
-        ${(board.memberEntity.userid === loggedUserId)
-				&& trade !== null
+        ${(board.memberEntity.userid === loggedUserId)	
+        && trade !== null
+        			&&	trade.member1 &&trade.member2&& trade.member1.userid && trade.member2.userid
+				&& (
+					(room.member1UserId === trade.member1.userid && room.member2UserId === trade.member2.userid)
+					|| (room.member1UserId === trade.member2.userid && room.member2UserId === trade.member1.userid)
+				)
 				&& trade.booking1 === true && trade.booking2 === true
 				&& trade.accept1 !== true && trade.accept2 !== true ?
 				`<button id="chat-change-enroll-Book2-${board.id}" class = "changeTrading">거래 중으로 전환</button>` : ""}
 
         ${trade !== null
+        &&	trade.member1 &&trade.member2&& trade.member1.userid && trade.member2.userid
+				&& (
+					(room.member1UserId === trade.member1.userid && room.member2UserId === trade.member2.userid)
+					|| (room.member1UserId === trade.member2.userid && room.member2UserId === trade.member1.userid)
+				)
+
+
+				&& (trade.member1.userid === loggedUserId || trade.member2.userid === loggedUserId)
 				&& trade.booking1 !== true && trade.booking2 !== true
 				&& trade.accept1 === true && trade.accept2 === true
 				&& trade.tradeStatus !== '완료' ?
 				`<button type="button"  class = "trading">거래 진행 중</button>` : ""}
 
         ${trade !== null
+        &&	trade.member1 &&trade.member2&& trade.member1.userid && trade.member2.userid
+				&& (
+					(room.member1UserId === trade.member1.userid && room.member2UserId === trade.member2.userid)
+					|| (room.member1UserId === trade.member2.userid && room.member2UserId === trade.member1.userid)
+				)
+
+
 				&& trade.booking1 !== true && trade.booking2 !== true
 				&& trade.accept1 === true && trade.accept2 === true
 				&& trade.tradeStatus !== '완료' && board.memberEntity.userid === loggedUserId ?
 				`<button type="button" id="chat-complete2-Sell-${trade.id}"
            class = "completeTrade">거래완료</button>` : ""}
 
+
+          ${trade !== null 
+          			   &&	trade.member1 &&trade.member2&& trade.member1.userid && trade.member2.userid
+				&& !(
+					(room.member1UserId === trade.member1.userid && room.member2UserId === trade.member2.userid)
+					|| (room.member1UserId === trade.member2.userid && room.member2UserId === trade.member1.userid)
+				)
+         		 &&
+						((trade.accept1 === true && trade.accept2 === true || trade.booking1 === true && trade.booking2 === true) ||
+						trade.tradeStatus === '완료') ?
+						`<button class="small-btn" style="background-color:red;color:white;">거래불가</button>` : ''}
+
         ${trade !== null && trade.tradeStatus !== null && trade.tradeStatus === '완료' ?
-				`<h3 style="color:red;">※ 거래가 완료된 게시글입니다</h3>` : ""}
+				`<h3 style="color:red;">※ 거래 완료된 게시글</h3>` : ""}
 				
-					 ${trade !== null && trade.tradeStatus !== '완료' ?
+					 ${trade !== null
+				&&	trade.member1 &&trade.member2&& trade.member1.userid && trade.member2.userid
+				&& (
+					(room.member1UserId === trade.member1.userid && room.member2UserId === trade.member2.userid)
+					|| (room.member1UserId === trade.member2.userid && room.member2UserId === trade.member1.userid)
+				)
+
+
+
+
+				&& (trade.member1.userid === loggedUserId || trade.member2.userid === loggedUserId) && trade.tradeStatus !== '완료' ?
 				`<button id = "chat-cancel-trade-${trade.id}" class = "cancelTrade">거래취소</button>
 				` : ""}
     `;

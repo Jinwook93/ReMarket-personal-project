@@ -170,12 +170,35 @@ function toggleSearchMessageContainer(event) {
 
 
 
+//채팅창 검색
+
+
+//document.getElementById("chatSearch").addEventListener("input", searchChat);
+
+let chatSearchElement = document.getElementById("chatSearch");
+
+if (chatSearchElement) {
+  chatSearchElement.addEventListener("input", searchChat);
+}
 
 
 
 
 
-document.getElementById("chatSearch").addEventListener("input", searchChat);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 async function searchChat() {
 	let input = document.getElementById("chatSearch").value.trim().toLowerCase();
@@ -438,6 +461,7 @@ export async function fetchCompleted2Trade(alarm) {
 			throw new Error("서버로부터 데이터를 가져오지 못했습니다.");
 		}
 
+		
 		const tradeData = await response.json();
 
 		if (tradeData.id != null) {
@@ -532,31 +556,30 @@ export async function findAlarm(loggedId, alarmResult, alarmList, alarmListBody,
                 
                     ${alarm.member2Visible && Number(alarm.member2Id) === Number(loggedId) ? `
                         <td  id = alarm-${alarm.id}>${alarm.member2Content}
-                            ${alarm.action === "상대방 동의 확인" ? `
+                            ${alarm.expired !== true &&alarm.action === "상대방 동의 확인" ? `
                                 <button id="agreeMember2-${alarm.id}" >거래하기</button>
                                 <button id="denyMember2-${alarm.id}" >거절하기</button>
                           		` : ""}
                           		
                           		
                           		
-                          		
-                          		
-                          		
-                          		 ${alarm.action === "예약" ? `
+                          		 ${alarm.expired !== true && alarm.action === "예약" ? `
                                 <button id="enroll-Book2-${alarm.id}" >예약하기</button>
                                 <button id="deny-enroll-Book2-${alarm.id}" >거절하기</button>
                           		` : ""}
                           		
                           		
-                          		
-                          		
+                          		${alarm.expired === true  ? `
+                                <button id="agreeMember2-${alarm.id}" disabled >만료된 정보입니다</button>
+                          		` : ""}
+                          			
                           		
 
                            <!-- ${alarm.action === "거래 완료 확인" ? `
                             <div id = "complete-class-${alarm.id}">
                                <button id="complete1-Sell-${alarm.object}">거래완료</button> 
-                               </div>
-             							 ` : ""} -->
+                               </div> 	 ` : ""} -->
+             						
              							 
              							 
                                     <div class="date-container" style="display: flex; gap: 10px;"> 
@@ -588,21 +611,46 @@ export async function findAlarm(loggedId, alarmResult, alarmList, alarmListBody,
 
 
 
-document.getElementById("myChattingRoomList").addEventListener("click", async () => {
-	const isLoggedIn = document.getElementById("isLoggedIn")?.value;
-	const loggedId = document.getElementById("loggedId")?.value;
-	const loggedUserId = document.getElementById("loggedUserId")?.value;
-	if (isLoggedIn === "true" || isLoggedIn === true) {
-		await loadChatRooms(loggedId);
-		await checkUserAlarmCount(loggedId);
-		setUpEnterRoomButton(loggedUserId);
-		setUpExitRoomButton();
-	}
-});
+//document.getElementById("myChattingRoomList").addEventListener("click", async () => {
+//	const isLoggedIn = document.getElementById("isLoggedIn")?.value;
+//	const loggedId = document.getElementById("loggedId")?.value;
+//	const loggedUserId = document.getElementById("loggedUserId")?.value;
+//	if (isLoggedIn === "true" || isLoggedIn === true) {
+//		await loadChatRooms(loggedId);
+//		await checkUserAlarmCount(loggedId);
+//		setUpEnterRoomButton(loggedUserId);
+//		setUpExitRoomButton();
+//	}
+//});
 
 
 
-document.getElementById("alarmButton").addEventListener("click", async () => {
+let myChattingRoomListElement = document.getElementById("myChattingRoomList");
+
+if (myChattingRoomListElement) {
+  myChattingRoomListElement.addEventListener("click", async () => {
+    const isLoggedIn = document.getElementById("isLoggedIn")?.value;
+    const loggedId = document.getElementById("loggedId")?.value;
+    const loggedUserId = document.getElementById("loggedUserId")?.value;
+    
+    if (isLoggedIn === "true" || isLoggedIn === true) {
+      await loadChatRooms(loggedId);
+      await checkUserAlarmCount(loggedId);
+      setUpEnterRoomButton(loggedUserId);
+      setUpExitRoomButton();
+    }
+  });
+}
+
+
+
+
+
+let myAlarmButton = document.getElementById("alarmButton");
+
+
+if(myAlarmButton){
+myAlarmButton.addEventListener("click", async () => {
 	const isLoggedIn = document.getElementById("isLoggedIn")?.value;
 	const loggedId = document.getElementById("loggedId")?.value;
 
@@ -616,6 +664,7 @@ document.getElementById("alarmButton").addEventListener("click", async () => {
 	}
 });
 
+}
 //클릭한 알람에 대해 읽음 처리
 // 문서 전체 클릭 이벤트는 한 번만 등록
 document.addEventListener("click", async function(event) {
