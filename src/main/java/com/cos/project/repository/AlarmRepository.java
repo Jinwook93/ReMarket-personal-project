@@ -27,7 +27,13 @@ public interface AlarmRepository extends JpaRepository<AlarmEntity, Long> {
 	    List<AlarmEntity> findByLoggedId(@Param("loggedId") Long loggedId);
 
 	    @Query("SELECT a FROM AlarmEntity a WHERE a.member1.id = :loggedId OR a.member2.id = :loggedId")
-	    Page<AlarmEntity> findByLoggedId(@Param("loggedId") Long loggedId, Pageable pageable);
+	    Page<AlarmEntity> findByLoggedId2(@Param("loggedId") Long loggedId, Pageable pageable);
+	    
+	    @Query("SELECT a FROM AlarmEntity a " +
+	    	       "WHERE (a.member1.id = :loggedId AND a.member1Visible = true AND a.member1Content NOT LIKE '%(숨김)%') " +
+	    	       "OR (a.member2.id = :loggedId AND a.member2Visible = true AND a.member2Content NOT LIKE '%(숨김)%')")
+	    	Page<AlarmEntity> findByLoggedId(@Param("loggedId") Long loggedId, Pageable pageable);
+
 
 	    @Query("SELECT a FROM AlarmEntity a WHERE ((a.member1 = :member1 AND a.member2 = :member2) OR (a.member1 = :member2 AND a.member2 = :member1))  AND a.object = :object")
 	    	List<AlarmEntity> findByMembersAndObject(@Param("member1") MemberEntity member1, 

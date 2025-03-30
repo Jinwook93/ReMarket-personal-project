@@ -12,7 +12,7 @@ export function toggleAlarmList() {
 			event.preventDefault();
 			alarmList.style.display = alarmList.style.display === "none" ? "block" : "none";
 			if(alarmList.style.display === "none"){
-				markAllAsReadCheckbox.checked = false;  // 체크 해제
+				markAllAsReadCheckbox.checked = "false";  // 체크 해제
 			}
 		});
 	}

@@ -934,8 +934,29 @@ export async function boardTitleButtonClickHandler(event, board) {
 
 
 
-
-
+//document.addEventListener('DOMContentLoaded', () => {
+//    const exceptTrade = document.querySelector('#exceptTrade'); // 체크박스를 선택
+//    const loggedId = document.getElementById("loggedId").value;
+//        const loggedUserId = document.getElementById("loggedUserId").value;
+//    // 체크박스 값이 변경될 때마다 실행되는 이벤트 리스너
+//    exceptTrade.addEventListener('change', async () => {
+//        // 체크박스가 체크되지 않았을 때
+//        if (exceptTrade.checked === false) {
+//            // 체크박스를 다시 체크 상태로 만들기
+//            exceptTrade.checked = true;
+//
+//            // 세션 스토리지에 체크 상태 저장
+//            sessionStorage.setItem("exceptTradeChecked", exceptTrade.checked);
+////        					await loadChatRooms(loggedId);
+////						setUpEnterRoomButton(loggedUserId);
+////						setUpExitRoomButton();
+//            
+//        } else {
+//            // 체크박스를 체크했을 때 상태를 그대로 저장
+//            sessionStorage.setItem("exceptTradeChecked", exceptTrade.checked);
+//        }
+//    });
+//});
 
 
 
@@ -949,9 +970,16 @@ export async function loadChatRooms(loggedId) {
 	const loggedUserId = document.getElementById("loggedUserId").value;
 	const chattingRoomListBody = document.getElementById("chattingRoomListBody");
 	const chattingRoomScroll = document.getElementById("chattingRoomScroll");
+	
+const exceptTrade = sessionStorage.getItem("exceptTradeChecked");
 
+// exceptTrade가 null일 수 있기 때문에, 기본값을 'false'로 설정 (체크박스가 체크되지 않으면 'false')
+const exceptChecked = exceptTrade === 'true' ? 'true' : 'false';
+
+	
+	
 	try {
-		const response = await fetch(`/chat/myChatRoom/${numericLoggedId}`);
+		const response = await fetch(`/chat/myChatRoom/${numericLoggedId}?exceptChecked=${exceptChecked}`);
 		if (!response.ok) throw new Error("Failed to fetch chat rooms");
 
 		const datas = await response.json();
@@ -1099,7 +1127,7 @@ export async function loadChatRooms(loggedId) {
                     ${trade !== null && comparingTradeAndRoom === "false" &&
 						((trade.accept1 === true && trade.accept2 === true || trade.booking1 === true && trade.booking2 === true) ||
 						trade.tradeStatus === '완료') ?
-						`<button class="small-btn" style="background-color:red;color:white;">거래불가</button>` : ''}
+						`<button class="small-btn tradedisable" style="background-color:red;color:white;">거래불가</button>` : ''}
 
                      
                        <b>${data.title}</b> 

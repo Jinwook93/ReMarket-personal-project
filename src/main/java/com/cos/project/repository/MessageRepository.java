@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cos.project.entity.ChattingRoomEntity;
+import com.cos.project.entity.MemberEntity;
 import com.cos.project.entity.MessageEntity;
 
 public interface MessageRepository extends JpaRepository<MessageEntity, Long>{
@@ -39,4 +40,5 @@ public interface MessageRepository extends JpaRepository<MessageEntity, Long>{
             @Param("receiver") Long receiver
         );
 
+        List<MessageEntity> findByReceiver(MemberEntity receiver);
 }

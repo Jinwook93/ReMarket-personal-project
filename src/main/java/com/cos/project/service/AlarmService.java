@@ -142,12 +142,20 @@ public class AlarmService {
 	@Transactional // 알림 숨김 (삭제)
 	public boolean hideAlarm(Long alarmId, Long loggedId, Long member1Id, Long member2Id) {
 		MemberEntity member1 = memberRepository.findById(member1Id).get();
+		if(member1Id != null && member2Id == null) {
+			MemberEntity member2 = null;
+			
+			}
+		else if(member1Id != null && member2Id != null) {
 		MemberEntity member2 = memberRepository.findById(member2Id).get();
+		}
 		AlarmEntity alarmEntity = alarmRepository.findById(alarmId).get(); // 알람조회
 		if (loggedId.equals(member1Id)) {
 			alarmEntity.setMember1Visible(false);
+			alarmEntity.setMember1Read("READ");
 		} else if (loggedId.equals(member2Id)) {
 			alarmEntity.setMember2Visible(false);
+			alarmEntity.setMember2Read("READ");
 		}
 
 		alarmRepository.saveAndFlush(alarmEntity);
@@ -155,6 +163,35 @@ public class AlarmService {
 		return true;
 	}
 
+	
+	
+	//모든 알람 삭제 (숨김)
+	@Transactional
+	public void deleteAllAlarms(Long loggedId) {
+		
+		List<AlarmEntity> alarms = alarmRepository.findByLoggedId(loggedId);
+		
+		alarms.forEach(alarm ->{
+			if(alarm.getMember1().getId().equals(loggedId)){
+				alarm.setMember1Visible(false);
+				alarm.setMember1Read("READ");
+			}else if(alarm.getMember2().getId().equals(loggedId)){
+				alarm.setMember2Visible(false);
+				alarm.setMember2Read("READ");
+			}
+				
+		});
+		
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 //	@Transactional // 알림 읽음
 //	public void readAlarm(Long alarmId, Long loggedId, Long member1Id, Long member2Id) {
 //		MemberEntity member1 = memberRepository.findById(member1Id).get();
@@ -457,9 +494,19 @@ public class AlarmService {
 						.findFirst().map(trade -> new TradeDTO().fromEntity(trade)).orElse(null);
 				member1Content = member2.get().getNickname() + "님에게 거래완료 신청을 보냈습니다";
 //						member2Content = member1.get().getNickname()  + " 님이 거래완료를 희망합니다. 거래를 마치시겠습니까? <div class='messageButtonSelect'><button id='complete1-Sell-" + tradeDTO.getId() + "'>거래완료</button></div>";
-				member2Content = member1.get().getNickname()
+
+								member2Content = member1.get().getNickname()
 						+ " 님이 거래완료를 희망합니다. 거래를 마치시겠습니까? <button id='complete1-Sell-" + tradeDTO.getId()
 						+ "'>거래완료</button>";
+				
+				
+//				member2Content = member1.get().getNickname()
+//					    + " 님이 거래완료를 희망합니다. 거래를 마치시겠습니까? "
+//					    + "<button id='complete1-Sell-" + tradeDTO.getId() + "' "
+//					    + "style=\"display: ${alarm.expired === true ? 'none' : 'block'}\">"
+//					    + "거래완료</button>";
+
+				
 			} else if (childType.equals("거래") && action.equals("거래완료")) {
 //				member1Content = member2.get().getNickname() + "님과 " + object + " 번 게시판 거래를 완료하였습니다";
 				member1Content = member2.get().getNickname() + "님과 " + board.getTitle() +" 거래를 완료하였습니다";
@@ -476,8 +523,16 @@ public class AlarmService {
 			else if (childType.equals("거래") && action.equals("거래불가")) {
 //				member1Content = member2.get().getNickname() + "님과 " + object + " 번 게시판 거래를 취소하였습니다";
 				member1Content = "(숨김)"+member2.get().getNickname() + "님과 ' " + board.getTitle() + "'  거래를 거절하였습니다";
-				member2Content ="신청하신 "+board.getTitle()+" 거래는 다른 사용자와 진행되어 거래가 불가능합니다."+ "<br><hr><button class='small-btn' id= searchOtherProduct-"+ board.getCategory().name()  +">다른 상품도 확인해보세요!</button>";
-//				member1Visible = false;
+//				member2Content ="신청하신 "+board.getTitle()+" 거래는 다른 사용자와 진행되어 거래가 불가능합니다."+ "<br><hr><button class='small-btn searchOtherProduct-"+ board.getCategory().name()  +">다른 상품도 확인해보세요!</button>";
+				member2Content = "신청하신 " + board.getTitle() + 
+					    " 거래는 다른 사용자와 진행되어 거래가 불가능합니다." + 
+					    "<br><hr>" + 
+					    "<button class='small-btn searchOtherProduct-" + board.getCategory().name() + 
+					    "' onclick=\"location.href='/board/list?condition=2&category=" + board.getCategory().name() + "'\">" +
+					    "다른 상품도 확인해보세요!</button>";
+
+				
+				//				member1Visible = false;
 //				member1Read = "READ";
 			}
 			
@@ -505,21 +560,45 @@ public class AlarmService {
 		return alarmDTO;
 	}
 
+	@Transactional
 	public PagedResponse<AlarmDTO> getUserAlarms(Long loggedId, Pageable pageable) {
-		Page<AlarmEntity> alarmEntities = alarmRepository.findByLoggedId(loggedId, pageable);
+	    // 사용자의 알림을 페이지네이션하여 조회
+	    Page<AlarmEntity> alarmEntities = alarmRepository.findByLoggedId(loggedId, pageable);
 
-		List<AlarmDTO> alarms = alarmEntities.getContent().stream()
-				.map(alarm -> new AlarmDTO(alarm.getId(), alarm.getMember1Content(), alarm.getMember2Content(),
-						alarm.getMember1() != null ? alarm.getMember1().getId() : null, // member1Id
-						alarm.getMember2() != null ? alarm.getMember2().getId() : null, // member2Id
-						alarm.getMember1Visible(), alarm.getMember2Visible(), alarm.getCreateTime(), alarm.getType(),
-						alarm.getChildType(), alarm.getObject(), alarm.getAction(), alarm.getMember1Read(),
-						alarm.getMember2Read(), alarm.getPriority(), null, alarm.getExpired() // targetId가 null일 수 있다면 null 처리
-				)).collect(Collectors.toList());
+	    // 조회된 AlarmEntity 목록을 AlarmDTO로 변환
+	    List<AlarmDTO> alarms = alarmEntities.getContent().stream()
+	            .map(alarm -> new AlarmDTO(
+	                    alarm.getId(),                          // 알림 ID
+	                    alarm.getMember1Content(),             // 회원1이 보낸 알림 내용
+	                    alarm.getMember2Content(),             // 회원2가 보낸 알림 내용
+	                    alarm.getMember1() != null ? alarm.getMember1().getId() : null, // member1Id (회원1 ID, 없으면 null)
+	                    alarm.getMember2() != null ? alarm.getMember2().getId() : null, // member2Id (회원2 ID, 없으면 null)
+	                    alarm.getMember1Visible(),             // 회원1에게 보이는 여부
+	                    alarm.getMember2Visible(),             // 회원2에게 보이는 여부
+	                    alarm.getCreateTime(),                 // 알림 생성 시간
+	                    alarm.getType(),                       // 알림 타입
+	                    alarm.getChildType(),                  // 세부 알림 타입
+	                    alarm.getObject(),                     // 관련 객체 정보
+	                    alarm.getAction(),                     // 수행된 액션 정보
+	                    alarm.getMember1Read(),                // 회원1이 읽었는지 여부
+	                    alarm.getMember2Read(),                // 회원2가 읽었는지 여부
+	                    alarm.getPriority(),                   // 알림 우선순위
+	                    null,                                  // targetId가 필요하면 추가, 현재는 null 처리
+	                    alarm.getExpired()                     // 만료 여부
+	            ))
+	            .collect(Collectors.toList());
 
-		return new PagedResponse<>(alarms, alarmEntities.getNumber(), alarmEntities.getSize(),
-				alarmEntities.getTotalPages(), alarmEntities.getTotalElements(), alarmEntities.isLast());
+	    // 페이지네이션 정보를 포함하여 PagedResponse 객체 생성 후 반환
+	    return new PagedResponse<>(
+	            alarms,
+	            alarmEntities.getNumber(),         // 현재 페이지 번호
+	            alarmEntities.getSize(),           // 페이지 크기
+	            alarmEntities.getTotalPages(),     // 총 페이지 수
+	            alarmEntities.getTotalElements(),  // 총 알림 개수
+	            alarmEntities.isLast()             // 마지막 페이지 여부
+	    );
 	}
+
 
 	@Transactional
 	public List<AlarmEntity> unReadAlarmList(Long loggedId) {
@@ -880,6 +959,7 @@ public List<AlarmEntity> setOtherRoomsEnableTrade(BoardEntity boardEntity, Chatt
 					
 	return noTradedchattingRooms;
 }
+
 
 
 

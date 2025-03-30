@@ -83,6 +83,11 @@
 							style="width: 100%; padding: 8px; box-sizing: border-box; margin-bottom: 5px;">
 						<h3 id="searchResultText" style="display: none;">검색 결과 (채팅방)
 						</h3>
+						<div style ="display:flex;justify-content: space-between;margin:10px;" >
+							 <label><input type="checkbox" id ="read-all-messages">모두 읽음</label>
+						 <label><input type="checkbox" id ="exceptTrade">거래불가,거래완료 제외 </label>
+						
+						</div>
 						<div id="chattingRoomScroll">
 							<table>
 								<tbody id="chattingRoomListBody">
@@ -98,7 +103,11 @@
 						onclick="bringToFront(this)">
 						<table>
 							<tbody id="alarmListBody">
+									<div style ="display:flex;justify-content: space-between;margin:10px;" >
 								<div id="notification-container"></div>
+								<!-- 모든 알림 삭제 버튼 -->
+								<button id="deleteAllAlarmsBtn" class="small-btn">모든 알림 삭제</button>
+								</div>
 								<!-- 알림 목록이 여기에 동적으로 추가됩니다 -->
 							</tbody>
 						</table>
@@ -156,7 +165,32 @@
     }
 </script>
 
+<script>
+// document.addEventListener('DOMContentLoaded', () => {
+//     const exceptTrade = document.querySelector('#exceptTrade'); // 체크박스를 선택
+//     const loggedId = document.getElementById("loggedId").value;
+//         const loggedUserId = document.getElementById("loggedUserId").value;
+//     // 체크박스 값이 변경될 때마다 실행되는 이벤트 리스너
+//     exceptTrade.addEventListener('change', async () => {
+//         // 체크박스가 체크되지 않았을 때
+//         if (exceptTrade.checked === false) {
+//             // 체크박스를 다시 체크 상태로 만들기
+//             exceptTrade.checked = true;
 
+//             // 세션 스토리지에 체크 상태 저장
+//             sessionStorage.setItem("exceptTradeChecked", exceptTrade.checked);
+// //        					await loadChatRooms(loggedId);
+// //						setUpEnterRoomButton(loggedUserId);
+// //						setUpExitRoomButton();
+            
+//         } else {
+//             // 체크박스를 체크했을 때 상태를 그대로 저장
+//             sessionStorage.setItem("exceptTradeChecked", exceptTrade.checked);
+//         }
+//     });
+// });
+
+</script>
 
 
 </body>

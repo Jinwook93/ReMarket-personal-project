@@ -761,7 +761,7 @@ public class ChatService {
 		return filteredMessageDTO;
 	}
 
-	@Transactional
+	@Transactional				//읽지 않은 메시지 찾기
 	public List<MessageDTO> findUnReadMessages(Long loggedId) {
 
 		String loggedUserId = memberRepository.findById(loggedId)
@@ -794,6 +794,31 @@ public class ChatService {
 		return filteredMessages.stream().map(message -> message.convertToDTO(message)).collect(Collectors.toList());
 	}
 
+	
+	
+	//메시지 모두 읽기
+	@Transactional
+	public boolean setAllUnReadMessages(MemberEntity memberEntity) {
+			
+		
+			List<MessageEntity> messages = messageRepository.findByReceiver(memberEntity);
+			messages.forEach(message-> message.setRead(true));
+
+		return true;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	@Transactional // 한 채팅방 당 읽지않음 메시지 수
 	public List<MessageDTO> findUnReadMessage(Long roomId, Long loggedId) {
 

@@ -98,12 +98,57 @@ public class ChatController {
     
     @GetMapping("/myChatRoom/{loggedId}")
     @ResponseBody
-    public ResponseEntity<?> myChatRoom(@PathVariable(name = "loggedId") Long id, 
-                                        @AuthenticationPrincipal PrincipalDetails principalDetails) {
-        List<ChattingRoomDTO> chattingRoomList = new ArrayList<>(chatService.myChattingRoomList(principalDetails.getMemberEntity().getId()));
+    public ResponseEntity<?> myChatRoom(
+            @PathVariable(name = "loggedId") Long id,
+            @AuthenticationPrincipal PrincipalDetails principalDetails, 
+            @RequestParam(name = "exceptChecked", required = false) Boolean exceptChecked) {  
 
-        // sendTime 기준으로 내림차순 정렬 (최신 메시지가 먼저)
-//        chattingRoomList.sort(Comparator.comparing(ChattingRoomDTO::getCreateTime, Comparator.nullsLast(Comparator.reverseOrder())));
+//    	System.out.println(exceptChecked);
+        if(exceptChecked == null) {
+        	exceptChecked= Boolean.FALSE;
+        }
+    	
+    	List<ChattingRoomDTO> chattingRoomList = new ArrayList<>(chatService.myChattingRoomList(principalDetails.getMemberEntity().getId()));
+
+        
+//        // exceptChecked가 true일 경우 거래 완료 & 거래 불가인 채팅방을 제외
+//        if (Boolean.TRUE.equals(exceptChecked)) {
+//            chattingRoomList = chattingRoomList.stream()
+//                .filter(room -> {
+//                    BoardEntity boardEntity = boardService.findByBoardId(Long.valueOf(room.getBoardId()));
+//
+//                    // 거래 목록이 없으면 거래 가능하므로 포함
+//                    if (boardEntity.getTrades() == null || boardEntity.getTrades().isEmpty()) {
+//                        return true;
+//                    }
+//
+//                    // 현재 room을 final 변수로 저장
+//                    final ChattingRoomDTO currentRoom = room;
+//
+//                    return boardEntity.getTrades().stream().noneMatch(trade -> 
+//                        trade.getMember1() != null && trade.getMember2() != null &&
+//                        trade.getMember1().getUserid() != null && trade.getMember2().getUserid() != null &&
+//                        (
+//                            (currentRoom.getMember1UserId().equals(trade.getMember1().getUserid()) && 
+//                             currentRoom.getMember2UserId().equals(trade.getMember2().getUserid())) ||
+//                            (currentRoom.getMember1UserId().equals(trade.getMember2().getUserid()) && 
+//                             currentRoom.getMember2UserId().equals(trade.getMember1().getUserid()))
+//                        ) 
+//                        &&   trade.getTradeStatus() != null // 🔴 NULL CHECK 추가
+//                        &&
+//                        (
+//                            // 1. 거래 상태가 '완료'
+//                            "완료".equals(trade.getTradeStatus().name()) ||
+//                            // 2. 예약된 거래 (거래 불가)
+//                            (trade.getBooking1() && trade.getBooking2()) ||
+//                            // 3. 상호 거래 수락된 경우 (거래 불가)
+//                            (trade.getAccept1() && trade.getAccept2())
+//                        )
+//                    
+//                    );
+//                })
+//                .collect(Collectors.toList());
+//        }
 
         return ResponseEntity.ok(chattingRoomList);
     }
@@ -319,6 +364,24 @@ public class ChatController {
         return ResponseEntity.ok(result);
     }
 
+    
+    
+    @GetMapping("/markAsAllRead")		//채팅방 메시지 모두 읽기
+    @ResponseBody
+    public ResponseEntity<?> markAllMessagesAsRead(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+        
+    	Long loggedId = principalDetails.getMemberEntity().getId();
+    	List<MessageDTO> unReadMessages= chatService.findUnReadMessages(loggedId);
+        boolean result = chatService.setAllUnReadMessages(principalDetails.getMemberEntity());
+        return ResponseEntity.ok(result);
+    }
+    
+    
+    
+    
+    
+    
+    
     
     
     

@@ -126,16 +126,17 @@ public class AlarmController {
     // 특정 알림 삭제
     @PostMapping("/delete/{alarmId}")
     public ResponseEntity<Void> deleteAlarm(@PathVariable(name = "alarmId") Long alarmId, @AuthenticationPrincipal PrincipalDetails principalDetail, @RequestBody AlarmDTO alarmDTO) {
-        alarmService.hideAlarm(alarmId, principalDetail.getMemberEntity().getId(), alarmDTO.getMember1Id(), alarmDTO.getMember2Id());
+    		System.out.println(alarmDTO.toString());
+    	alarmService.hideAlarm(alarmId, principalDetail.getMemberEntity().getId(), alarmDTO.getMember1Id(), alarmDTO.getMember2Id());
         return ResponseEntity.ok().build();
     }
 
-    // 모든 알림 삭제
-//    @DeleteMapping("/delete-all")
-//    public ResponseEntity<Void> deleteAllAlarms(@AuthenticationPrincipal PrincipalDetails principalDetail) {
-//        alarmService.deleteAllAlarms(principalDetail.getUser().getId());
-//        return ResponseEntity.ok().build();
-//    }
+     //모든 알림 삭제
+    @DeleteMapping("/delete-all")
+    public ResponseEntity<Void> deleteAllAlarms(@AuthenticationPrincipal PrincipalDetails principalDetail) {
+        alarmService.deleteAllAlarms(principalDetail.getMemberEntity().getId());
+        return ResponseEntity.ok().build();
+    }
     
     
     

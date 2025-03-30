@@ -36,6 +36,164 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 
+document.addEventListener('DOMContentLoaded', () => {
+	const exceptTrade = document.querySelector('#exceptTrade'); // 체크박스를 선택
+	const loggedId = document.getElementById("loggedId").value;
+	const loggedUserId = document.getElementById("loggedUserId").value;
+
+	const readAllMessages = document.getElementById("read-all-messages");
+
+	// 세션 스토리지에서 값 가져오기 (없으면 기본값은 false)
+	const exceptTradeChecked = sessionStorage.getItem("exceptTradeChecked") === 'true';
+
+	// 페이지 로드 시 체크박스의 상태를 세션 스토리지 값에 따라 설정
+	//    exceptTrade.checked = exceptTradeChecked;			// 백엔드 동기화 때문에 처음에는 적용이 안되어있음
+
+	// 체크박스 값이 변경될 때마다 실행되는 이벤트 리스너
+	exceptTrade.addEventListener('change', async () => {
+		// 체크박스 상태가 변경될 때마다 세션 스토리지에 저장
+		sessionStorage.setItem("exceptTradeChecked", exceptTrade.checked);
+
+		// 추가적인 로직을 필요하면 여기에 추가
+		// await loadChatRooms(loggedId);
+		// setUpEnterRoomButton(loggedUserId);
+		// setUpExitRoomButton();
+
+		// td 내의 버튼을 찾아서 클래스에 따라 td를 삭제
+		let buttons = document.querySelectorAll('td button');  // 모든 td 안의 버튼을 찾음
+
+		buttons.forEach(button => {
+			if (button.classList.contains("complete") || button.classList.contains("tradedisable")) {
+				// 해당 버튼이 있는 td를 삭제
+				button.closest('td').style.display = "none";
+			} else if (exceptTrade.checked === false) {
+				button.closest('td').style.display = "block";
+			}
+
+			//            현재 코드에서는 체크박스를 해제했을 때 td의 display를 block으로 설정하고 있는데, display="block"은 td 요소에 적용하기 적합하지 않습니다. 
+			//            td는 기본적으로 table 레이아웃에 속한 요소이기 때문에, display 속성은 none 또는 table-cell로 설정해야 합니다.
+
+
+
+
+			//else {		--> 안됨
+			//                // exceptTrade가 체크되지 않으면 td를 보이게 설정
+			//                td.style.display = exceptTrade.checked ? "table-cell" : "none";
+			//            }
+
+
+
+		});
+	});
+
+	if (readAllMessages) {
+		readAllMessages.addEventListener('change', async () => {
+			await fetch("/chat/markAsAllRead");
+			//			console.log("모든 메시지 읽기 처리 완료");
+
+		//	await checkUnReadMessageCount(loggedId);
+		await unReadMessageCount(loggedId);
+		
+		await loadChatRooms(loggedId);
+		setUpEnterRoomButton(loggedUserId);
+		setUpExitRoomButton();
+		})
+
+
+	}
+
+
+
+
+});
+
+
+document.addEventListener('DOMContentLoaded', () => {
+	document.addEventListener("click", async (event) => {
+		if (event.target.classList.contains("deleteAlarmBtn")) {
+			const deleteAlarmBtn = event.target;
+
+			const alarmId = deleteAlarmBtn.getAttribute("data-alarm-id");
+			const member1Id = deleteAlarmBtn.getAttribute("data-alarm-member1Id");
+			const member2Id = deleteAlarmBtn.getAttribute("data-alarm-member2Id");
+
+			try {
+				const response = await fetch(`/alarm/delete/${alarmId}`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({
+						id: alarmId,
+						member1Id: member1Id ? Number(member1Id) : null,
+						member2Id: member2Id ? Number(member2Id) : null
+					})
+				});
+
+				if (response.ok) {
+					alert("알림이 삭제되었습니다.");
+					//                    deleteAlarmBtn.closest("tr").remove();
+
+					const isLoggedIn = document.getElementById("isLoggedIn")?.value;
+					const loggedId = document.getElementById("loggedId")?.value;
+
+					if (isLoggedIn === "true" || isLoggedIn === true) {
+						const alarmResult = await checkUserAlarmList(loggedId);
+						await checkUserAlarmCount(loggedId);
+						const alarmList = alarmResult.content;
+						const alarmListBody = document.getElementById("alarmListBody");
+
+						findAlarm(loggedId, alarmResult, alarmList, alarmListBody);
+					}
+				} else {
+					alert("알림 삭제에 실패했습니다.");
+				}
+			} catch (error) {
+				console.error('Error:', error);
+				alert("오류가 발생했습니다.");
+			}
+		}
+	});
+
+
+	// 모든 알림 삭제 버튼 클릭 이벤트
+	const deleteAllAlarmsBtn = document.querySelector("#deleteAllAlarmsBtn");
+	if (deleteAllAlarmsBtn) {
+		deleteAllAlarmsBtn.addEventListener("click", async () => {
+			try {
+				const response = await fetch(`/alarm/delete-all`, {
+					method: 'DELETE',
+					headers: {
+						'Content-Type': 'application/json',
+					}
+				});
+
+				if (response.ok) {
+					alert("모든 알림이 삭제되었습니다.");
+					// 삭제 후 UI 업데이트 (예: 알림 목록 비우기)
+					
+							const isLoggedIn = document.getElementById("isLoggedIn")?.value;
+					const loggedId = document.getElementById("loggedId")?.value;
+
+					if (isLoggedIn === "true" || isLoggedIn === true) {
+						const alarmResult = await checkUserAlarmList(loggedId);
+						await checkUserAlarmCount(loggedId);
+						const alarmList = alarmResult.content;
+						const alarmListBody = document.getElementById("alarmListBody");
+
+						findAlarm(loggedId, alarmResult, alarmList, alarmListBody);
+					}
+					
+				} else {
+					alert("모든 알림 삭제에 실패했습니다.");
+				}
+			} catch (error) {
+				console.error('Error:', error);
+				alert("오류가 발생했습니다.");
+			}
+		});
+	}
+});
 
 
 
@@ -178,7 +336,7 @@ function toggleSearchMessageContainer(event) {
 let chatSearchElement = document.getElementById("chatSearch");
 
 if (chatSearchElement) {
-  chatSearchElement.addEventListener("input", searchChat);
+	chatSearchElement.addEventListener("input", searchChat);
 }
 
 
@@ -428,8 +586,8 @@ async function checkUserAlarmData(loggedId) {
 				loadedRooms.add(roomId);
 			}
 			if (
-				(data.member1Read === "UNREAD" && data.member1Content.includes('숨김')  && Number(data.member1Id) === Number(loggedId)) ||
-				(data.member2Read === "UNREAD" && data.member2Content.includes('숨김') &&Number(data.member2Id) === Number(loggedId))
+				(data.member1Read === "UNREAD" && data.member1Content.includes('숨김') && Number(data.member1Id) === Number(loggedId)) ||
+				(data.member2Read === "UNREAD" && data.member2Content.includes('숨김') && Number(data.member2Id) === Number(loggedId))
 			) {
 				await fetch(`/alarm/readHiddenAlarm/${data.id}`);
 			}
@@ -461,7 +619,7 @@ export async function fetchCompleted2Trade(alarm) {
 			throw new Error("서버로부터 데이터를 가져오지 못했습니다.");
 		}
 
-		
+
 		const tradeData = await response.json();
 
 		if (tradeData.id != null) {
@@ -516,7 +674,7 @@ export async function findAlarm(loggedId, alarmResult, alarmList, alarmListBody,
 				checkbox.checked = false;
 			}
 			// 텍스트 노드 생성
-			const text = document.createTextNode(' 모든 알림 읽음 처리');
+			const text = document.createTextNode('모두 읽음');
 
 			// <label> 요소에 체크박스와 텍스트 추가
 			label.appendChild(checkbox);
@@ -539,12 +697,37 @@ export async function findAlarm(loggedId, alarmResult, alarmList, alarmListBody,
 				return;
 			}
 
+
+
+			// 버튼 요소 선택
+			//    let button = document.getElementById(`complete1-Sell-${alarm.id}`);
+			//
+			//    // alarm.expired 값에 따라 display 속성 변경
+			//    if (alarm.expired === true) {
+			//        button.style.display = "none";  // 거래완료 버튼 숨김
+			//    } else {
+			//        button.style.display = "block";  // 거래완료 버튼 보임
+			//    }
+
+
+
+
 			const row = document.createElement("tr");
 			fetchCompleted2Trade(alarm);
 			//			console.log(trade);
 			row.innerHTML = `
                     ${alarm.member1Visible && Number(alarm.member1Id) === Number(loggedId) ? `
-                        <td id = alarm-${alarm.id}>${alarm.member1Content} 
+                                            <!-- 특정 알림 삭제 버튼 -->
+	
+
+                        <td id = alarm-${alarm.id}>
+                                                        	<button class="deleteAlarmBtn" data-alarm-id="${alarm.id}" data-alarm-member1Id="${alarm.member1Id}" data-alarm-member2Id="${alarm.member2Id}">X</button>
+                       <div>
+                       ${alarm.expired === true ? `
+                                <span id="agreeMember2-${alarm.id}" style="font-weight:bold;">(만료)</span>
+                          		` : ""}
+                        ${alarm.member1Content} </div>
+
     <div class="date-container" style="display: flex; gap: 10px;"> 
         <p class="date-text">${formatDate(alarm.createTime)}</p>
         <p class="read-status">${alarm.member1Read === "READ" ? "읽음" : "읽지 않음"}</p>
@@ -555,8 +738,12 @@ export async function findAlarm(loggedId, alarmResult, alarmList, alarmListBody,
                 
                 
                     ${alarm.member2Visible && Number(alarm.member2Id) === Number(loggedId) ? `
-                        <td  id = alarm-${alarm.id}>${alarm.member2Content}
-                            ${alarm.expired !== true &&alarm.action === "상대방 동의 확인" ? `
+                        <td  id = alarm-${alarm.id}>	
+                        	<button class="deleteAlarmBtn" data-alarm-id="${alarm.id}" data-alarm-member1Id="${alarm.member1Id}" data-alarm-member2Id="${alarm.member2Id}">X</button>
+                        <div>${alarm.expired === true ? `
+                                <span id="agreeMember2-${alarm.id}" style="font-weight:bold;">(만료)</span>
+                          		` : ""}${alarm.expired === true && alarm.action === '거래 완료 확인' ? `만료된 정보입니다` : alarm.member2Content}</div>
+                            ${alarm.expired !== true && alarm.action === "상대방 동의 확인" ? `
                                 <button id="agreeMember2-${alarm.id}" >거래하기</button>
                                 <button id="denyMember2-${alarm.id}" >거절하기</button>
                           		` : ""}
@@ -569,9 +756,9 @@ export async function findAlarm(loggedId, alarmResult, alarmList, alarmListBody,
                           		` : ""}
                           		
                           		
-                          		${alarm.expired === true  ? `
+                          	<!--	${alarm.expired === true ? `
                                 <button id="agreeMember2-${alarm.id}" disabled >만료된 정보입니다</button>
-                          		` : ""}
+                          		` : ""} -->
                           			
                           		
 
@@ -628,18 +815,18 @@ export async function findAlarm(loggedId, alarmResult, alarmList, alarmListBody,
 let myChattingRoomListElement = document.getElementById("myChattingRoomList");
 
 if (myChattingRoomListElement) {
-  myChattingRoomListElement.addEventListener("click", async () => {
-    const isLoggedIn = document.getElementById("isLoggedIn")?.value;
-    const loggedId = document.getElementById("loggedId")?.value;
-    const loggedUserId = document.getElementById("loggedUserId")?.value;
-    
-    if (isLoggedIn === "true" || isLoggedIn === true) {
-      await loadChatRooms(loggedId);
-      await checkUserAlarmCount(loggedId);
-      setUpEnterRoomButton(loggedUserId);
-      setUpExitRoomButton();
-    }
-  });
+	myChattingRoomListElement.addEventListener("click", async () => {
+		const isLoggedIn = document.getElementById("isLoggedIn")?.value;
+		const loggedId = document.getElementById("loggedId")?.value;
+		const loggedUserId = document.getElementById("loggedUserId")?.value;
+
+		if (isLoggedIn === "true" || isLoggedIn === true) {
+			await loadChatRooms(loggedId);
+			await checkUserAlarmCount(loggedId);
+			setUpEnterRoomButton(loggedUserId);
+			setUpExitRoomButton();
+		}
+	});
 }
 
 
@@ -649,26 +836,30 @@ if (myChattingRoomListElement) {
 let myAlarmButton = document.getElementById("alarmButton");
 
 
-if(myAlarmButton){
-myAlarmButton.addEventListener("click", async () => {
-	const isLoggedIn = document.getElementById("isLoggedIn")?.value;
-	const loggedId = document.getElementById("loggedId")?.value;
+if (myAlarmButton) {
+	myAlarmButton.addEventListener("click", async () => {
+		const isLoggedIn = document.getElementById("isLoggedIn")?.value;
+		const loggedId = document.getElementById("loggedId")?.value;
 
-	if (isLoggedIn === "true" || isLoggedIn === true) {
-		const alarmResult = await checkUserAlarmList(loggedId);
-		await checkUserAlarmCount(loggedId);
-		const alarmList = alarmResult.content;
-		const alarmListBody = document.getElementById("alarmListBody");
+		if (isLoggedIn === "true" || isLoggedIn === true) {
+			const alarmResult = await checkUserAlarmList(loggedId);
+			await checkUserAlarmCount(loggedId);
+			const alarmList = alarmResult.content;
+			const alarmListBody = document.getElementById("alarmListBody");
 
-		findAlarm(loggedId, alarmResult, alarmList, alarmListBody);
-	}
-});
+			findAlarm(loggedId, alarmResult, alarmList, alarmListBody);
+		}
+	});
 
 }
 //클릭한 알람에 대해 읽음 처리
 // 문서 전체 클릭 이벤트는 한 번만 등록
 document.addEventListener("click", async function(event) {
 	const target = event.target;
+
+	//	 if (target.tagName.toLowerCase() === "button" && target.id.startsWith("delete")) {
+	//        return; // 'delete'로 시작하는 버튼 클릭 이벤트 제외
+	//    }
 
 	if (target.tagName === "TD" && target.id.startsWith("alarm-")) {
 		const alarmId = target.id.split("-")[1];
