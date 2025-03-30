@@ -16,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.cos.project.dto.AlarmDTO;
+import com.cos.project.dto.ChattingRoomDTO;
 import com.cos.project.dto.PagedResponse;
 import com.cos.project.dto.TradeDTO;
 import com.cos.project.entity.AlarmEntity;
@@ -249,6 +250,7 @@ public class AlarmService {
 				}
 			} else if (childType.equals("게시판") && action.equals("삭제")) {
 				if (member2Id == null) {
+//					member1Content = member1.get().getNickname() + "님의 " + object + "번 게시글이 삭제되었습니다";
 					member1Content = member1.get().getNickname() + "님의 " + object + "번 게시글이 삭제되었습니다";
 				} else if (member2Id != null) { // 거래가 완료되었을 경우
 					ChattingRoomEntity chattingRoomEntity = chattingRoomRepository.findById(Long.valueOf(object)).get();
@@ -459,23 +461,34 @@ public class AlarmService {
 						+ " 님이 거래완료를 희망합니다. 거래를 마치시겠습니까? <button id='complete1-Sell-" + tradeDTO.getId()
 						+ "'>거래완료</button>";
 			} else if (childType.equals("거래") && action.equals("거래완료")) {
-				member1Content = member2.get().getNickname() + "님과 " + object + " 번 게시판 거래를 완료하였습니다";
+//				member1Content = member2.get().getNickname() + "님과 " + object + " 번 게시판 거래를 완료하였습니다";
+				member1Content = member2.get().getNickname() + "님과 " + board.getTitle() +" 거래를 완료하였습니다";
 				member2Content = member1.get().getNickname() + "님이 거래완료를 수락하였습니다." + member1.get().getNickname()
 						+ " 님과의 " + object + " 번 게시판 거래를 완료하였습니다";
 			}
 
 			else if (childType.equals("거래") && action.equals("거래취소")) {
-				member1Content = member2.get().getNickname() + "님과 " + object + " 번 게시판 거래를 취소하였습니다";
+//				member1Content = member2.get().getNickname() + "님과 " + object + " 번 게시판 거래를 취소하였습니다";
+				member1Content = member2.get().getNickname() + "님과 '"  + board.getTitle() +"'  거래를 취소하였습니다";
 				member2Content = member1.get().getNickname() + "님이 거래를 취소하였습니다";
 			}
 
 			else if (childType.equals("거래") && action.equals("거래불가")) {
 //				member1Content = member2.get().getNickname() + "님과 " + object + " 번 게시판 거래를 취소하였습니다";
-				member1Content = member2.get().getNickname() + "님과 ' " + board.getTitle() + "'  거래를 거절하였습니다";
+				member1Content = "(숨김)"+member2.get().getNickname() + "님과 ' " + board.getTitle() + "'  거래를 거절하였습니다";
 				member2Content ="신청하신 "+board.getTitle()+" 거래는 다른 사용자와 진행되어 거래가 불가능합니다."+ "<br><hr><button class='small-btn' id= searchOtherProduct-"+ board.getCategory().name()  +">다른 상품도 확인해보세요!</button>";
-				member1Visible = false;
+//				member1Visible = false;
 //				member1Read = "READ";
 			}
+			
+			else if (childType.equals("거래") && action.equals("다시 거래 가능")) {
+//				member1Content = member2.get().getNickname() + "님과 " + object + " 번 게시판 거래를 취소하였습니다";
+				member1Content = "(숨김)"+member2.get().getNickname() + "님과 ' " + board.getTitle() + "'  거래가 다시 가능합니다";
+				member2Content = member2.get().getNickname() + "님과 ' " + board.getTitle() + "'  거래가 다시 가능합니다";
+			//	member1Visible = false;
+//				member1Read = "READ";
+			}
+			
 			
 		}
 
@@ -841,6 +854,31 @@ public void setExpiredAllAlarm(MemberEntity member1, MemberEntity member2, Long 
         .ifPresent(alarm -> { // ✅ Optional 값이 존재할 경우에만 실행
             alarm.setExpired(Boolean.TRUE); // ✅ 상태 변경 (Dirty Checking 작동)
         });
+}
+
+
+//거래가 취소될 경우 기존 신청했던 알람 목록 조회
+@Transactional
+public List<AlarmEntity> setOtherRoomsEnableTrade(BoardEntity boardEntity, ChattingRoomEntity chattingRoomEntity2) {
+	
+		List<AlarmEntity> alarmsAboutBoard = alarmRepository.findByObject(String.valueOf(boardEntity.getId()));
+	
+		MemberEntity member1 = chattingRoomEntity2.getMember1();
+		MemberEntity member2 = chattingRoomEntity2.getMember2();		// 보드 게시자
+		
+		MemberEntity boardWriter = boardEntity.getMemberEntity();
+		
+			List<AlarmEntity> noTradedchattingRooms = alarmsAboutBoard.stream().filter(
+					alarm -> (
+						    alarm.getType().equals("TRADE") &&
+					        (alarm.getAction().equals("상대방 동의 확인") || alarm.getAction().equals("예약")) &&
+					        !(Objects.equals(alarm.getMember1(), member1) && Objects.equals(alarm.getMember2(), member2)) &&		//Objects 비교 : 비교대상이 null일 경우 nullPointException 을 발생시키지 않고 false로 리턴
+					        !(Objects.equals(alarm.getMember1(), member2) && Objects.equals(alarm.getMember2(), member1))
+					       && Boolean.TRUE.equals(alarm.getExpired()) 
+					)
+					).collect(Collectors.toList());
+					
+	return noTradedchattingRooms;
 }
 
 

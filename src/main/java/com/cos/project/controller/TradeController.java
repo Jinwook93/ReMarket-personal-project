@@ -2,9 +2,11 @@ package com.cos.project.controller;
 
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
@@ -836,6 +838,60 @@ public class TradeController {
 				messageDTO.setReceiverUserId(member1.getUserid());
 				messageDTO.setAlarmType(true);
 				chatService.addMessage(roomId, principalDetails, messageDTO);
+				
+				
+				// 취소하였을 경우 '다시 구매 가능' 메시지 전송					//chattingRoomEntity2 : 기존 거래되었던 방
+				List<AlarmEntity> otherUsersAlarmExpired = alarmService.setOtherRoomsEnableTrade(boardEntity,chattingRoomEntity2);
+				
+				
+				
+				
+				Set<Long> rememberRoomId = new HashSet<>();
+
+				for (AlarmEntity alarm : otherUsersAlarmExpired) {
+				    ChattingRoomDTO notTradedRoomDTO = chatService.findRoomByBoardIdAndMemberId(
+				        boardEntity.getId(), 
+				        alarm.getMember1().getId(), 
+				        alarm.getMember2().getId(), 
+				        loggedId
+				    );
+
+				    if (rememberRoomId.contains(notTradedRoomDTO.getId())) {
+				        continue; // 중복된 거래 방이면 건너뜀
+				    }
+
+				    rememberRoomId.add(notTradedRoomDTO.getId());
+
+				    chatService.setMessageExpired(notTradedRoomDTO);
+
+				    MemberEntity notTradedMember1 = memberService.findByUserId(notTradedRoomDTO.getMember1UserId());
+				    MemberEntity notTradedMember2 = memberService.findByUserId(notTradedRoomDTO.getMember2UserId());
+
+				    AlarmEntity failedTradeAlarm = alarmService.postAlarm(
+				        loggedId, 
+				        notTradedMember1.getId(),
+				        notTradedMember2.getId(), 
+				        "TRADE", 
+				        "거래", 
+				        String.valueOf(boardEntity.getId()), 
+				        "다시 거래 가능", 
+				        null
+				    );
+
+				    MessageDTO failedTradeMessage = new MessageDTO();
+				    failedTradeMessage.setAlarmType(true);
+				    failedTradeMessage.setMessageContent(failedTradeAlarm.getMember2Content());
+				    failedTradeMessage.setReceiverUserId(notTradedMember1.getUserid());
+
+				    chatService.addMessage(notTradedRoomDTO.getId(), principalDetails, failedTradeMessage);
+				}
+
+				
+				
+				
+				
+				
+				
 				
 				
 				
