@@ -720,13 +720,19 @@ export async function findAlarm(loggedId, alarmResult, alarmList, alarmListBody,
                                             <!-- 특정 알림 삭제 버튼 -->
 	
 
-                        <td id = alarm-${alarm.id}>
-                                                        	<button class="deleteAlarmBtn" data-alarm-id="${alarm.id}" data-alarm-member1Id="${alarm.member1Id}" data-alarm-member2Id="${alarm.member2Id}">X</button>
-                       <div>
-                       ${alarm.expired === true ? `
-                                <span id="agreeMember2-${alarm.id}" style="font-weight:bold;">(만료)</span>
-                          		` : ""}
-                        ${alarm.member1Content} </div>
+                     <td id="alarm-${alarm.id}">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="flex-grow: 1;">
+            ${alarm.expired === true ? `
+                <span id="agreeMember2-${alarm.id}" style="font-weight:bold;">(만료)</span>
+            ` : ""}
+            ${alarm.member1Content}
+        </div>
+        <button class="deleteAlarmBtn" data-alarm-id="${alarm.id}" data-alarm-member1Id="${alarm.member1Id}" data-alarm-member2Id="${alarm.member2Id}"
+            style="background-color: red; color: white; border: none; padding: 5px 10px; border-radius: 10%; cursor: pointer; font-weight: bold; font-size: 10px; display: inline-flex; align-items: center; justify-content: center;">
+            삭제
+        </button>
+    </div>
 
     <div class="date-container" style="display: flex; gap: 10px;"> 
         <p class="date-text">${formatDate(alarm.createTime)}</p>
@@ -739,7 +745,10 @@ export async function findAlarm(loggedId, alarmResult, alarmList, alarmListBody,
                 
                     ${alarm.member2Visible && Number(alarm.member2Id) === Number(loggedId) ? `
                         <td  id = alarm-${alarm.id}>	
-                        	<button class="deleteAlarmBtn" data-alarm-id="${alarm.id}" data-alarm-member1Id="${alarm.member1Id}" data-alarm-member2Id="${alarm.member2Id}">X</button>
+                        	  <button class="deleteAlarmBtn" data-alarm-id="${alarm.id}" data-alarm-member1Id="${alarm.member1Id}" data-alarm-member2Id="${alarm.member2Id}"
+            style="background-color: red; color: white; border: none; padding: 5px 10px; border-radius: 10%; cursor: pointer; font-weight: bold; font-size: 10px; display: inline-flex; align-items: center; justify-content: center;">
+            삭제
+        </button>
                         <div>${alarm.expired === true ? `
                                 <span id="agreeMember2-${alarm.id}" style="font-weight:bold;">(만료)</span>
                           		` : ""}${alarm.expired === true && alarm.action === '거래 완료 확인' ? `만료된 정보입니다` : alarm.member2Content}</div>
