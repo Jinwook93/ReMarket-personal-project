@@ -1,6 +1,7 @@
 package com.cos.project.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,5 +33,7 @@ public interface AlarmRepository extends JpaRepository<AlarmEntity, Long> {
 	    	List<AlarmEntity> findByMembersAndObject(@Param("member1") MemberEntity member1, 
 	    	                                         @Param("member2") MemberEntity member2, 
 	    	                                         @Param("object") String object);
+
+		List<AlarmEntity> findByObject(String object);
 
 }

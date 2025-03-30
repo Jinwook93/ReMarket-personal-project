@@ -1032,4 +1032,18 @@ public class ChatService {
 		
 	}
 
+	
+	@Transactional			//메시지 내부 버튼 기능 만료
+	public void setMessageExpired(ChattingRoomDTO chattingRoomDTO) {
+					
+			List<MessageEntity> messages = messageRepository.findByChattingRoomEntity(chattingRoomDTO.getId());
+				for(MessageEntity message : messages) {
+					message.setExpired(true);
+				}
+		
+	}
+	
+	
+	
+	
 }

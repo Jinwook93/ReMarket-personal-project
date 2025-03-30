@@ -3,6 +3,7 @@ package com.cos.project.service;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -48,7 +49,8 @@ public class AlarmService {
 	private final CommentRepository commentRepository;
 	private final CommentLikeRepository commentLikeRepository;
 	private final BoardLikeRepository boardLikeRepository;
-
+	
+	
 	// 내 기준
 
 	@Transactional // 알림목록 추출
@@ -226,6 +228,9 @@ public class AlarmService {
 
 		Boolean member1Visible = true;
 		Boolean member2Visible = true;
+		
+		String member1Read ="UNREAD";
+		String member2Read ="UNREAD";
 
 		if (type.equals("LOGIN")) {
 			member1Content = "로그인에 성공하였습니다";
@@ -368,6 +373,7 @@ public class AlarmService {
 				member2Content = member1Content = member2.get().getNickname() + "님과 " + member1.get().getNickname()
 						+ "님의 채팅창이 삭제되었습니다";
 				member2Visible = false;
+			
 			} else if (childType.equals("채팅방") && action.equals("재입장")) {
 				member1Content = member2.get().getNickname() + "님의 채팅방에 재입장하였습니다";
 				member2Content = member1.get().getNickname() + "님이 재입장하였습니다";
@@ -407,6 +413,11 @@ public class AlarmService {
 		}
 
 		else if (type.equals("TRADE")) { // 거래
+			BoardEntity board = null;
+				if(object != null) {
+					board = boardRepository.findById(Long.valueOf(object)).get() ;	
+			}
+					
 			if (childType.equals("거래") && action.equals("상대방 동의 확인")) {
 				member1Content = member2.get().getNickname() + "님에게 거래신청을 보냈습니다";
 				member2Content = member1.get().getNickname() + " 님이 거래를 희망합니다. 거래하시겠습니까?";
@@ -458,16 +469,25 @@ public class AlarmService {
 				member2Content = member1.get().getNickname() + "님이 거래를 취소하였습니다";
 			}
 
+			else if (childType.equals("거래") && action.equals("거래불가")) {
+//				member1Content = member2.get().getNickname() + "님과 " + object + " 번 게시판 거래를 취소하였습니다";
+				member1Content = member2.get().getNickname() + "님과 ' " + board.getTitle() + "'  거래를 거절하였습니다";
+				member2Content ="신청하신 "+board.getTitle()+" 거래는 다른 사용자와 진행되어 거래가 불가능합니다."+ "<br><hr><button class='small-btn' id= searchOtherProduct-"+ board.getCategory().name()  +">다른 상품도 확인해보세요!</button>";
+				member1Visible = false;
+//				member1Read = "READ";
+			}
+			
 		}
 
 		if (member1Id.equals(member2Id)) { // 메시지가 양쪽 다 뜨는 것을 방지
 			member2Visible = false;
+//			member2Read = "READ";
 		}
 
 		AlarmDTO alarmDTO = new AlarmDTO().builder().action(action).type(childType).object(object).type(type)
 				.childType(childType).member1Id(member1Id).member2Id(member2Id).member1Content(member1Content)
 				.member2Content(member2Content).member1Visible(member1Visible).member2Visible(member2Visible)
-				.priority("MEDIUM").expired(Boolean.FALSE).build();
+				.priority("MEDIUM").expired(Boolean.FALSE).member1Read(member1Read).member1Read(member2Read).build();
 
 		return alarmDTO;
 	}
@@ -607,9 +627,18 @@ public class AlarmService {
 
 	    BoardEntity boardEntity = boardRepository.findById(boardId).orElse(null);
 
+//	    // 거래가 존재하면 false 반환
+//	    if (boardEntity == null || !boardEntity.getTrades().isEmpty()) {
+//	        return false;
+//	    }
+	    
 	    // 거래가 존재하면 false 반환
+	    
+	    
 	    if (boardEntity == null || !boardEntity.getTrades().isEmpty()) {
-	        return false;
+	        
+	    	
+	    	return false;
 	    }
 
 	    // 특정 조건을 만족하는 알람만 조회
@@ -618,9 +647,9 @@ public class AlarmService {
 	    // 필터링
 	    List<AlarmEntity> filteredAlarms = alarms.stream()
 	        .filter(alarm -> 
-	            (alarm.getAction().equals("상대방 동의 확인") || alarm.getAction().equals("예약") || alarm.getAction().equals("거래완료"))
+	            (alarm.getAction().equals("상대방 동의 확인") || alarm.getAction().equals("예약") || alarm.getAction().equals("거래 완료 확인"))
 	            && Boolean.FALSE.equals(alarm.getExpired()) // 이미 만료된 알람 제외
-	            && setIncludeAlarmId == true? true : !alarm.getId().equals(alarmId)									//최근 알람 제외 혹은 포함
+	            && !alarm.getId().equals(alarmId)									//해당 alarmId (최근) 제외
 	        )
 	        .collect(Collectors.toList());
 
@@ -637,63 +666,200 @@ public class AlarmService {
 
 	  return true;
 	}
+	
+	
+	
+	//거래 완료 신청 알람이 여러 개일 경우 최신 알람을 제외하고 만료된 정보 출력 
+	
+	@Transactional
+	public Boolean setExpiredCompleteAlarm(Long alarmId, boolean setIncludeAlarmId) {
+	    Optional<AlarmEntity> alarmEntityOpt = alarmRepository.findById(alarmId);
 
+	    // 존재하지 않는 경우 false 반환
+	    if (!alarmEntityOpt.isPresent()) {
+	        return false;
+	    }
+	    	
+	    AlarmEntity alarmEntity = alarmEntityOpt.get();
+	    
+	    if(!alarmEntity.getType().equals("TRADE")) {
+	    	return false;
+	    }
+	    
+	    MemberEntity member1 = alarmEntity.getMember1();
+	    MemberEntity member2 = alarmEntity.getMember2();
+	    String alarmObject = alarmEntity.getObject();
+	    Long boardId = Long.valueOf(alarmObject);
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-//	@Transactional
-//	public void setExpiredAlarm2(Long alarmId) {
-//	    Optional<AlarmEntity> alarmEntityOpt = alarmRepository.findById(alarmId);
-//
-//	    // alarmEntity가 존재하는지 확인
-//	    if (!alarmEntityOpt.isPresent()) {
-//	        return; // 존재하지 않으면 메서드 종료
+	    BoardEntity boardEntity = boardRepository.findById(boardId).orElse(null);
+
+//	    // 거래가 존재하면 false 반환
+//	    if (boardEntity == null || !boardEntity.getTrades().isEmpty()) {
+//	        return false;
 //	    }
-//
-//	    AlarmEntity alarmEntity = alarmEntityOpt.get();
-//	    MemberEntity member1 = alarmEntity.getMember1();
-//	    MemberEntity member2 = alarmEntity.getMember2();
-//	    String alarmObject = alarmEntity.getObject(); // 게시판 Id 추출
-//	    Long boardId = Long.valueOf(alarmObject);
-//
-//	    BoardEntity boardEntity = boardRepository.findById(boardId).orElse(null);
-//
-//	    if (boardEntity == null || boardEntity.getTrades().size() > 0) {
-//	        return; // 거래가 있으면 처리 안 함
-//	    }
-//
-//	    // 알람 리스트를 필터링하여 expired 상태를 업데이트
-//	    List<AlarmEntity> alarms = alarmRepository.findAll();
-//
-//	    alarms.stream()
-//	        .filter(alarm ->
-//	            (alarm.getMember1().equals(member1) && alarm.getMember2().equals(member2) && alarm.getObject().equals(alarmObject)
-//	            || alarm.getMember1().equals(member2) && alarm.getMember2().equals(member1) && alarm.getObject().equals(alarmObject))
-//	            && boardEntity.getTrades().size() == 0
-//	            && (alarm.getAction().equals("상대방 동의 확인")|| alarm.getAction().equals("예약"))
-//	        )
-//	        .forEach(alarm -> {
-//	            if (!alarm.getExpired()) { 
-//	            	alarm.setExpired(Boolean.TRUE); // 또는 alarm.setExpired(true);
-//	                alarmRepository.save(alarm); // 상태 업데이트 후 저장
-//	            }
-//	        });
+	    
+
+	    // 특정 조건을 만족하는 알람만 조회
+	    List<AlarmEntity> alarms = alarmRepository.findByMembersAndObject(member1, member2, alarmObject);
+
+	    // 필터링
+	    List<AlarmEntity> filteredAlarms = alarms.stream()
+	        .filter(alarm -> 
+	            ( alarm.getAction().equals("거래 완료 확인"))
+	            && Boolean.FALSE.equals(alarm.getExpired()) // 이미 만료된 알람 제외
+	            && !alarm.getId().equals(alarmId)									//해당 alarmId (최근) 제외
+	        )
+	        .collect(Collectors.toList());
+
+	    if(filteredAlarms.size()  == 0) {
+	    	return false;
+	    }
+
+	    for (AlarmEntity alarm : filteredAlarms) { 
+	            alarm.setExpired(Boolean.TRUE);
+	    }
+
+	    // 변경된 알람 저장
+	    alarmRepository.saveAll(filteredAlarms);
+
+	  return true;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+	@Transactional		//현재 특정 alarm을 expired
+	public void setExpiredCurrentAlarm(Long alarmId) {
+		AlarmEntity alarmEntity =alarmRepository.findById(alarmId).orElse(null);
+		
+		if(alarmEntity.getExpired().equals(Boolean.FALSE)) {
+		alarmEntity.setExpired(Boolean.TRUE);	
+		alarmRepository.save(alarmEntity);
+		alarmRepository.flush();
+		}
+		
+	}
+	
+	
+	
+	
+	//예약,등록한 경우 다른 방의 신청 알람,메시지 만료시키기
+	
+	@Transactional
+	public List<AlarmEntity> setOtherAlarmExpired(BoardEntity boardEntity, ChattingRoomEntity tradedRoom) {
+
+		if(boardEntity == null) {
+			return null;
+		}
+		
+		List<TradeEntity> trades =  boardEntity.getTrades();
+		if(trades == null) {
+			return null;
+		}
+		
+		
+		
+		
+
+		
+				MemberEntity member1 = tradedRoom.getMember1(); 
+				MemberEntity member2 = tradedRoom.getMember2(); 
+				
+				
+			
+				
+				
+		
+		List<AlarmEntity> alarms = alarmRepository.findByObject(String.valueOf(boardEntity.getId()));		//보드에 관한 알람
+		
+		if(alarms.size() == 0) {
+			return null;
+		}
+		
+		List<AlarmEntity> notTradedAlarms = alarms.stream()
+			    .filter(alarm ->
+			        alarm.getType().equals("TRADE") &&
+			        (alarm.getAction().equals("상대방 동의 확인") || alarm.getAction().equals("예약")) &&
+			        !(Objects.equals(alarm.getMember1(), member1) && Objects.equals(alarm.getMember2(), member2)) &&		//Objects 비교 : 비교대상이 null일 경우 nullPointException 을 발생시키지 않고 false로 리턴
+			        !(Objects.equals(alarm.getMember1(), member2) && Objects.equals(alarm.getMember2(), member1)) &&
+			        Boolean.FALSE.equals(alarm.getExpired()) // Boolean 비교는 equals 사용
+			    )
+			    .collect(Collectors.toList()); // 필터링된 알람 리스트 반환
+
+			// 거래되지 못한 알람들 expired 설정 (Dirty Checking 사용)
+			notTradedAlarms.forEach(alarm ->
+			alarm.setExpired(Boolean.TRUE)
+			
+					);
+			alarmRepository.saveAllAndFlush(notTradedAlarms);
+		
+//			for(AlarmEntity notTradedAlarm : notTradedAlarms ) {
+//				notTradedAlarm.setExpired(Boolean.TRUE);
+//				ChattingRoomEntity  notTradedRoom = chattingRoomRepository.findEnableRoom(notTradedAlarm.getMember1().getId(), notTradedAlarm.getMember2().getId(), Long.valueOf(notTradedAlarm.getObject()));
+//				chatService.setMessageExpired(notTradedRoom);
+//			}
+		
+		return notTradedAlarms;
+		
+	}
+	
+	
+	
+	
+	
+	//거래 완료가 되었을 경우 TRADE 연관 알람 모두 expired (원치않는 알람까지 expired 되므로 쓰지 않음)
+//@Transactional
+//	public void setExpiredAllAlarm(MemberEntity member1, MemberEntity member2, Long boardId) {
+//			List<AlarmEntity> alarms = alarmRepository.findByMembersAndObject(member1, member2, String.valueOf(boardId));
+//				
+//			alarms.stream().filter(alarm -> alarm.getExpired().equals(Boolean.FALSE) && alarm.getType().equals("TRADE"))
+//					.forEach(alarm -> alarm.setExpired(Boolean.TRUE));
+//	
+//			alarmRepository.saveAll(alarms);
 //	}
+
+
+	
+	
+	//최근 거래 완료 확인 하나만 expired 설정
+@Transactional
+public void setExpiredAllAlarm(MemberEntity member1, MemberEntity member2, Long boardId) {
+    List<AlarmEntity> alarms = alarmRepository.findByMembersAndObject(member1, member2, String.valueOf(boardId));
+
+    alarms.stream()
+        .filter(alarm -> Boolean.FALSE.equals(alarm.getExpired()) && "거래 완료 확인".equals(alarm.getAction()))
+        .findFirst()
+        .ifPresent(alarm -> { // ✅ Optional 값이 존재할 경우에만 실행
+            alarm.setExpired(Boolean.TRUE); // ✅ 상태 변경 (Dirty Checking 작동)
+        });
+}
+
+
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
 	
 	
 	

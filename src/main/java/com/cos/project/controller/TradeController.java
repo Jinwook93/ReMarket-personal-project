@@ -118,7 +118,7 @@ public class TradeController {
 		return null;
 	}
 	chatService.setMessageExpired(chattingRoomEntity2);	//메시지 내부 버튼 기능 만료
-		
+	alarmService.setExpiredAlarm(responseDTO.getId(), false);
 		chatService.addMessage(roomId, principalDetails, messageDTO);
 
 		boolean result = true;
@@ -152,7 +152,8 @@ public class TradeController {
 			AlarmEntity alarmEntity = alarmService.postAlarm(loggedId, responseDTO.getMember1Id(),
 					responseDTO.getMember2Id(), "TRADE", "거래", String.valueOf(responseDTO.getBoardEntityId()), "거래수락", null);
 			AlarmDTO responseAlarmDTO = alarmEntity.toDTO();
-
+				
+		
 			
 			//알람메시지를 채팅방으로도 전송 (상대방에게 responseDTO의 member2Content 전송)
 			//// 먼저 채팅방 ID를 조회
@@ -172,8 +173,37 @@ public class TradeController {
 			return null;
 		}
 		chatService.setMessageExpired(chattingRoomEntity2);	//메시지 내부 버튼 기능 만료
-			
+		alarmService.setExpiredCurrentAlarm(alarmId);		//해당 알람을 expired 설정
 			chatService.addMessage(roomId, principalDetails, messageDTO);
+			
+			
+			
+			//다른 비거래 사용자가 같은 보드를 참조할 경우 알림, 메시지를 전부 expired
+			List<AlarmEntity> otherUsersAlarmExpired = alarmService.setOtherAlarmExpired(boardEntity,chattingRoomEntity2);
+			otherUsersAlarmExpired.forEach(alarm ->{
+				ChattingRoomDTO  notTradedRoomDTO = chatService.findRoomByBoardIdAndMemberId(boardEntity.getId(), alarm.getMember1().getId(), alarm.getMember2().getId(), loggedId);
+//						chattingRoomRepository.findEnableRoom(notTradedAlarm.getMember1().getId(), notTradedAlarm.getMember2().getId(), Long.valueOf(notTradedAlarm.getObject()));
+					
+				chatService.setMessageExpired(notTradedRoomDTO);
+				
+				MemberEntity notTradedMember1 = memberService.findByUserId(notTradedRoomDTO.getMember1UserId());
+				MemberEntity notTradedMember2 = memberService.findByUserId(notTradedRoomDTO.getMember2UserId());		//보드 게시자
+				
+//				MemberEntity boardWriter = boardEntity.getMemberEntity();
+				
+				
+				
+				AlarmEntity failedTradeAlarm = alarmService.postAlarm(loggedId, notTradedMember1.getId(),
+						notTradedMember2.getId(), "TRADE", "거래", String.valueOf(responseDTO.getBoardEntityId()), "거래불가", null);
+				
+				MessageDTO failedTradeMessage = new MessageDTO();
+				failedTradeMessage.setAlarmType(true);
+				failedTradeMessage.setMessageContent(failedTradeAlarm.getMember2Content());
+				failedTradeMessage.setReceiverUserId(notTradedMember1.getUserid());
+				
+				chatService.addMessage(notTradedRoomDTO.getId(), principalDetails, failedTradeMessage);
+			});
+			
 			
 			
 			
@@ -182,7 +212,7 @@ public class TradeController {
 			
 			
 			return ResponseEntity.ok(responseAlarmDTO);
-		} else {
+		} else {		//거래 신청을 거절할 경우
 			
 			
 			Map<String, Object> tradeDTO_map = tradeService.searchMember1Member2Board(alarmId);
@@ -223,9 +253,8 @@ public class TradeController {
 			return null;
 		}
 		chatService.setMessageExpired(chattingRoomEntity2);	//메시지 내부 버튼 기능 만료
-		
+		alarmService.setExpiredCurrentAlarm(alarmId);		//해당 알람을 expired 설정
 			chatService.addMessage(roomId, principalDetails, messageDTO);
-			
 			
 			
 			
@@ -318,6 +347,7 @@ public class TradeController {
 			return null;
 		}
 		chatService.setMessageExpired(chattingRoomEntity2);	//메시지 내부 버튼 기능 만료
+		alarmService.setExpiredCompleteAlarm(responseAlarmDTO.getId(), false);		//해당 알람을 expired 설정
 			chatService.addMessage(roomId, principalDetails, messageDTO);
 			
 			
@@ -363,6 +393,8 @@ public class TradeController {
 			}
 			chatService.setMessageExpired(chattingRoomEntity);	//메시지 내부 버튼 기능 만료
 			
+			alarmService.setExpiredAllAlarm(chattingRoomEntity.getMember1(),chattingRoomEntity.getMember2(),
+					chattingRoomEntity.getBoardEntity().getId());		//사용자1,사용자2, 게시물 아이디에 관련된 모든 Trade 알람을 expired 설정
 			
 			BoardEntity boardEntity = boardService.findByBoardId((Long) responseDTO.getBoardEntityId());
 			messageDTO.setReceiverUserId(boardEntity.getMemberEntity().getUserid());
@@ -484,7 +516,7 @@ public class TradeController {
 			return null;
 		}
 		chatService.setMessageExpired(chattingRoomEntity);	//메시지 내부 버튼 기능 만료
-		
+		alarmService.setExpiredAlarm(responseDTO.getId(), false);
 		chatService.addMessage(roomId, principalDetails, messageDTO);
 
 		boolean result = true;
@@ -539,11 +571,44 @@ public class TradeController {
 				return null;
 			}
 			chatService.setMessageExpired(chattingRoomEntity);	//메시지 내부 버튼 기능 만료
+			alarmService.setExpiredCurrentAlarm(alarmId);		//해당 알람을 expired 설정
+			
+//			alarmService.setExpiredAlarm(alarmId, true);
+			
+			
+			
+			
+			List<AlarmEntity> otherUsersAlarmExpired = alarmService.setOtherAlarmExpired(boardEntity,chattingRoomEntity);
+				otherUsersAlarmExpired.forEach(alarm ->{
+					ChattingRoomDTO  notTradedRoomDTO = chatService.findRoomByBoardIdAndMemberId(boardEntity.getId(), alarm.getMember1().getId(), alarm.getMember2().getId(), loggedId);
+//							chattingRoomRepository.findEnableRoom(notTradedAlarm.getMember1().getId(), notTradedAlarm.getMember2().getId(), Long.valueOf(notTradedAlarm.getObject()));
+						
+					chatService.setMessageExpired(notTradedRoomDTO);
+					
+					MemberEntity notTradedMember1 = memberService.findByUserId(notTradedRoomDTO.getMember1UserId());
+					MemberEntity notTradedMember2 = memberService.findByUserId(notTradedRoomDTO.getMember2UserId());		//보드 게시자
+					
+//					MemberEntity boardWriter = boardEntity.getMemberEntity();
+					
+					
+					
+					AlarmEntity failedTradeAlarm = alarmService.postAlarm(loggedId, notTradedMember1.getId(),
+							notTradedMember2.getId(), "TRADE", "거래", String.valueOf(responseDTO.getBoardEntityId()), "거래불가", null);
+					
+					MessageDTO failedTradeMessage = new MessageDTO();
+					failedTradeMessage.setAlarmType(true);
+					failedTradeMessage.setMessageContent(failedTradeAlarm.getMember2Content());
+					failedTradeMessage.setReceiverUserId(notTradedMember1.getUserid());
+					
+					chatService.addMessage(notTradedRoomDTO.getId(), principalDetails, failedTradeMessage);
+				});
+			
+			
 			
 			
 			chatService.addMessage(roomId, principalDetails, messageDTO);
 			return ResponseEntity.ok(responseAlarmDTO);
-		} else {
+		} else {		//신청을 거절할 경우
 			Map<String, Object> tradeDTO_map = tradeService.searchMember1Member2Board(alarmId);
 
 			// tradeEntity가 존재할 시, trade Entity 삭제
@@ -581,7 +646,7 @@ public class TradeController {
 			}
 			chatService.setMessageExpired(chattingRoomEntity);	//메시지 내부 버튼 기능 만료
 			
-			
+			alarmService.setExpiredCurrentAlarm(alarmId);		//해당 알람을 expired 설정
 			
 			chatService.addMessage(roomId, principalDetails, messageDTO);
 			
@@ -752,7 +817,7 @@ public class TradeController {
 					return null;
 				}
 				chatService.setMessageExpired(chattingRoomEntity);	//메시지 내부 버튼 기능 만료
-				
+				alarmService.setExpiredAlarm(responseAlarmDTO.getId(), false);
 				
 				
 				MessageDTO messageDTO = new MessageDTO();
@@ -766,7 +831,7 @@ public class TradeController {
 					return null;
 				}
 				chatService.setMessageExpired(chattingRoomEntity2);	//메시지 내부 버튼 기능 만료
-				
+			
 				BoardEntity boardEntity = boardService.findByBoardId(responseDTO.getBoardEntityId());
 				messageDTO.setReceiverUserId(member1.getUserid());
 				messageDTO.setAlarmType(true);
