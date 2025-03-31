@@ -1,0 +1,7 @@
+/* searchMainContainer.css */
+.logo-container {
+    display: flex;
+    justify-content: center; /* 가로 중앙 정렬 */
+    align-items: center; /* 세로 중앙 정렬 (필요 시) */
+    height: 40vh; /* 화면 전체 높이에서 가운데 배치하고 싶다면 사용 */
+}

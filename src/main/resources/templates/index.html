@@ -4,14 +4,75 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Main Page</title>
+        <link rel="stylesheet" href="/css/logoContainer.css" />
+    <link rel="stylesheet" href="/css/searchMainContainer.css" />
 </head>
 <body>
     <!-- 헤더 포함 -->
     <div th:replace="~{header.html}"></div>
-
+	<div class= "main-Container" style="margin-top:75px;">
     <main>
-        <p>메인 페이지</p>
+<!--         <p>메인 페이지</p> -->
+        
+        <div  class="logo-container" >
+        <a href="/"  >
+         <img th:src="@{/logo/logo2.jpg}" width="200px" height="200px" alt="로고">
+         </a>
+         </div>
+   <div class="search-main-container" style="margin-bottom:30px;">
+
+<form th:action="@{/board/list}" method="get" style="width: 100%;">
+	<div th:if="${isLoggedIn}" >
+	<input type ="hidden"  name = "condition"  value="3">
+	</div>
+    <div style="display: flex; align-items: center; justify-content: center; gap: 20px; width: 80%; margin: 0 auto;">
+        <input type="text" name="title" placeholder="상품명을 입력하세요..."  style="flex-grow: 1; width: 100%; min-width: 300px;">
+        <button class = "small-btn" type="submit">검색</button>
+    </div>
+</form>
+
+
+</div>
+
+        
+   <!--     
+          <section class="popular-products">
+            <h2>최근 거래 상품</h2>
+            <div class="product-list">
+                <div th:each="product : ${popularProducts}" class="product">
+                    <a th:href="@{/product/{id}(id=${product.id})}">
+                        <img th:src="@{${product.imageUrl}}" alt="상품 이미지">
+                        <p th:text="${product.name}"></p>
+                        <p th:text="|${product.price}원|"></p>
+                    </a>
+                </div>
+            </div>
+        </section>
+        
+        <section class="recent-products">
+            <h2>최근 등록된 상품</h2>
+          <div class="product-list">
+                <div th:each="product : ${recentProducts}" class="product">
+                    <a th:href="@{/product/{id}(id=${product.id})}">
+                        <img th:src="@{${product.imageUrl}}" alt="상품 이미지">
+                        <p th:text="${product.name}"></p>
+                        <p th:text="|${product.price}원|"></p>
+                    </a>
+                </div>
+            </div>
+
+        </section>
+        
+         --> 
+        
+        <div th:replace="~{features.html}"></div>
+        
+        
+        
+        
+        
     </main>
+    </div>
     <div th:replace="~{footer.html}"></div>
 <!-- <div th:replace="fragments/footer :: footerFragment"></div> -->
 

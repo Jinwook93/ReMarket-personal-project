@@ -15,7 +15,7 @@
 	<header th:fragment="header">
 		<div id="header-content" style="display: flex; position: relative;">
 				<div style="margin-right:10px;" >
-			<a href="/"  ><img src="/logo/logo.jpg" width=90%, height=50px style="margin-top:5px;" ></a>
+			<a href="/"  ><img src="/logo/logo.jpg" width=80%, height=50px style="margin-top:5px;" ></a>
 			</div>
 			<!-- 로그인 상태인 경우 -->
 			<div th:if="${isLoggedIn}" class="logged-in">
@@ -84,8 +84,8 @@
 						<h3 id="searchResultText" style="display: none;">검색 결과 (채팅방)
 						</h3>
 						<div style ="display:flex;justify-content: space-between;margin:10px;" >
-							 <label><input type="checkbox" id ="read-all-messages">모두 읽음</label>
-						 <label><input type="checkbox" id ="exceptTrade">거래불가,거래완료 제외 </label>
+							 <label><input type="checkbox" id ="read-all-messages"  style="margin-right:5px;">모두 읽음</label>
+						 <label><input type="checkbox" id ="exceptTrade" style="margin-right:5px;">거래불가,거래완료 제외 </label>
 						
 						</div>
 						<div id="chattingRoomScroll">

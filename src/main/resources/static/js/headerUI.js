@@ -674,7 +674,7 @@ export async function findAlarm(loggedId, alarmResult, alarmList, alarmListBody,
 				checkbox.checked = false;
 			}
 			// 텍스트 노드 생성
-			const text = document.createTextNode('모두 읽음');
+			const text = document.createTextNode(' 모두 읽음');
 
 			// <label> 요소에 체크박스와 텍스트 추가
 			label.appendChild(checkbox);
