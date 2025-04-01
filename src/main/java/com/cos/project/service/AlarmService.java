@@ -950,13 +950,15 @@ public List<AlarmEntity> setOtherRoomsEnableTrade(BoardEntity boardEntity, Chatt
 			List<AlarmEntity> noTradedchattingRooms = alarmsAboutBoard.stream().filter(
 					alarm -> (
 						    alarm.getType().equals("TRADE") &&
-					        (alarm.getAction().equals("상대방 동의 확인") || alarm.getAction().equals("예약")) &&
+					        (alarm.getAction().equals("상대방 동의 확인") || alarm.getAction().equals("예약")) 
+					        && Boolean.TRUE.equals(alarm.getExpired()) 
+					        &&
 					        !(Objects.equals(alarm.getMember1(), member1) && Objects.equals(alarm.getMember2(), member2)) &&		//Objects 비교 : 비교대상이 null일 경우 nullPointException 을 발생시키지 않고 false로 리턴
 					        !(Objects.equals(alarm.getMember1(), member2) && Objects.equals(alarm.getMember2(), member1))
-					       && Boolean.TRUE.equals(alarm.getExpired()) 
+					      
 					)
 					).collect(Collectors.toList());
-					
+					System.out.println("여기까지 가나1");
 	return noTradedchattingRooms;
 }
 

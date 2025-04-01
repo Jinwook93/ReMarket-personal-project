@@ -454,7 +454,10 @@ button[id^="denyMember2-"] {
 }
 
 
-
+#nicknameChatList {
+	margin-bottom : 20px;
+	
+}
 
 
 

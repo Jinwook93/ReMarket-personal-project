@@ -530,7 +530,9 @@ export async function loadMessages(roomId, messageIndex, recentExitedmemberId, s
 
 // 특정 채팅방(roomId)에 메시지를 전송하는 함수 (userid= 상대방)
 export async function sendMessage(roomId, userid, messageIndex, recentExitedmemberId) {
-	const messageInput = document.getElementById(`message-input-${roomId}`);
+//	const messageInput = document.getElementById(`#chat-container-${roomId} #message-input-${roomId}`);
+	const messageInput = document.querySelector(`#chat-container-${roomId} #message-input-${roomId}`);
+	
 	const message = messageInput.value.trim();
 	//	const parentMessageId = document.getElementById(`message-input-${roomId}`).value;		//클릭한 대상의 id
 	const parentMessageId = document.getElementById("parentMessageId");			// ※ .value : 무조건 String으로 인식함
@@ -586,9 +588,13 @@ export async function openChatRoom(roomId, title, loggedUserId, userid, loggedFl
 	let chatWindow = document.getElementById(`chat-room-${roomId}`);
 
 
+
+
 	if (chatWindow) {
 		chatWindow.remove(); // 이미 열려있으면 닫기
 	} else {
+		
+		
 		chatWindow = document.createElement("div");
 		chatWindow.id = `chat-room-${roomId}`;
 		chatWindow.className = "chat-window";
@@ -618,7 +624,16 @@ export async function openChatRoom(roomId, title, loggedUserId, userid, loggedFl
 
 
 
+//    const sendButton = document.getElementById(`send-button-${roomId}`);
+//    const messageInput = document.getElementById(`message-input-${roomId}`);
 
+    // 기존 이벤트 리스너 제거
+//    if (sendButton) {
+//        sendButton.removeEventListener("click", sendMessageHandler(roomId,userid));
+//    }
+//    if (messageInput) {
+//        messageInput.removeEventListener("keypress", handleKeyPress);
+//    }
 
 
 
@@ -758,6 +773,32 @@ export async function openChatRoom(roomId, title, loggedUserId, userid, loggedFl
 		//			console.log("기존 interval 제거 완료");
 		//		}
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		//		console.log(room);
 		if (loggedFlag === "logged1") {
 			//			let messageIndex = Number(room.messageIndex1);
@@ -766,24 +807,26 @@ export async function openChatRoom(roomId, title, loggedUserId, userid, loggedFl
 			// 메시지 전송 이벤트 추가
 			//		intervalId = setInterval(() => loadMessages(Number(roomId), messageIndex, recentExitedmemberId), 2000);
 
-			document.getElementById(`send-button-${roomId}`).addEventListener("click", () => sendMessage(roomId, userid, Number(room.messageIndex1), Number(room.recentExitedmemberId)));
-			document.getElementById(`message-input-${roomId}`).addEventListener("keypress", (event) => {
-				if (event.key === "Enter") sendMessage(roomId, userid, messageIndex1, recentExitedmemberId);
-			});
+
+//메시지 전송 이벤트 추가
+//			document.getElementById(`send-button-${roomId}`).addEventListener("click", () => sendMessage(roomId, userid, Number(room.messageIndex1), Number(room.recentExitedmemberId)));
+//			document.getElementById(`message-input-${roomId}`).addEventListener("keypress", (event) => {
+//				if (event.key === "Enter") sendMessage(roomId, userid, room.messageIndex1, recentExitedmemberId);
+//			});
 
 
+		resetMessageListeners(roomId, userid, room.messageIndex1, room.recentExitedmemberId);
 		} else if (loggedFlag === "logged2") {
 			//			let messageIndex = Number(room.messageIndex2);
 			loadMessages(Number(roomId), Number(room.messageIndex2), Number(room.recentExitedmemberId), messageId);
 			//-			intervalId = setInterval(() => loadMessages(Number(roomId), Number(room.messageIndex2), Number(room.recentExitedmemberId)), 2000);
 			// 메시지 전송 이벤트 추가
-			document.getElementById(`send-button-${roomId}`).addEventListener("click", () => sendMessage(roomId, userid, Number(room.messageIndex2), Number(room.recentExitedmemberId)));
-			document.getElementById(`message-input-${roomId}`).addEventListener("keypress", (event) => {
-				if (event.key === "Enter") sendMessage(roomId, userid, messageIndex2, recentExitedmemberId);
-			});
+//			document.getElementById(`send-button-${roomId}`).addEventListener("click", () => sendMessage(roomId, userid, Number(room.messageIndex2), Number(room.recentExitedmemberId)));
+//			document.getElementById(`message-input-${roomId}`).addEventListener("keypress", (event) => {
+//				if (event.key === "Enter") sendMessage(roomId, userid, room.messageIndex2, recentExitedmemberId);
+//			});
 
-
-
+		resetMessageListeners(roomId, userid, room.messageIndex2, room.recentExitedmemberId);
 
 
 		}
@@ -812,6 +855,41 @@ export async function openChatRoom(roomId, title, loggedUserId, userid, loggedFl
 
 
 
+// 이벤트 핸들러를 변수로 저장
+let sendMessageHandlerInstance = null;
+let handleKeyPressInstance = null;
+
+function resetMessageListeners(roomId, userid, messageIndex, recentExitedmemberId) {
+    const sendButton = document.querySelector(`#chat-container-${roomId} #send-button-${roomId}`);
+    const messageInput = document.querySelector(`#chat-container-${roomId} #message-input-${roomId}`);
+
+    // 기존 이벤트 리스너 제거 (중복방지)
+    if (sendButton && sendMessageHandlerInstance) {
+        sendButton.removeEventListener("click", sendMessageHandlerInstance);
+    }
+    if (messageInput && handleKeyPressInstance) {
+        messageInput.removeEventListener("keypress", handleKeyPressInstance);
+    }
+
+    // 이벤트 핸들러 정의
+    sendMessageHandlerInstance = function() {
+        sendMessage(roomId, userid, Number(messageIndex), Number(recentExitedmemberId));
+    };
+    
+    handleKeyPressInstance = function(event) {
+        if (event.key === "Enter") {
+            sendMessage(roomId, userid, Number(messageIndex), Number(recentExitedmemberId));
+        }
+    };
+
+    // 새로운 이벤트 리스너 추가
+    if (sendButton) {
+        sendButton.addEventListener("click", sendMessageHandlerInstance);
+    }
+    if (messageInput) {
+        messageInput.addEventListener("keypress", handleKeyPressInstance);
+    }
+}
 
 
 
@@ -867,13 +945,13 @@ export async function boardTitleButtonClickHandler(event, board) {
 			//			console.log("상대 아이디" + board.memberEntity.id);
 
 			bookTrade1(Number(boardId), Number(loggedId), Number(board.memberEntity.id), loggedUserId);
-		} else if (event.target.id === `chat-enroll-Book2-${alarm.id}`) {	//예약승인
+		} if (event.target.id === `chat-enroll-Book2-${alarm.id}`) {	//예약승인
 			const alarmId = event.target.id.replace("chat-enroll-Book2-", "");
 			bookTrade2(Number(alarmId), loggedUserId);
-		} else if (event.target.id === `chat-deny-enroll-Book2-${alarm.id}`) {	//예약거절
+		}  if (event.target.id === `chat-deny-enroll-Book2-${alarm.id}`) {	//예약거절
 			const alarmId = event.target.id.replace("chat-deny-enroll-Book2-", "");
 			denyBookTrade(Number(alarmId), loggedUserId);
-		} else if (event.target.id === `chat-change-enroll-Book2-${board.id}`) {	//거래 상태 변경 (보드 관리자가  승인)
+		}  if (event.target.id === `chat-change-enroll-Book2-${board.id}`) {	//거래 상태 변경 (보드 관리자가  승인)
 			const boardId = event.target.id.replace("chat-change-enroll-Book2-", "");
 			//		  const roomResponse = await fetch(`/chat/findRoomByBoardId/${boardId}`);
 			//       		 const room = await roomResponse.json(); 	
@@ -883,23 +961,24 @@ export async function boardTitleButtonClickHandler(event, board) {
 
 		if (event.target.id === `chat-enroll-trade-${board.id}`) {			//거래신청
 			enrollTrade1(Number(board.id), Number(loggedId), Number(board.memberEntity.id), loggedUserId);
-		} else if (event.target.id === `chat-agreeMember2-${alarm.id}`) {	//거래승인
+		}  if (event.target.id === `chat-agreeMember2-${alarm.id}`) {	//거래승인
 			const alarmId = event.target.id.replace("chat-agreeMember2-", "");
 			enrollTrade2(Number(alarmId), loggedUserId);
-		} else if (event.target.id === `chat-denyMember2-${alarm.id}`) {	//거래거절
+		}  if (event.target.id === `chat-denyMember2-${alarm.id}`) {	//거래거절
 			const alarmId = event.target.id.replace("chat-denyMember2-", "");
 			denyCreateTrade(Number(alarmId), loggedUserId);
-		} else if (trade != null && event.target.id === `chat-complete2-Sell-${trade.id}`) {	//거래 완료2 (보드 관리자가 먼저 승인)
+		}  if (trade != null && event.target.id === `chat-complete2-Sell-${trade.id}`) {	//거래 완료2 (보드 관리자가 먼저 승인)
 			const tradeId = event.target.id.replace("chat-complete2-Sell-", "");
 			CompleteTrade(tradeId, "isMember2", "거래완료 요청을 보내시겠습니까? (※ 상대방도 수락해야 거래완료 상태가 됩니다");
-		} else if (trade != null && event.target.id === `chat-complete1-Sell-${trade.id}`) {	//거래 완료1 (거래 희망자가 승인)
+		}  if (trade != null && event.target.id === `chat-complete1-Sell-${trade.id}`) {	//거래 완료1 (거래 희망자가 승인)
 			const tradeId = event.target.id.replace("chat-complete1-Sell-", "");
 			CompleteTrade(tradeId, "isMember1", "거래완료를 수락하시겠습니까?");
 		}
-		else if (trade != null && event.target.id === `chat-cancel-trade-${trade.id}`) {			//거래취소
+		 if (trade != null && event.target.id === `chat-cancel-trade-${trade.id}`) {			//거래취소
 			const tradeId = event.target.id.replace("chat-cancel-trade-", "");
 			CancelTrade(Number(tradeId), loggedId);
 		}
+		
 
 
 
@@ -1546,10 +1625,11 @@ export async function reloadDetails(roomId, loggedUserId) {
 
 
 	// 버튼 부분만 업데이트 (기존 내용을 유지하면서 버튼 상태만 변경)
-	const buttonsContainer = detailsElement.querySelector(".buttons-container");
+	const buttonsContainer = detailsElement.querySelector(`#chat-container-${room.id} .buttons-container`);
+//	const buttonstatus = document.querySelector(`.buttons-container-${board.id} .small-btn`); // 버튼 컨테이너 내부의 버튼 찾기
 	if (buttonsContainer) {
 		buttonsContainer.innerHTML = ``;
-		buttonsContainer.innerHTML = `
+		buttonsContainer.innerHTML = `			
         ${(board.memberEntity.userid !== loggedUserId) && board.trades.length === 0 ?
 				`<button id="chat-enroll-trade-${board.id}" class = "applyTrade">거래신청</button> 
              <button id="chat-enroll-Book1-${board.id}" class = "bookTrade">예약신청</button> 
@@ -1669,14 +1749,14 @@ export async function reloadDetails(roomId, loggedUserId) {
 
 
 
-
-
-		const boardTitleButton = document.getElementById(`BoardTitleButton-${board.id}`);
+		
+//		const boardTitleButton = document.getElementById(`BoardTitleButton-${board.id}`);
+		const boardTitleButton = document.querySelector(`#chat-container-${room.id} #BoardTitleButton-${board.id}`);
 		if (boardTitleButton) {
 			// ✅ 이전 핸들러가 있으면 제거
 			if (boardButtonHandlers.has(board.id)) {			//boardButtonHandlers = 전역 상태를 관리하 변수
 				boardTitleButton.removeEventListener("click", boardButtonHandlers.get(board.id));
-			}
+		}
 
 			// ✅ 새 핸들러 생성 후 등록
 			const handler = (event) => boardTitleButtonClickHandler(event, board);

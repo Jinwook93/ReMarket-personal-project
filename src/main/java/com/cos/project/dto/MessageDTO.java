@@ -40,7 +40,7 @@ public class MessageDTO {
     private Boolean expired;
     
     public MessageDTO(Long id, String profileImageUrl1,String senderUserId, String member1Nickname, String messageContent, Long roomId,Boolean statusBar,Timestamp sendTime
-    		,Boolean expired) {
+    		,Boolean expired, Boolean alarmType) {
 		super();
 		this.id = id;
 		this.profileImageUrl1 = profileImageUrl1;
@@ -51,6 +51,7 @@ public class MessageDTO {
 		this.statusBar = statusBar;
 		this.sendTime = sendTime;
 		this.expired = expired;
+		this.alarmType = alarmType;
 	}
 
 

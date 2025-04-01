@@ -391,8 +391,16 @@ async function searchChat() {
 				return { msg, room }; // msg와 room 정보를 함께 반환
 			});
 
-			// 모든 방 정보를 가져오기 완료 후 처리
-			const roomsData = await Promise.all(roomPromises);
+
+
+		// 모든 방 정보를 가져오기 완료 후 처리
+const roomsData = await Promise.all(roomPromises);
+
+
+
+
+
+
 
 			messagedata.innerHTML = `
                 <div>
@@ -405,9 +413,10 @@ async function searchChat() {
                             	 ${msg.member1Nickname}
                             	 </div>
                                 	<div  style="width:60%;">
-                                 <p> ${msg.messageContent}   </p>
+                                <!--	${msg.expired}  	${msg.alarmType} -->
+                                 <p> ${msg.alarmType ==true && msg.expired ===true?`만료된 기능 입니다`:msg.messageContent}   </p>
                                		<div class = "date-text"> ${msg.sendTime} </div>
-                                    </div>
+                                   </div>
                                     <div>
                                     <button class="enterChat"
                                         data-search-room-id="${msg.roomId}"
@@ -433,10 +442,41 @@ async function searchChat() {
 			//			const details = document.getElementById(`details-${roomId}`);
 			//			details.style.display = (details.style.display === 'none' || details.style.display === '') ? 'block' : 'none';
 			//		});
+			
+			
 			roomsData.forEach(({ msg, room }) => {
 				const roomId = msg.roomId; // msg에서 roomId 가져오기
 				const toggleButton = document.getElementById(`toggleDetails-${roomId}`);
 				const detailsSection = document.getElementById(`details-${roomId}`);
+
+
+
+//  const sendButton = document.getElementById(`send-button-${room.id}`);
+//    const messageInput = document.getElementById(`message-input-${room.id}`);
+//
+//    // 기존 이벤트 리스너 제거
+//    if (sendButton) {
+//        const newSendButton = sendButton.cloneNode(true); // 버튼을 복제
+//        sendButton.parentNode.replaceChild(newSendButton, sendButton); // 기존 버튼을 복제된 버튼으로 교체
+//        newSendButton.addEventListener("click", () => { // 새로 복제된 버튼에 이벤트 리스너 추가
+//            sendMessage(room.id, loggedUserId, msg.id, room.recentExitedmemberId);
+//        });
+//    }
+//
+//    // Enter 키를 누를 때 메시지 전송
+//    if (messageInput) {
+//        messageInput.addEventListener("keypress", (event) => {
+//            if (event.key === "Enter") {
+//                sendMessage(room.id, loggedUserId, msg.id, room.recentExitedmemberId);
+//            }
+//        });
+//    }
+
+
+
+
+
+
 
 				if (toggleButton && detailsSection) {
 					toggleButton.addEventListener('click', () => {
@@ -745,17 +785,19 @@ export async function findAlarm(loggedId, alarmResult, alarmList, alarmListBody,
                 
                     ${alarm.member2Visible && Number(alarm.member2Id) === Number(loggedId) ? `
                         <td  id = alarm-${alarm.id}>	
-                        	  <button class="deleteAlarmBtn" data-alarm-id="${alarm.id}" data-alarm-member1Id="${alarm.member1Id}" data-alarm-member2Id="${alarm.member2Id}"
-            style="background-color: red; color: white; border: none; padding: 5px 10px; border-radius: 10%; cursor: pointer; font-weight: bold; font-size: 10px; display: inline-flex; align-items: center; justify-content: center;">
-            삭제
-        </button>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                          <div style="flex-grow: 1;">
+                        
                         <div>${alarm.expired === true ? `
                                 <span id="agreeMember2-${alarm.id}" style="font-weight:bold;">(만료)</span>
                           		` : ""}${alarm.expired === true && alarm.action === '거래 완료 확인' ? `만료된 정보입니다` : alarm.member2Content}</div>
+                          		
                             ${alarm.expired !== true && alarm.action === "상대방 동의 확인" ? `
                                 <button id="agreeMember2-${alarm.id}" >거래하기</button>
                                 <button id="denyMember2-${alarm.id}" >거절하기</button>
                           		` : ""}
+                          		
+                          		
                           		
                           		
                           		
@@ -775,9 +817,12 @@ export async function findAlarm(loggedId, alarmResult, alarmList, alarmListBody,
                             <div id = "complete-class-${alarm.id}">
                                <button id="complete1-Sell-${alarm.object}">거래완료</button> 
                                </div> 	 ` : ""} -->
-             						
-             							 
-             							 
+             						</div>
+             							 	  <button class="deleteAlarmBtn" data-alarm-id="${alarm.id}" data-alarm-member1Id="${alarm.member1Id}" data-alarm-member2Id="${alarm.member2Id}"
+            style="background-color: red; color: white; border: none; padding: 5px 10px; border-radius: 10%; cursor: pointer; font-weight: bold; font-size: 10px; display: inline-flex; align-items: center; justify-content: center;">
+            삭제
+        </button>
+             							 </div>
                                     <div class="date-container" style="display: flex; gap: 10px;"> 
                               <p class="date-text">${formatDate(alarm.createTime)}</p>
                                        <p class="read-status">${alarm.member2Read === "READ" ? "읽음" : "읽지 않음"}</p></div>

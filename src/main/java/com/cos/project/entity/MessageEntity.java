@@ -86,7 +86,9 @@ public class MessageEntity {
             message.getChattingRoomEntity().getId(),
             message.getStatusBar(),
             message.getSendTime(),
-            message.getExpired()
+            message.getExpired(),
+            message.getAlarmType()
+            
         );
     }
     

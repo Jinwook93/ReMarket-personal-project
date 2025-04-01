@@ -76,14 +76,19 @@
 				<div style="display: flex; position: relative;">
 					<!-- 채팅방 리스트 (오른쪽 정렬, 하나만 활성화시 기본 위치) -->
 					<div class="chattingRoomList"
-						style="position: absolute; top: -5px; left: 0px; width: 600px; height: 650px; display: none; z-index: 1;"
+						style="position: absolute; top: -5px; left: 0px; width: 600px; height: 650px; display: none; z-index: 1;padding:25px;"
 						onclick="bringToFront(this)">
 						<!-- 🔍 검색창 추가 -->
+<!-- 					<h2 style="font-weight: bold;" th:text="|${loggedNickname}의 채팅목록|"> 나의 채팅목록</h2>	 -->
+						<div style="display:flex;justify-content: space-between;">
+							<h2 id ="nicknameChatList" style="font-weight: bold;" th:text="|${loggedNickname}의 채팅목록|"> 나의 채팅목록</h2>
+							<div style="display:flex;text-align: center;justify-content: center;align-items: center;">
 						<input type="text" id="chatSearch" placeholder="채팅방 검색..."
 							style="width: 100%; padding: 8px; box-sizing: border-box; margin-bottom: 5px;">
-						<h3 id="searchResultText" style="display: none;">검색 결과 (채팅방)
-						</h3>
-						<div style ="display:flex;justify-content: space-between;margin:10px;" >
+							</div>
+						</div>	
+						<h3 id="searchResultText" style="display: none;">검색 결과 (채팅방)	</h3>
+						<div style ="display:flex;justify-content: space-between;margin:0px;margin-bottom: 20px;" >
 							 <label><input type="checkbox" id ="read-all-messages"  style="margin-right:5px;">모두 읽음</label>
 						 <label><input type="checkbox" id ="exceptTrade" style="margin-right:5px;">거래불가,거래완료 제외 </label>
 						
