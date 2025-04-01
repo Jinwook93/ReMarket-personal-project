@@ -1751,20 +1751,29 @@ export async function reloadDetails(roomId, loggedUserId) {
 
 		
 //		const boardTitleButton = document.getElementById(`BoardTitleButton-${board.id}`);
-		const boardTitleButton = document.querySelector(`#chat-container-${room.id} #BoardTitleButton-${board.id}`);
-		if (boardTitleButton) {
-			// ✅ 이전 핸들러가 있으면 제거
-			if (boardButtonHandlers.has(board.id)) {			//boardButtonHandlers = 전역 상태를 관리하 변수
-				boardTitleButton.removeEventListener("click", boardButtonHandlers.get(board.id));
-		}
+//		const boardTitleButton = document.querySelector(`#chat-container-${room.id} #BoardTitleButton-${board.id}`);
+const boardTitleButtons = document.querySelectorAll(`#chat-container-${room.id} #BoardTitleButton-${board.id} button`);
 
-			// ✅ 새 핸들러 생성 후 등록
-			const handler = (event) => boardTitleButtonClickHandler(event, board);
-			boardTitleButton.addEventListener("click", handler);
+boardTitleButtons.forEach((boardTitleButton) => {
+    if (boardTitleButton) {
+        // ✅ 이전 핸들러가 있으면 제거
+        if (boardButtonHandlers.has(board.id)) {  
+            boardTitleButton.removeEventListener("click", boardButtonHandlers.get(board.id));
+            boardButtonHandlers.delete(board.id); // 기존 핸들러 삭제
+        }
 
-			// ✅ 핸들러 저장
-			boardButtonHandlers.set(board.id, handler);
-		}
+        // ✅ 버튼 내용이 "거래불가"가 아닐 경우 이벤트 추가
+        if (boardTitleButton.textContent.trim() !== "거래불가") {
+            // ✅ 새 핸들러 생성 후 등록
+            const handler = (event) => boardTitleButtonClickHandler(event, board);
+            boardTitleButton.addEventListener("click", handler);
+
+            // ✅ 핸들러 저장
+            boardButtonHandlers.set(board.id, handler);
+        }
+    }
+});
+
 
 
 

@@ -707,45 +707,34 @@ public class TradeController {
 		if (otherUsersAlarmExpired.isEmpty()) {
 			return ResponseEntity.ok("거래가 취소되었습니다");
 		}
-		System.out.println("검색 결과:" + otherUsersAlarmExpired.size());
-		System.out.println("여기까지 가나2");
 
 		Set<Long> rememberRoomId = new HashSet<>();
 
 		for (AlarmEntity alarm : otherUsersAlarmExpired) {
 			ChattingRoomDTO notTradedRoomDTO = chatService.findRoomByBoardIdAndMemberId(boardEntity.getId(),
 					alarm.getMember1().getId(), alarm.getMember2().getId(), loggedId);
-			System.out.println("여기까지3");
 			if (notTradedRoomDTO == null || otherUsersAlarmExpired.isEmpty()) {
 				break;
 			}
-			System.out.println("여기까지4");
 			if (rememberRoomId.contains(notTradedRoomDTO.getId())) {
 				continue; // 중복된 거래 방이면 건너뜀
 			}
-			System.out.println("여기까지 5");
 			rememberRoomId.add(notTradedRoomDTO.getId());
-			System.out.println("여기까지 6");
 			chatService.setMessageExpired(notTradedRoomDTO);
-			System.out.println("여기까지 7");
 			MemberEntity notTradedMember1 = memberService.findByUserId(notTradedRoomDTO.getMember1UserId());
 			MemberEntity notTradedMember2 = memberService.findByUserId(notTradedRoomDTO.getMember2UserId());
-			System.out.println("여기까지 8");
 			
 			//boardEntity	 보드 게시자 기준으로 알람을 보내야 함
 			
 			AlarmEntity failedTradeAlarm = alarmService.postAlarm(boardEntity.getMemberEntity().getId(), notTradedMember1.getId(),
 					notTradedMember2.getId(), "TRADE", "거래", String.valueOf(boardEntity.getId()), "다시 거래 가능", null);
-			System.out.println("여기까지 9");
 			MessageDTO failedTradeMessage = new MessageDTO();
 			failedTradeMessage.setAlarmType(true);
 			failedTradeMessage.setMessageContent(failedTradeAlarm.getMember2Content());
 			failedTradeMessage.setReceiverUserId(notTradedMember1.getUserid());
-			System.out.println("여기 마지막");
 			chatService.addMessage(notTradedRoomDTO.getId(), principalDetails, failedTradeMessage);
 		}
 
-		System.out.println("거래가 취소되었습니다");
 
 		return ResponseEntity.ok("거래가 취소되었습니다");
 
