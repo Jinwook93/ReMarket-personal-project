@@ -32,7 +32,7 @@
         
 <!--         닉네임-->
 		<div style="display:flex;">
-        <label for="nickname">닉네임</label>  <button type="button" onclick="checkNickname()">중복확인</button>
+        <label for="nickname">닉네임</label>  <button type="button"  class="small-btn" onclick="checkNickname()">중복확인</button>
         </div>
         <input type="text" id="nickname" name="nickname" th:value="${member.nickname}" required />
             <input type ="hidden" id="isCheckedNickname" value=false>
