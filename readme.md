@@ -1,4 +1,4 @@
-![신청만료테스트](https://github.com/user-attachments/assets/773f0f7d-35a0-44ab-929c-b906d758ceeb)
+
 
 ## 개발 인원
 
