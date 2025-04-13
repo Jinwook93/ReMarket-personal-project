@@ -24,8 +24,11 @@
 - 한눈에 보기 쉽게 브라우저 배율을 50%로 잡아서 테스트하였습니다.
 
 
+### 로그인 테스트
+![로그인테스트](https://github.com/user-attachments/assets/9520d605-36c3-4929-9b20-37ea62ddc2fe)
 
-
+### 회원가입 테스트
+![회원가입테스트](https://github.com/user-attachments/assets/5564e071-4033-427e-9360-d49af491ae24)
 
 
 
